@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Google Sans Code", monospace;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff;
+  color: #1a1a1a;
+}
+
+/* Ensure Google Sans Code is used everywhere */
+* {
+  font-family: "Google Sans Code", monospace;
+  font-optical-sizing: auto;
+}
+
+/* Headings - All caps with letter spacing */
+h1, h2, h3, h4, h5, h6 {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Specific heading styles */
+h1 {
+  letter-spacing: 0.08em;
+}
+
+h2 {
+  letter-spacing: 0.06em;
+}
+
+h3, h4, h5, h6 {
+  letter-spacing: 0.04em;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

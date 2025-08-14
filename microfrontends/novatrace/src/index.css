@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+
+  /* NovaTrace Custom Colors */
+  --nova-blue: hsl(217, 91%, 25%);
+  --nova-light: hsl(217, 91%, 60%);
+  --nova-success: hsl(158, 64%, 52%);
+  --nova-warning: hsl(43, 96%, 56%);
+  --nova-error: hsl(0, 84%, 60%);
+  --nova-dark: hsl(217, 33%, 17%);
+  --nova-gray: hsl(217, 10%, 40%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: "Google Sans Code", monospace;
+    font-optical-sizing: auto;
+  }
+
+  /* Ensure Google Sans Code is used everywhere */
+  * {
+    font-family: "Google Sans Code", monospace;
+    font-optical-sizing: auto;
+  }
+
+  /* Headings - All caps with letter spacing */
+  h1, h2, h3, h4, h5, h6 {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+@layer utilities {
+  .text-nova-blue {
+    color: var(--nova-blue);
+  }
+  
+  .text-nova-light {
+    color: var(--nova-light);
+  }
+  
+  .text-nova-success {
+    color: var(--nova-success);
+  }
+  
+  .text-nova-warning {
+    color: var(--nova-warning);
+  }
+  
+  .text-nova-error {
+    color: var(--nova-error);
+  }
+  
+  .text-nova-dark {
+    color: var(--nova-dark);
+  }
+  
+  .text-nova-gray {
+    color: var(--nova-gray);
+  }
+  
+  .bg-nova-blue {
+    background-color: var(--nova-blue);
+  }
+  
+  .bg-nova-light {
+    background-color: var(--nova-light);
+  }
+  
+  .bg-nova-success {
+    background-color: var(--nova-success);
+  }
+  
+  .bg-nova-warning {
+    background-color: var(--nova-warning);
+  }
+  
+  .bg-nova-error {
+    background-color: var(--nova-error);
+  }
+  
+  .bg-nova-dark {
+    background-color: var(--nova-dark);
+  }
+  
+  .bg-nova-gray {
+    background-color: var(--nova-gray);
+  }
+}
