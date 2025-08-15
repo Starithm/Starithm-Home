@@ -10,16 +10,5 @@
       "source": "/home/(.*)",
       "destination": "/home/index.html"
     }
-  ],
-  "headers": [
-    {
-      "source": "/novatrace/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        }
-      ]
-    }
   ]
 }
