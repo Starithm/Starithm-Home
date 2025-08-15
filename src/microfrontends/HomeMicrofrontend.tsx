@@ -8,11 +8,21 @@ const HomeMicrofrontend: React.FC = () => {
     // In production, you might want to use Module Federation or other microfrontend patterns
   }, []);
 
+  const getHomeRoute = () => {
+    if (import.meta.env.PROD) {
+      // Production: Use relative URLs
+      return '/home/';
+    } else {
+      // Development: Use localhost URLs
+      return 'http://localhost:5173';
+    }
+  };
+
   return (
     <div className="microfrontend-container">
       <iframe
         ref={iframeRef}
-        src="http://localhost:5173"
+        src={getHomeRoute()}
         title="Starithm Home"
         className="microfrontend-iframe"
         style={{

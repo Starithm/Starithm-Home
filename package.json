@@ -12,7 +12,7 @@
     "dev:shell": "vite --port 3000 --open",
     "install:all": "npm install && cd microfrontends/home && npm install && cd ../novatrace && npm install",
     "build:all": "npm run build && cd microfrontends/home && npm install && npm run build && cd ../novatrace && npm install && npm run build && cd ../.. && npm run copy-microfrontends",
-    "copy-microfrontends": "mkdir -p dist/home dist/novatrace && cp -r microfrontends/home/dist/* dist/home/ && cp -r microfrontends/novatrace/dist/* dist/novatrace/",
+    "copy-microfrontends": "mkdir -p dist/home dist/novatrace && cp -r microfrontends/home/dist/* dist/home/ && cp -r microfrontends/novatrace/dist/* dist/novatrace/ && echo 'Copy completed'",
     "preview:all": "concurrently \"npm run preview\" \"cd microfrontends/home && npm run preview\" \"cd microfrontends/novatrace && npm run preview\""
   },
   "dependencies": {
