@@ -4,7 +4,7 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: process.env.NODE_ENV === 'production' ? '/novatrace/' : '/',
   css: {
     postcss: './postcss.config.js',
   },
@@ -21,5 +21,12 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        assetFileNames: 'novatrace-assets/[name]-[hash][extname]',
+        chunkFileNames: 'novatrace-assets/[name]-[hash].js',
+        entryFileNames: 'novatrace-assets/[name]-[hash].js'
+      }
+    }
   },
 });

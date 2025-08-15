@@ -2,17 +2,19 @@
   "buildCommand": "npm run install:all && npm run build:all",
   "outputDirectory": "dist",
 
-  "rewrites": [
-    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+      "rewrites": [
+      { "source": "/assets/(.*)", "destination": "/assets/$1" },
+      { "source": "/home-assets/(.*)", "destination": "/home/home-assets/$1" },
+      { "source": "/novatrace-assets/(.*)", "destination": "/novatrace/novatrace-assets/$1" },
 
-    { "source": "/novatrace", "destination": "/novatrace/index.html" },
-    { "source": "/novatrace/", "destination": "/novatrace/index.html" },
-    { "source": "/novatrace/(.*)", "destination": "/novatrace/index.html" },
+      { "source": "/novatrace", "destination": "/novatrace/index.html" },
+      { "source": "/novatrace/", "destination": "/novatrace/index.html" },
+      { "source": "/novatrace/(.*)", "destination": "/novatrace/index.html" },
 
-    { "source": "/home", "destination": "/home/index.html" },
-    { "source": "/home/", "destination": "/home/index.html" },
-    { "source": "/home/(.*)", "destination": "/home/index.html" }
-  ],
+      { "source": "/home", "destination": "/home/index.html" },
+      { "source": "/home/", "destination": "/home/index.html" },
+      { "source": "/home/(.*)", "destination": "/home/index.html" }
+    ],
 
   "headers": [
     {
