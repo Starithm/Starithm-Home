@@ -12,11 +12,19 @@ const NovaTraceMicrofrontend: React.FC = () => {
 
   // Determine the correct route for NovaTrace microfrontend
   const getNovaTraceRoute = () => {
-    if (location.pathname === '/novatrace/status') {
-      return 'http://localhost:5174/status';
+    if (import.meta.env.PROD) {
+      // Production: Use relative URLs
+      if (location.pathname === '/novatrace/status') {
+        return '/novatrace/status';
+      }
+      return '/novatrace/';
+    } else {
+      // Development: Use localhost URLs
+      if (location.pathname === '/novatrace/status') {
+        return 'http://localhost:5174/status';
+      }
+      return 'http://localhost:5174/';
     }
-    // Default to Event Intelligence Dashboard
-    return 'http://localhost:5174/';
   };
 
   return (

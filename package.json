@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "dev:all": "concurrently \"npm run dev\" \"cd microfrontends/home && npm run dev\" \"cd microfrontends/novatrace && npm run dev\"",
     "dev:shell": "vite --port 3000 --open",
-    "install:all": "npm install && cd microfrontends/home && npm install && cd ../novatrace && npm install"
+    "install:all": "npm install && cd microfrontends/home && npm install && cd ../novatrace && npm install",
+    "build:all": "npm run build && cd microfrontends/home && npm run build && cd ../novatrace && npm run build && npm run copy-microfrontends",
+    "copy-microfrontends": "cp -r microfrontends/home/dist dist/home && cp -r microfrontends/novatrace/dist dist/novatrace",
+    "preview:all": "concurrently \"npm run preview\" \"cd microfrontends/home && npm run preview\" \"cd microfrontends/novatrace && npm run preview\""
   },
   "dependencies": {
     "react": "^18.2.0",
