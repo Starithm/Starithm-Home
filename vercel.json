@@ -1,45 +1,36 @@
 {
   "buildCommand": "npm run install:all && npm run build:all",
   "outputDirectory": "dist",
+
   "rewrites": [
-    {
-      "source": "/novatrace",
-      "destination": "/novatrace/index.html"
-    },
-    {
-      "source": "/novatrace/",
-      "destination": "/novatrace/index.html"
-    },
-    {
-      "source": "/novatrace/status",
-      "destination": "/novatrace/index.html"
-    },
-    {
-      "source": "/home",
-      "destination": "/home/index.html"
-    },
-    {
-      "source": "/home/",
-      "destination": "/home/index.html"
-    }
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+
+    { "source": "/novatrace", "destination": "/novatrace/index.html" },
+    { "source": "/novatrace/", "destination": "/novatrace/index.html" },
+    { "source": "/novatrace/(.*)", "destination": "/novatrace/index.html" },
+
+    { "source": "/home", "destination": "/home/index.html" },
+    { "source": "/home/", "destination": "/home/index.html" },
+    { "source": "/home/(.*)", "destination": "/home/index.html" }
   ],
+
   "headers": [
     {
-      "source": "/novatrace/(.*)",
+      "source": "/(home|novatrace)/index.html",
       "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        }
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
       ]
     },
     {
-      "source": "/home/(.*)",
+      "source": "/assets/(.*)",
       "headers": [
-        {
-          "key": "X-Frame-Options", 
-          "value": "SAMEORIGIN"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/(home|novatrace)/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
       ]
     }
   ]
