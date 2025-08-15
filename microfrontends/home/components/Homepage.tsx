@@ -12,8 +12,14 @@ export function Homepage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left">
-              <h1 className="text-5xl lg:text-7xl font-bold text-starithm-electric-violet mb-6 leading-tight">
-                Explore the Universe with Starithm
+              <h1 className="mb-6 leading-tight">
+                <span className="text-4xl lg:text-6xl font-bold text-starithm-rich-black">
+                  Explore the Universe with
+                </span>
+                <br />
+                <span className="text-5xl lg:text-7xl font-bold text-starithm-electric-violet text-uppercase">
+                  Starithm
+                </span>
               </h1>
               
               <p className="text-2xl lg:text-3xl text-starithm-rich-black/80 mb-8 opacity-90 leading-relaxed">
@@ -190,7 +196,7 @@ export function Homepage() {
             <p className="text-2xl lg:text-3xl text-starithm-rich-black/80 mb-10 leading-relaxed">
               Connect with researchers worldwide, access real-time data, and accelerate your discoveries
             </p>
-            
+          
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
               <Button 
                 size="lg"

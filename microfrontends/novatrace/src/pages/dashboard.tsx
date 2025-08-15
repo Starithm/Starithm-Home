@@ -138,10 +138,10 @@ export default function Dashboard() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-[#8D0FF5] rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 bg-[#770ff5] rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-xs">S</span>
               </div>
-              <span className="text-sm font-medium text-[#8D0FF5]">Starithm</span>
+              <span className="text-sm font-medium text-[#770ff5]">Starithm</span>
             </div>
             <div className="text-center">
               <p className="text-xs text-gray-500">&copy; 2024 Starithm. All rights reserved.</p>

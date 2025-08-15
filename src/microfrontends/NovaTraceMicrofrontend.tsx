@@ -1,18 +1,29 @@
 import React, { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const NovaTraceMicrofrontend: React.FC = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const location = useLocation();
 
   useEffect(() => {
     // For now, we'll use iframe approach
     // In production, you might want to use Module Federation or other microfrontend patterns
   }, []);
 
+  // Determine the correct route for NovaTrace microfrontend
+  const getNovaTraceRoute = () => {
+    if (location.pathname === '/novatrace/status') {
+      return 'http://localhost:5174/status';
+    }
+    // Default to Event Intelligence Dashboard
+    return 'http://localhost:5174/';
+  };
+
   return (
     <div className="microfrontend-container">
       <iframe
         ref={iframeRef}
-        src="http://localhost:5174/status"
+        src={getNovaTraceRoute()}
         title="NovaTrace"
         className="microfrontend-iframe"
         style={{

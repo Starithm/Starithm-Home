@@ -76,10 +76,14 @@
     font-optical-sizing: auto;
   }
 
-  /* Headings - All caps with letter spacing */
+  /* Headings - Normal case with letter spacing */
   h1, h2, h3, h4, h5, h6 {
-    text-transform: uppercase;
     letter-spacing: 0.05em;
+  }
+
+  /* Utility class for uppercase text when needed */
+  .text-uppercase {
+    text-transform: uppercase;
   }
 }
 

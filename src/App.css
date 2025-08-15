@@ -14,8 +14,6 @@
 }
 
 .nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 0 1rem;
   display: flex;
   align-items: center;
@@ -27,6 +25,22 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  text-decoration: none !important;
+  transition: opacity 0.2s;
+  color: inherit;
+}
+
+.nav-brand:hover {
+  opacity: 0.8;
+  text-decoration: none !important;
+}
+
+.nav-brand:visited {
+  text-decoration: none !important;
+}
+
+.nav-brand:active {
+  text-decoration: none !important;
 }
 
 .nav-logo {
@@ -37,7 +51,7 @@
 .nav-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #8D0FF5;
+  color: #770ff5;
 }
 
 .nav-links {
@@ -54,7 +68,7 @@
 }
 
 .nav-link:hover {
-  color: #8D0FF5;
+  color: #770ff5;
 }
 
 .main-content {

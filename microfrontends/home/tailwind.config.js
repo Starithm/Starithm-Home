@@ -9,9 +9,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        'starithm-electric-violet': '#8D0FF5',
+        'starithm-electric-violet': '#770ff5',
         'starithm-veronica': '#A239CA',
         'starithm-selective-yellow': '#FFB400',
+        'starithm-golden-yellow': '#ffc332',
         'starithm-rich-black': '#1A1A1A',
       },
     },

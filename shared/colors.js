@@ -3,10 +3,13 @@
 
 export const starithmColors = {
   // Primary Brand Colors
-  electricViolet: '#8D0FF5',    // Main brand color
+  // electricViolet: '#770ff5',    // Main brand color
+  electricViolet: '#770ff5',
   veronica: '#A239CA',          // Secondary purple
   selectiveYellow: '#FFB400',   // Accent yellow
   richBlack: '#1A1A1A',         // Dark text
+  goldenYellow: '#ffc332',
+  whitish: "#FFFDF9",
   
   // Semantic Colors (using Starithm palette)
   success: '#10B981',           // Green for success states

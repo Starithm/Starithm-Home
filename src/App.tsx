@@ -12,10 +12,10 @@ function App() {
       {/* Global Navigation */}
       <nav className="global-nav">
         <div className="nav-container">
-          <div className="nav-brand">
+          <Link to="/" className="nav-brand">
             <img src="/logo_without_name.png" alt="Starithm" className="nav-logo" />
             <span className="nav-title">Starithm</span>
-          </div>
+          </Link>
           <div className="nav-links">
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/novatrace" className="nav-link">NovaTrace</Link>

@@ -1,10 +1,11 @@
 // API Configuration
-export const API_BASE_URL = 'http://localhost:5004';
+export const API_BASE_URL = 'http://localhost:3000';
 
 // API endpoints
 export const API_ENDPOINTS = {
   health: `${API_BASE_URL}/health`,
   dashboard: `${API_BASE_URL}/api/dashboard`,
   alerts: `${API_BASE_URL}/api/alerts`,
+  alertDetails: (id: string) => `${API_BASE_URL}/api/alerts/${id}`,
   process: `${API_BASE_URL}/api/process`,
 } as const;

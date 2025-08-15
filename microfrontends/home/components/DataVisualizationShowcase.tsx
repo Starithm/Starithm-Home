@@ -12,7 +12,7 @@ export function DataVisualizationShowcase() {
   ];
 
   const eventTypes = [
-    { name: 'Supernovae', value: 35, color: '#8D0FF5' },
+    { name: 'Supernovae', value: 35, color: '#770ff5' },
     { name: 'GRBs', value: 25, color: '#A239CA' },
     { name: 'Variables', value: 30, color: '#FFB400' },
     { name: 'Others', value: 10, color: '#0E0B16' }
@@ -51,13 +51,13 @@ export function DataVisualizationShowcase() {
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: '#ffffff', 
-                      border: '2px solid #8D0FF5', 
+                      border: '2px solid #770ff5', 
                       borderRadius: '12px',
                       color: '#0E0B16',
                       boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                     }} 
                   />
-                  <Line type="monotone" dataKey="events" stroke="#8D0FF5" strokeWidth={4} />
+                  <Line type="monotone" dataKey="events" stroke="#770ff5" strokeWidth={4} />
                   <Line type="monotone" dataKey="alerts" stroke="#FFB400" strokeWidth={4} />
                 </LineChart>
               </ResponsiveContainer>
@@ -114,7 +114,7 @@ export function DataVisualizationShowcase() {
                       boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                     }} 
                   />
-                  <Bar dataKey="active" fill="#8D0FF5" radius={4} />
+                  <Bar dataKey="active" fill="#770ff5" radius={4} />
                   <Bar dataKey="scheduled" fill="#A239CA" radius={4} />
                 </BarChart>
               </ResponsiveContainer>
@@ -128,7 +128,7 @@ export function DataVisualizationShowcase() {
           <div className="relative h-64 bg-gradient-radial from-starithm-electric-violet/10 to-gray-50 rounded-xl overflow-hidden">
             {/* Mock constellation lines */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 200">
-              <g stroke="#8D0FF5" strokeWidth="2" fill="none" opacity="0.8">
+              <g stroke="#770ff5" strokeWidth="2" fill="none" opacity="0.8">
                 <path d="M50,50 L100,80 L150,60 L200,90" />
                 <path d="M250,40 L300,70 L350,50" />
                 <path d="M100,120 L150,140 L200,130 L250,150" />

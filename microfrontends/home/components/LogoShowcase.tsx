@@ -184,7 +184,7 @@ export function LogoShowcase() {
             <div className="text-center">
               <div className="w-16 h-16 bg-starithm-electric-violet rounded-full mx-auto mb-3"></div>
               <div className="text-sm text-starithm-rich-black/70">Electric Violet</div>
-              <div className="text-xs text-starithm-rich-black/50">#8D0FF5</div>
+              <div className="text-xs text-starithm-rich-black/50">#770ff5</div>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-starithm-veronica rounded-full mx-auto mb-3"></div>
