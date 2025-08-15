@@ -12,6 +12,8 @@ function Router() {
     <Switch>
       <Route path="/" component={EventIntelligence} />
       <Route path="/status" component={Dashboard} />
+      <Route path="/novatrace" component={EventIntelligence} />
+      <Route path="/novatrace/status" component={Dashboard} />
       <Route component={NotFound} />
     </Switch>
   );

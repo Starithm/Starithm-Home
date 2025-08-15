@@ -15,9 +15,9 @@ const NovaTraceMicrofrontend: React.FC = () => {
     if (import.meta.env.PROD) {
       // Production: Use relative URLs
       if (location.pathname === '/novatrace/status') {
-        return '/novatrace/status';
+        return '/novatrace/status';  // This will be rewritten to /novatrace/index.html by Vercel
       }
-      return '/novatrace/';
+      return '/novatrace/';  // This will be rewritten to /novatrace/index.html by Vercel
     } else {
       // Development: Use localhost URLs
       if (location.pathname === '/novatrace/status') {

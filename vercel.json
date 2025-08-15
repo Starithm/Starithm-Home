@@ -3,12 +3,44 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/novatrace/(.*)",
+      "source": "/novatrace",
       "destination": "/novatrace/index.html"
     },
     {
-      "source": "/home/(.*)",
+      "source": "/novatrace/",
+      "destination": "/novatrace/index.html"
+    },
+    {
+      "source": "/novatrace/status",
+      "destination": "/novatrace/index.html"
+    },
+    {
+      "source": "/home",
       "destination": "/home/index.html"
+    },
+    {
+      "source": "/home/",
+      "destination": "/home/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/novatrace/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    },
+    {
+      "source": "/home/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options", 
+          "value": "SAMEORIGIN"
+        }
+      ]
     }
   ]
 }
