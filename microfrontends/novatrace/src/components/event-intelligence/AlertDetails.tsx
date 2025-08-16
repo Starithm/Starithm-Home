@@ -17,7 +17,8 @@ import {
   Users,
   Telescope,
   BarChart3,
-  Calendar
+  Calendar,
+  Link
 } from "lucide-react";
 
 interface AlertDetailsProps {
@@ -101,6 +102,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
   const authors = alertData.data.authors;
   const telescopes = alertData.data.telescopes;
   const timeline = alertData.timeline || [];
+  const urls = alertData.data.urls || [];
 
   return (
     <div className="flex-1 p-6">
@@ -368,7 +370,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
           </Card>
 
           {/* Participants Section */}
-          {authors.authors.length > 0 || authors.institutions.length > 0 && (
+          {(authors.authors.length > 0 || authors.institutions.length > 0 || telescopes.telescopes.length > 0 || telescopes.observatories.length > 0) && (
           <Card className="border border-gray-200">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -379,7 +381,29 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
             <CardContent>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  {authors.authors && authors.authors.length > 0 && (
+                  {
+                    Object.keys(authors).map((key) => {
+                      return authors[key]?.length > 0 && (<div className="mb-3">
+                        <label className="text-sm font-medium text-muted-foreground">{key.toLocaleUpperCase()}</label>
+                        <div className="text-sm mt-1">
+                          {authors[key].join(', ')}
+                        </div>
+                      </div>)
+                    })
+                  }
+                  </div>
+                  <div>
+                  {
+                    Object.keys(telescopes).map((key) => {
+                      return telescopes[key]?.length > 0 && (<div className="mb-3">
+                        <label className="text-sm font-medium text-muted-foreground">{key.toLocaleUpperCase()}</label>
+                        <div className="text-sm mt-1">
+                          {telescopes[key].join(', ')}
+                        </div>
+                      </div>)
+                    })
+                  }
+                  {/* {authors.authors && authors.authors.length > 0 && (
                     <div className="mb-3">
                       <label className="text-sm font-medium text-muted-foreground">Authors</label>
                       <div className="text-sm mt-1">
@@ -396,10 +420,10 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                         {authors.institutions.length > 3 && ` +${authors.institutions.length - 3} more`}
                       </div>
                     </div>
-                  )}
+                  )} */}
                 </div>
 
-                <div>
+                {/* <div>
                   {telescopes.telescopes && telescopes.telescopes.length > 0 && (
                     <div className="mb-3">
                       <label className="text-sm font-medium text-muted-foreground">Telescopes</label>
@@ -418,12 +442,29 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                       </div>
                     </div>
                   )}
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>)}
-
-          
+          {urls.length > 0 && (
+            <Card className="border border-gray-200">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Link className="h-5 w-5" />
+                  <span>Links</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-2">
+                  {urls.map((url) => (
+                    <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-starithm-electric-violet hover:underline">
+                      {url}
+                    </a>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </ScrollArea>
     </div>

@@ -100,7 +100,7 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
             size="sm"
             onClick={handleSearch}
             disabled={isLoading}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 bg-starithm-electric-violet text-white hover:bg-starithm-electric-violet/90"
           >
             <Search className="h-4 w-4" />
             <span>{isLoading ? "Searching..." : "Search"}</span>
