@@ -92,7 +92,7 @@ export function AlertModal({ alert, isOpen, onClose, onOpenRawDataModal }: Alert
   if (!alert) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={onClose} showCloseButton={false}>
       <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden" showCloseButton={false}>
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center justify-between">

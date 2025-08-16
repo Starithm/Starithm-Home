@@ -16,7 +16,7 @@ export function RawDataModal({ alert, isOpen, onClose }: RawDataModalProps) {
   if (!alert) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={onClose} showCloseButton={false}>
       <DialogContent className="max-w-4xl max-h-[80vh]" showCloseButton={false}>
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
