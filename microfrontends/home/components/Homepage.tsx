@@ -185,15 +185,14 @@ export function Homepage() {
             
             <div className="relative">
               <div className="w-full h-80 bg-gradient-to-br from-starithm-electric-violet/10 to-starithm-veronica/10 rounded-2xl overflow-hidden border-2 border-starithm-electric-violet/30 shadow-lg">
-                <video 
-                  className="w-full h-full object-cover"
-                  controls
-                  poster="/logo.png"
-                  preload="metadata"
-                >
-                  <source src="/novatrace_video.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/AUyLy5NSxk8?modestbranding=1&showinfo=0&rel=0&controls=1"
+                  title="NovaTrace Demo Video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                ></iframe>
               </div>
             </div>
           </div>

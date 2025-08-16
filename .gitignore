@@ -93,3 +93,13 @@ temp/
 
 # Local development
 .local/
+
+# Media files (too large for Git)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.mp3
+*.wav
+*.flac
