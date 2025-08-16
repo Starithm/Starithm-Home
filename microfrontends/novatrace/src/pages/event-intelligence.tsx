@@ -61,10 +61,10 @@ export default function EventIntelligence() {
 
   // Set the first alert as selected by default
   useEffect(() => {
-    if (alerts.length > 0 && !selectedAlert) {
-      setSelectedAlert(alerts[0]);
+    if (displayAlerts.length > 0 && !selectedAlert) {
+      setSelectedAlert(displayAlerts[0]);
     }
-  }, [alerts, selectedAlert]);
+  }, [JSON.stringify(displayAlerts), selectedAlert]);
 
   const handleSelectAlert = (alert: Alert) => {
     setSelectedAlert(alert);
