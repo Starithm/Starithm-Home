@@ -93,7 +93,7 @@ export function Homepage() {
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-starithm-selective-yellow mb-3">1000+</div>
-              <div className="text-starithm-rich-black/70 text-lg">Daily Alerts</div>
+              <div className="text-starithm-rich-black/70 text-lg">Alerts</div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-starithm-electric-violet mb-3">99.9%</div>
@@ -184,12 +184,16 @@ export function Homepage() {
             </div>
             
             <div className="relative">
-              <div className="w-full h-80 bg-gradient-to-br from-starithm-electric-violet/10 to-starithm-veronica/10 rounded-2xl flex items-center justify-center border-2 border-dashed border-starithm-electric-violet/30">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">🎥</div>
-                  <p className="text-starithm-rich-black/60 text-lg">NovaTrace Demo Video</p>
-                  <p className="text-starithm-rich-black/40 text-sm mt-2">Video placeholder - will be added soon</p>
-                </div>
+              <div className="w-full h-80 bg-gradient-to-br from-starithm-electric-violet/10 to-starithm-veronica/10 rounded-2xl overflow-hidden border-2 border-starithm-electric-violet/30 shadow-lg">
+                <video 
+                  className="w-full h-full object-cover"
+                  controls
+                  poster="/logo.png"
+                  preload="metadata"
+                >
+                  <source src="/novatrace_video.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               </div>
             </div>
           </div>
