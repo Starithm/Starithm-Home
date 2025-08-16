@@ -1,7 +1,11 @@
 import { Button } from "./ui/button";
 import { StarfieldBackground } from "./StarfieldBackground";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 export function Homepage() {
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -37,7 +41,10 @@ export function Homepage() {
                   variant="outline" 
                   size="lg"
                   className="border-starithm-electric-violet text-starithm-electric-violet bg-white hover:bg-starithm-electric-violet/10 px-10 py-4 text-xl"
-                  onClick={() => window.open('http://localhost:3000/novatrace', '_blank')}
+                  onClick={() => {
+                    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+                    window.open(`${baseUrl}/novatrace`, '_blank');
+                  }}
                 >
                   View Live Alerts
                 </Button>
@@ -101,7 +108,7 @@ export function Homepage() {
         <div className="container mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet mb-6">
-              Powerful Features for Astronomers
+              Upcoming Powerful Features for Astronomers
             </h2>
             <p className="text-xl text-starithm-rich-black/70 max-w-3xl mx-auto">
               Everything you need to stay ahead of astronomical discoveries
@@ -142,42 +149,46 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* Data Visualization Showcase */}
-      <section id="data" className="py-24 bg-gradient-to-b from-starithm-electric-violet/5 to-white">
+      {/* NovaTrace Showcase */}
+      <section id="novatrace" className="py-24 bg-gradient-to-b from-starithm-electric-violet/5 to-white">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet mb-6">
-              Visualize Astronomical Data
+              NovaTrace Dashboard
             </h2>
             <p className="text-xl text-starithm-rich-black/70 max-w-3xl mx-auto">
-              Interactive charts and visualizations to help you understand the cosmos
+              Real-time astronomical event intelligence and alert monitoring
             </p>
           </div>
           
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h3 className="text-3xl font-bold text-starithm-electric-violet mb-6">
-                Real-Time Data Visualization
+                Event Intelligence Dashboard
               </h3>
               <p className="text-lg text-starithm-rich-black/70 mb-8 leading-relaxed">
-                Explore astronomical data through interactive charts, graphs, and 3D visualizations. 
-                Track celestial events, analyze patterns, and discover new insights with our powerful 
-                visualization tools.
+                Monitor and analyze astronomical events in real-time through GCN notices and ATel reports. 
+                Track gamma-ray bursts, optical transients, neutrino detections, and gravitational waves 
+                with comprehensive measurement data and confidence assessments.
               </p>
               <Button 
                 size="lg"
                 className="bg-starithm-electric-violet hover:bg-starithm-electric-violet/90 text-white px-8 py-4 text-lg"
-                onClick={() => window.open('http://localhost:3000', '_blank')}
+                onClick={() => {
+                  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+                  window.open(`${baseUrl}/novatrace`, '_blank');
+                }}
               >
-                Explore Data
+                Launch NovaTrace
               </Button>
             </div>
             
             <div className="relative">
-              <div className="w-full h-80 bg-gradient-to-br from-starithm-electric-violet/10 to-starithm-veronica/10 rounded-2xl flex items-center justify-center">
+              <div className="w-full h-80 bg-gradient-to-br from-starithm-electric-violet/10 to-starithm-veronica/10 rounded-2xl flex items-center justify-center border-2 border-dashed border-starithm-electric-violet/30">
                 <div className="text-center">
-                  <div className="text-6xl mb-4">📊</div>
-                  <p className="text-starithm-rich-black/60 text-lg">Interactive Charts</p>
+                  <div className="text-6xl mb-4">🎥</div>
+                  <p className="text-starithm-rich-black/60 text-lg">NovaTrace Demo Video</p>
+                  <p className="text-starithm-rich-black/40 text-sm mt-2">Video placeholder - will be added soon</p>
                 </div>
               </div>
             </div>
@@ -185,7 +196,8 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* Call to Action */}
+      {/* Call to Action - Commented out for now */}
+      {/* 
       <section className="py-24 bg-gradient-to-r from-white via-starithm-electric-violet/5 to-white">
         <div className="container mx-auto px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto">
@@ -209,18 +221,18 @@ export function Homepage() {
                 variant="outline"
                 size="lg"
                 className="border-starithm-electric-violet text-starithm-electric-violet bg-white hover:bg-starithm-electric-violet/10 px-12 py-5 text-xl font-bold"
-                onClick={() => window.open('http://localhost:3000', '_blank')}
+                onClick={() => {
+                  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+                  window.open(`${baseUrl}/novatrace`, '_blank');
+                }}
               >
                 View Live Alerts
               </Button>
             </div>
-            
-            <div className="text-starithm-rich-black/60 text-lg">
-              No credit card required • 14-day free trial
-            </div>
           </div>
         </div>
       </section>
+      */}
 
       {/* Footer */}
       <footer className="bg-gray-50 border-t border-starithm-electric-violet/20 py-16">
@@ -239,45 +251,68 @@ export function Homepage() {
                 The astronomer's platform for real-time alerts and collaboration.
               </p>
               <div className="flex space-x-4">
-                <div className="w-10 h-10 bg-starithm-electric-violet/20 rounded-full flex items-center justify-center hover:bg-starithm-electric-violet/30 transition-colors cursor-pointer">
-                  <span className="text-starithm-electric-violet font-bold">T</span>
-                </div>
-                <div className="w-10 h-10 bg-starithm-veronica/20 rounded-full flex items-center justify-center hover:bg-starithm-veronica/30 transition-colors cursor-pointer">
-                  <span className="text-starithm-veronica font-bold">G</span>
-                </div>
-                <div className="w-10 h-10 bg-starithm-selective-yellow/20 rounded-full flex items-center justify-center hover:bg-starithm-selective-yellow/30 transition-colors cursor-pointer">
-                  <span className="text-starithm-selective-yellow font-bold">L</span>
-                </div>
+                <a 
+                  href="https://x.com/starithm_ai" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-starithm-electric-violet/20 rounded-full flex items-center justify-center hover:bg-starithm-electric-violet/30 transition-colors cursor-pointer"
+                >
+                  <span className="text-starithm-electric-violet font-bold">𝕏</span>
+                </a>
               </div>
             </div>
             
             <div>
               <h4 className="font-bold text-starithm-rich-black mb-6 text-xl">Platform</h4>
               <ul className="space-y-3 text-starithm-rich-black/70 text-lg">
-                <li><a href="#features" className="hover:text-starithm-electric-violet transition-colors">Features</a></li>
-                <li><a href="#data" className="hover:text-starithm-electric-violet transition-colors">Data Sources</a></li>
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">API</a></li>
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Integrations</a></li>
+                {/* <li><a href="#features" className="hover:text-starithm-electric-violet transition-colors">Features</a></li> */}
+                <li><a href="#novatrace" className="hover:text-starithm-electric-violet transition-colors">NovaTrace</a></li>
+                {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">API</a></li> */}
+                {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Integrations</a></li> */}
               </ul>
             </div>
             
             <div>
-              <h4 className="font-bold text-starithm-rich-black mb-6 text-xl">Community</h4>
+              <h4 className="font-bold text-starithm-rich-black mb-6 text-xl">Resources</h4>
               <ul className="space-y-3 text-starithm-rich-black/70 text-lg">
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Forums</a></li>
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Research Groups</a></li>
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Events</a></li>
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Blog</a></li>
+                {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Documentation</a></li> */}
+                {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Status</a></li> */}
+                <li>
+                  <a 
+                    href="/blog/roadmap" 
+                    className="hover:text-starithm-electric-violet transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Roadmap
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="/blog" 
+                    className="hover:text-starithm-electric-violet transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Blog
+                  </a>
+                </li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-bold text-starithm-rich-black mb-6 text-xl">Support</h4>
+              <h4 className="font-bold text-starithm-rich-black mb-6 text-xl">Contact</h4>
               <ul className="space-y-3 text-starithm-rich-black/70 text-lg">
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Documentation</a></li>
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Status</a></li>
+                <li>
+                  <button 
+                    onClick={() => setIsContactDialogOpen(true)}
+                    className="hover:text-starithm-electric-violet transition-colors text-left"
+                  >
+                    Contact Us
+                  </button>
+                </li>
+                {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Status</a></li>
+                <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Roadmap</a></li> */}
               </ul>
             </div>
           </div>
@@ -287,6 +322,23 @@ export function Homepage() {
           </div>
         </div>
       </footer>
+
+      {/* Contact Dialog */}
+      <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-starithm-electric-violet">Contact Us</DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-6">
+            <p className="text-starithm-rich-black/70 text-lg mb-4">
+              Get in touch with our team
+            </p>
+            <p className="text-starithm-electric-violet font-semibold text-lg">
+              contact.starithm@gmail.com
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

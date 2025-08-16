@@ -6,6 +6,7 @@
       { "source": "/assets/(.*)", "destination": "/assets/$1" },
       { "source": "/home-assets/(.*)", "destination": "/home/home-assets/$1" },
       { "source": "/novatrace-assets/(.*)", "destination": "/novatrace/novatrace-assets/$1" },
+      { "source": "/blog-assets/(.*)", "destination": "/blog/blog-assets/$1" },
 
       { "source": "/novatrace", "destination": "/novatrace/index.html" },
       { "source": "/novatrace/", "destination": "/novatrace/index.html" },
@@ -13,7 +14,11 @@
 
       { "source": "/home", "destination": "/home/index.html" },
       { "source": "/home/", "destination": "/home/index.html" },
-      { "source": "/home/(.*)", "destination": "/home/index.html" }
+      { "source": "/home/(.*)", "destination": "/home/index.html" },
+
+      { "source": "/blog", "destination": "/blog/index.html" },
+      { "source": "/blog/", "destination": "/blog/index.html" },
+      { "source": "/blog/(.*)", "destination": "/blog/index.html" }
     ],
 
   "headers": [

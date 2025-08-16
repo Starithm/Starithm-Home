@@ -93,7 +93,7 @@ export function AlertModal({ alert, isOpen, onClose, onOpenRawDataModal }: Alert
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden">
+      <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden" hideCloseButton={true}>
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
