@@ -266,7 +266,7 @@ export function Homepage() {
               <h4 className="font-bold text-starithm-rich-black mb-6 text-xl">Platform</h4>
               <ul className="space-y-3 text-starithm-rich-black/70 text-lg">
                 {/* <li><a href="#features" className="hover:text-starithm-electric-violet transition-colors">Features</a></li> */}
-                <li><a href="#novatrace" className="hover:text-starithm-electric-violet transition-colors">NovaTrace</a></li>
+                <li><a href="/novatrace" className="hover:text-starithm-electric-violet transition-colors">NovaTrace</a></li>
                 {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">API</a></li> */}
                 {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Integrations</a></li> */}
               </ul>
