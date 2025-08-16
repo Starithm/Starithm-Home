@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, MapPin, Zap, Star, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { getTimeAgo } from "../../utils/duration";
 
 interface AlertsListProps {
   alerts: Alert[];
@@ -26,18 +27,6 @@ const getEventIcon = (eventType: string) => {
       return Star;
     default:
       return TrendingUp;
-  }
-};
-
-const getTimeAgo = (date: Date) => {
-  const now = new Date();
-  const diffInMinutes = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60));  
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes}m ago`;
-  } else if (diffInMinutes < 1440) {
-    return `${Math.floor(diffInMinutes / 60)}h ago`;
-  } else {
-    return `${Math.floor(diffInMinutes / 1440)}d ago`;
   }
 };
 
@@ -119,7 +108,7 @@ export function AlertsList({
                       <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                         <div className="flex items-center space-x-1">
                           <Clock className="h-3 w-3" />
-                          <span>{getTimeAgo(alert.date)}</span>
+                          <span>{getTimeAgo(new Date(alert.date))}</span>
                         </div>
                       </div>
                       

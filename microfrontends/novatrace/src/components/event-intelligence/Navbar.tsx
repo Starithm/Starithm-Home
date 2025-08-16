@@ -27,11 +27,20 @@ export function Navbar() {
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => window.location.href = '/status'}
+            onClick={() => window.location.href = '/novatrace/status'}
             className="flex items-center space-x-2"
           >
             <Activity className="h-4 w-4" />
             <span>Check Status</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => window.location.href = '/home'}
+            className="flex items-center space-x-2"
+          >
+            <Activity className="h-4 w-4" />
+            <span>Home</span>
           </Button>
         </div>
       </div>

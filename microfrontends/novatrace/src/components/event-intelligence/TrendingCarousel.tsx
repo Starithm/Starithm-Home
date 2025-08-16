@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Alert } from "@/types/Alert";
 import { API_ENDPOINTS } from "../../lib/config";
+import { getTimeAgo } from "../../utils/duration";
 
 interface TrendingAlert {
   event: string;
@@ -24,22 +25,6 @@ const getEventIcon = (eventType: string) => {
   if (eventType.toLowerCase().includes('gw')) return TrendingUp;
   if (eventType.toLowerCase().includes('sn')) return Star;
   return TrendingUp;
-};
-
-const getTimeAgo = (dateString: string) => {
-  const now = new Date();
-  const date = new Date(dateString);
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-  
-  if (diffInHours > 0) {
-    return `${diffInHours}h ago`;
-  } else if (diffInMinutes > 0) {
-    return `${diffInMinutes}m ago`;
-  } else {
-    return '< 1h ago';
-  }
 };
 
 export function TrendingCarousel({ onAlertClick }: TrendingCarouselProps) {
@@ -142,7 +127,7 @@ export function TrendingCarousel({ onAlertClick }: TrendingCarouselProps) {
                   <span className="text-muted-foreground text-sm">Alerts</span>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Latest: {getTimeAgo(currentEvent.latestAlert)}
+                  Latest: {getTimeAgo(new Date(currentEvent.latestAlert))}
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {new Date(currentEvent.latestAlert).toLocaleDateString()}

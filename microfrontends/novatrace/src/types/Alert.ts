@@ -21,6 +21,7 @@ export type MeasurementData = {
   duration?: number | null; // in seconds
   fluence?: number | null; // in erg/cm²
   energy?: number | null; // in erg
+  tables?: Array<Record<string, any>>;
   other_measurements?: Record<string, any>; // Additional measurements
 };
 

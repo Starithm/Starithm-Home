@@ -20,6 +20,7 @@ import {
   Calendar,
   Link
 } from "lucide-react";
+import { getTimeAgo } from "../../utils/duration";
 
 interface AlertDetailsProps {
   selectedAlert?: Alert;
@@ -53,20 +54,6 @@ const formatDate = (date: Date) => {
   }).format(new Date(date));
 };
 
-const getTimeAgo = (date: Date) => {
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-  
-  if (diffInHours > 0) {
-    return `${diffInHours}h ago`;
-  } else if (diffInMinutes > 0) {
-    return `${diffInMinutes}m ago`;
-  } else {
-    return '< 1h ago';
-  }
-};
 
 export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true, onOpenAlertModal }: AlertDetailsProps) {
   if (!selectedAlert) {
@@ -237,7 +224,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                                 </Badge>
                                 {timelineItem.current && (
                                   <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                                    CURRENT
+                                    SELECTED
                                   </Badge>
                                 )}
                               </div>
@@ -284,22 +271,19 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
             </CardHeader>
             <CardContent>
               {Object.keys(measurements).length > 0 ? (
+                <>
                 <div className="grid grid-cols-2 gap-4">
                     {
                         Object.keys(measurements).map((key) => {
                             const value = measurements[key as keyof typeof measurements];
+                            if (key === 'tables') {
+                              return null;
+
+                            }
                             if (value === null || value === undefined) {
                                 return null;
                             }
-                            if (typeof value === 'object') {
-                                return Object.keys(value).map((vKey) => (
-                                    <div key={vKey}>
-                                        <label className="text-sm font-medium text-muted-foreground">{vKey.replaceAll('_', ' ')}</label>
-                                        <p className="text-sm">{JSON.stringify(value[vKey]).replaceAll('"', '')}</p>
-                                    </div>
-                                ))
-                            } 
-                            if (Array.isArray(value) && value[0] !== 'object') {
+                            if (Array.isArray(value) && typeof value[0] !== 'object') {
                                 return (
                                     <div>
                                         <label className="text-sm font-medium text-muted-foreground">{key.replaceAll('_', ' ')}</label>
@@ -307,17 +291,56 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                                     </div>
                                 )
                             }
-                            if (Array.isArray(value) && value[0] === 'object') {
-                                return value.map(v => {
-                                    return Object.keys(v).map((vKey) => (
-                                    <div>
-                                        <label className="text-sm font-medium text-muted-foreground">{key.replaceAll('_', ' ')}</label>
-                                        <p className="text-sm">{JSON.stringify(v[vKey]).replaceAll('"', '')}</p>
+                            if (Array.isArray(value) && typeof value[0] === 'object') {
+                                return (
+                                  <div className="mt-4">
+                                    <label className="text-sm font-medium text-muted-foreground mb-2">{key.replaceAll('_', ' ')}</label>
+                                    <div className="border rounded-lg overflow-hidden">
+                                      <div className="bg-muted/50 px-4 py-2 border-b">
+                                        <h4 className="font-medium text-sm">{key.replaceAll('_', ' ')} Data</h4>
+                                      </div>
+                                      {Array.isArray(value) && value.length > 0 ? (
+                                        <div className="overflow-x-auto mt-4">
+                                          <table className="w-full text-sm">
+                                            <thead className="bg-muted/30">
+                                              <tr>
+                                                {Object.keys(value[0]).map((column) => (
+                                                  <th key={column} className="px-4 py-2 text-left font-medium text-muted-foreground border-b">
+                                                    {column.replaceAll('_', ' ')}
+                                                  </th>
+                                                ))}
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {value.map((row, rowIndex) => (
+                                                <tr key={rowIndex} className="border-b hover:bg-muted/20">
+                                                  {Object.values(row).map((cell, cellIndex) => (
+                                                    <td key={cellIndex} className="px-4 py-2 text-foreground">
+                                                      {typeof cell === 'object' ? JSON.stringify(cell).replaceAll('"', '') : String(cell)}
+                                                    </td>
+                                                  ))}
+                                                </tr>
+                                              ))}
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      ) : (
+                                        <div className="p-4 text-sm text-muted-foreground">
+                                          No data available
+                                        </div>
+                                      )}
                                     </div>
-                                    ))
-                                })
-                                
-                            }
+                                  </div>
+                                )
+                          }
+                            if (typeof value === 'object') {
+                              return Object.keys(value).map((vKey) => (
+                                  <div key={vKey}>
+                                      <label className="text-sm font-medium text-muted-foreground">{vKey.replaceAll('_', ' ')}</label>
+                                      <p className="text-sm">{JSON.stringify(value[vKey]).replaceAll('"', '')}</p>
+                                  </div>
+                              ))
+                          } 
                             return (
                                 <div>
                                     <label className="text-sm font-medium text-muted-foreground">{key.replaceAll('_', ' ')}</label>
@@ -363,6 +386,91 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                     </div>
                   )} */}
                 </div>
+                {
+                  measurements.tables?.length > 0 && (
+                    <div className="mt-6">
+                      <label className="text-sm font-medium text-muted-foreground mb-2">Tables</label>
+                      <div className="border rounded-lg overflow-hidden">
+                        <div className="bg-muted/50 px-4 py-2 border-b">
+                          <h4 className="font-medium text-sm">Data Table</h4>
+                        </div>
+                        {Array.isArray(measurements.tables) && measurements.tables.length > 0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead className="bg-muted/30">
+                                <tr>
+                                  {Object.keys(measurements.tables[0]).map((column) => (
+                                    <th key={column} className="px-4 py-2 text-left font-medium text-muted-foreground border-b">
+                                      {column}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {measurements.tables.map((row, rowIndex) => (
+                                  <tr key={rowIndex} className="border-b hover:bg-muted/20">
+                                    {Object.values(row).map((cell, cellIndex) => (
+                                      <td key={cellIndex} className="px-4 py-2 text-foreground">
+                                        {String(cell)}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <div className="p-4 text-sm text-muted-foreground">
+                            No data available
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                }
+                {
+                  measurements.misc_tables && (
+                    <div className="mt-6">
+                      <label className="text-sm font-medium text-muted-foreground mb-2">Miscellaneous Tables</label>
+                      <div className="border rounded-lg overflow-hidden">
+                        <div className="bg-muted/50 px-4 py-2 border-b">
+                          <h4 className="font-medium text-sm">Miscellaneous Data Table</h4>
+                        </div>
+                        {Array.isArray(measurements.misc_tables) && measurements.misc_tables.length > 0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead className="bg-muted/30">
+                                <tr>
+                                  {Object.keys(measurements.misc_tables[0]).map((column) => (
+                                    <th key={column} className="px-4 py-2 text-left font-medium text-muted-foreground border-b">
+                                      {column}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {measurements.misc_tables.map((row, rowIndex) => (
+                                  <tr key={rowIndex} className="border-b hover:bg-muted/20">
+                                    {Object.values(row).map((cell, cellIndex) => (
+                                      <td key={cellIndex} className="px-4 py-2 text-foreground">
+                                        {String(cell)}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <div className="p-4 text-sm text-muted-foreground">
+                            No data available
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                }
+                </>
               ) : (
                 <p className="text-sm text-muted-foreground">No measurements detected in alert</p>
               )}

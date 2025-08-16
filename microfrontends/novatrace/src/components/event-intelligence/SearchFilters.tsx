@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -134,6 +134,11 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
               type="date"
               value={filters.endDate}
               onChange={(e) => handleFilterChange("endDate", e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
               className="pl-10"
             />
           </div>
@@ -151,6 +156,11 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
             placeholder="0.0"
             value={filters.confidenceMin || ""}
             onChange={(e) => handleFilterChange("confidenceMin", e.target.value ? parseFloat(e.target.value) : undefined)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
           />
         </div>
 
@@ -166,6 +176,11 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
             placeholder="1.0"
             value={filters.confidenceMax || ""}
             onChange={(e) => handleFilterChange("confidenceMax", e.target.value ? parseFloat(e.target.value) : undefined)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
           />
         </div>
 
@@ -175,6 +190,11 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
           <Select
             value={filters.broker}
             onValueChange={(value) => handleFilterChange("broker", value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
           >
             <SelectTrigger>
               <SelectValue placeholder="All Brokers" />
@@ -198,6 +218,11 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
             placeholder="Event name"
             value={filters.event}
             onChange={(e) => handleFilterChange("event", e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
           />
         </div>
 
@@ -210,6 +235,11 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
             placeholder="GCN-12345"
             value={filters.alertKey}
             onChange={(e) => handleFilterChange("alertKey", e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
           />
         </div>
       </div>

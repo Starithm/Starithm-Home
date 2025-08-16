@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { API_ENDPOINTS } from "@/lib/config";
 import { AlertDetails } from "./AlertDetails";
+import { getTimeAgo } from "../../utils/duration";
 
 
 interface AlertModalProps {
@@ -31,20 +32,6 @@ const formatDate = (date: Date) => {
   }).format(new Date(date));
 };
 
-const getTimeAgo = (date: Date) => {
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-  
-  if (diffInHours > 0) {
-    return `${diffInHours}h ago`;
-  } else if (diffInMinutes > 0) {
-    return `${diffInMinutes}m ago`;
-  } else {
-    return '< 1h ago';
-  }
-};
 
 export function AlertModal({ alert, isOpen, onClose, onOpenRawDataModal }: AlertModalProps) {
   const [selectedTimelineAlertId, setSelectedTimelineAlertId] = useState<string | undefined>();
@@ -142,7 +129,7 @@ export function AlertModal({ alert, isOpen, onClose, onOpenRawDataModal }: Alert
                                 </Badge>
                                 {timelineItem.current && (
                                   <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                                    CURRENT
+                                    SELECTED
                                   </Badge>
                                 )}
                               </div>
