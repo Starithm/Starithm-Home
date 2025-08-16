@@ -31,16 +31,16 @@ export function Homepage() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button 
+                {/* <Button 
                   size="lg" 
                   className="bg-starithm-electric-violet hover:bg-starithm-electric-violet/90 text-white px-10 py-4 text-xl"
                 >
                   Start Exploring
-                </Button>
+                </Button> */}
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="border-starithm-electric-violet text-starithm-electric-violet bg-white hover:bg-starithm-electric-violet/10 px-10 py-4 text-xl"
+                  className="bg-starithm-electric-violet hover:bg-starithm-electric-violet/90 text-white px-10 py-4 text-xl"
                   onClick={() => {
                     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
                     window.open(`${baseUrl}/novatrace`, '_blank');
