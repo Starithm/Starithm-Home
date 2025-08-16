@@ -17,7 +17,7 @@ export function RawDataModal({ alert, isOpen, onClose }: RawDataModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[80vh]" hideCloseButton={true}>
+      <DialogContent className="max-w-4xl max-h-[80vh]" showCloseButton={false}>
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
