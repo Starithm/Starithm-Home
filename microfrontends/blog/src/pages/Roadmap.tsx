@@ -116,7 +116,7 @@ export default function Roadmap() {
         <div className="container mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+              <Link to="/blog" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
                 <ArrowLeft className="h-5 w-5" />
                 <span>Back to Blog</span>
               </Link>

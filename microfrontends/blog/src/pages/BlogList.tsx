@@ -76,15 +76,15 @@ export default function BlogList() {
               <div className="flex items-center space-x-4 text-sm text-starithm-rich-black/60">
                 <div className="flex items-center space-x-1">
                   <Calendar className="h-4 w-4" />
-                  <span>January 15, 2025</span>
+                  <span>Aug, 2025</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Clock className="h-4 w-4" />
-                  <span>5 min read</span>
+                  <span>2 min read</span>
                 </div>
               </div>
               <Link 
-                to="/roadmap"
+                to="/blog/roadmap"
                 className="inline-flex items-center space-x-2 bg-starithm-electric-violet text-white px-6 py-3 rounded-lg hover:bg-starithm-electric-violet/90 transition-colors"
               >
                 <span>Read Roadmap</span>
