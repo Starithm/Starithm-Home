@@ -59,7 +59,7 @@ export default function BlogList() {
       <main className="container mx-auto px-6 lg:px-8 py-12">
         {/* Featured Post */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-starithm-rich-black mb-6">Featured Article</h2>
+          {/* <h2 className="text-2xl font-bold text-starithm-rich-black mb-6">Featured Article</h2> */}
           <div className="bg-gradient-to-br from-starithm-electric-violet/5 to-starithm-veronica/5 rounded-2xl p-8 border border-starithm-electric-violet/20">
             <div className="flex items-center space-x-2 mb-4">
               <FileText className="h-5 w-5 text-starithm-electric-violet" />
@@ -94,7 +94,7 @@ export default function BlogList() {
           </div>
         </div>
 
-        {/* All Posts */}
+        {/* All Posts
         <div>
           <h2 className="text-2xl font-bold text-starithm-rich-black mb-6">All Articles</h2>
           <div className="grid gap-8">
@@ -105,7 +105,7 @@ export default function BlogList() {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="mt-16 bg-gradient-to-r from-starithm-electric-violet/5 to-starithm-veronica/5 rounded-2xl p-8 border border-starithm-electric-violet/20">
+        {/* <div className="mt-16 bg-gradient-to-r from-starithm-electric-violet/5 to-starithm-veronica/5 rounded-2xl p-8 border border-starithm-electric-violet/20">
           <div className="text-center">
             <h3 className="text-2xl font-bold text-starithm-rich-black mb-4">
               Stay Updated
@@ -125,7 +125,7 @@ export default function BlogList() {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
       </main>
     </div>
   );
