@@ -1,0 +1,29 @@
+{
+  "name": "@starithm/shared-components",
+  "version": "1.0.0",
+  "description": "Shared UI components for Starithm microfrontends",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "echo 'Shared components are built with each microfrontend'",
+    "dev": "echo 'Shared components are used directly by microfrontends'"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "lucide-react": "^0.263.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "ui",
+    "starithm",
+    "microfrontends"
+  ],
+  "author": "Starithm Team",
+  "license": "MIT"
+}

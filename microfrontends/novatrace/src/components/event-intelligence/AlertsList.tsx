@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, MapPin, Zap, Star, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { getTimeAgo } from "../../utils/duration";
+import { Loading } from "@shared/components";
 
 interface AlertsListProps {
   alerts: Alert[];
@@ -15,6 +16,7 @@ interface AlertsListProps {
   currentPage?: number;
   onPageChange?: (page: number) => void;
   pageSize?: number;
+  isLoading?: boolean;
 }
 
 const getEventIcon = (eventType: string) => {
@@ -38,7 +40,8 @@ export function AlertsList({
   total,
   currentPage = 1,
   onPageChange,
-  pageSize = 20
+  pageSize = 20,
+  isLoading = false
 }: AlertsListProps) {
   console.log("alerts", alerts);
   
@@ -61,7 +64,9 @@ export function AlertsList({
       
       <ScrollArea className="flex-1 min-h-0">
         <div className="p-4 space-y-3">
-          {alerts.length === 0 ? (
+          {isLoading ? (
+            <Loading title="Loading Alerts" className="py-8" />
+          ) : alerts.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p>No alerts available</p>

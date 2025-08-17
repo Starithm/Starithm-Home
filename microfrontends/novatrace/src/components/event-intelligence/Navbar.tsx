@@ -1,6 +1,7 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Activity } from "lucide-react";
+import { Activity, House } from "lucide-react";
 
 export function Navbar() {
   return (
@@ -39,7 +40,7 @@ export function Navbar() {
             onClick={() => window.location.href = '/home'}
             className="flex items-center space-x-2"
           >
-            <Activity className="h-4 w-4" />
+            <House className="h-4 w-4" />
             <span>Home</span>
           </Button>
         </div>

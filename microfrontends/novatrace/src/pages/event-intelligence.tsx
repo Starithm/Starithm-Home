@@ -23,7 +23,7 @@ export default function EventIntelligence() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch alerts from API
-  const { data: alerts = [] } = useQuery({
+  const { data: alerts = [], isLoading: isAlertsLoading } = useQuery({
     queryKey: ['/api/alerts'],
     queryFn: () => fetch(`${API_ENDPOINTS.alerts}`).then(res => res.json()),
     refetchInterval: 15000, // Refresh every 15 seconds
@@ -127,6 +127,7 @@ export default function EventIntelligence() {
           currentPage={currentPage}
           onPageChange={handlePageChange}
           pageSize={20}
+          isLoading={isSearchMode ? isSearchLoading : isAlertsLoading}
         />
         
         {/* Alert Details on Right */}

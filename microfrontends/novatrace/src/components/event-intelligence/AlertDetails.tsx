@@ -23,6 +23,7 @@ import {
 import { getTimeAgo } from "../../utils/duration";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Image, Maximize2 } from "lucide-react";
+import { Loading } from "@shared/components";
 
 interface AlertDetailsProps {
   selectedAlert?: Alert;
@@ -84,6 +85,14 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
           <h3 className="text-lg font-medium mb-2">No Alert Selected</h3>
           <p className="text-sm">Select an alert from the list to view details</p>
         </div>
+      </div>
+    );
+  }
+
+  if (isLoadingDetails) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <Loading title="Loading Alert Details" />
       </div>
     );
   }
