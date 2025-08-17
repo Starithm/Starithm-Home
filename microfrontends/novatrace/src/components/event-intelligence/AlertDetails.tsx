@@ -21,6 +21,8 @@ import {
   Link
 } from "lucide-react";
 import { getTimeAgo } from "../../utils/duration";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Image, Maximize2 } from "lucide-react";
 
 interface AlertDetailsProps {
   selectedAlert?: Alert;
@@ -56,6 +58,24 @@ const formatDate = (date: Date) => {
 
 
 export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true, onOpenAlertModal }: AlertDetailsProps) {
+  const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
+  const [selectedUrl, setSelectedUrl] = useState<string>('');
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>('');
+
+  // Fetch detailed alert information
+  const { data: detailedAlert, isLoading: isLoadingDetails } = useQuery({
+    queryKey: ['alert-details', selectedAlert?.id],
+    queryFn: async () => {
+      const response = await fetch(API_ENDPOINTS.alertDetails(selectedAlert!.id.toString()));
+      if (!response.ok) {
+        throw new Error('Failed to fetch alert details');
+      }
+      return response.json();
+    },
+    enabled: !!selectedAlert?.id,
+  });
+
   if (!selectedAlert) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -68,19 +88,6 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
     );
   }
 
-  // Fetch detailed alert information
-  const { data: detailedAlert, isLoading: isLoadingDetails } = useQuery({
-    queryKey: ['alert-details', selectedAlert.id],
-    queryFn: async () => {
-      const response = await fetch(API_ENDPOINTS.alertDetails(selectedAlert.id.toString()));
-      if (!response.ok) {
-        throw new Error('Failed to fetch alert details');
-      }
-      return response.json();
-    },
-    enabled: !!selectedAlert.id,
-  });
-
   // Use detailed alert data if available, otherwise fall back to selectedAlert
   const alertData = detailedAlert || selectedAlert;
   
@@ -89,7 +96,15 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
   const authors = alertData.data.authors;
   const telescopes = alertData.data.telescopes;
   const timeline = alertData.timeline || [];
-  const urls = alertData.data.urls || [];
+  const allUrls = alertData.data.urls || [];
+  
+  // Separate image URLs from regular URLs
+  const imageUrls = allUrls.filter(url => 
+    /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(url)
+  );
+  const regularUrls = allUrls.filter(url => 
+    !/\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(url)
+  );
 
   return (
     <div className="flex-1 p-6">
@@ -554,7 +569,47 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
               </div>
             </CardContent>
           </Card>)}
-          {urls.length > 0 && (
+          
+          {/* Images Section */}
+          {imageUrls.length > 0 && (
+            <Card className="border border-gray-200">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Image className="h-5 w-5" />
+                  <span>Images ({imageUrls.length})</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4">
+                  {imageUrls.map((imageUrl, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={imageUrl}
+                        alt={`Image ${index + 1}`}
+                        className="w-full h-50 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => {
+                          setSelectedImage(imageUrl);
+                          setIsImageModalOpen(true);
+                        }}
+                      />
+                      <button
+                        onClick={() => {
+                          setSelectedImage(imageUrl);
+                          setIsImageModalOpen(true);
+                        }}
+                        className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Maximize2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          {/* Links Section */}
+          {regularUrls.length > 0 && (
             <Card className="border border-gray-200">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -564,8 +619,14 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col gap-2">
-                  {urls.map((url) => (
-                    <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-starithm-electric-violet hover:underline">
+                  {regularUrls.map((url, index) => (
+                    <a
+                      key={index}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-starithm-electric-violet hover:underline"
+                    >
                       {url}
                     </a>
                   ))}
@@ -573,6 +634,31 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
               </CardContent>
             </Card>
           )}
+          
+          {/* Image Modal */}
+          <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+            <DialogContent className="max-w-4xl max-h-[90vh] p-0" hideCloseButton={true}>
+              <DialogHeader className="p-4 border-b">
+                <div className="flex items-center justify-between">
+                  <DialogTitle className="text-lg font-semibold">Image Preview</DialogTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsImageModalOpen(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </DialogHeader>
+              <div className="p-4">
+                <img
+                  src={selectedImage}
+                  alt="Full size image"
+                  className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </ScrollArea>
     </div>
