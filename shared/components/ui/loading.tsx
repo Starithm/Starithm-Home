@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, Coffee, Zap, 
-  Telescope, Rocket, Computer, CloudDownload,Bot, 
+  Telescope, Rocket, Computer, DownloadCloud,Bot, 
   Drill, StarHalf, Sun, Puzzle, SunSnow } from 'lucide-react';
 
 interface LoadingProps {
@@ -38,7 +38,7 @@ const loadingMessages = [{
 },
 {
   message: "Downloading data from the edge of the universe",
-  icon: CloudDownload
+  icon: DownloadCloud
 },
 {
   message: "Converting stardust to pixels",
@@ -54,7 +54,7 @@ const loadingMessages = [{
 },
 {
   message: "Our hamsters are running extra fast today",
-  icon: CloudDownload
+  icon: DownloadCloud
 },
 {
   message: "Loading with the power of a thousand suns",
@@ -62,7 +62,7 @@ const loadingMessages = [{
 },
 {
   message: "Decoding messages from distant galaxies",
-  icon: CloudDownload
+  icon: DownloadCloud
 },
 {
   message: "Our servers are run on free tiers, it may be cold starting, come back after 5 mins",

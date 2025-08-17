@@ -8,10 +8,10 @@
     "build": "echo 'Shared components are built with each microfrontend'",
     "dev": "echo 'Shared components are used directly by microfrontends'"
   },
-  "peerDependencies": {
+  "dependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "lucide-react": "^0.263.0"
+    "lucide-react": "^0.331.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
