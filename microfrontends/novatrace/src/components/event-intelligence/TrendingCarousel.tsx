@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Alert } from "@/types/Alert";
 import { API_ENDPOINTS } from "../../lib/config";
 import { getTimeAgo } from "../../utils/duration";
+import { ErrorComponentCompact } from "@shared/components";
 
 interface TrendingAlert {
   event: string;
@@ -29,12 +30,26 @@ const getEventIcon = (eventType: string) => {
 
 export function TrendingCarousel({ onAlertClick }: TrendingCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [apiError, setApiError] = useState<any>(null);
 
   // Fetch trending alerts from API
-  const { data: trendingAlerts = [], isLoading } = useQuery<TrendingAlert[]>({
+  const { data: trendingAlerts = [], isLoading, error: trendingError } = useQuery<TrendingAlert[]>({
     queryKey: ['/api/alerts/trending'],
+    queryFn: () => fetch(`${API_ENDPOINTS.alerts}/trending`).then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    }),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
+
+  // Handle API errors
+  useEffect(() => {
+    if (trendingError) {
+      setApiError(trendingError);
+    }
+  }, [trendingError]);
 
   useEffect(() => {
     if (trendingAlerts.length > 0) {
@@ -90,7 +105,16 @@ export function TrendingCarousel({ onAlertClick }: TrendingCarouselProps) {
               <div className="mb-3">
           <h2 className="text-lg font-semibold text-foreground">Trending!</h2>
         </div>
-        {isLoading ? (
+        {apiError ? (
+          <div className="flex items-center justify-center h-full">
+            <ErrorComponentCompact
+              onRetry={() => {
+                setApiError(null);
+                // The query will automatically refetch
+              }}
+            />
+          </div>
+        ) : isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-sm text-muted-foreground">Loading trending alerts...</div>
           </div>

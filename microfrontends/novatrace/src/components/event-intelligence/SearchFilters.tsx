@@ -20,8 +20,6 @@ interface SearchFiltersProps {
 export interface SearchFilters {
   startDate?: string;
   endDate?: string;
-  confidenceMin?: number;
-  confidenceMax?: number;
   broker?: string;
   event?: string;
   alertKey?: string;
@@ -41,8 +39,6 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
   const [filters, setFilters] = useState<SearchFilters>({
     startDate: "",
     endDate: "",
-    confidenceMin: undefined,
-    confidenceMax: undefined,
     broker: "all",
     event: "",
     alertKey: "",
@@ -70,8 +66,6 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
     setFilters({
       startDate: "",
       endDate: "",
-      confidenceMin: undefined,
-      confidenceMax: undefined,
       broker: "all",
       event: "",
       alertKey: "",
@@ -142,46 +136,6 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
               className="pl-10"
             />
           </div>
-        </div>
-
-        {/* Confidence Min */}
-        <div className="space-y-2">
-          <Label htmlFor="confidenceMin" className="text-xs">Confidence Min</Label>
-          <Input
-            id="confidenceMin"
-            type="number"
-            min="0"
-            max="1"
-            step="0.01"
-            placeholder="0.0"
-            value={filters.confidenceMin || ""}
-            onChange={(e) => handleFilterChange("confidenceMin", e.target.value ? parseFloat(e.target.value) : undefined)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSearch();
-              }
-            }}
-          />
-        </div>
-
-        {/* Confidence Max */}
-        <div className="space-y-2">
-          <Label htmlFor="confidenceMax" className="text-xs">Confidence Max</Label>
-          <Input
-            id="confidenceMax"
-            type="number"
-            min="0"
-            max="1"
-            step="0.01"
-            placeholder="1.0"
-            value={filters.confidenceMax || ""}
-            onChange={(e) => handleFilterChange("confidenceMax", e.target.value ? parseFloat(e.target.value) : undefined)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSearch();
-              }
-            }}
-          />
         </div>
 
         {/* Broker */}

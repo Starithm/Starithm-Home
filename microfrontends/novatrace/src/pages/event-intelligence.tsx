@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Alert } from "@/types/Alert";
@@ -11,6 +11,16 @@ import { AlertModal } from "@/components/event-intelligence/AlertModal";
 import { RawDataModal } from "@/components/event-intelligence/RawDataModal";
 import { SearchFilters, SearchFilters as SearchFiltersType } from "@/components/event-intelligence/SearchFilters";
 import { API_ENDPOINTS } from "@/lib/config";
+import { ErrorComponent } from "@shared/components";
+import { useApiError } from "@/hooks/useApiError";
+
+// Global declarations for JS9
+declare global {
+  interface Window {
+    JS9: any;
+    fabric: any;
+  }
+}
 
 export default function EventIntelligence() {
   const [selectedAlert, setSelectedAlert] = useState<Alert | undefined>();
@@ -21,17 +31,94 @@ export default function EventIntelligence() {
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [searchFilters, setSearchFilters] = useState<SearchFiltersType | undefined>();
   const [currentPage, setCurrentPage] = useState(1);
+  const [js9Loaded, setJs9Loaded] = useState(false);
+  const [apiError, setApiError] = useState<any>(null);
+
+  // Load JS9 library when dashboard loads
+  useEffect(() => {
+    const loadJS9 = async () => {
+      if (window.JS9) {
+        setJs9Loaded(true);
+        return;
+      }
+
+      try {
+        // Load Fabric.js from CDN first
+        await new Promise<void>((resolve, reject) => {
+          const fabricScript = document.createElement('script');
+          fabricScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js';
+          fabricScript.onload = () => resolve();
+          fabricScript.onerror = () => reject(new Error('Failed to load Fabric.js'));
+          document.head.appendChild(fabricScript);
+        });
+
+        // Load JS9 script
+        await new Promise<void>((resolve, reject) => {
+          const js9Script = document.createElement('script');
+          js9Script.src = 'https://js9.si.edu/js9/js9.js';
+          js9Script.onload = () => resolve();
+          js9Script.onerror = () => reject(new Error('Failed to load JS9'));
+          document.head.appendChild(js9Script);
+        });
+
+        // Load JS9 CSS
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://js9.si.edu/js9/js9.css';
+        document.head.appendChild(link);
+
+        // Wait a bit for everything to initialize
+        setTimeout(() => {
+          setJs9Loaded(true);
+          console.log('JS9 library loaded successfully');
+        }, 500);
+
+      } catch (error) {
+        console.error('Failed to load JS9 library:', error);
+        // Try alternative approach - load JS9 without Fabric.js dependency
+        try {
+          console.log('Attempting to load JS9 without Fabric.js dependency...');
+          await new Promise<void>((resolve, reject) => {
+            const js9Script = document.createElement('script');
+            js9Script.src = 'https://js9.si.edu/js9/js9.js';
+            js9Script.onload = () => resolve();
+            js9Script.onerror = () => reject(new Error('Failed to load JS9'));
+            document.head.appendChild(js9Script);
+          });
+
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = 'https://js9.si.edu/js9/js9.css';
+          document.head.appendChild(link);
+
+          setTimeout(() => {
+            setJs9Loaded(true);
+            console.log('JS9 library loaded successfully (without Fabric.js)');
+          }, 500);
+        } catch (fallbackError) {
+          console.error('Failed to load JS9 even with fallback approach:', fallbackError);
+        }
+      }
+    };
+
+    loadJS9();
+  }, []);
 
   // Fetch alerts from API
-  const { data: alerts = [], isLoading: isAlertsLoading } = useQuery({
+  const { data: alerts = [], isLoading: isAlertsLoading, error: alertsError} = useQuery({
     queryKey: ['/api/alerts'],
-    queryFn: () => fetch(`${API_ENDPOINTS.alerts}`).then(res => res.json()),
+    queryFn: () => fetch(`${API_ENDPOINTS.alerts}`).then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    }),
     refetchInterval: 15000, // Refresh every 15 seconds
     enabled: !isSearchMode,
   });
 
   // Fetch search results
-  const { data: searchResults = {alerts: []}, isLoading: isSearchLoading } = useQuery({
+  const { data: searchResults = {alerts: []}, isLoading: isSearchLoading, error: searchError } = useQuery({
     queryKey: ['/api/alerts/search', JSON.stringify(searchFilters), currentPage],
     queryFn: async () => {
       if (!searchFilters) return [];
@@ -44,17 +131,26 @@ export default function EventIntelligence() {
       });
       params.append('limit', '20');
       params.append('offset', String((currentPage - 1) * 20));
-      console.log("searcgparams", params.toString());
       
       const response = await fetch(`${API_ENDPOINTS.alerts}/search?${params.toString()}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch search results');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     },
     enabled: isSearchMode && !!searchFilters,
-    staleTime: 60000, // Consider data fresh for 1 minute
+    staleTime: 60000,
   });
+  useEffect(() => {
+    if (alertsError) {
+      setApiError(alertsError);
+    }
+  }, [alertsError]);
+  useEffect(() => {
+    if (searchError) {
+      setApiError(searchError);
+    }
+  }, [searchError]);
 
   // Use search results when in search mode, otherwise use regular alerts
   const displayAlerts = isSearchMode ? searchResults.alerts : alerts;
@@ -116,27 +212,40 @@ export default function EventIntelligence() {
       />
       
       {/* Main Content */}
-      <div className="flex h-[calc(100vh-320px)]">
-        {/* Recent Alerts on Left */}
-        <AlertsList 
-          alerts={displayAlerts}
-          onSelectAlert={handleSelectAlert}
-          selectedAlert={selectedAlert}
-          isSearchMode={isSearchMode}
-          total={searchResults.total}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          pageSize={20}
-          isLoading={isSearchMode ? isSearchLoading : isAlertsLoading}
-        />
-        
-        {/* Alert Details on Right */}
-        <AlertDetails 
-          selectedAlert={selectedAlert} 
-          onOpenRawData={handleOpenRawDataModal}
-          onOpenAlertModal={handleOpenAlertModal}
-        />
-      </div>
+      {apiError ? (
+        <div className="flex-1 flex items-center justify-center">
+          <ErrorComponent
+            onRetry={() => {
+              setApiError(null);
+              // Trigger refetch by updating a state that affects the query
+              setCurrentPage(currentPage);
+            }}
+          />
+        </div>
+      ) : (
+        <div className="flex h-[calc(100vh-150px)]">
+          {/* Recent Alerts on Left */}
+          <AlertsList 
+            alerts={displayAlerts}
+            onSelectAlert={handleSelectAlert}
+            selectedAlert={selectedAlert}
+            isSearchMode={isSearchMode}
+            total={searchResults.total}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            pageSize={20}
+            isLoading={isSearchMode ? isSearchLoading : isAlertsLoading}
+          />
+          
+          {/* Alert Details on Right */}
+          <AlertDetails 
+            selectedAlert={selectedAlert} 
+            onOpenRawData={handleOpenRawDataModal}
+            onOpenAlertModal={handleOpenAlertModal}
+            js9Loaded={js9Loaded}
+          />
+        </div>
+      )}
       <AlertModal 
         alert={modalAlert}
         isOpen={isModalOpen}
@@ -156,7 +265,7 @@ export default function EventIntelligence() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-[#8D0FF5] rounded-full flex items-center justify-center">
+              <div className="w-4 h-4 bg-[#8D0FF5] rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-xs">S</span>
               </div>
               <span className="text-sm font-medium text-[#8D0FF5]">Starithm</span>

@@ -22,14 +22,16 @@ import {
 } from "lucide-react";
 import { getTimeAgo } from "../../utils/duration";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Image, Maximize2 } from "lucide-react";
-import { Loading } from "@shared/components";
+import { Image, Maximize2, Telescope as TelescopeIcon } from "lucide-react";
+import { Loading, ErrorComponentCompact } from "@shared/components";
+import { FitsViewerModal } from "./FitsViewerModal";
 
 interface AlertDetailsProps {
   selectedAlert?: Alert;
   showTimeline?: boolean;
   onOpenRawData: (alert: Alert) => void;
   onOpenAlertModal?: (alert: Alert) => void;
+  js9Loaded?: boolean;
 }
 
 const getEventIcon = (eventType: string) => {
@@ -58,24 +60,32 @@ const formatDate = (date: Date) => {
 };
 
 
-export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true, onOpenAlertModal }: AlertDetailsProps) {
-  const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
-  const [selectedUrl, setSelectedUrl] = useState<string>('');
+export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true, onOpenAlertModal, js9Loaded = false }: AlertDetailsProps) {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>('');
+  const [isFitsModalOpen, setIsFitsModalOpen] = useState(false);
+  const [selectedFitsUrl, setSelectedFitsUrl] = useState<string>('');
+  const [apiError, setApiError] = useState<any>(null);
 
   // Fetch detailed alert information
-  const { data: detailedAlert, isLoading: isLoadingDetails } = useQuery({
+  const { data: detailedAlert, isLoading: isLoadingDetails, error: detailsError } = useQuery({
     queryKey: ['alert-details', selectedAlert?.id],
     queryFn: async () => {
       const response = await fetch(API_ENDPOINTS.alertDetails(selectedAlert!.id.toString()));
       if (!response.ok) {
-        throw new Error('Failed to fetch alert details');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     },
     enabled: !!selectedAlert?.id,
   });
+
+  // Handle API errors
+  useEffect(() => {
+    if (detailsError) {
+      setApiError(detailsError);
+    }
+  }, [detailsError]);
 
   if (!selectedAlert) {
     return (
@@ -85,6 +95,19 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
           <h3 className="text-lg font-medium mb-2">No Alert Selected</h3>
           <p className="text-sm">Select an alert from the list to view details</p>
         </div>
+      </div>
+    );
+  }
+
+  if (apiError) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <ErrorComponentCompact
+          onRetry={() => {
+            setApiError(null);
+            // The query will automatically refetch
+          }}
+        />
       </div>
     );
   }
@@ -107,13 +130,21 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
   const timeline = alertData.timeline || [];
   const allUrls = alertData.data.urls || [];
   
-  // Separate image URLs from regular URLs
+  // Separate image URLs, FITS files, and regular URLs
   const imageUrls = allUrls.filter(url => 
     /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(url)
   );
-  const regularUrls = allUrls.filter(url => 
-    !/\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(url)
+  const fitsUrls = allUrls.filter(url => 
+    /\.(fit|fits)$/i.test(url)
   );
+  const regularUrls = allUrls.filter(url => 
+    !/\.(jpg|jpeg|png|gif|bmp|webp|svg|fit|fits)$/i.test(url)
+  );
+  console.log({
+    fitsUrls,
+    imageUrls,
+    regularUrls
+  });
 
   return (
     <div className="flex-1 p-6">
@@ -589,13 +620,13 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4"> */}
                   {imageUrls.map((imageUrl, index) => (
                     <div key={index} className="relative group">
                       <img
                         src={imageUrl}
                         alt={`Image ${index + 1}`}
-                        className="w-full h-50 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                        className="w-1/2 h-25 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
                         onClick={() => {
                           setSelectedImage(imageUrl);
                           setIsImageModalOpen(true);
@@ -610,6 +641,43 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                       >
                         <Maximize2 className="h-4 w-4" />
                       </button>
+                    </div>
+                  ))}
+                {/* </div> */}
+              </CardContent>
+            </Card>
+          )}
+          
+          {/* FITS Files Section */}
+          {fitsUrls.length > 0 && (
+            <Card className="border border-gray-200">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <TelescopeIcon className="h-5 w-5" />
+                  <span>FITS Files ({fitsUrls.length})</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-2">
+                  {fitsUrls.map((url, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                      <div className="flex items-center space-x-2">
+                        <TelescopeIcon className="h-4 w-4 text-starithm-electric-violet" />
+                        <span className="text-sm font-mono text-gray-700">
+                          {url.split('/').pop() || url}
+                        </span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedFitsUrl(url);
+                          setIsFitsModalOpen(true);
+                        }}
+                      >
+                        <TelescopeIcon className="h-4 w-4 mr-2" />
+                        View FITS
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -646,7 +714,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
           
           {/* Image Modal */}
           <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
-            <DialogContent className="max-w-4xl max-h-[90vh] p-0" hideCloseButton={true}>
+            <DialogContent className="max-w-4xl max-h-[90vh] p-0">
               <DialogHeader className="p-4 border-b">
                 <div className="flex items-center justify-between">
                   <DialogTitle className="text-lg font-semibold">Image Preview</DialogTitle>
@@ -668,6 +736,15 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
               </div>
             </DialogContent>
           </Dialog>
+          
+          {/* FITS Viewer Modal */}
+          <FitsViewerModal
+            isOpen={isFitsModalOpen}
+            onClose={() => setIsFitsModalOpen(false)}
+            fitsUrl={selectedFitsUrl}
+            title={`FITS Viewer - ${selectedFitsUrl.split('/').pop() || 'FITS File'}`}
+            js9Loaded={js9Loaded}
+          />
         </div>
       </ScrollArea>
     </div>
