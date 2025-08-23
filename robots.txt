@@ -1,0 +1,15 @@
+# Starithm - Real-time Astronomical Event Intelligence Platform
+# Root robots.txt file
+
+# Redirect to main robots.txt in public directory
+# The main robots.txt file is located at /public/robots.txt
+
+User-agent: *
+Allow: /
+
+# For development environments, you may want to disallow all crawling
+# Uncomment the line below if this is a development/staging environment
+# Disallow: /
+
+# Sitemap location (when you create a sitemap)
+# Sitemap: https://starithm.com/sitemap.xml

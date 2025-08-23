@@ -1,0 +1,11 @@
+# Starithm Home Microfrontend
+# Robots.txt file for the home microfrontend assets
+
+User-agent: *
+Allow: /
+
+# Allow crawling of home microfrontend assets
+Allow: /logo*.png
+
+# This microfrontend is served through the main application
+# Main robots.txt rules are defined in the root public/robots.txt

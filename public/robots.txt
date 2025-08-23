@@ -1,0 +1,88 @@
+# Starithm - Real-time Astronomical Event Intelligence Platform
+# Robots.txt file for search engine crawlers
+
+User-agent: *
+Allow: /
+
+# Allow crawling of main pages and content
+Allow: /index.html
+Allow: /blog/
+Allow: /home/
+Allow: /novatrace/
+
+# Allow crawling of static assets
+Allow: /public/
+Allow: /favicon-*.png
+Allow: /apple-touch-icon.png
+Allow: /android-chrome-*.png
+Allow: /logo*.png
+Allow: /social-media-*.png
+Allow: /site.webmanifest
+
+# Disallow crawling of sensitive areas
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /build/
+Disallow: /dist/
+Disallow: /.git/
+Disallow: /package*.json
+Disallow: /tsconfig*.json
+Disallow: /vite.config.*
+Disallow: /tailwind.config.*
+Disallow: /postcss.config.*
+Disallow: /.env*
+Disallow: /vercel.json
+
+# Disallow crawling of development and configuration files
+Disallow: /*.log
+Disallow: /*.lock
+Disallow: /start-dev.sh
+Disallow: /build.sh
+Disallow: /check-status.sh
+
+# Disallow crawling of internal API endpoints (if any)
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+
+# Crawl delay to be respectful to the server
+Crawl-delay: 1
+
+# Sitemap location (you can add this when you create a sitemap)
+# Sitemap: https://starithm.com/sitemap.xml
+
+# Additional rules for specific bots
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 2
+
+# Block aggressive crawlers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Allow legitimate astronomy and science crawlers
+User-agent: arXiv
+Allow: /
+
+User-agent: NASA
+Allow: /
+
+User-agent: ESA
+Allow: /
