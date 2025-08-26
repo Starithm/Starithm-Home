@@ -27,4 +27,3 @@ export * from './ui/scroll-area';
 export * from './ui/select';
 export * from './ui/tabs';
 export * from './ui/tooltip';
-export * from './ui/Na'
