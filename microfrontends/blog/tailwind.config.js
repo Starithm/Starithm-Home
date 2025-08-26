@@ -11,6 +11,10 @@ export default {
         'starithm-veronica': '#6B46C1',
         'starithm-selective-yellow': '#FFC332',
         'starithm-rich-black': '#1A1A1A',
+        'starithm-platinum': '#E7DFDD',
+        'starithm-bg-black': '#0E0B16',
+        'starithm-electric-violet-dark': '#9A48FF',
+        'starithm-veronica-dark': '#C84BF7'
       },
       fontFamily: {
         'sans': ['Google Sans Code', 'sans-serif'],

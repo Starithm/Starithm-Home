@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Alert } from "@/types/Alert";
-import { Navbar } from "@/components/event-intelligence/Navbar";
-import { DashboardHeader } from "@/components/event-intelligence/DashboardHeader";
+import { Navbar } from "@/components/Navbar";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
-import { AlertsList } from "@/components/event-intelligence/AlertsList";
-import { AlertDetails } from "@/components/event-intelligence/AlertDetails";
-import { AlertModal } from "@/components/event-intelligence/AlertModal";
-import { RawDataModal } from "@/components/event-intelligence/RawDataModal";
-import { SearchFilters, SearchFilters as SearchFiltersType } from "@/components/event-intelligence/SearchFilters";
+import { AlertsList } from "@/components/AlertsList";
+import { AlertDetails } from "@/components/AlertDetails";
+import { AlertModal } from "@/components/AlertModal";
+import { RawDataModal } from "@/components/RawDataModal";
+import { SearchFilters, SearchFilters as SearchFiltersType } from "@/components/SearchFilters";
 import { API_ENDPOINTS } from "@/lib/config";
 import { ErrorComponent } from "@shared/components";
 import { useApiError } from "@/hooks/useApiError";
@@ -223,7 +223,7 @@ export default function EventIntelligence() {
           />
         </div>
       ) : (
-        <div className="flex h-[calc(100vh-150px)]">
+        <div className="flex h-[calc(100vh-200px)] overflow-hidden">
           {/* Recent Alerts on Left */}
           <AlertsList 
             alerts={displayAlerts}
@@ -260,8 +260,8 @@ export default function EventIntelligence() {
         onClose={() => setIsRawDataModalOpen(false)}
       />
       
-      {/* Footer */}
-      <footer className="mt-auto py-6 bg-white border-t border-gray-200">
+      {/* Footer
+      <footer className="mt-auto py-6 bg-white dark:bg-starithm-bg-black border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex items-center space-x-2">
@@ -271,12 +271,12 @@ export default function EventIntelligence() {
               <span className="text-sm font-medium text-[#8D0FF5]">Starithm</span>
             </div>
             <div className="text-center">
-              <p className="text-xs text-gray-500">&copy; 2025 Starithm. All rights reserved.</p>
-              <p className="text-xs text-gray-500 mt-1">Astronomer's Platform</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2025 Starithm. All rights reserved.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Astronomer's Platform</p>
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }

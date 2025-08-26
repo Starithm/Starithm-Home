@@ -1,4 +1,4 @@
-import { Button } from "./ui/button";
+import { Button } from "../../../shared/components/ui/button";
 
 export function CallToActionBanner() {
   return (
@@ -15,8 +15,9 @@ export function CallToActionBanner() {
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
             <Button 
+              variant="secondary"
               size="lg"
-              className="bg-starithm-selective-yellow hover:bg-starithm-selective-yellow/90 text-starithm-rich-black px-12 py-5 text-xl font-bold shadow-lg"
+              className="px-12 py-5 text-xl font-bold shadow-lg"
             >
               Get Started Free
             </Button>

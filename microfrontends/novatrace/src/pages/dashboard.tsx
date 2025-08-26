@@ -3,12 +3,12 @@ import SystemStatus from "@/components/SystemStatus";
 import RecentAlerts from "@/components/RecentAlerts";
 import SystemHealth from "@/components/SystemHealth";
 import RecentSummary from "@/components/RecentSummary";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@shared/components/ui/card";
+import { Button } from "@shared/components/ui/button";
 import { Satellite, Settings, Play, Pause, FileText } from "lucide-react";
 import { useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "../../../../shared/hooks/use-toast";
 
 export default function Dashboard() {
   const [isProcessing, setIsProcessing] = useState(true);
@@ -100,7 +100,7 @@ export default function Dashboard() {
                 <div className="space-y-3">
                                            <Button
                            onClick={handleManualProcess}
-                           className="w-full bg-starithm-electric-violet hover:bg-starithm-veronica"
+                           className="w-full bg-[#9A48FF] hover:bg-[#9A48FF]/90"
                          >
                     <Play className="mr-2 h-4 w-4" />
                     Process Queue Manually

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, FileText } from 'lucide-react';
+import { Button } from '../../../../shared/components/ui/button';
 
 export default function NotFound() {
   return (
@@ -14,13 +15,15 @@ export default function NotFound() {
           </p>
         </div>
         
-        <Link 
-          to="/"
-          className="inline-flex items-center space-x-2 bg-starithm-electric-violet text-white px-6 py-3 rounded-lg hover:bg-starithm-electric-violet/90 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back to Blog</span>
-        </Link>
+        <Button asChild>
+          <Link 
+            to="/"
+            className="inline-flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Blog</span>
+          </Link>
+        </Button>
       </div>
     </div>
   );

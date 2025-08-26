@@ -53,6 +53,8 @@
   --starithm-veronica: #A239CA;
   --starithm-selective-yellow: #FFB400;
   --starithm-golden-yellow: #ffc332;
+  --starithm-electric-violet-dark: #9A48FF;
+  --starithm-veronica-dark: #C84BF7;
 }
 
 .dark {
@@ -62,7 +64,7 @@
   --card-foreground: var(--starithm-platinum);
   --popover: var(--starithm-rich-black);
   --popover-foreground: var(--starithm-platinum);
-  --primary: var(--starithm-electric-violet);
+  --primary: var(--starithm-electric-violet-dark);
   --primary-foreground: var(--starithm-platinum);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: var(--starithm-platinum);
@@ -142,11 +144,11 @@
 
 @layer base {
   * {
-    @apply border-gray-200 outline-none;
+    @apply border-gray-200 dark:border-gray-700 outline-none;
   }
 
   body {
-    @apply bg-white text-starithm-rich-black;
+    @apply bg-white dark:bg-starithm-bg-black text-starithm-rich-black dark:text-starithm-platinum;
     font-family: "Google Sans Code", monospace;
     font-optical-sizing: auto;
   }

@@ -46,21 +46,24 @@
 
   /* Starithm Brand Colors */
   --starithm-rich-black: #0E0B16;
+  --starithm-bg-black: #0E0B16;
   --starithm-platinum: #E7DFDD;
   --starithm-electric-violet: #770ff5;
   --starithm-veronica: #A239CA;
   --starithm-selective-yellow: #FFB400;
   --starithm-golden-yellow: #ffc332;
+  --starithm-electric-violet-dark: #9A48FF;
+  --starithm-veronica-dark: #C84BF7;
 }
 
 .dark {
-  --background: var(--starithm-rich-black);
+  --background: var(--starithm-bg-black);
   --foreground: var(--starithm-platinum);
-  --card: var(--starithm-rich-black);
+  --card: var(--starithm-bg-black);
   --card-foreground: var(--starithm-platinum);
-  --popover: var(--starithm-rich-black);
+  --popover: var(--starithm-bg-black);
   --popover-foreground: var(--starithm-platinum);
-  --primary: var(--starithm-electric-violet);
+  --primary: var(--starithm-electric-violet-dark);
   --primary-foreground: var(--starithm-platinum);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: var(--starithm-platinum);
@@ -132,19 +135,22 @@
 
   /* Starithm Brand Color Utilities */
   --color-starithm-rich-black: var(--starithm-rich-black);
+  --color-starithm-bg-black: var(--starithm-bg-black);
   --color-starithm-platinum: var(--starithm-platinum);
   --color-starithm-electric-violet: var(--starithm-electric-violet);
   --color-starithm-veronica: var(--starithm-veronica);
   --color-starithm-selective-yellow: var(--starithm-selective-yellow);
+  --color-starithm-electric-violet-dark: var(--starithm-electric-violet-dark);
+  --color-starithm-veronica-dark: var(--starithm-veronica-dark);
 }
 
 @layer base {
   * {
-    @apply border-gray-200 outline-none;
+    @apply border-gray-200 dark:border-gray-700 outline-none;
   }
 
   body {
-    @apply bg-white text-starithm-rich-black;
+    @apply bg-white dark:bg-starithm-bg-black text-starithm-rich-black dark:text-starithm-platinum;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 }

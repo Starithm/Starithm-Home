@@ -65,7 +65,7 @@ export function ErrorComponent({
       {onRetry && (
         <button
           onClick={onRetry}
-          className="inline-flex items-center px-4 py-2 bg-starithm-electric-violet text-white rounded-lg hover:bg-starithm-electric-violet/90 transition-colors"
+                          className="inline-flex items-center px-4 py-2 bg-[#9A48FF] text-white rounded-lg hover:bg-[#9A48FF]/90 transition-colors"
         >
           <RefreshCw className="h-4 w-4 mr-2 mb-2" />
           Try Again

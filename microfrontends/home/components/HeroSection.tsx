@@ -1,4 +1,4 @@
-import { Button } from "./ui/button";
+import { Button } from "../../../shared/components/ui/button";
 import { StarfieldBackground } from "./StarfieldBackground";
 
 export function HeroSection() {
