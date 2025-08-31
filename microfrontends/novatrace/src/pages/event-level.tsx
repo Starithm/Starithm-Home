@@ -202,6 +202,10 @@ export default function EventLevel() {
     );
   }
 
+  const navigateToAlertLevel = () => {
+    window.parent.postMessage({ type: 'navigate', path: '/novatrace' }, '*');
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 text-foreground select-none">
       
@@ -248,13 +252,23 @@ export default function EventLevel() {
         
         {/* Navigation */}
         <div className="px-6 py-2">
-          <NavComponent
+          {/* <NavComponent
             items={[
                           { href: "/novatrace", label: "Alert Level Dashboard", icon: <Activity className="h-4 w-4"  />, variant: "ghost" },
             // { href: "/novatrace/events", label: "Event Level Dashboard", icon: <Calendar className="h-4 w-4" /> },
             // { href: "/novatrace/status", label: "System Status", icon: <BarChart3 className="h-4 w-4" /> },
             ]}
-          />
+          /> */}
+          <Button 
+            variant="outline" 
+            size="lg"
+            hasIcon={true}
+            onClick={navigateToAlertLevel}
+            className="flex items-center space-x-2"
+          >
+            <Activity className="h-4 w-4" />
+            <span>Alert Level Dashboard</span>
+          </Button>
         </div>
         
         {/* Timeline Picker */}
