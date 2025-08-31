@@ -203,7 +203,7 @@ export default function EventLevel() {
   }
 
   const navigateToAlertLevel = () => {
-    window.parent.postMessage({ type: 'navigate', path: '/novatrace/alerts' }, '*');
+    window.parent.postMessage({ type: 'navigate', path: '/' }, '*');
   }
 
   return (

@@ -258,7 +258,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
             {/* Summary Stats */}
             <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{eventDetails.stream.length}</div>
+                <div className="text-2xl font-bold text-secondary-foreground">{eventDetails.stream.length}</div>
                 <div className="text-sm text-muted-foreground">Alerts</div>
               </div>
               <div className="text-center">
@@ -373,12 +373,12 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                     const isTextualCircular = item.type === 'textual_circular';
 
                     return (
-                      <Card key={item.id} className="border-l-4 border-l-primary">
+                      <Card key={item.id} className="border-l-3 border-l-secondary-foreground">
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
                             {/* Timeline indicator */}
                             <div className="flex flex-col items-center">
-                              <div className="w-3 h-3 bg-primary rounded-full"></div>
+                              <div className="w-3 h-3 bg-starithm-selective-yellow rounded-full"></div>
                               {index < timelineItems.length - 1 && (
                                 <div className="w-0.5 h-8 bg-border mt-1"></div>
                               )}
