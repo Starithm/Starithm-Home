@@ -28,7 +28,8 @@
     "class-variance-authority": "^0.7.1",
     "@radix-ui/react-popover": "^1.1.6",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.5"
+    "tailwind-merge": "^2.5.5",
+    "wouter": "^3.3.5"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
