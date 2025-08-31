@@ -7,7 +7,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ onAlertClick }: DashboardHeaderProps) {
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700 bg-muted/50 dark:bg-starithm-bg-black/50">
+    <div className="bg-muted/50 dark:bg-starithm-bg-black/50">
       <div className="px-6 py-4">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">

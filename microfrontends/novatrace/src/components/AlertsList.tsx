@@ -51,7 +51,7 @@ export function AlertsList({
   const endIndex = Math.min(currentPage * pageSize, total || alerts.length);
 
   return (
-    <div className="w-1/3 bg-muted/30 flex flex-col h-full">
+    <div className="w-1/4 bg-muted/30 flex flex-col h-full">
       <div className="p-4 flex-shrink-0">
         <h2 className="text-lg font-semibold text-foreground">{isSearchMode ? "Search Results" : "Recent Alerts"}</h2>
         <p className="text-sm text-muted-foreground">

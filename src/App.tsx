@@ -6,6 +6,7 @@ import './App.css';
 // Lazy load microfrontends
 const HomeMicrofrontend = lazy(() => import('./microfrontends/HomeMicrofrontend'));
 const NovaTraceMicrofrontend = lazy(() => import('./microfrontends/NovaTraceMicrofrontend'));
+const BlogMicrofrontend = lazy(() => import('./microfrontends/BlogMicrofrontend'));
 
 function App() {
   return (
@@ -15,12 +16,13 @@ function App() {
         <div className="nav-container">
           <Link to="/" className="nav-brand">
             <img src="/logo_without_name.png" alt="Starithm" className="nav-logo" />
-            <span className="nav-title text-starithm-electric-violet dark:text-starithm-platinum">Starithm</span>
+            <span className="nav-title">Starithm</span>
           </Link>
           <div className="nav-links">
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/novatrace" className="nav-link">NovaTrace</Link>
-            <ThemeToggle variant="icon" size="sm" />
+            {/* <Link to="/blog" className="nav-link">Blog</Link> */}
+            {/* <ThemeToggle variant="icon" size="sm" /> */}
           </div>
         </div>
       </nav>
@@ -32,6 +34,8 @@ function App() {
             <Route path="/" element={<HomeMicrofrontend />} />
             <Route path="/novatrace" element={<NovaTraceMicrofrontend />} />
             <Route path="/novatrace/status" element={<NovaTraceMicrofrontend />} />
+            <Route path="/novatrace/events" element={<NovaTraceMicrofrontend />} />
+            <Route path="/blog/*" element={<BlogMicrofrontend />} />
           </Routes>
         </Suspense>
       </main>
@@ -39,10 +43,10 @@ function App() {
       {/* Footer */}
       <footer className="app-footer">
         <div className="footer-content">
-          <div className="footer-brand">
+          {/* <div className="footer-brand">
             <img src="/logo_without_name.png" alt="Starithm" className="footer-logo" />
             <span className="footer-title">Starithm</span>
-          </div>
+          </div> */}
           <div className="footer-copyright">
             <p>&copy; 2025 Starithm. All rights reserved.</p>
             <p>Astronomer's Platform</p>

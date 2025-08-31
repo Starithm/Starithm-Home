@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { Alert } from "@/types/Alert";
 import { Navbar } from "@/components/Navbar";
 import { DashboardHeader } from "@/components/DashboardHeader";
@@ -12,7 +11,6 @@ import { RawDataModal } from "@/components/RawDataModal";
 import { SearchFilters, SearchFilters as SearchFiltersType } from "@/components/SearchFilters";
 import { API_ENDPOINTS } from "@/lib/config";
 import { ErrorComponent } from "@shared/components";
-import { useApiError } from "@/hooks/useApiError";
 
 // Global declarations for JS9
 declare global {
@@ -22,7 +20,7 @@ declare global {
   }
 }
 
-export default function EventIntelligence() {
+export default function AlertsLevel() {
   const [selectedAlert, setSelectedAlert] = useState<Alert | undefined>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalAlert, setModalAlert] = useState<Alert | undefined>();
@@ -169,11 +167,13 @@ export default function EventIntelligence() {
 
 
   const handleOpenRawDataModal = (alert: Alert) => {
+    console.log("Opening Raw Data Modal for alert:", alert.alertKey);
     setRawDataAlert(alert);
     setIsRawDataModalOpen(true);
   };
 
   const handleOpenAlertModal = (alert: Alert) => {
+    console.log("Opening Alert Modal for alert:", alert.alertKey);
     setModalAlert(alert);
     setIsModalOpen(true);
   };
@@ -223,7 +223,7 @@ export default function EventIntelligence() {
           />
         </div>
       ) : (
-        <div className="flex h-[calc(100vh-200px)] overflow-hidden">
+        <div className="flex h-[calc(100vh-150px)] overflow-hidden">
           {/* Recent Alerts on Left */}
           <AlertsList 
             alerts={displayAlerts}
@@ -259,24 +259,6 @@ export default function EventIntelligence() {
         isOpen={isRawDataModalOpen}
         onClose={() => setIsRawDataModalOpen(false)}
       />
-      
-      {/* Footer
-      <footer className="mt-auto py-6 bg-white dark:bg-starithm-bg-black border-t border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-[#8D0FF5] rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xs">S</span>
-              </div>
-              <span className="text-sm font-medium text-[#8D0FF5]">Starithm</span>
-            </div>
-            <div className="text-center">
-              <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2025 Starithm. All rights reserved.</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Astronomer's Platform</p>
-            </div>
-          </div>
-        </div>
-      </footer> */}
     </div>
   );
 }

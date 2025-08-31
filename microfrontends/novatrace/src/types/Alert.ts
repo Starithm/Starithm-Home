@@ -3,7 +3,7 @@ export type Alert = {
   alertKey: string; // Format: GCN-{gcnid}
   broker: string; // Source: gcn, atel, etc.
   event: string; // Event name like "EP J1350.0-8622"
-  date: Date;
+  date: string;
   data: AlertData;
   summary: string;
   confidenceLevel: number; // Confidence score (0.0 to 1.0)

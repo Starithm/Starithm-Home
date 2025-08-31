@@ -37,15 +37,10 @@ export function Homepage() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                {/* <Button 
-                  size="lg" 
-                  className="bg-starithm-electric-violet hover:bg-starithm-electric-violet/90 text-white px-10 py-4 text-xl"
-                >
-                  Start Exploring
-                </Button> */}
                 <Button 
+                  variant="default"
                   size="lg"
-                  className="px-10 py-4 text-xl"
+                  className="px-10 py-4 text-primary-foreground"
                   onClick={() => {
                     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
                     window.open(`${baseUrl}/novatrace`, '_blank');
@@ -79,7 +74,7 @@ export function Homepage() {
       <section className="py-24 bg-gradient-to-b from-white dark:from-starithm-bg-black to-starithm-electric-violet/5 dark:to-starithm-electric-violet/10">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet dark:text-starithm-electric-violet-dark mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-6">
               Real-Time Astronomical Data
             </h2>
             <p className="text-xl text-starithm-rich-black/70 dark:text-starithm-platinum/70 max-w-3xl mx-auto">
@@ -112,7 +107,7 @@ export function Homepage() {
       <section id="features" className="py-24 bg-white dark:bg-starithm-bg-black">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet dark:text-starithm-electric-violet-dark mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-6">
               Upcoming Powerful Features for Astronomers
             </h2>
             <p className="text-xl text-starithm-rich-black/70 dark:text-starithm-platinum/70 max-w-3xl mx-auto">
@@ -125,7 +120,7 @@ export function Homepage() {
               <div className="w-16 h-16 bg-starithm-electric-violet/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl">⚡</span>
               </div>
-              <h3 className="text-2xl font-bold text-starithm-electric-violet dark:text-starithm-electric-violet-dark mb-4">Real-Time Alerts</h3>
+              <h3 className="text-2xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-4">Real-Time Alerts</h3>
               <p className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">
                 Get instant notifications for new astronomical events and discoveries
               </p>
@@ -135,7 +130,7 @@ export function Homepage() {
               <div className="w-16 h-16 bg-starithm-veronica/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl">🔍</span>
               </div>
-              <h3 className="text-2xl font-bold text-starithm-veronica dark:text-starithm-veronica-dark mb-4">Advanced Search</h3>
+              <h3 className="text-2xl font-bold text-starithm-veronica dark:text-starithm-platinum mb-4">Advanced Search</h3>
               <p className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">
                 Filter and search through historical data with powerful query tools
               </p>
@@ -145,7 +140,7 @@ export function Homepage() {
               <div className="w-16 h-16 bg-starithm-selective-yellow/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl">🤝</span>
               </div>
-              <h3 className="text-2xl font-bold text-starithm-selective-yellow mb-4">Collaboration</h3>
+              <h3 className="text-2xl font-bold text-starithm-platinum mb-4">Collaboration</h3>
               <p className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">
                 Connect with researchers worldwide and share findings
               </p>
@@ -158,7 +153,7 @@ export function Homepage() {
       <section id="novatrace" className="py-24 bg-gradient-to-b from-starithm-electric-violet/5 dark:from-starithm-electric-violet/10 to-white dark:to-starithm-bg-black">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet dark:text-starithm-electric-violet-dark mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-6">
               NovaTrace Dashboard
             </h2>
             <p className="text-xl text-starithm-rich-black/70 dark:text-starithm-platinum/70 max-w-3xl mx-auto">
@@ -168,7 +163,7 @@ export function Homepage() {
           
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h3 className="text-3xl font-bold text-starithm-electric-violet dark:text-starithm-electric-violet-dark mb-6">
+              <h3 className="text-3xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-6">
                 Event Intelligence Dashboard
               </h3>
               <p className="text-lg text-starithm-rich-black/70 dark:text-starithm-platinum/70 mb-8 leading-relaxed">
@@ -177,8 +172,9 @@ export function Homepage() {
                 with comprehensive measurement data and confidence assessments.
               </p>
               <Button 
+                variant="default"
                 size="lg"
-                className="px-8 py-4 text-lg"
+                className="text-lg text-primary-foreground"
                 onClick={() => {
                   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
                   window.open(`${baseUrl}/novatrace`, '_blank');
@@ -203,47 +199,8 @@ export function Homepage() {
           </div>
         </div>
       </section>
-
-      {/* Call to Action - Commented out for now */}
-      {/* 
-      <section className="py-24 bg-gradient-to-r from-white via-starithm-electric-violet/5 to-white">
-        <div className="container mx-auto px-6 lg:px-8 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-6xl font-bold text-starithm-electric-violet mb-8">
-              Join the Astronomer's Network Today
-            </h2>
-            
-            <p className="text-2xl lg:text-3xl text-starithm-rich-black/80 mb-10 leading-relaxed">
-              Connect with researchers worldwide, access real-time data, and accelerate your discoveries
-            </p>
-          
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <Button 
-                size="lg"
-                className="bg-[#C84BF7] hover:bg-[#C84BF7]/90 text-white px-12 py-5 text-xl font-bold shadow-lg"
-              >
-                Get Started Free
-              </Button>
-              
-              <Button 
-                variant="outline"
-                size="lg"
-                className="border-starithm-electric-violet text-starithm-electric-violet bg-white hover:bg-starithm-electric-violet/10 px-12 py-5 text-xl font-bold"
-                onClick={() => {
-                  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-                  window.open(`${baseUrl}/novatrace`, '_blank');
-                }}
-              >
-                View Live Alerts
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-      */}
-
       {/* Footer */}
-      <footer className="bg-gray-50 dark:bg-starithm-bg-black border-t border-starithm-electric-violet/20 py-16">
+      <div className="bg-gray-50 dark:bg-starithm-bg-black border-t border-starithm-electric-violet/20 py-16">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-10">
             <div>
@@ -253,7 +210,7 @@ export function Homepage() {
                   alt="Starithm Logo" 
                   className="w-10 h-10"
                 />
-                <h3 className="text-2xl font-bold text-starithm-electric-violet dark:text-starithm-electric-violet-dark">Starithm</h3>
+                <h3 className="text-2xl font-bold text-starithm-electric-violet dark:text-starithm-platinum">Starithm</h3>
               </div>
               <p className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 mb-6 text-lg leading-relaxed">
                 The astronomer's platform for real-time alerts and collaboration.
@@ -263,9 +220,9 @@ export function Homepage() {
                   href="https://x.com/starithm_ai" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-starithm-electric-violet/20 rounded-full flex items-center justify-center hover:bg-starithm-electric-violet/30 transition-colors cursor-pointer"
+                  className="w-10 h-10 bg-starithm-electric-violet/20 dark:bg-starithm-platinum rounded-full flex items-center justify-center hover:bg-starithm-electric-violet/30 transition-colors cursor-pointer"
                 >
-                  <span className="text-starithm-electric-violet font-bold">𝕏</span>
+                  <span className="text-starithm-electric-violet dark:text-starithm-electric-violet-dark font-bold">𝕏</span>
                 </a>
               </div>
             </div>
@@ -329,7 +286,7 @@ export function Homepage() {
             <p>&copy; 2025 Starithm. All rights reserved. Built for the astronomical community.</p>
           </div> */}
         </div>
-      </footer>
+      </div>
 
       {/* Contact Dialog */}
       <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>

@@ -4,7 +4,7 @@ import { Alert } from "@/types/Alert";
 import { Badge } from "@shared/components/ui/badge";
 import { Button } from "@shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/card";
-import { ScrollArea } from "@shared/components/ui/scroll-area";
+
 import { API_ENDPOINTS } from "@/lib/config";
 import {
   Clock,
@@ -29,7 +29,7 @@ import { FitsViewerModal } from "./FitsViewerModal";
 interface AlertDetailsProps {
   selectedAlert?: Alert;
   showTimeline?: boolean;
-  onOpenRawData: (alert: Alert) => void;
+  onOpenRawData?: (alert: Alert) => void;
   onOpenAlertModal?: (alert: Alert) => void;
   js9Loaded?: boolean;
 }
@@ -147,9 +147,9 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
   });
 
   return (
-    <div className="flex-1 p-6">
-      <ScrollArea className="h-full">
-        <div className="space-y-6">
+    <div className="flex-1 flex flex-col h-full">
+      <div className="h-full overflow-y-auto">
+        <div className="p-6 space-y-6">
           {/* Header */}
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-3">
@@ -172,19 +172,22 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
               <Badge variant="outline">
                 {(alertData.confidenceLevel * 100).toFixed(0)}% Confidence
               </Badge>
+              {onOpenRawData && (
               <Button
                 variant="outline"
                 size="lg"
-                className="bg-[#1A1A1A] text-white hover:bg-[#1A1A1A]/90"
+                hasIcon={true}
+                className="flex items-center space-x-2"
                 onClick={() => onOpenRawData(alertData)}
               >
-                <FileText className="h-4 w-4 mr-2" />
+                <FileText className="h-4 w-4" />
                 Raw Data
               </Button>
+              )}
             </div>
           </div>
            {/* Event Information Section */}
-           <Card className="border border-gray-200">
+           <Card className="border border-border">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Calendar className="h-5 w-5" />
@@ -218,7 +221,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
           </Card>
           {/* Summary Section */}
           {alertData.summary && (
-            <Card className="border-2 border-[#ffc332] bg-gradient-to-r from-starithm-electric-violet/5 via-starithm-veronica/5 to-[#E8B0FD]">
+            <Card className="border-1 border-[#ffc332] bg-gradient-to-r from-starithm-electric-violet/5 via-starithm-veronica/5 to-[#2f0240]">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <span>Summary</span>
@@ -235,7 +238,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
 
          
           {timeline.length > 0 && showTimeline &&(
-            <Card className="border border-gray-200">
+            <Card className="border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Clock className="h-5 w-5" />
@@ -254,7 +257,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                         (timeline.map((timelineItem, index) => (
                           <div key={index} className="relative flex items-start">
                             {/* Timeline Dot */}
-                            <div className={`absolute left-3 w-3 h-3 rounded-full border-2 border-white ${
+                            <div className={`absolute left-3 w-3 h-3 rounded-full border-2 border-border ${
                               timelineItem.current 
                                 ? 'bg-starithm-electric-violet' 
                                 : 'bg-gray-300'
@@ -323,7 +326,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
             </Card>
           )}
           {/* Measurements Section */}
-          <Card className="border border-gray-200">
+          <Card className="border border-border">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <BarChart3 className="h-5 w-5" />
@@ -708,7 +711,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-starithm-electric-violet hover:underline"
+                      className="text-sm text-starithm-link hover:underline"
                     >
                       {url}
                     </a>
@@ -752,7 +755,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
             js9Loaded={js9Loaded}
           />
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

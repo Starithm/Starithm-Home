@@ -74,27 +74,28 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
   };
 
   return (
-    <div className="border-b bg-background p-4">
+    <div className="bg-background p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Search className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">Search Filters</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <Button
-            variant="outline"
+            variant="ghost"
             size="lg"
             onClick={handleReset}
-            className="flex items-center space-x-2 bg-[#C84BF7] text-white hover:bg-[#C84BF7]/90"
+            className="flex items-center space-x-1"
           >
-            <RotateCcw className="h-4 w-4" />
-            <span>Reset</span>
+            <RotateCcw className="h-6 w-6" />
+            {/* <span>Reset</span> */}
           </Button>
           <Button
+            variant="default"
             size="lg"
             onClick={handleSearch}
             disabled={isLoading}
-                            className="flex items-center space-x-2 bg-[#9A48FF] text-white hover:bg-[#9A48FF]/90"
+                            className="flex items-center space-x-2"
           >
             <Search className="h-4 w-4" />
             <span>{isLoading ? "Searching..." : "Search"}</span>

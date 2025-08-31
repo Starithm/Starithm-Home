@@ -3,11 +3,29 @@ import { Button } from "@shared/components/ui/button";
 import { Badge } from "@shared/components/ui/badge";
 import { Activity, House } from "lucide-react";
 import { ThemeToggle } from "../../../../shared/components/ThemeToggle";
+import { useLocation } from "wouter";
 
 export function Navbar() {
+  const [, setLocation] = useLocation();
+
+  const navigateToEvents = () => {
+    // Navigate to the main app's events route
+    window.parent.postMessage({ type: 'navigate', path: '/novatrace/events' }, '*');
+  };
+
+  const navigateToStatus = () => {
+    // Navigate to the main app's status route
+    window.parent.postMessage({ type: 'navigate', path: '/novatrace/status' }, '*');
+  };
+
+  const navigateToHome = () => {
+    // Navigate to the main app's home route
+    window.parent.postMessage({ type: 'navigate', path: '/' }, '*');
+  };
+
   return (
-    <nav className="border-b border-gray-200 dark:border-gray-700 bg-background/95 dark:bg-starithm-bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:supports-[backdrop-filter]:bg-starithm-bg-black/60">
-      <div className="flex h-16 items-center px-4">
+    // <nav className="border-b border-gray-200 dark:border-gray-700 bg-background/95 dark:bg-starithm-bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:supports-[backdrop-filter]:bg-starithm-bg-black/60">
+      <div className="flex h-14 items-center px-4">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-starithm-electric-violet rounded-lg flex items-center justify-center">
@@ -18,9 +36,9 @@ export function Navbar() {
               <span className="text-xs text-muted-foreground">Powered by Starithm Tech</span>
             </div>
           </div>
-          <Badge variant="secondary" className="text-xs">
+          {/* <Badge variant="secondary" className="text-xs">
             Event Intelligence
-          </Badge>
+          </Badge> */}
         </div>
         
 
@@ -29,17 +47,30 @@ export function Navbar() {
           {/* <ThemeToggle variant="icon" size="sm" /> */}
           <Button 
             variant="outline" 
-            size="sm" 
-            onClick={() => window.location.href = '/novatrace/status'}
+            size="lg"
+            hasIcon={true}
+            onClick={navigateToEvents}
+            className="flex items-center space-x-2"
+          >
+            <Activity className="h-4 w-4" />
+            <span>Event Level Dashboard</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="lg"
+            hasIcon={true}
+            onClick={navigateToStatus}
             className="flex items-center space-x-2"
           >
             <Activity className="h-4 w-4" />
             <span>Check Status</span>
           </Button>
           <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => window.location.href = '/home'}
+            //variant="primary" 
+            variant="outline"
+            size="lg" 
+            hasIcon={true}
+            onClick={navigateToHome}
             className="flex items-center space-x-2"
           >
             <House className="h-4 w-4" />
@@ -47,6 +78,6 @@ export function Navbar() {
           </Button>
         </div>
       </div>
-    </nav>
+    // </nav>
   );
 }

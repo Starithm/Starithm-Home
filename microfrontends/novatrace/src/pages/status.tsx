@@ -10,7 +10,7 @@ import { useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "../../../../shared/hooks/use-toast";
 
-export default function Dashboard() {
+export default function StatusDashboard() {
   const [isProcessing, setIsProcessing] = useState(true);
   const { toast } = useToast();
 

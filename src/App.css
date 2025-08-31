@@ -13,7 +13,7 @@
 
 .global-nav {
   background: white;
-  border-bottom: 1px solid #e5e7eb;
+  /* border-bottom: 1px solid #e5e7eb; */
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   /* position: sticky; */
   top: 0;
@@ -23,7 +23,7 @@
 
 .dark .global-nav {
   background: #0E0B16;
-  border-bottom: 1px solid #374151;
+  /* border-bottom: 1px solid #374151; */
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
@@ -66,6 +66,10 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #770ff5;
+}
+
+.dark .nav-title {
+  color: #e7dfdd;
 }
 
 .nav-links {
@@ -113,7 +117,7 @@
 /* Footer Styles */
 .app-footer {
   background: white;
-  border-top: 1px solid #e5e7eb;
+  /* border-top: 1px solid #e5e7eb; */
   padding: 2rem 0;
   margin-top: auto;
   transition: background-color 0.2s, border-color 0.2s;
@@ -121,7 +125,7 @@
 
 .dark .app-footer {
   background: #0E0B16;
-  border-top: 1px solid #374151;
+  /* border-top: 1px solid #374151; */
 }
 
 .footer-content {
@@ -149,6 +153,10 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: #770ff5;
+}
+
+.dark .footer-title {
+  color: #e7dfdd;
 }
 
 .footer-links {
