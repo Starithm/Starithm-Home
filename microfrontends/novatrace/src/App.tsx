@@ -19,6 +19,7 @@ function Router() {
       <Route path="/status" component={StatusDashboard} />
       <Route path="/events" component={EventLevel} />
       <Route path="/novatrace" component={AlertsLevel} />
+      <Route path="/novatrace/alerts" component={AlertsLevel} />
       <Route path="/novatrace/status" component={StatusDashboard} />
       <Route path="/novatrace/events" component={EventLevel} />
       <Route component={NotFound} />
