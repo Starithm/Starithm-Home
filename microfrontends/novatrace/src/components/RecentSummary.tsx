@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@shared/components/ui/card";
+import { Button } from "@shared/components/ui/button";
 import { Twitter, ExternalLink } from "lucide-react";
 import { Alert } from "@shared/schema";
 

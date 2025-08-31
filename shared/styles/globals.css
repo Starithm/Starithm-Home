@@ -1,0 +1,404 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap');
+@import "react-day-picker/style.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Light Mode Theme Variables */
+  --background: white;
+  --foreground: #0E0B16;
+  --card: white;
+  --card-foreground: #0E0B16;
+  --popover: white;
+  --popover-foreground: #0E0B16;
+  --primary: #770ff5;
+  --primary-foreground: white;
+  --secondary: #C84BF7;
+  --secondary-foreground: white;
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: #0E0B16;
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --border: #686868;
+  --input: hsl(20, 5.9%, 90%);
+  --input-background: white;
+  --switch-background: hsl(20, 5.9%, 90%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+
+  /* Starithm Brand Colors */
+  --starithm-rich-black: #0E0B16;
+  --starithm-bg-black: #0E0B16;
+  --starithm-platinum: #E7DFDD;
+  --starithm-electric-violet: #770ff5;
+  --starithm-veronica: #A239CA;
+  --starithm-selective-yellow: #FFB400;
+  --starithm-golden-yellow: #ffc332;
+  --starithm-electric-violet-dark: #9A48FF;
+  --starithm-veronica-dark: #C84BF7;
+  --starithm-link: #69acf4;
+
+  /* React Day Picker Theme Variables - Light Mode */
+  
+}
+.rdp-root {
+  --rdp-accent-color: var(--starithm-veronica);
+  --rdp-accent-background-color: var(--starithm-veronica);
+  --rdp-animation_duration: 0.3s;
+  --rdp-animation_timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --rdp-day-height: 36px;
+  --rdp-day-width: 36px;
+  --rdp-chevron-disabled-opacity: 0.3;
+  --rdp-day_button-border-radius: 6px;
+  --rdp-day_button-border: 1px solid transparent;
+  --rdp-day_button-height: 36px;
+  --rdp-day_button-width: 36px;
+  --rdp-selected-border: 2px solid var(--starithm-veronica);
+  --rdp-disabled-opacity: 0.3;
+  --rdp-outside-opacity: 0.5;
+  --rdp-today-color: var(--starithm-veronica);
+  --rdp-dropdown-gap: 0.5rem;
+  --rdp-months-gap: 1rem;
+  --rdp-nav_button-disabled-opacity: 0.3;
+  --rdp-nav_button-height: 32px;
+  --rdp-nav_button-width: 32px;
+  --rdp-nav-height: 40px;
+  --rdp-range_middle-background-color: var(--accent);
+  --rdp-range_middle-color: var(--accent-foreground);
+  --rdp-range_start-color: var(--primary-foreground);
+  --rdp-range_start-background: var(--primary);
+  --rdp-range_end-background: var(--primary);
+  --rdp-range_end-color: var(--primary-foreground);
+  --rdp-week_number-border-radius: 6px;
+  --rdp-week_number-border: 1px solid var(--border);
+  --rdp-week_number-height: 36px;
+  --rdp-week_number-width: 36px;
+  --rdp-weekday-opacity: 0.7;
+  --rdp-weekday-padding: 0.5rem;
+  --rdp-weekday-text-align: center;
+}
+
+.dark {
+  --background: #0E0B16;
+  --foreground: #E7DFDD;
+  --card: #0E0B16;
+  --card-foreground: #E7DFDD;
+  --popover: #0E0B16;
+  --popover-foreground: #E7DFDD;
+  --primary: #770ff5;
+  --primary-foreground: #E7DFDD;
+  --secondary: #E7DFDD;
+  --secondary-foreground: #A239CA;
+  /* --secondary-foreground: #2f0240; */
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: #E7DFDD;
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: #E7DFDD;
+  --border: #686868;
+  --input: hsl(240, 3.7%, 15.9%);
+  --input-background: #0E0B16;
+  --switch-background: hsl(240, 3.7%, 15.9%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+
+}
+
+[data-theme="dark"] .rdp-root {
+  /* React Day Picker Theme Variables - Dark Mode */
+  --rdp-accent-color: var(--starithm-veronica);
+  --rdp-accent-background-color: var(--starithm-veronica);
+  --rdp-animation_duration: 0.3s;
+  --rdp-animation_timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --rdp-day-height: 36px;
+  --rdp-day-width: 36px;
+  --rdp-chevron-disabled-opacity: 0.3;
+  --rdp-day_button-border-radius: 6px;
+  --rdp-day_button-border: 1px solid transparent;
+  --rdp-day_button-height: 36px;
+  --rdp-day_button-width: 36px;
+  --rdp-selected-border: 2px solid var(--starithm-veronica);
+  --rdp-disabled-opacity: 0.3;
+  --rdp-outside-opacity: 0.5;
+  --rdp-today-color: var(--starithm-veronica);
+  --rdp-dropdown-gap: 0.5rem;
+  --rdp-months-gap: 1rem;
+  --rdp-nav_button-disabled-opacity: 0.3;
+  --rdp-nav_button-height: 32px;
+  --rdp-nav_button-width: 32px;
+  --rdp-nav-height: 40px;
+  --rdp-range_middle-background-color: var(--accent);
+  --rdp-range_middle-color: var(--accent-foreground);
+  --rdp-range_start-color: var(--primary-foreground);
+  --rdp-range_start-background: var(--primary);
+  --rdp-range_end-background: var(--primary);
+  --rdp-range_end-color: var(--primary-foreground);
+  --rdp-week_number-border-radius: 6px;
+  --rdp-week_number-border: 1px solid var(--border);
+  --rdp-week_number-height: 36px;
+  --rdp-week_number-width: 36px;
+  --rdp-weekday-opacity: 0.7;
+  --rdp-weekday-padding: 0.5rem;
+  --rdp-weekday-text-align: center;
+}
+/* Dropdown Menu Specific Styles */
+[data-slot="dropdown-menu-content"] {
+  background-color: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 99999 !important;
+}
+
+/* Ensure dropdown portal renders at body level */
+[data-radix-popper-content-wrapper] {
+  z-index: 99999 !important;
+}
+
+/* Force dropdown to be on top */
+[role="menu"] {
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+/* Radix UI Dropdown specific fixes */
+[data-radix-popper-content-wrapper] {
+  z-index: 99999 !important;
+}
+
+[data-radix-popper-content-wrapper] > div {
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+/* Force all dropdown content to be on top */
+[data-radix-popper-content-wrapper] * {
+  z-index: 99999 !important;
+}
+
+/* Override any iframe or container z-index issues */
+.microfrontend-iframe {
+  z-index: 1 !important;
+}
+
+/* Ensure dropdowns are always on top */
+[data-radix-popper-content-wrapper],
+[data-radix-popper-content-wrapper] *,
+[role="menu"],
+[data-slot="dropdown-menu-content"] {
+  z-index: 999999 !important;
+}
+
+/* Force dropdown to render at body level and be on top */
+[data-radix-popper-content-wrapper] {
+  z-index: 999999 !important;
+}
+
+[data-radix-popper-content-wrapper] > div {
+  z-index: 999999 !important;
+}
+
+/* Override any conflicting z-index values */
+* {
+  z-index: auto !important;
+}
+
+[data-radix-popper-content-wrapper],
+[data-radix-popper-content-wrapper] *,
+[role="menu"],
+[data-slot="dropdown-menu-content"] {
+  z-index: 999999 !important;
+}
+
+[data-slot="dropdown-menu-item"]:hover,
+[data-slot="dropdown-menu-checkbox-item"]:hover,
+[data-slot="dropdown-menu-radio-item"]:hover {
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+[data-slot="dropdown-menu-item"]:focus,
+[data-slot="dropdown-menu-checkbox-item"]:focus,
+[data-slot="dropdown-menu-radio-item"]:focus {
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Starithm Brand Color Utilities */
+  --color-starithm-rich-black: var(--starithm-rich-black);
+  --color-starithm-bg-black: var(--starithm-bg-black);
+  --color-starithm-platinum: var(--starithm-platinum);
+  --color-starithm-electric-violet: var(--starithm-electric-violet);
+  --color-starithm-veronica: var(--starithm-veronica);
+  --color-starithm-selective-yellow: var(--starithm-selective-yellow);
+  --color-starithm-electric-violet-dark: var(--starithm-electric-violet-dark);
+  --color-starithm-veronica-dark: var(--starithm-veronica-dark);
+}
+
+@layer base {
+  html, body {
+    background-color: var(--background);
+    color: var(--foreground);
+    height: 100%;
+    overscroll-behavior: none;
+  }
+  
+  body {
+    font-family: "Google Sans Code", monospace;
+    font-optical-sizing: auto;
+    min-height: 100vh;
+  }
+  
+  /* Ensure all elements inherit the background */
+  * {
+    background-color: inherit;
+  }
+  
+  /* Reset specific elements that might override */
+  div, section, main, article, aside, header, footer, nav {
+    background-color: transparent;
+  }
+
+  /* Ensure Google Sans Code is used everywhere */
+  * {
+    font-family: "Google Sans Code", monospace;
+    font-optical-sizing: auto;
+  }
+
+  /* Headings - Normal case with letter spacing */
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: 0.05em;
+  }
+
+  /* Utility class for uppercase text when needed */
+  .text-uppercase {
+    text-transform: uppercase;
+  }
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+/* Starfield animation */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.star {
+  animation: twinkle 2s infinite;
+}
+
+.star:nth-child(2n) {
+  animation-delay: 0.5s;
+}
+
+.star:nth-child(3n) {
+  animation-delay: 1s;
+}
+
+.star:nth-child(4n) {
+  animation-delay: 1.5s;
+}

@@ -1,15 +1,21 @@
-import { Button } from "./ui/button";
+import { Button } from "../../../shared/components/ui/button";
 import { StarfieldBackground } from "./StarfieldBackground";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../shared/components/ui/dialog";
+import { ThemeToggle } from "../../../shared/components/ThemeToggle";
 
 export function Homepage() {
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-starithm-bg-black">
+      {/* Theme Toggle - Fixed Position */}
+      {/* <div className="fixed top-6 right-6 z-50">
+        <ThemeToggle variant="icon" size="md" />
+      </div> */}
+      
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-white overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center bg-white dark:bg-starithm-bg-black overflow-hidden">
         <StarfieldBackground />
         
         <div className="container mx-auto px-6 lg:px-8 relative z-10">
@@ -17,30 +23,24 @@ export function Homepage() {
             {/* Left Content */}
             <div className="text-center lg:text-left">
               <h1 className="mb-6 leading-tight">
-                <span className="text-4xl lg:text-6xl font-bold text-starithm-rich-black">
+                <span className="text-4xl lg:text-6xl font-bold text-starithm-rich-black dark:text-starithm-platinum">
                   Explore the Universe with
                 </span>
                 <br />
-                <span className="text-5xl lg:text-7xl font-bold text-starithm-electric-violet text-uppercase">
+                <span className="text-5xl lg:text-7xl font-bold text-starithm-electric-violet dark:text-starithm-electric-violet-dark text-uppercase">
                   Starithm
                 </span>
               </h1>
               
-              <p className="text-2xl lg:text-3xl text-starithm-rich-black/80 mb-8 opacity-90 leading-relaxed">
+              <p className="text-2xl lg:text-3xl text-starithm-rich-black/80 dark:text-starithm-platinum/80 mb-8 opacity-90 leading-relaxed">
                 Instant access to astronomical alerts from trusted global networks — all in one place.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                {/* <Button 
-                  size="lg" 
-                  className="bg-starithm-electric-violet hover:bg-starithm-electric-violet/90 text-white px-10 py-4 text-xl"
-                >
-                  Start Exploring
-                </Button> */}
                 <Button 
-                  variant="outline" 
+                  variant="default"
                   size="lg"
-                  className="bg-starithm-electric-violet hover:bg-starithm-electric-violet/90 text-white px-10 py-4 text-xl"
+                  className="px-10 py-4 text-primary-foreground"
                   onClick={() => {
                     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
                     window.open(`${baseUrl}/novatrace`, '_blank');
@@ -71,77 +71,77 @@ export function Homepage() {
       </section>
 
       {/* Key Metrics Section */}
-      <section className="py-24 bg-gradient-to-b from-white to-starithm-electric-violet/5">
+      <section className="py-24 bg-gradient-to-b from-white dark:from-starithm-bg-black to-starithm-electric-violet/5 dark:to-starithm-electric-violet/10">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-6">
               Real-Time Astronomical Data
             </h2>
-            <p className="text-xl text-starithm-rich-black/70 max-w-3xl mx-auto">
+            <p className="text-xl text-starithm-rich-black/70 dark:text-starithm-platinum/70 max-w-3xl mx-auto">
               Access live alerts from the world's leading astronomical observatories and research institutions
             </p>
           </div>
           
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-4xl font-bold text-starithm-electric-violet mb-3">50+</div>
-              <div className="text-starithm-rich-black/70 text-lg">Observatories</div>
+              <div className="text-4xl font-bold text-starithm-electric-violet dark:text-starithm-electric-violet-dark mb-3">50+</div>
+              <div className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">Observatories</div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-starithm-veronica mb-3">24/7</div>
-              <div className="text-starithm-rich-black/70 text-lg">Monitoring</div>
+              <div className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">Monitoring</div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-starithm-selective-yellow mb-3">1000+</div>
-              <div className="text-starithm-rich-black/70 text-lg">Alerts</div>
+              <div className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">Alerts</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-starithm-electric-violet mb-3">99.9%</div>
-              <div className="text-starithm-rich-black/70 text-lg">Uptime</div>
+              <div className="text-4xl font-bold text-starithm-electric-violet dark:text-starithm-electric-violet-dark mb-3">99.9%</div>
+              <div className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">Uptime</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-white">
+      <section id="features" className="py-24 bg-white dark:bg-starithm-bg-black">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-6">
               Upcoming Powerful Features for Astronomers
             </h2>
-            <p className="text-xl text-starithm-rich-black/70 max-w-3xl mx-auto">
+            <p className="text-xl text-starithm-rich-black/70 dark:text-starithm-platinum/70 max-w-3xl mx-auto">
               Everything you need to stay ahead of astronomical discoveries
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-starithm-electric-violet/5 to-starithm-veronica/5">
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-starithm-electric-violet/5 to-starithm-veronica/5 dark:from-starithm-electric-violet/10 dark:to-starithm-veronica/10">
               <div className="w-16 h-16 bg-starithm-electric-violet/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl">⚡</span>
               </div>
-              <h3 className="text-2xl font-bold text-starithm-electric-violet mb-4">Real-Time Alerts</h3>
-              <p className="text-starithm-rich-black/70 text-lg">
+              <h3 className="text-2xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-4">Real-Time Alerts</h3>
+              <p className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">
                 Get instant notifications for new astronomical events and discoveries
               </p>
             </div>
             
-            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-starithm-veronica/5 to-starithm-selective-yellow/5">
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-starithm-veronica/5 to-starithm-selective-yellow/5 dark:from-starithm-veronica/10 dark:to-starithm-selective-yellow/10">
               <div className="w-16 h-16 bg-starithm-veronica/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl">🔍</span>
               </div>
-              <h3 className="text-2xl font-bold text-starithm-veronica mb-4">Advanced Search</h3>
-              <p className="text-starithm-rich-black/70 text-lg">
+              <h3 className="text-2xl font-bold text-starithm-veronica dark:text-starithm-platinum mb-4">Advanced Search</h3>
+              <p className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">
                 Filter and search through historical data with powerful query tools
               </p>
             </div>
             
-            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-starithm-selective-yellow/5 to-starithm-electric-violet/5">
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-starithm-selective-yellow/5 to-starithm-electric-violet/5 dark:from-starithm-selective-yellow/10 dark:to-starithm-electric-violet/10">
               <div className="w-16 h-16 bg-starithm-selective-yellow/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl">🤝</span>
               </div>
-              <h3 className="text-2xl font-bold text-starithm-selective-yellow mb-4">Collaboration</h3>
-              <p className="text-starithm-rich-black/70 text-lg">
+              <h3 className="text-2xl font-bold text-starithm-platinum mb-4">Collaboration</h3>
+              <p className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">
                 Connect with researchers worldwide and share findings
               </p>
             </div>
@@ -150,30 +150,31 @@ export function Homepage() {
       </section>
 
       {/* NovaTrace Showcase */}
-      <section id="novatrace" className="py-24 bg-gradient-to-b from-starithm-electric-violet/5 to-white">
+      <section id="novatrace" className="py-24 bg-gradient-to-b from-starithm-electric-violet/5 dark:from-starithm-electric-violet/10 to-white dark:to-starithm-bg-black">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-6">
               NovaTrace Dashboard
             </h2>
-            <p className="text-xl text-starithm-rich-black/70 max-w-3xl mx-auto">
+            <p className="text-xl text-starithm-rich-black/70 dark:text-starithm-platinum/70 max-w-3xl mx-auto">
               Real-time astronomical event intelligence and alert monitoring
             </p>
           </div>
           
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h3 className="text-3xl font-bold text-starithm-electric-violet mb-6">
+              <h3 className="text-3xl font-bold text-starithm-electric-violet dark:text-starithm-platinum mb-6">
                 Event Intelligence Dashboard
               </h3>
-              <p className="text-lg text-starithm-rich-black/70 mb-8 leading-relaxed">
+              <p className="text-lg text-starithm-rich-black/70 dark:text-starithm-platinum/70 mb-8 leading-relaxed">
                 Monitor and analyze astronomical events in real-time through GCN notices and ATel reports. 
                 Track gamma-ray bursts, optical transients, neutrino detections, and gravitational waves 
                 with comprehensive measurement data and confidence assessments.
               </p>
               <Button 
+                variant="default"
                 size="lg"
-                className="bg-starithm-electric-violet hover:bg-starithm-electric-violet/90 text-white px-8 py-4 text-lg"
+                className="text-lg text-primary-foreground"
                 onClick={() => {
                   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
                   window.open(`${baseUrl}/novatrace`, '_blank');
@@ -198,47 +199,8 @@ export function Homepage() {
           </div>
         </div>
       </section>
-
-      {/* Call to Action - Commented out for now */}
-      {/* 
-      <section className="py-24 bg-gradient-to-r from-white via-starithm-electric-violet/5 to-white">
-        <div className="container mx-auto px-6 lg:px-8 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-6xl font-bold text-starithm-electric-violet mb-8">
-              Join the Astronomer's Network Today
-            </h2>
-            
-            <p className="text-2xl lg:text-3xl text-starithm-rich-black/80 mb-10 leading-relaxed">
-              Connect with researchers worldwide, access real-time data, and accelerate your discoveries
-            </p>
-          
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <Button 
-                size="lg"
-                className="bg-starithm-selective-yellow hover:bg-starithm-selective-yellow/90 text-starithm-rich-black px-12 py-5 text-xl font-bold shadow-lg"
-              >
-                Get Started Free
-              </Button>
-              
-              <Button 
-                variant="outline"
-                size="lg"
-                className="border-starithm-electric-violet text-starithm-electric-violet bg-white hover:bg-starithm-electric-violet/10 px-12 py-5 text-xl font-bold"
-                onClick={() => {
-                  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-                  window.open(`${baseUrl}/novatrace`, '_blank');
-                }}
-              >
-                View Live Alerts
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-      */}
-
       {/* Footer */}
-      <footer className="bg-gray-50 border-t border-starithm-electric-violet/20 py-16">
+      <div className="bg-gray-50 dark:bg-starithm-bg-black border-t border-starithm-electric-violet/20 py-16">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-10">
             <div>
@@ -248,9 +210,9 @@ export function Homepage() {
                   alt="Starithm Logo" 
                   className="w-10 h-10"
                 />
-                <h3 className="text-2xl font-bold text-starithm-electric-violet">Starithm</h3>
+                <h3 className="text-2xl font-bold text-starithm-electric-violet dark:text-starithm-platinum">Starithm</h3>
               </div>
-              <p className="text-starithm-rich-black/70 mb-6 text-lg leading-relaxed">
+              <p className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 mb-6 text-lg leading-relaxed">
                 The astronomer's platform for real-time alerts and collaboration.
               </p>
               <div className="flex space-x-4">
@@ -258,16 +220,16 @@ export function Homepage() {
                   href="https://x.com/starithm_ai" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-starithm-electric-violet/20 rounded-full flex items-center justify-center hover:bg-starithm-electric-violet/30 transition-colors cursor-pointer"
+                  className="w-10 h-10 bg-starithm-electric-violet/20 dark:bg-starithm-platinum rounded-full flex items-center justify-center hover:bg-starithm-electric-violet/30 transition-colors cursor-pointer"
                 >
-                  <span className="text-starithm-electric-violet font-bold">𝕏</span>
+                  <span className="text-starithm-electric-violet dark:text-starithm-electric-violet-dark font-bold">𝕏</span>
                 </a>
               </div>
             </div>
             
             <div>
-              <h4 className="font-bold text-starithm-rich-black mb-6 text-xl">Platform</h4>
-              <ul className="space-y-3 text-starithm-rich-black/70 text-lg">
+              <h4 className="font-bold text-starithm-rich-black dark:text-starithm-platinum mb-6 text-xl">Platform</h4>
+              <ul className="space-y-3 text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">
                 {/* <li><a href="#features" className="hover:text-starithm-electric-violet transition-colors">Features</a></li> */}
                 <li><a href="/novatrace" className="hover:text-starithm-electric-violet transition-colors">NovaTrace</a></li>
                 {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">API</a></li> */}
@@ -276,8 +238,8 @@ export function Homepage() {
             </div>
             
             <div>
-              <h4 className="font-bold text-starithm-rich-black mb-6 text-xl">Resources</h4>
-              <ul className="space-y-3 text-starithm-rich-black/70 text-lg">
+              <h4 className="font-bold text-starithm-rich-black dark:text-starithm-platinum mb-6 text-xl">Resources</h4>
+              <ul className="space-y-3 text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">
                 {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Documentation</a></li> */}
                 {/* <li><a href="#" className="hover:text-starithm-electric-violet transition-colors">Status</a></li> */}
                 <li>
@@ -304,8 +266,8 @@ export function Homepage() {
             </div>
             
             <div>
-              <h4 className="font-bold text-starithm-rich-black mb-6 text-xl">Contact</h4>
-              <ul className="space-y-3 text-starithm-rich-black/70 text-lg">
+              <h4 className="font-bold text-starithm-rich-black dark:text-starithm-platinum mb-6 text-xl">Contact</h4>
+              <ul className="space-y-3 text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg">
                 <li>
                   <button 
                     onClick={() => setIsContactDialogOpen(true)}
@@ -320,11 +282,11 @@ export function Homepage() {
             </div>
           </div>
           
-          <div className="border-t border-starithm-electric-violet/20 mt-16 pt-10 text-center text-starithm-rich-black/60 text-lg">
+          {/* <div className="border-t border-starithm-electric-violet/20 mt-16 pt-10 text-center text-starithm-rich-black/60 dark:text-starithm-platinum/60 text-lg">
             <p>&copy; 2025 Starithm. All rights reserved. Built for the astronomical community.</p>
-          </div>
+          </div> */}
         </div>
-      </footer>
+      </div>
 
       {/* Contact Dialog */}
       <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
@@ -333,7 +295,7 @@ export function Homepage() {
             <DialogTitle className="text-starithm-electric-violet">Contact Us</DialogTitle>
           </DialogHeader>
           <div className="text-center py-6">
-            <p className="text-starithm-rich-black/70 text-lg mb-4">
+            <p className="text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-lg mb-4">
               Get in touch with our team
             </p>
             <p className="text-starithm-electric-violet font-semibold text-lg">

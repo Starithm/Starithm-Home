@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, Clock, FileText } from 'lucide-react';
+// import { ThemeToggle } from '@shared/components/ThemeToggle';
+import { Button } from '@shared/components/ui/button';
 
 interface BlogPost {
   id: string;
@@ -44,12 +46,12 @@ const blogPosts: BlogPost[] = [
 
 export default function BlogList() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="bg-gradient-to-r from-starithm-electric-violet to-starithm-veronica text-white py-12">
+      <header className="bg-background text-primary-foreground py-12">
         <div className="container mx-auto px-6 lg:px-8 text-center">
           <h1 className="text-4xl font-bold mb-4">Starithm Blog</h1>
-          <p className="text-xl text-starithm-electric-violet/80 max-w-2xl mx-auto">
+          <p className="text-xl text-primary-foreground/80 max-w-2xl mx-auto">
             Updates, insights, and roadmap for the astronomical community
           </p>
         </div>
@@ -59,21 +61,20 @@ export default function BlogList() {
       <main className="container mx-auto px-6 lg:px-8 py-12">
         {/* Featured Post */}
         <div className="mb-12">
-          {/* <h2 className="text-2xl font-bold text-starithm-rich-black mb-6">Featured Article</h2> */}
-          <div className="bg-gradient-to-br from-starithm-electric-violet/5 to-starithm-veronica/5 rounded-2xl p-8 border border-starithm-electric-violet/20">
+          <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 rounded-2xl p-8 border border-border">
             <div className="flex items-center space-x-2 mb-4">
-              <FileText className="h-5 w-5 text-starithm-electric-violet" />
-              <span className="text-sm font-medium text-starithm-electric-violet">Roadmap</span>
+              <FileText className="h-5 w-5 text-primary" />
+              <span className="text-sm font-medium text-primary">Roadmap</span>
             </div>
-            <h3 className="text-2xl font-bold text-starithm-rich-black mb-4">
+            <h3 className="text-2xl font-bold text-foreground mb-4">
               Starithm Roadmap: Upcoming Features & Development Timeline
             </h3>
-            <p className="text-starithm-rich-black/70 mb-6 text-lg leading-relaxed">
+            <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
               Explore our comprehensive roadmap featuring upcoming features, improvements, and infrastructure updates planned for the Starithm platform. 
               From real-time notifications to advanced data visualization, discover what's coming next.
             </p>
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4 text-sm text-starithm-rich-black/60">
+              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                 <div className="flex items-center space-x-1">
                   <Calendar className="h-4 w-4" />
                   <span>Aug, 2025</span>
@@ -83,13 +84,15 @@ export default function BlogList() {
                   <span>2 min read</span>
                 </div>
               </div>
-              <Link 
-                to="/blog/roadmap"
-                className="inline-flex items-center space-x-2 bg-starithm-electric-violet text-white px-6 py-3 rounded-lg hover:bg-starithm-electric-violet/90 transition-colors"
-              >
-                <span>Read Roadmap</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              <Button asChild>
+                <Link 
+                  to="/roadmap"
+                  className="inline-flex items-center space-x-2"
+                >
+                  <span>Read Roadmap</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -120,9 +123,9 @@ export default function BlogList() {
                 placeholder="Enter your email"
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-starithm-electric-violet focus:border-transparent min-w-64"
               />
-              <button className="bg-starithm-electric-violet text-white px-6 py-3 rounded-lg hover:bg-starithm-electric-violet/90 transition-colors">
-                Subscribe
-              </button>
+                                              <Button>
+                  Subscribe
+                </Button>
             </div>
           </div>
         </div> */}
@@ -135,20 +138,20 @@ function BlogPostCard({ post }: { post: BlogPost }) {
   return (
     <article className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center space-x-2 mb-4">
-        <FileText className="h-4 w-4 text-starithm-electric-violet" />
-        <span className="text-sm font-medium text-starithm-electric-violet">{post.category}</span>
+        <FileText className="h-4 w-4 text-primary-foreground" />
+        <span className="text-sm font-medium text-primary-foreground">{post.category}</span>
       </div>
       
-      <h3 className="text-xl font-bold text-starithm-rich-black mb-3">
+      <h3 className="text-xl font-bold text-primary-foreground mb-3">
         {post.title}
       </h3>
       
-      <p className="text-starithm-rich-black/70 mb-4 leading-relaxed">
+      <p className="text-primary-foreground mb-4 leading-relaxed">
         {post.excerpt}
       </p>
       
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4 text-sm text-starithm-rich-black/60">
+        <div className="flex items-center space-x-4 text-sm text-primary-foreground">
           <div className="flex items-center space-x-1">
             <Calendar className="h-4 w-4" />
             <span>{new Date(post.date).toLocaleDateString('en-US', { 

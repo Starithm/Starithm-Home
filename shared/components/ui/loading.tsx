@@ -105,18 +105,18 @@ export function Loading({ title = "Loading...", className = "" }: LoadingProps) 
     <div className={`flex flex-col items-center justify-center p-8 ${className}`}>
       {/* Spinning Icon */}
       <div className="mb-6">
-        <IconComponent className="h-12 w-12 text-starithm-electric-violet animate-bounce" />
+        <IconComponent className="h-12 w-12 text-starithm-electric-violet dark:text-starithm-electric-violet-dark animate-bounce" />
       </div>
 
       {/* Title */}
-      <h2 className="text-lg font-semibold text-starithm-rich-black">
+      <h2 className="text-lg font-semibold text-starithm-rich-black dark:text-starithm-platinum">
         {`${title}...`}
       </h2>
 
       {/* Animated Message */}
       <div className="h-10 flex items-center justify-center text-center">
         <p 
-          className={`text-starithm-rich-black/70 text-sm transition-all duration-50 ease-in-out ${
+          className={`text-starithm-rich-black/70 dark:text-starithm-platinum/70 text-sm transition-all duration-50 ease-in-out ${
             isVisible 
               ? 'opacity-100 transform translate-y-0' 
               : 'opacity-0 transform -translate-y-4'
@@ -143,8 +143,8 @@ export function LoadingCompact({ className = "" }: { className?: string }) {
 
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
-      <Loader2 className="h-5 w-5 text-starithm-electric-violet animate-spin" />
-      <p className="text-sm text-starithm-rich-black/70">
+      <Loader2 className="h-5 w-5 text-starithm-electric-violet dark:text-starithm-electric-violet-dark animate-spin" />
+      <p className="text-sm text-starithm-rich-black/70 dark:text-starithm-platinum/70">
         {loadingMessages[currentMessageIndex].message}
       </p>
     </div>

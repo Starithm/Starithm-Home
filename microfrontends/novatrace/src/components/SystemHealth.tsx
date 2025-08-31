@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@shared/components/ui/card";
+import { Badge } from "@shared/components/ui/badge";
 import { Mail, Brain, Database, Twitter, Check, Clock, Cog } from "lucide-react";
 
 interface SystemHealthProps {

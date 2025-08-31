@@ -10,6 +10,11 @@ export const starithmColors = {
   richBlack: '#1A1A1A',         // Dark text
   goldenYellow: '#ffc332',
   whitish: "#FFFDF9",
+  bgBlack: '#0E0B16',
+  
+  // Dark Mode Colors
+  electricVioletDark: '#9A48FF',  // Dark mode electric violet
+  veronicaDark: '#C84BF7',        // Dark mode veronica
   
   // Semantic Colors (using Starithm palette)
   success: '#10B981',           // Green for success states
@@ -37,6 +42,9 @@ export const tailwindColors = {
   'starithm-veronica': starithmColors.veronica,
   'starithm-selective-yellow': starithmColors.selectiveYellow,
   'starithm-rich-black': starithmColors.richBlack,
+  'starithm-bg-black': starithmColors.bgBlack,
+  'starithm-electric-violet-dark': starithmColors.electricVioletDark,
+  'starithm-veronica-dark': starithmColors.veronicaDark,
   'starithm-success': starithmColors.success,
   'starithm-warning': starithmColors.warning,
   'starithm-error': starithmColors.error,
