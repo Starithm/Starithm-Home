@@ -16,9 +16,9 @@ import {
   Database,
   Image as ImageIcon
 } from 'lucide-react';
-import { API_ENDPOINTS } from '../lib/config';
+import { API_ENDPOINTS } from '../../../../shared/lib/config';
 import { AlertDetails } from './AlertDetails';
-import { Alert } from '@/types/Alert';
+import { Alert } from '@novatrace/types/Alert';
 
 
 // Constants for table keys to display

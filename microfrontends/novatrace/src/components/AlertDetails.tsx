@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Alert } from "@/types/Alert";
+import { Alert } from "@novatrace/types/Alert";
 import { Badge } from "@shared/components/ui/badge";
 import { Button } from "@shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/card";
 
-import { API_ENDPOINTS } from "@/lib/config";
+import { API_ENDPOINTS } from "@shared/lib/config";
 import {
   Clock,
   MapPin,

@@ -17,10 +17,10 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@novatrace/*": ["src/*"],
       "@shared/*": ["../../shared/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "App.tsx", "main.tsx", "vite-env.d.ts", "../../shared/lib"],
   "references": [{ "path": "../../tsconfig.node.json" }]
 }

@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import SystemStatus from "@/components/SystemStatus";
-import RecentAlerts from "@/components/RecentAlerts";
-import SystemHealth from "@/components/SystemHealth";
-import RecentSummary from "@/components/RecentSummary";
+import SystemStatus from "@novatrace/components/SystemStatus";
+import RecentAlerts from "@novatrace/components/RecentAlerts";
+import SystemHealth from "@novatrace/components/SystemHealth";
+import RecentSummary from "@novatrace/components/RecentSummary";
 import { Card, CardContent } from "@shared/components/ui/card";
 import { Button } from "@shared/components/ui/button";
-import { Satellite, Settings, Play, Pause, FileText } from "lucide-react";
+import { Play, Pause, FileText } from "lucide-react";
 import { useState } from "react";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "../../../../shared/hooks/use-toast";
+import { apiRequest } from "@shared/lib/queryClient";
+import { useToast } from "@shared/hooks/use-toast";
 
 export default function StatusDashboard() {
   const [isProcessing, setIsProcessing] = useState(true);

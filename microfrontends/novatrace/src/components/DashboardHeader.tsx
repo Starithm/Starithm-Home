@@ -1,5 +1,5 @@
 import { TrendingCarousel } from "./TrendingCarousel";
-import { Alert } from "@/types/Alert";
+import { Alert } from "@novatrace/types/Alert";
 
 interface DashboardHeaderProps {
   onAlertClick?: (alert: Alert) => void;

@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap');
 @import "react-day-picker/style.css";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -182,9 +180,18 @@
   z-index: 99999 !important;
 }
 
-/* Override any iframe or container z-index issues */
-.microfrontend-iframe {
-  z-index: 1 !important;
+/* Microfrontend content containers */
+.microfrontend-container {
+  width: 100%;
+  min-height: calc(100vh - 120px);
+  padding: 2rem;
+}
+
+.blog-content,
+.home-content,
+.novatrace-content {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* Ensure dropdowns are always on top */
@@ -401,4 +408,108 @@ html {
 
 .star:nth-child(4n) {
   animation-delay: 1.5s;
+}
+
+/* Utility Classes for Layout */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Utility Classes */
+.heading-1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.heading-2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+}
+
+.heading-3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.body-text {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
+}
+
+/* Responsive Typography */
+@media (min-width: 1024px) {
+  .heading-1 {
+    font-size: var(--font-size-6xl);
+  }
+  
+  .heading-2 {
+    font-size: var(--font-size-5xl);
+  }
+}
+
+@media (min-width: 1280px) {
+  .heading-1 {
+    font-size: var(--font-size-7xl);
+  }
+}
+
+/* Gradient Utility Classes */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--starithm-electric-violet), var(--starithm-veronica));
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, var(--starithm-veronica), var(--starithm-selective-yellow));
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, var(--starithm-selective-yellow), var(--starithm-electric-violet));
+}
+
+/* Animation Utility Classes */
+.transition {
+  transition: all 0.3s ease;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Spacing Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-6);
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 var(--spacing-8);
+  }
 }

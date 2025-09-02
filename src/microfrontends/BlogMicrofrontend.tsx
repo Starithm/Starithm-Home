@@ -1,19 +1,25 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import BlogList from '../../microfrontends/blog/src/pages/BlogList';
+import Roadmap from '../../microfrontends/blog/src/pages/Roadmap';
+import NotFound from '../../microfrontends/blog/src/pages/NotFound';
 
 const BlogMicrofrontend: React.FC = () => {
+  const location = useLocation();
+
+  const renderContent = () => {
+    if (location.pathname === '/blog/roadmap') {
+      return <Roadmap />;
+    } else if (location.pathname === '/blog') {
+      return <BlogList />;
+    } else {
+      return <NotFound />;
+    }
+  };
+
   return (
     <div className="microfrontend-container">
-      <iframe
-        src="http://localhost:5175"
-        title="Blog Microfrontend"
-        className="microfrontend-iframe"
-        style={{
-          width: '100%',
-          height: 'calc(100vh - 120px)', // Adjust for nav and footer
-          border: 'none',
-          borderRadius: '8px'
-        }}
-      />
+      {renderContent()}
     </div>
   );
 };

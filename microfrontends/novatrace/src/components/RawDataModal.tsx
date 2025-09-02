@@ -1,6 +1,5 @@
-import { Alert } from "@/types/Alert";
+import { Alert } from "@novatrace/types/Alert";
 import { Button } from "@shared/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@shared/components/ui/dialog";
 
 import { Copy, X, FileText } from "lucide-react";
 import React from "react";

@@ -3,23 +3,13 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./App.tsx",
+    "./microfrontends/**/src/**/*.{js,ts,jsx,tsx}",
+    "./shared/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: ["class", ".dark"],
   theme: {
     extend: {
       colors: {
-        'starithm-electric-violet': '#770ff5',
-        'starithm-veronica': '#A239CA',
-        'starithm-selective-yellow': '#FFB400',
-        'starithm-golden-yellow': '#ffc332',
-        'starithm-rich-black': '#1A1A1A',
-        'starithm-platinum': '#E7DFDD',
-        'starithm-electric-violet-dark': '#9A48FF',
-        'starithm-veronica-dark': '#C84BF7',
-        'starithm-bg-black': '#0E0B16',
-        
-        // CSS Variables for theme support
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: {
@@ -53,8 +43,23 @@ export default {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
+        // Starithm brand colors
+        "starithm-rich-black": "var(--starithm-rich-black)",
+        "starithm-bg-black": "var(--starithm-bg-black)",
+        "starithm-platinum": "var(--starithm-platinum)",
+        "starithm-electric-violet": "var(--starithm-electric-violet)",
+        "starithm-veronica": "var(--starithm-veronica)",
+        "starithm-selective-yellow": "var(--starithm-selective-yellow)",
+        "starithm-golden-yellow": "var(--starithm-golden-yellow)",
+        "starithm-electric-violet-dark": "var(--starithm-electric-violet-dark)",
+        "starithm-veronica-dark": "var(--starithm-veronica-dark)",
+        "starithm-link": "var(--starithm-link)",
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
     },
   },
-  plugins: [],
 }

@@ -1,15 +1,13 @@
 import React from "react";
-import { Alert, TimelineItem } from "@/types/Alert";
+import { Alert, TimelineItem } from "@novatrace/types/Alert";
 import { Button } from "@shared/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@shared/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/card";
 import { Badge } from "@shared/components/ui/badge";
-import { ScrollArea } from "@shared/components/ui/scroll-area";
 
 import { X, FileText, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { API_ENDPOINTS } from "@/lib/config";
+import { API_ENDPOINTS } from "@shared/lib/config";
 import { AlertDetails } from "./AlertDetails";
 import { getTimeAgo } from "../utils/duration";
 

@@ -1,14 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { crossAliases } from "../../vite.aliases.ts";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
   base: process.env.NODE_ENV === 'production' ? '/blog/' : '/',
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
-      "@shared": path.resolve(__dirname, "../../shared"),
+      ...crossAliases,
+      "@blog": path.resolve(__dirname, "src"),
     },
   },
   server: {

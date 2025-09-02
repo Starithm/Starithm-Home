@@ -1,9 +1,8 @@
 import React from "react";
-import { Alert } from "@/types/Alert";
+import { Alert } from "@novatrace/types/Alert";
 import { Badge } from "@shared/components/ui/badge";
 import { Button } from "@shared/components/ui/button";
 import { Card, CardContent } from "@shared/components/ui/card";
-import { ScrollArea } from "@shared/components/ui/scroll-area";
 import { Clock, MapPin, Zap, Star, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { getTimeAgo } from "../utils/duration";
 import { Loading } from "@shared/components";

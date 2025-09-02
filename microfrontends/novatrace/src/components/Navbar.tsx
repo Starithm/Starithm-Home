@@ -1,8 +1,6 @@
 import React from "react";
 import { Button } from "@shared/components/ui/button";
-import { Badge } from "@shared/components/ui/badge";
-import { Activity, House } from "lucide-react";
-import { ThemeToggle } from "../../../../shared/components/ThemeToggle";
+import { Activity, Home } from "lucide-react";
 import { useLocation } from "wouter";
 
 export function Navbar() {
@@ -73,7 +71,7 @@ export function Navbar() {
             onClick={navigateToHome}
             className="flex items-center space-x-2"
           >
-            <House className="h-4 w-4" />
+            <Home className="h-4 w-4" />
             <span>Home</span>
           </Button>
         </div>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Event } from '../types/Event';
 import { Button } from '@shared/components/ui/button';
@@ -19,7 +18,7 @@ import {
   Clock,
   RotateCcw
 } from 'lucide-react';
-import { API_ENDPOINTS } from '../lib/config';
+import { API_ENDPOINTS } from '@shared/lib/config';
 import { ErrorComponent, Navigation as NavComponent, CelestialSphere } from '@shared/components';
 import { getTimeAgo } from '../utils/duration';
 import { EventDetailsPanel } from '../components/EventDetailsPanel';

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Alert } from "@/types/Alert";
-import { Navbar } from "@/components/Navbar";
-import { DashboardHeader } from "@/components/DashboardHeader";
+import { Alert } from "@novatrace/types/Alert";
+import { Navbar } from "@novatrace/components/Navbar";
+import { DashboardHeader } from "@novatrace/components/DashboardHeader";
 
-import { AlertsList } from "@/components/AlertsList";
-import { AlertDetails } from "@/components/AlertDetails";
-import { AlertModal } from "@/components/AlertModal";
-import { RawDataModal } from "@/components/RawDataModal";
-import { SearchFilters, SearchFilters as SearchFiltersType } from "@/components/SearchFilters";
-import { API_ENDPOINTS } from "@/lib/config";
+import { AlertsList } from "@novatrace/components/AlertsList";
+import { AlertDetails } from "@novatrace/components/AlertDetails";
+import { AlertModal } from "@novatrace/components/AlertModal";
+import { RawDataModal } from "@novatrace/components/RawDataModal";
+import { SearchFilters, SearchFilters as SearchFiltersType } from "@novatrace/components/SearchFilters";
+import { API_ENDPOINTS } from "@shared/lib/config";
 import { ErrorComponent } from "@shared/components";
+
 
 // Global declarations for JS9
 declare global {

@@ -1,16 +1,18 @@
 import React from "react";
 import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
+import { getQueryClient } from "@shared/lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "../../../shared/components/ui/toaster";
-import { TooltipProvider } from "../../../shared/components/ui/tooltip";
+import { Toaster } from "@novatrace/components/ui/toaster";
+import { TooltipProvider } from "@shared/components/ui/tooltip";
 import { Analytics } from '@vercel/analytics/react';
-import { ThemeProvider } from '../../../shared/components/ThemeProvider';
-import StatusDashboard from "./pages/status";
-import AlertsLevel from "./pages/alerts-level";
-import EventLevel from "./pages/event-level";
-import NotFound from "./pages/not-found";
+import { ThemeProvider } from "@shared/components/ThemeProvider";
+import StatusDashboard from "@novatrace/pages/StatusDashboard";
+import AlertsLevel from "@novatrace/pages/AlertLevelDashboard";
+import EventLevel from "@novatrace/pages/EventLevelDashboard";
+import NotFound from "@novatrace/pages/NotFound";
+import '@shared/styles/globals.css';
 
+console.log("App", getQueryClient );
 
 function Router() {
   return (
@@ -30,7 +32,7 @@ function Router() {
 function App() {
   return (
     <ThemeProvider defaultTheme="dark">
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={getQueryClient()}>
         <TooltipProvider>
           <Toaster />
           <Router />

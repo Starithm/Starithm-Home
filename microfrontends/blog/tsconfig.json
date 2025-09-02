@@ -23,7 +23,8 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@blog/*": ["src/*"],
+      "@shared/*": ["../../shared/*"]
     }
   },
   "include": ["src"],

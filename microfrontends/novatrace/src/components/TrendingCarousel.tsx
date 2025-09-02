@@ -2,10 +2,9 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, TrendingUp, Zap, Star } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
-import { Badge } from "@shared/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { Alert } from "@/types/Alert";
-import { API_ENDPOINTS } from "../lib/config";
+import { Alert } from "@novatrace/types/Alert";
+import { API_ENDPOINTS } from "../../../../shared/lib/config";
 import { getTimeAgo } from "../utils/duration";
 import { ErrorComponentCompact } from "@shared/components";
 
