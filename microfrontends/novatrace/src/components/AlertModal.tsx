@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, TimelineItem } from "@novatrace/types/Alert";
+import { Alert, TimelineItem } from "@shared/types";
 import { Button } from "@shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/card";
 import { Badge } from "@shared/components/ui/badge";

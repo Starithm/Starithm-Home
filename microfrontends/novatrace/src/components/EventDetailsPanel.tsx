@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { API_ENDPOINTS } from '../../../../shared/lib/config';
 import { AlertDetails } from './AlertDetails';
-import { Alert } from '@novatrace/types/Alert';
+import { Alert } from '@shared/types';
 
 
 // Constants for table keys to display

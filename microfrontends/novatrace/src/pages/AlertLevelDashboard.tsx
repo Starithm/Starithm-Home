@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Alert } from "@novatrace/types/Alert";
+import { Alert } from "@shared/types";
 import { Navbar } from "@novatrace/components/Navbar";
 import { DashboardHeader } from "@novatrace/components/DashboardHeader";
 
@@ -13,9 +13,8 @@ import { API_ENDPOINTS } from "@shared/lib/config";
 import { ErrorComponent } from "@shared/components";
 import {
   DashboardContainer,
-  ErrorContainer,
-  MainContent
-} from "../styled_components/AlertLevelDashboard.styled";
+} from "../styled_pages";
+import { ErrorContainer, MainContent } from "../styled_components";
 
 // Global declarations for JS9
 declare global {

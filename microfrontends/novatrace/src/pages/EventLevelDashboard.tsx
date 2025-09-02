@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Event } from '../types/Event';
+import { Event } from '@shared/types';
 import { Button } from '@shared/components/ui/button';
 import { Input } from '@shared/components/ui/input';
 import { Badge } from '@shared/components/ui/badge';
 import { Calendar as CalendarComponent } from '@shared/components/ui/calendar';
-
 
 import { 
   Calendar, 
@@ -22,6 +21,63 @@ import { API_ENDPOINTS } from '@shared/lib/config';
 import { ErrorComponent, Navigation as NavComponent, CelestialSphere } from '@shared/components';
 import { getTimeAgo } from '../utils/duration';
 import { EventDetailsPanel } from '../components/EventDetailsPanel';
+import {
+  EventLevelContainer,
+  Header,
+  HeaderContent,
+  HeaderTop,
+  HeaderLeft,
+  LogoContainer,
+  LogoText,
+  HeaderTitle,
+  HeaderRight,
+  EventCount,
+  EventCountNumber,
+  EventCountDate,
+  LiveIndicator,
+  LiveDot,
+  LiveText,
+  Navigation,
+  TimelinePicker,
+  TimelineContent,
+  TimelineLabel,
+  TimelineIcon,
+  TimelineText,
+  DateRangeContainer,
+  DateRangeSeparator,
+  CelestialSphereContainer,
+  FloatingEventPanel,
+  EventPanel,
+  EventPanelHeader,
+  EventPanelContent,
+  EventPanelTop,
+  EventPanelLeft,
+  EventIconContainer,
+  EventTitle,
+  EventSubtitle,
+  EventPanelBody,
+  BadgeContainer,
+  SectionContainer,
+  SectionHeader,
+  SectionIcon,
+  SectionTitle,
+  SectionContent,
+  SectionRow,
+  SectionLabel,
+  SectionValue,
+  ActionsContainer,
+  StatusBar,
+  StatusContent,
+  StatusLeft,
+  StatusItem,
+  StatusSeparator,
+  StatusSelected,
+  StatusRight,
+  ConnectionStatus,
+  StatusDots,
+  StatusDot,
+} from '../styled_pages';
+import { ErrorContainer, MainContent } from '../styled_components';
 
 interface EventFilters {
   search: string;
@@ -91,7 +147,7 @@ export default function EventLevel() {
   });
 
   // Use events directly since filtering is done by the API
-  const filteredEvents = events;
+  const filteredEvents: Event[] = events;
 
   // Auto-select first event on initial load
   useEffect(() => {
@@ -135,12 +191,12 @@ export default function EventLevel() {
     switch (alertKind?.toLowerCase()) {
       case 'grb':
       case 'gamma-ray burst':
-        return <Star className="h-4 w-4" />;
+        return <Star size={16} />;
       case 'gw':
       case 'gravitational wave':
-        return <Telescope className="h-4 w-4" />;
+        return <Telescope size={16} />;
       default:
-        return <MapPin className="h-4 w-4" />;
+        return <MapPin size={16} />;
     }
   };
 
@@ -193,11 +249,11 @@ export default function EventLevel() {
 
   if (error) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <ErrorContainer>
         <ErrorComponent
           onRetry={() => window.location.reload()}
         />
-      </div>
+      </ErrorContainer>
     );
   }
 
@@ -206,58 +262,34 @@ export default function EventLevel() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 text-foreground select-none">
-      
-
+    <EventLevelContainer>
       {/* Header */}
-      <div className="bg-card/80 backdrop-blur-xl">
-        <div className="px-6 py-4">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div 
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, #770ff5 0%, #A239CA 100%)',
-                  boxShadow: '0 8px 32px rgba(119, 15, 245, 0.3)'
-                }}
-              >
-                <span className="text-white font-bold text-lg">NT</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-foreground">NovaTrace</h1>
-                {/* <p className="text-sm text-muted-foreground">Interactive Celestial Observatory</p> */}
-              </div>
-            </div>
-            <div className="ml-auto flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-sm text-foreground font-medium">{filteredEvents.length} Events</div>
-                <div className="text-xs text-muted-foreground">
+      <Header>
+        <HeaderContent>
+          <HeaderTop>
+            <HeaderLeft>
+              <LogoContainer>
+                <LogoText>NT</LogoText>
+              </LogoContainer>
+              <HeaderTitle>NovaTrace</HeaderTitle>
+            </HeaderLeft>
+            <HeaderRight>
+              <EventCount>
+                <EventCountNumber>{filteredEvents.length} Events</EventCountNumber>
+                <EventCountDate>
                   {dateRange.start} to {dateRange.end}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-2 h-2 rounded-full animate-pulse"
-                  style={{
-                    background: 'linear-gradient(45deg, #FFB400, #FF9F43)',
-                    boxShadow: '0 0 8px rgba(255, 180, 0, 0.6)'
-                  }}
-                ></div>
-                <span className="text-sm text-muted-foreground">Live</span>
-              </div>
-            </div>
-          </div>
-        </div>
+                </EventCountDate>
+              </EventCount>
+              <LiveIndicator>
+                <LiveDot />
+                <LiveText>Live</LiveText>
+              </LiveIndicator>
+            </HeaderRight>
+          </HeaderTop>
+        </HeaderContent>
         
         {/* Navigation */}
-        <div className="px-6 py-2">
-          {/* <NavComponent
-            items={[
-                          { href: "/novatrace", label: "Alert Level Dashboard", icon: <Activity className="h-4 w-4"  />, variant: "ghost" },
-            // { href: "/novatrace/events", label: "Event Level Dashboard", icon: <Calendar className="h-4 w-4" /> },
-            // { href: "/novatrace/status", label: "System Status", icon: <BarChart3 className="h-4 w-4" /> },
-            ]}
-          /> */}
+        <Navigation>
           <Button 
             variant="outline" 
             size="lg"
@@ -265,148 +297,135 @@ export default function EventLevel() {
             onClick={navigateToAlertLevel}
             className="flex items-center space-x-2"
           >
-            <Activity className="h-4 w-4" />
+            <Activity size={16} />
             <span>Alert Level Dashboard</span>
           </Button>
-        </div>
+        </Navigation>
         
         {/* Timeline Picker */}
-        <div className="px-8 py-3" style={{ zIndex: 999999 }}>
-          <div className="flex items-center gap-6 w-full">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Timeline</span>
-            </div>
-            <div className="flex items-center gap-2">
+        <TimelinePicker>
+          <TimelineContent>
+            <TimelineLabel>
+              <TimelineIcon>
+                <Calendar size={16} />
+              </TimelineIcon>
+              <TimelineText>Timeline</TimelineText>
+            </TimelineLabel>
+            <DateRangeContainer>
               <CalendarComponent
-                  selected={dateRange.start ? new Date(dateRange.start) : undefined}
-                  onSelect={(date) => {
-                    console.log("selected start date", date);
-                    if (date) {
-                      handleDateRangeChange(formatDateToUTCString(date), dateRange.end);
-                    }
-                  }}
-                  label="Start Date"
-                  initialFocus={false}
-                />
-              <span className="text-muted-foreground">to</span>
-              <CalendarComponent
-                  selected={dateRange.end ? new Date(dateRange.end) : undefined}
-                  onSelect={(date) => {
-                    console.log("selected end date in eventlevel", date);
-                    if (date) {
-                      handleDateRangeChange(dateRange.start, formatDateToUTCString(date));
-                    }
-                  }}
-                  label="End Date"
-                  initialFocus={false}
-                />
-            </div>
-                          <Input
-                placeholder="Search by name or id"
-                value={filters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="w-48"
+                mode="single"
+                selected={dateRange.start ? new Date(dateRange.start) : undefined}
+                onSelect={(date) => {
+                  console.log("selected start date", date);
+                  if (date) {
+                    handleDateRangeChange(formatDateToUTCString(date), dateRange.end);
+                  }
+                }}
+                initialFocus={false}
               />
-              <Button 
-                variant="default" 
-                size="lg" 
-                onClick={() => setSearchTrigger(prev => prev + 1)}
-                disabled={isLoading}
-              >
-                {isLoading ? "Searching..." : "Search"}
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleClearFilters}>
-                <RotateCcw className="h-6 w-6" />
-              </Button>
-          </div>
-        </div>
-      </div>
+              <DateRangeSeparator>to</DateRangeSeparator>
+              <CalendarComponent
+                mode="single"
+                selected={dateRange.end ? new Date(dateRange.end) : undefined}
+                onSelect={(date) => {
+                  console.log("selected end date in eventlevel", date);
+                  if (date) {
+                    handleDateRangeChange(dateRange.start, formatDateToUTCString(date));
+                  }
+                }}
+                initialFocus={false}
+              />
+            </DateRangeContainer>
+            <Input
+              placeholder="Search by name or id"
+              value={filters.search}
+              onChange={(e) => handleFilterChange('search', e.target.value)}
+              className="w-48"
+            />
+            <Button 
+              variant="default" 
+              size="lg" 
+              onClick={() => setSearchTrigger(prev => prev + 1)}
+              disabled={isLoading}
+            >
+              {isLoading ? "Searching..." : "Search"}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleClearFilters}>
+              <RotateCcw size={24} />
+            </Button>
+          </TimelineContent>
+        </TimelinePicker>
+      </Header>
 
       {/* Main Content */}
-      <div className="relative h-[calc(100vh-120px)]">
-        {/* Interactive Celestial Sphere - Full Width */}
-        {/** Show a "Drag the globe to navigate" message on the top right corner  */}
-        {/* <div className="absolute top-4 right-4 text-xs text-muted-foreground/60">
-          <span>Drag the globe to navigate</span>
-        </div> */}
-        <div className="h-full p-6">
+      <MainContent>
+        <CelestialSphereContainer>
           <CelestialSphere
             events={filteredEvents}
             onEventClick={handleEventClick}
             selectedEvent={selectedEvent}
             className="w-full h-full"
           />
-        </div>
+        </CelestialSphereContainer>
 
         {/* Floating Event Panel */}
         {selectedEvent && (
-          <div className="absolute top-6 left-6 z-50">
-            <div 
-              className="w-96 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl"
-              style={{
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
-              }}
-            >
+          <FloatingEventPanel>
+            <EventPanel>
               {/* Header */}
-              <div className="pt-2 ml-2 flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    disabled={filteredEvents.indexOf(selectedEvent) === 0}
-                    onClick={() => {
-                      const currentIndex = filteredEvents.indexOf(selectedEvent);
-                      if (currentIndex > 0) {
-                        handleEventChange(filteredEvents[currentIndex - 1]);
-                      }
-                    }}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-xs text-muted-foreground">
-                    {filteredEvents.indexOf(selectedEvent) + 1} of {filteredEvents.length}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    disabled={filteredEvents.indexOf(selectedEvent) === filteredEvents.length - 1}
-                    onClick={() => {
-                      const currentIndex = filteredEvents.indexOf(selectedEvent);
-                      if (currentIndex < filteredEvents.length - 1) {
-                        handleEventChange(filteredEvents[currentIndex + 1]);
-                      }
-                    }}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-8 h-8 rounded-lg flex items-center justify-center"
-                      style={{
-                        background: 'linear-gradient(135deg, #770ff5 0%, #A239CA 100%)'
-                      }}
-                    >
+              <EventPanelHeader>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  disabled={filteredEvents.indexOf(selectedEvent) === 0}
+                  onClick={() => {
+                    const currentIndex = filteredEvents.indexOf(selectedEvent);
+                    if (currentIndex > 0) {
+                      handleEventChange(filteredEvents[currentIndex - 1]);
+                    }
+                  }}
+                >
+                  <ChevronLeft size={16} />
+                </Button>
+                <span className="text-xs text-muted-foreground">
+                  {filteredEvents.indexOf(selectedEvent) + 1} of {filteredEvents.length}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  disabled={filteredEvents.indexOf(selectedEvent) === filteredEvents.length - 1}
+                  onClick={() => {
+                    const currentIndex = filteredEvents.indexOf(selectedEvent);
+                    if (currentIndex < filteredEvents.length - 1) {
+                      handleEventChange(filteredEvents[currentIndex + 1]);
+                    }
+                  }}
+                >
+                  <ChevronRight size={16} />
+                </Button>
+              </EventPanelHeader>
+              <EventPanelContent>
+                <EventPanelTop>
+                  <EventPanelLeft>
+                    <EventIconContainer>
                       {getEventIcon(selectedEvent.alertKind)}
-                    </div>
+                    </EventIconContainer>
                     <div>
-                      <h3 className="font-semibold text-sm">
+                      <EventTitle>
                         {selectedEvent.canonicalId || selectedEvent.id}
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
+                      </EventTitle>
+                      <EventSubtitle>
                         {selectedEvent.sourceName} • {selectedEvent.alertKind}
-                      </p>
+                      </EventSubtitle>
                     </div>
-                  </div>
-                </div>
-              </div>
+                  </EventPanelLeft>
+                </EventPanelTop>
+              </EventPanelContent>
 
               {/* Content */}
-              <div className="p-4 space-y-4">
+              <EventPanelBody>
                 {/* Event Type Badge */}
-                <div className="flex items-center gap-2">
+                <BadgeContainer>
                   <Badge variant={'default'}>
                     {selectedEvent.alertKind}
                   </Badge>
@@ -420,58 +439,52 @@ export default function EventLevel() {
                       </Badge>
                     )
                   }
-                  
-                  
-                </div>
+                </BadgeContainer>
 
                 {/* Timing */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">Timing</span>
-                  </div>
-                  <div className="text-xs space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">T0:</span>
-                      <span>{new Date(selectedEvent.t0).toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Time Ago:</span>
-                      <span>{getTimeAgo(new Date(selectedEvent.t0))}</span>
-                    </div>
-                  </div>
-                </div>
+                <SectionContainer>
+                  <SectionHeader>
+                    <SectionIcon>
+                      <Clock size={16} />
+                    </SectionIcon>
+                    <SectionTitle>Timing</SectionTitle>
+                  </SectionHeader>
+                  <SectionContent>
+                    <SectionRow>
+                      <SectionLabel>T0:</SectionLabel>
+                      <SectionValue>{new Date(selectedEvent.t0).toLocaleString()}</SectionValue>
+                    </SectionRow>
+                    <SectionRow>
+                      <SectionLabel>Time Ago:</SectionLabel>
+                      <SectionValue>{getTimeAgo(new Date(selectedEvent.t0))}</SectionValue>
+                    </SectionRow>
+                  </SectionContent>
+                </SectionContainer>
 
                 {/* Position */}
                 {selectedEvent.raDeg && selectedEvent.decDeg && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">Position</span>
-                    </div>
-                    <div className="text-xs space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">RA:</span>
-                        <span className="font-mono">{formatCoordinate(selectedEvent.raDeg, 'ra')}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Dec:</span>
-                        <span className="font-mono">{formatCoordinate(selectedEvent.decDeg, 'dec')}</span>
-                      </div>
-                      {/* {selectedEvent.posErrorDeg && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Error:</span>
-                          <span className="font-mono">{selectedEvent.posErrorDeg.toFixed(2)}°</span>
-                        </div>
-                      )} */}
-                    </div>
-                  </div>
+                  <SectionContainer>
+                    <SectionHeader>
+                      <SectionIcon>
+                        <MapPin size={16} />
+                      </SectionIcon>
+                      <SectionTitle>Position</SectionTitle>
+                    </SectionHeader>
+                    <SectionContent>
+                      <SectionRow>
+                        <SectionLabel>RA:</SectionLabel>
+                        <SectionValue>{formatCoordinate(selectedEvent.raDeg, 'ra')}</SectionValue>
+                      </SectionRow>
+                      <SectionRow>
+                        <SectionLabel>Dec:</SectionLabel>
+                        <SectionValue>{formatCoordinate(selectedEvent.decDeg, 'dec')}</SectionValue>
+                      </SectionRow>
+                    </SectionContent>
+                  </SectionContainer>
                 )}
 
-                
-
                 {/* Actions */}
-                <div className="flex gap-2 pt-2">
+                <ActionsContainer>
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -480,39 +493,37 @@ export default function EventLevel() {
                   >
                     Details
                   </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+                </ActionsContainer>
+              </EventPanelBody>
+            </EventPanel>
+          </FloatingEventPanel>
         )}
-      </div>
+      </MainContent>
 
       {/* Enhanced Status Bar */}
-      <div className="bg-card/60 backdrop-blur-xl px-6 py-3">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-4">
-            <span>Coordinate System: J2000.0 Equatorial</span>
-            <span>•</span>
-            <span>Observer: Geocentric</span>
-            {/* <span>•</span> */}
-            {/* <span>Last Update: {new Date().toLocaleTimeString('en-US', { timeZone: 'UTC' })} UTC</span> */}
+      <StatusBar>
+        <StatusContent>
+          <StatusLeft>
+            <StatusItem>Coordinate System: J2000.0 Equatorial</StatusItem>
+            <StatusSeparator>•</StatusSeparator>
+            <StatusItem>Observer: Geocentric</StatusItem>
             {selectedEvent && (
               <>
-                <span>•</span>
-                <span className="text-primary-foreground">Selected: {selectedEvent.canonicalId || selectedEvent.id}</span>
+                <StatusSeparator>•</StatusSeparator>
+                <StatusSelected>Selected: {selectedEvent.canonicalId || selectedEvent.id}</StatusSelected>
               </>
             )}
-          </div>
-          <div className="flex items-center gap-4">
-            <span>Connected: Swift, Fermi, LIGO, IceCube</span>
-            <div className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse"></div>
-              <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
-              <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" style={{ animationDelay: '0.6s' }}></div>
-            </div>
-          </div>
-        </div>
-      </div>
+          </StatusLeft>
+          <StatusRight>
+            <ConnectionStatus>Connected: Swift, Fermi, LIGO, IceCube</ConnectionStatus>
+            <StatusDots>
+              <StatusDot />
+              <StatusDot delay="0.3s" />
+              <StatusDot delay="0.6s" />
+            </StatusDots>
+          </StatusRight>
+        </StatusContent>
+      </StatusBar>
 
       {/* Event Details Panel */}
       <EventDetailsPanel 
@@ -520,6 +531,6 @@ export default function EventLevel() {
         isOpen={showEventDetailsModal} 
         onClose={() => setShowEventDetailsModal(false)} 
       />
-    </div>
+    </EventLevelContainer>
   );
 }

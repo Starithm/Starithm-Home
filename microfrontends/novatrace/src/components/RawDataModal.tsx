@@ -1,4 +1,4 @@
-import { Alert } from "@novatrace/types/Alert";
+import { Alert } from "@shared/types";
 import { Button } from "@shared/components/ui/button";
 
 import { Copy, X, FileText } from "lucide-react";

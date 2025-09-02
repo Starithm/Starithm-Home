@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@shared/components/ui/card";
 import { Button } from "@shared/components/ui/button";
 import { Twitter, ExternalLink } from "lucide-react";
-import { Alert } from "@novatrace/types/Alert";
+import { Alert } from "@shared/types";
 
 interface RecentSummaryProps {
   alert: Alert;

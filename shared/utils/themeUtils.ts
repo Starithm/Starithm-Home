@@ -100,3 +100,18 @@ export const resetToSystemTheme = (): void => {
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   setTheme(systemTheme);
 };
+
+// Helper function to safely access theme properties
+export const getThemeValue = (theme: any, path: string, fallback: any) => {
+  if (!theme) return fallback;
+  const keys = path.split('.');
+  let value = theme;
+  for (const key of keys) {
+    if (value && typeof value === 'object' && key in value) {
+      value = value[key];
+    } else {
+      return fallback;
+    }
+  }
+  return value || fallback;
+};

@@ -65,6 +65,7 @@ export interface Theme {
     relaxed: number;
     loose: number;
   };
+  name: string;
 
   // Spacing
   spacing: {
@@ -115,6 +116,7 @@ export interface Theme {
 
 export const lightTheme: Theme = {
   // Base colors
+  name: 'light',
   background: 'white',
   foreground: '#0E0B16',
   card: 'white',
@@ -231,6 +233,7 @@ export const lightTheme: Theme = {
 export const darkTheme: Theme = {
   ...lightTheme,
   // Override with dark mode values
+  name: 'dark',
   background: '#0E0B16',
   foreground: '#E7DFDD',
   card: '#0E0B16',

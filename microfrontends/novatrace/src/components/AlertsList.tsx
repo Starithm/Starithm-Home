@@ -1,11 +1,20 @@
 import React from "react";
-import { Alert } from "@novatrace/types/Alert";
+import { Alert } from "@shared/types"; 
 import { Badge } from "@shared/components/ui/badge";
 import { Button } from "@shared/components/ui/button";
 import { Card, CardContent } from "@shared/components/ui/card";
 import { Clock, MapPin, Zap, Star, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { getTimeAgo } from "../utils/duration";
 import { Loading } from "@shared/components";
+import { 
+  AlertListEventDescriptionContainer, AlertListEventDescriptionMidSize,
+  AlertListEventDescriptionSmSize, AlertListHeaderContainer,
+  AlertListHeaderDate, AlertListHeaderSubtitle, AlertListHeaderTitle,
+  SingleAlertCard, SingleAlertContainer, SingleAlertHeading,
+  SingleAlertHeadingText, AlertListContent, AlertListInner, AlertListEmptyState,
+  AlertListEmptyIcon, AlertListEmptyTitle, AlertListEmptySubtitle, 
+  AlertListDateText, AlertListContainer
+} from "../styled_components/AlertList.styled";
 
 interface AlertsListProps {
   alerts: Alert[];
@@ -50,96 +59,69 @@ export function AlertsList({
   const endIndex = Math.min(currentPage * pageSize, total || alerts.length);
 
   return (
-    <div className="w-1/4 bg-muted/30 flex flex-col h-full">
-      <div className="p-4 flex-shrink-0">
-        <h2 className="text-lg font-semibold text-foreground">{isSearchMode ? "Search Results" : "Recent Alerts"}</h2>
-        <p className="text-sm text-muted-foreground">
-          {isSearchMode && total ? (
+    <AlertListContainer>
+      <AlertListHeaderContainer>
+        <AlertListHeaderTitle>{isSearchMode ? "Search Results" : "Recent Alerts"}</AlertListHeaderTitle>
+        <AlertListHeaderSubtitle>{isSearchMode && total ? (
             `Showing ${startIndex}-${endIndex} of ${total} alerts`
           ) : (
             `Last ${alerts.length} alerts`
           )}
-        </p>
-      </div>
+        </AlertListHeaderSubtitle>
+      </AlertListHeaderContainer>
       
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-4 space-y-3">
+      <AlertListContent>  
+        <AlertListInner>
           {isLoading ? (
-            <Loading title="Loading Alerts" className="py-8" />
+            <Loading title="Loading Alerts" />
           ) : alerts.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <AlertListEmptyState>
               <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>No alerts available</p>
-              <p className="text-xs">Alerts will appear here as they are processed</p>
-            </div>
+              <AlertListEmptyTitle>No alerts available</AlertListEmptyTitle>
+              <AlertListEmptySubtitle>Alerts will appear here as they are processed</AlertListEmptySubtitle>
+            </AlertListEmptyState>
           ) : (
             alerts.map((alert) => {
               const IconComponent = getEventIcon(alert.data.basic_data.eventType);
               const isSelected = selectedAlert?.id === alert.id;
               
               return (
-                <Card
+                <SingleAlertCard
                   key={alert.id}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
-                    isSelected 
-                      ? "ring-2 ring-starithm-electric-violet bg-starithm-electric-violet/5" 
-                      : "hover:bg-muted/50"
-                  }`}
+                  isSelected={isSelected}
                   onClick={() => onSelectAlert(alert)}
                 >
                   <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center space-x-2">
+                    <SingleAlertContainer>
+                      <SingleAlertHeading>
                         <IconComponent className="h-4 w-4 text-starithm-electric-violet" />
-                        <span className="font-medium text-sm text-foreground">
+                        <SingleAlertHeadingText>
                           {alert.alertKey}
-                        </span>
-                      </div>
+                        </SingleAlertHeadingText>
+                      </SingleAlertHeading>
                       <Badge variant="outline" className="text-xs">
                         {alert.broker}
                       </Badge>
-                    </div>
-                    
-                    <div className="mb-2">
-                      <p className="text-sm font-medium text-foreground">
+                    </SingleAlertContainer>
+                   < AlertListEventDescriptionContainer> 
+                    <AlertListEventDescriptionMidSize>  
                         {alert.event}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
+                        </AlertListEventDescriptionMidSize>
+                      <AlertListEventDescriptionSmSize>
                         {alert.data.basic_data.eventType || 'Unknown Type'}
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                        <div className="flex items-center space-x-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{getTimeAgo(new Date(alert.date))}</span>
-                        </div>
-                      </div>
-                      
-                    </div>
-                    
-                    {/* {alert.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {alert.tags.slice(0, 3).map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {alert.tags.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{alert.tags.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                    )} */}
+                      </AlertListEventDescriptionSmSize>
+                    </AlertListEventDescriptionContainer>    
+                    <AlertListHeaderDate>
+                      <Clock className="h-3 w-3" />
+                      <AlertListDateText>{getTimeAgo(new Date(alert.date))}</AlertListDateText>
+                    </AlertListHeaderDate>
                   </CardContent>
-                </Card>
+                </SingleAlertCard>
               );
             })
           )}
-        </div>
-      </div>
+        </AlertListInner>
+      </AlertListContent>
 
       {/* Pagination Controls */}
       {isSearchMode && total && totalPages > 1 && (
@@ -171,6 +153,6 @@ export function AlertsList({
           </div>
         </div>
       )}
-    </div>
+    </AlertListContainer>
   );
 }
