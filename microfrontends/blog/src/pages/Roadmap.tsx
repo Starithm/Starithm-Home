@@ -1,6 +1,42 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Circle, Clock, Users, Database, Bell } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Circle, Clock, CircleFadingPlus, Cog, Target } from 'lucide-react';
+import {
+  RoadmapContainer,
+  Header,
+  HeaderContainer,
+  HeaderContent,
+  BackLink,
+  HeaderCenter,
+  HeaderTitle,
+  HeaderSubtitle,
+  HeaderSpacer,
+  Main,
+  OverviewSection,
+  OverviewTitle,
+  OverviewGrid,
+  OverviewCard,
+  OverviewCardHeader,
+  OverviewCardIcon,
+  OverviewCardTitle,
+  OverviewCardValue,
+  OverviewCardDescription,
+  RoadmapItemsSection,
+  RoadmapSection,
+  RoadmapSectionTitle,
+  RoadmapSectionIcon,
+  RoadmapItemsGrid,
+  RoadmapItemContainer,
+  RoadmapItemHeader,
+  RoadmapItemLeft,
+  RoadmapItemStatusIcon,
+  RoadmapItemTitle,
+  RoadmapItemRight,
+  RoadmapItemCategoryIcon,
+  RoadmapItemDescription,
+  RoadmapItemFooter,
+  RoadmapItemStatus
+} from '../styled_components/Roadmap.styled';
 
 interface RoadmapItem {
   id: string;
@@ -79,35 +115,22 @@ const roadmapItems: RoadmapItem[] = [
 const getStatusIcon = (status: RoadmapItem['status']) => {
   switch (status) {
     case 'completed':
-      return <CheckCircle className="h-5 w-5 text-green-500" />;
+      return <CheckCircle size={20} />;
     case 'in-progress':
-      return <Clock className="h-5 w-5 text-blue-500" />;
+      return <Clock size={20} />;
     case 'planned':
-      return <Circle className="h-5 w-5 text-gray-400" />;
+      return <Circle size={20} />;
   }
 };
-
-
 
 const getCategoryIcon = (category: RoadmapItem['category']) => {
   switch (category) {
     case 'feature':
-      return <Bell className="h-4 w-4 text-starithm-electric-violet" />;
+      return <Target size={16} />;
     case 'improvement':
-      return <Users className="h-4 w-4 text-starithm-veronica" />;
+      return <CircleFadingPlus size={16} />;
     case 'infrastructure':
-      return <Database className="h-4 w-4 text-starithm-selective-yellow" />;
-  }
-};
-
-const getStatusColor = (status: RoadmapItem['status']) => {
-  switch (status) {
-    case 'completed':
-      return 'bg-green-500/10 text-green-500 border-green-500/20';
-    case 'in-progress':
-      return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-    case 'planned':
-      return 'bg-muted text-muted-foreground border-border';
+      return <Cog size={16} />;
   }
 };
 
@@ -117,133 +140,157 @@ export default function Roadmap() {
   const plannedItems = roadmapItems.filter(item => item.status === 'planned');
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <RoadmapContainer>
       {/* Header */}
-      <header className="bg-background text-primary-foreground py-8">
-        <div className="container mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                <ArrowLeft className="h-5 w-5" />
-                <span>Back to Blog</span>
-              </Link>
-            </div>
-            <div className="text-center">
-              <h1 className="text-3xl font-bold">Starithm Roadmap</h1>
-              <p className="text-primary-foreground/80 mt-2">Upcoming Features & Development Timeline</p>
-            </div>
-            <div className="w-24"></div> {/* Spacer for centering */}
-          </div>
-        </div>
-      </header>
+      <Header>
+        <HeaderContainer>
+          <HeaderContent>
+            <BackLink to="/blog">
+              <ArrowLeft size={20} />
+              <span>Back to Blog</span>
+            </BackLink>
+            <HeaderCenter>
+              <HeaderTitle>Starithm Roadmap</HeaderTitle>
+              <HeaderSubtitle>Upcoming Features & Development Timeline</HeaderSubtitle>
+            </HeaderCenter>
+            <HeaderSpacer />
+          </HeaderContent>
+        </HeaderContainer>
+      </Header>
 
       {/* Content */}
-      <main className="container mx-auto px-6 lg:px-8 py-12">
+      <Main>
         {/* Overview */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Development Overview</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-card border border-border rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center space-x-2 mb-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
-                <h3 className="text-lg font-semibold text-card-foreground">Completed</h3>
-              </div>
-              <p className="text-2xl font-bold text-green-500">{completedItems.length}</p>
-              <p className="text-muted-foreground">Features delivered</p>
-            </div>
-            <div className="bg-card border border-border rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center space-x-2 mb-2">
-                <Clock className="h-6 w-6 text-blue-500" />
-                <h3 className="text-lg font-semibold text-card-foreground">In Progress</h3>
-              </div>
-              <p className="text-2xl font-bold text-blue-500">{inProgressItems.length}</p>
-              <p className="text-muted-foreground">Currently developing</p>
-            </div>
-            <div className="bg-card border border-border rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center space-x-2 mb-2">
-                <Circle className="h-6 w-6 text-muted-foreground" />
-                <h3 className="text-lg font-semibold text-card-foreground">Planned</h3>
-              </div>
-              <p className="text-2xl font-bold text-muted-foreground">{plannedItems.length}</p>
-              <p className="text-muted-foreground">Upcoming features</p>
-            </div>
-          </div>
-        </div>
+        <OverviewSection>
+          <OverviewTitle>Development Overview</OverviewTitle>
+          <OverviewGrid>
+            <OverviewCard>
+              <OverviewCardHeader>
+                <OverviewCardIcon>
+                  <CheckCircle size={24} />
+                </OverviewCardIcon>
+                <OverviewCardTitle>Completed</OverviewCardTitle>
+              </OverviewCardHeader>
+              <OverviewCardValue color="#10b981">{completedItems.length}</OverviewCardValue>
+              <OverviewCardDescription>Features delivered</OverviewCardDescription>
+            </OverviewCard>
+            <OverviewCard>
+              <OverviewCardHeader>
+                <OverviewCardIcon>
+                  <Clock size={24} />
+                </OverviewCardIcon>
+                <OverviewCardTitle>In Progress</OverviewCardTitle>
+              </OverviewCardHeader>
+              <OverviewCardValue color="#3b82f6">{inProgressItems.length}</OverviewCardValue>
+              <OverviewCardDescription>Currently developing</OverviewCardDescription>
+            </OverviewCard>
+            <OverviewCard>
+              <OverviewCardHeader>
+                <OverviewCardIcon>
+                  <Circle size={24} />
+                </OverviewCardIcon>
+                <OverviewCardTitle>Planned</OverviewCardTitle>
+              </OverviewCardHeader>
+              <OverviewCardValue>{plannedItems.length}</OverviewCardValue>
+              <OverviewCardDescription>Upcoming features</OverviewCardDescription>
+            </OverviewCard>
+          </OverviewGrid>
+        </OverviewSection>
 
         {/* Roadmap Items */}
-        <div className="space-y-8">
+        <RoadmapItemsSection>
           {/* Completed */}
           {completedItems.length > 0 && (
-            <section>
-              <h3 className="text-xl font-bold text-foreground mb-6 flex items-center space-x-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+            <RoadmapSection>
+              <RoadmapSectionTitle>
+                <RoadmapSectionIcon color="#10b981">
+                  <CheckCircle size={24} />
+                </RoadmapSectionIcon>
                 <span>Completed Features</span>
-              </h3>
-              <div className="grid gap-6">
+              </RoadmapSectionTitle>
+              <RoadmapItemsGrid>
                 {completedItems.map(item => (
                   <RoadmapItem key={item.id} item={item} />
                 ))}
-              </div>
-            </section>
+              </RoadmapItemsGrid>
+            </RoadmapSection>
           )}
 
           {/* In Progress */}
           {inProgressItems.length > 0 && (
-            <section>
-              <h3 className="text-xl font-bold text-foreground mb-6 flex items-center space-x-2">
-                <Clock className="h-6 w-6 text-blue-500" />
+            <RoadmapSection>
+              <RoadmapSectionTitle>
+                <RoadmapSectionIcon color="#3b82f6">
+                  <Clock size={24} />
+                </RoadmapSectionIcon>
                 <span>In Progress</span>
-              </h3>
-              <div className="grid gap-6">
+              </RoadmapSectionTitle>
+              <RoadmapItemsGrid>
                 {inProgressItems.map(item => (
                   <RoadmapItem key={item.id} item={item} />
                 ))}
-              </div>
-            </section>
+              </RoadmapItemsGrid>
+            </RoadmapSection>
           )}
 
           {/* Planned */}
           {plannedItems.length > 0 && (
-            <section>
-              <h3 className="text-xl font-bold text-foreground mb-6 flex items-center space-x-2">
-                <Circle className="h-6 w-6 text-muted-foreground" />
+            <RoadmapSection>
+              <RoadmapSectionTitle>
+                <RoadmapSectionIcon>
+                  <Circle size={24} />
+                </RoadmapSectionIcon>
                 <span>Planned Features</span>
-              </h3>
-              <div className="grid gap-6">
+              </RoadmapSectionTitle>
+              <RoadmapItemsGrid>
                 {plannedItems.map(item => (
                   <RoadmapItem key={item.id} item={item} />
                 ))}
-              </div>
-            </section>
+              </RoadmapItemsGrid>
+            </RoadmapSection>
           )}
-        </div>
-      </main>
-    </div>
+        </RoadmapItemsSection>
+      </Main>
+    </RoadmapContainer>
   );
 }
 
 function RoadmapItem({ item }: { item: RoadmapItem }) {
   return (
-    <div className="bg-card border border-border rounded-lg p-6 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          {getStatusIcon(item.status)}
-          <h4 className="text-lg font-semibold text-card-foreground">{item.title}</h4>
-        </div>
-        <div className="flex items-center space-x-2">
-          {getCategoryIcon(item.category)}
-        </div>
-      </div>
+    <RoadmapItemContainer>
+      <RoadmapItemHeader>
+        <RoadmapItemLeft>
+          <RoadmapItemStatusIcon 
+            color={
+              item.status === 'completed' ? '#10b981' : 
+              item.status === 'in-progress' ? '#3b82f6' : 
+              undefined
+            }
+          >
+            {getStatusIcon(item.status)}
+          </RoadmapItemStatusIcon>
+          <RoadmapItemTitle>{item.title}</RoadmapItemTitle>
+        </RoadmapItemLeft>
+        <RoadmapItemRight>
+          <RoadmapItemCategoryIcon 
+            color={
+              item.category === 'feature' ? 'starithmElectricViolet' : 
+              item.category === 'improvement' ? 'starithmVeronica' : 
+              'starithmGoldenYellow'
+            }
+          >
+            {getCategoryIcon(item.category)}
+          </RoadmapItemCategoryIcon>
+        </RoadmapItemRight>
+      </RoadmapItemHeader>
       
-      <p className="text-muted-foreground mb-4">{item.description}</p>
+      <RoadmapItemDescription>{item.description}</RoadmapItemDescription>
       
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(item.status)}`}>
-            {item.status.replace('-', ' ')}
-          </span>
-        </div>
-      </div>
-    </div>
+      <RoadmapItemFooter>
+        <RoadmapItemStatus status={item.status}>
+          {item.status.replace('-', ' ')}
+        </RoadmapItemStatus>
+      </RoadmapItemFooter>
+    </RoadmapItemContainer>
   );
 }

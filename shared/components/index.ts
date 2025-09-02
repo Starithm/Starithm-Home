@@ -11,6 +11,9 @@ export { ThemeProvider, useTheme } from './ThemeProvider';
 export { ThemeToggle } from './ThemeToggle';
 export { ThemeDemo } from './ThemeDemo';
 
+// Shared Components
+export { NotFound } from './NotFound';
+
 // Theme Utilities
 export * from '../utils/themeUtils';
 

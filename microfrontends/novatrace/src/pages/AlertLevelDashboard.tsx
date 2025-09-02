@@ -11,7 +11,11 @@ import { RawDataModal } from "@novatrace/components/RawDataModal";
 import { SearchFilters, SearchFilters as SearchFiltersType } from "@novatrace/components/SearchFilters";
 import { API_ENDPOINTS } from "@shared/lib/config";
 import { ErrorComponent } from "@shared/components";
-
+import {
+  DashboardContainer,
+  ErrorContainer,
+  MainContent
+} from "../styled_components/AlertLevelDashboard.styled";
 
 // Global declarations for JS9
 declare global {
@@ -199,7 +203,7 @@ export default function AlertsLevel() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <DashboardContainer>
       <Navbar />
       
       {/* Dashboard Header with Info and Trending */}
@@ -214,7 +218,7 @@ export default function AlertsLevel() {
       
       {/* Main Content */}
       {apiError ? (
-        <div className="flex-1 flex items-center justify-center">
+        <ErrorContainer>
           <ErrorComponent
             onRetry={() => {
               setApiError(null);
@@ -222,9 +226,9 @@ export default function AlertsLevel() {
               setCurrentPage(currentPage);
             }}
           />
-        </div>
+        </ErrorContainer>
       ) : (
-        <div className="flex h-[calc(100vh-150px)] overflow-hidden">
+        <MainContent>
           {/* Recent Alerts on Left */}
           <AlertsList 
             alerts={displayAlerts}
@@ -245,7 +249,7 @@ export default function AlertsLevel() {
             onOpenAlertModal={handleOpenAlertModal}
             js9Loaded={js9Loaded}
           />
-        </div>
+        </MainContent>
       )}
       <AlertModal 
         alert={modalAlert}
@@ -260,6 +264,6 @@ export default function AlertsLevel() {
         isOpen={isRawDataModalOpen}
         onClose={() => setIsRawDataModalOpen(false)}
       />
-    </div>
+    </DashboardContainer>
   );
 }

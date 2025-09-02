@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@novatrace/components/ui/toaster";
 import { TooltipProvider } from "@shared/components/ui/tooltip";
 import { Analytics } from '@vercel/analytics/react';
-import { ThemeProvider } from "@shared/components/ThemeProvider";
+import { StyledThemeProviderNew } from "@shared/components/StyledThemeProviderNew";
 import StatusDashboard from "@novatrace/pages/StatusDashboard";
 import AlertsLevel from "@novatrace/pages/AlertLevelDashboard";
 import EventLevel from "@novatrace/pages/EventLevelDashboard";
@@ -31,7 +31,7 @@ function Router() {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark">
+    <StyledThemeProviderNew>
       <QueryClientProvider client={getQueryClient()}>
         <TooltipProvider>
           <Toaster />
@@ -39,7 +39,7 @@ function App() {
           <Analytics />
         </TooltipProvider>
       </QueryClientProvider>
-    </ThemeProvider>
+      </StyledThemeProviderNew>
   );
 }
 
