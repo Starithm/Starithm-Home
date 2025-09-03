@@ -30,10 +30,6 @@ export const AlertListHeaderSubtitle = styled.p`
   marginTop: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
 `;
 
-{/* <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                        <div className="flex items-center space-x-1"></div> */}
-
 export  const AlertListHeaderDate = styled.div`
   display: flex;
   align-items: center;
@@ -96,15 +92,6 @@ export const SingleAlertHeadingText = styled.p`
   margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
 `;
 
-{/* <Card
-                  key={alert.id}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
-                    isSelected 
-                      ? "ring-2 ring-starithm-electric-violet bg-starithm-electric-violet/5" 
-                      : "hover:bg-muted/50"
-                  }`}
-                  onClick={() => onSelectAlert(alert)}
-                ></Card> */}
 export const SingleAlertCard = styled(Card)<{ isSelected: boolean }>`
   margin: ${({ theme }) => getThemeValue(theme, 'spacing.1', '0.5rem')};
   cursor: pointer;
@@ -162,4 +149,66 @@ export const AlertListEmptyTitle = styled.p`
 
 export const AlertListEmptySubtitle = styled.p`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+`;
+
+{/* <div className="p-4 border-t flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPageChange?.(currentPage - 1)}
+                disabled={currentPage <= 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPageChange?.(currentPage + 1)}
+                disabled={currentPage >= totalPages}
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div> */}
+export const AlertListPaginationWrapper = styled.div`
+  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  border-top: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
+  flex-shrink: 0;
+`;
+export const AlertListPaginationSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  div {
+    font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+    color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+    justify-content: flex-start;
+  }
+`;
+export const AlertListPaginationText = styled.p`
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.875rem')};
+  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+  justify-content: flex-start;
+`;
+export const AlertListPaginationNavSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+`;
+
+export const AlertListPaginationNavSectionSeparator = styled.span`
+  width: 1px;
+  height: 24px;
+  background-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')};
+  margin: 0 8px;
+  vertical-align: middle;
 `;

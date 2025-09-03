@@ -7,20 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/
 
 import { API_ENDPOINTS } from "@shared/lib/config";
 import {
-  Clock,
-  MapPin,
   Zap,
   Star,
   TrendingUp,
   FileText,
-  ExternalLink,
   Users,
-  Telescope,
   BarChart3,
   Calendar,
   Link
 } from "lucide-react";
-import { getTimeAgo } from "../utils/duration";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
 import { Image, Maximize2, Telescope as TelescopeIcon } from "lucide-react";
 import { Loading, ErrorComponentCompact } from "@shared/components";
@@ -71,7 +66,31 @@ import {
   LinksContainer,
   LinksContent,
   LinkItem,
-  AlertCardHeader
+  AlertCardHeader,
+  AlertMeasurementItem,
+  AlertMeasurementLabel,
+  AlertMeasurementValue,
+  AlertMeasurementTable,
+  AlertMeasurementTableHead,
+  AlertMeasurementTableRow,
+  AlertMeasurementTableHeaderCell,
+  AlertMeasurementTableBody,
+  AlertMeasurementTableCell,
+  AlertMeasurementSectionTitle,
+  AlertMeasurementGenericObject,
+  AlertMeasurementTableSection,
+  AlertMeasurementTableSectionContent,
+  AlertMeasurementTableSectionContentTitle,
+  AlertMeasurementTableWrapper,
+  AlertMeasurementTableNoData,
+  AlertMeasurementGrid,
+  AlertMeasurementCard,
+  AlertImageModal,
+  AlertImageModalImage,
+  AlertTablesSectionContainer,
+  AlertTablesSection,
+  AlertTablesSectionLabel,
+  AlertTablesSectionHeader
 } from "../styled_components";
 
 interface AlertDetailsProps {
@@ -82,7 +101,7 @@ interface AlertDetailsProps {
   js9Loaded?: boolean;
 }
 
-const getEventIcon = (eventType: string) => {
+const getEventIcon = (eventType: string|undefined) => {
   switch (eventType?.toLowerCase()) {
     case 'gamma-ray burst':
     case 'grb':
@@ -170,7 +189,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
   }
 
   // Use detailed alert data if available, otherwise fall back to selectedAlert
-  const alertData = detailedAlert || selectedAlert;
+  const alertData: Alert = detailedAlert || selectedAlert;
   
   const IconComponent = getEventIcon(alertData.data.basic_data.eventType);
   const measurements = alertData.data.measurements;
@@ -247,7 +266,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
               <EventInfoGrid>
                 <EventInfoItem>
                   <EventInfoLabel>Detection Time</EventInfoLabel>
-                  <EventInfoValue>{formatDate(alertData.date)}</EventInfoValue>
+                  <EventInfoValue>{formatDate(new Date(alertData.date))}</EventInfoValue>
                 </EventInfoItem>
                 <EventInfoItem>
                   <EventInfoLabel>Event Type</EventInfoLabel>
@@ -272,17 +291,17 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
             </AlertSummarySection>
           {/* Summary Section */}
           {/* Measurements Section */}
-          <Card className="border border-border">
+          <AlertMeasurementCard>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle>
                 <BarChart3 className="h-5 w-5" />
                 <span>Astronomical Measurements</span>
               </CardTitle>
-            </CardHeader>
-            <CardContent className="rounded-lg mb-4">
+            </CardHeader> 
+            <CardContent>
               {Object.keys(measurements).length > 0 ? (
                 <>
-                <div className="grid grid-cols-2 gap-4">
+                <AlertMeasurementGrid>
                     {
                         Object.keys(measurements).map((key) => {
                             const value = measurements[key as keyof typeof measurements];
@@ -295,164 +314,158 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                             }
                             if (Array.isArray(value) && typeof value[0] !== 'object') {
                                 return (
-                                    <div>
-                                        <label className="text-sm font-medium text-muted-foreground">{key.replaceAll('_', ' ')}</label>
-                                        <p className="text-sm">{value.join(', ').replaceAll('"', '')}</p>
-                                    </div>
+                                    <AlertMeasurementItem>
+                                      {/* Replace all underscores with spaces using regex */}
+                                        <AlertMeasurementLabel>{key.replace(/_/g, ' ')}</AlertMeasurementLabel>
+                                        {/* Replace all quotes with spaces using regex */}
+                                        <AlertMeasurementValue>{value.join(', ').replace(/"/g, '')}</AlertMeasurementValue>
+                                    </AlertMeasurementItem>
                                 )
                             }
                             if (Array.isArray(value) && typeof value[0] === 'object') {
                                 return (
-                                  <div className="mt-4">
-                                    <label className="text-sm font-medium text-muted-foreground mb-2">{key.replaceAll('_', ' ')}</label>
-                                    <div className="border rounded-lg overflow-hidden">
-                                      <div className="bg-muted/50 px-4 py-2 border-b">
-                                        <h4 className="font-medium text-sm">{key.replaceAll('_', ' ')} Data</h4>
-                                      </div>
-                                      {Array.isArray(value) && value.length > 0 ? (
-                                        <div className="overflow-x-auto mt-4">
-                                          <table className="w-full text-sm">
-                                            <thead className="bg-muted/30">
-                                              <tr>
-                                                {Object.keys(value[0]).map((column) => (
-                                                  <th key={column} className="px-4 py-2 text-left font-medium text-muted-foreground border-b">
-                                                    {column.replaceAll('_', ' ')}
-                                                  </th>
-                                                ))}
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              {value.map((row, rowIndex) => (
-                                                <tr key={rowIndex} className="border-b hover:bg-muted/20">
-                                                  {Object.values(row).map((cell, cellIndex) => (
-                                                    <td key={cellIndex} className="px-4 py-2 text-foreground">
-                                                      {typeof cell === 'object' ? JSON.stringify(cell).replaceAll('"', '') : String(cell)}
-                                                    </td>
-                                                  ))}
-                                                </tr>
+                                  <AlertTablesSection key={key}>
+                                    <AlertTablesSectionLabel>{key.replace(/_/g, ' ')}</AlertTablesSectionLabel>
+                                    <AlertTablesSectionContainer>
+                                      <AlertTablesSectionHeader>
+                                        <AlertMeasurementSectionTitle>{key.replace(/_/g, ' ')} Data</AlertMeasurementSectionTitle>
+                                      </AlertTablesSectionHeader>
+                                      <AlertMeasurementTable>
+                                          <AlertMeasurementTableHead>
+                                            <AlertMeasurementTableRow>
+                                              {Object.keys(value[0]).map((column) => (
+                                                <AlertMeasurementTableHeaderCell key={column}>
+                                                  {column.replace(/_/g, ' ')}
+                                                </AlertMeasurementTableHeaderCell>
                                               ))}
-                                            </tbody>
-                                          </table>
-                                        </div>
-                                      ) : (
-                                        <div className="p-4 text-sm text-muted-foreground">
-                                          No data available
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
+                                            </AlertMeasurementTableRow>
+                                          </AlertMeasurementTableHead>
+                                          <AlertMeasurementTableBody>
+                                            {value.map((row, rowIndex) => (
+                                              <AlertMeasurementTableRow key={rowIndex}>
+                                                {Object.values(row).map((cell, cellIndex) => (
+                                                  <AlertMeasurementTableCell key={cellIndex}>
+                                                    {typeof cell === 'object' ? JSON.stringify(cell).replace(/"/g, '') : String(cell)}
+                                                  </AlertMeasurementTableCell>
+                                                ))}
+                                              </AlertMeasurementTableRow>
+                                            ))}
+                                          </AlertMeasurementTableBody>
+                                        </AlertMeasurementTable>
+                                    </AlertTablesSectionContainer>
+                                  </AlertTablesSection>
                                 )
                           }
                             if (typeof value === 'object') {
                               return Object.keys(value).map((vKey) => (
-                                  <div key={vKey}>
-                                      <label className="text-sm font-medium text-muted-foreground">{vKey.replaceAll('_', ' ')}</label>
-                                      <p className="text-sm">{JSON.stringify(value[vKey]).replaceAll('"', '')}</p>
-                                  </div>
+                                <AlertMeasurementGenericObject>
+                                      <label>{vKey.replace(/_/g, ' ')}</label>
+                                      <p>{JSON.stringify(value[vKey]).replace(/"/g, '')}</p>
+                                  </AlertMeasurementGenericObject>
                               ))
                           } 
                             return (
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">{key.replaceAll('_', ' ')}</label>
-                                    <p className="text-sm">{String(measurements[key as keyof typeof measurements])}</p>
-                                </div>
+                                <AlertMeasurementItem>
+                                    <AlertMeasurementLabel>{key.replace(/_/g, ' ')}</AlertMeasurementLabel>
+                                    <AlertMeasurementValue>{String(measurements[key as keyof typeof measurements])}</AlertMeasurementValue>
+                                </AlertMeasurementItem>
                             )
                         }).flat()
                     }
-                </div>
+                </AlertMeasurementGrid>
                 {
-                  measurements.tables?.length > 0 && (
-                    <div className="mt-6">
-                      <label className="text-sm font-medium text-muted-foreground mb-2">Tables</label>
-                      <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-muted/50 px-4 py-2 border-b">
-                          <h4 className="font-medium text-sm">Data Table</h4>
-                        </div>
+                  measurements?.tables?.length > 0 && (
+                    <AlertMeasurementTableSection>
+                      <label>Tables</label>
+                      <AlertMeasurementTableSectionContent>
+                        <AlertMeasurementTableSectionContentTitle>
+                          <h4>Data Table</h4>
+                        </AlertMeasurementTableSectionContentTitle>
                         {Array.isArray(measurements.tables) && measurements.tables.length > 0 ? (
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                              <thead className="bg-muted/30">
-                                <tr>
+                          <AlertMeasurementTableWrapper>
+                            <AlertMeasurementTable>
+                              <AlertMeasurementTableHead>
+                                <AlertMeasurementTableRow>
                                   {Object.keys(measurements.tables[0]).map((column) => (
-                                    <th key={column} className="px-4 py-2 text-left font-medium text-muted-foreground border-b">
+                                    <AlertMeasurementTableHeaderCell key={column}>
                                       {column}
-                                    </th>
+                                    </AlertMeasurementTableHeaderCell>
                                   ))}
-                                </tr>
-                              </thead>
-                              <tbody>
+                                </AlertMeasurementTableRow>
+                              </AlertMeasurementTableHead>
+                              <AlertMeasurementTableBody>
                                 {measurements.tables.map((row, rowIndex) => (
-                                  <tr key={rowIndex} className="border-b hover:bg-muted/20">
+                                  <AlertMeasurementTableRow key={rowIndex}>
                                     {Object.values(row).map((cell, cellIndex) => (
-                                      <td key={cellIndex} className="px-4 py-2 text-foreground">
+                                      <AlertMeasurementTableCell key={cellIndex}>
                                         {String(cell)}
-                                      </td>
+                                      </AlertMeasurementTableCell>
                                     ))}
-                                  </tr>
+                                  </AlertMeasurementTableRow>
                                 ))}
-                              </tbody>
-                            </table>
-                          </div>
+                              </AlertMeasurementTableBody>
+                            </AlertMeasurementTable>
+                          </AlertMeasurementTableWrapper>
                         ) : (
-                          <div className="p-4 text-sm text-muted-foreground">
+                          <AlertMeasurementTableNoData>
                             No data available
-                          </div>
+                          </AlertMeasurementTableNoData>
                         )}
-                      </div>
-                    </div>
+                      </AlertMeasurementTableSectionContent>
+                    </AlertMeasurementTableSection>
                   )
                 }
                 {
                   measurements.misc_tables && (
-                    <div className="mt-6">
-                      <label className="text-sm font-medium text-muted-foreground mb-2">Miscellaneous Tables</label>
-                      <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-muted/50 px-4 py-2 border-b">
-                          <h4 className="font-medium text-sm">Miscellaneous Data Table</h4>
-                        </div>
+                    <AlertMeasurementTableSection>
+                      <label>Miscellaneous Tables</label>
+                      <AlertMeasurementTableSectionContent>
+                        <AlertMeasurementTableSectionContentTitle>
+                          <h4>Miscellaneous Data Table</h4>
+                        </AlertMeasurementTableSectionContentTitle>
                         {Array.isArray(measurements.misc_tables) && measurements.misc_tables.length > 0 ? (
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                              <thead className="bg-muted/30">
+                          <AlertMeasurementTableWrapper>
+                            <AlertMeasurementTable>
+                              <AlertMeasurementTableHead>
                                 <tr>
                                   {Object.keys(measurements.misc_tables[0]).map((column) => (
-                                    <th key={column} className="px-4 py-2 text-left font-medium text-muted-foreground border-b">
+                                    <AlertMeasurementTableHeaderCell key={column}>
                                       {column}
-                                    </th>
+                                    </AlertMeasurementTableHeaderCell>
                                   ))}
                                 </tr>
-                              </thead>
-                              <tbody>
+                              </AlertMeasurementTableHead>
+                              <AlertMeasurementTableBody>
                                 {measurements.misc_tables.map((row, rowIndex) => (
-                                  <tr key={rowIndex} className="border-b hover:bg-muted/20">
+                                  <AlertMeasurementTableRow key={rowIndex}>
                                     {Object.values(row).map((cell, cellIndex) => (
-                                      <td key={cellIndex} className="px-4 py-2 text-foreground">
+                                      <AlertMeasurementTableCell key={cellIndex}>
                                         {String(cell)}
-                                      </td>
+                                      </AlertMeasurementTableCell>
                                     ))}
-                                  </tr>
+                                  </AlertMeasurementTableRow>
                                 ))}
-                              </tbody>
-                            </table>
-                          </div>
+                              </AlertMeasurementTableBody>
+                            </AlertMeasurementTable>
+                          </AlertMeasurementTableWrapper>
                         ) : (
-                          <div className="p-4 text-sm text-muted-foreground">
+                          <AlertMeasurementTableNoData>
                             No data available
-                          </div>
+                          </AlertMeasurementTableNoData>
                         )}
-                      </div>
-                    </div>
+                      </AlertMeasurementTableSectionContent>
+                    </AlertMeasurementTableSection>
                   )
                 }
                 </>
               ) : (
-                <p className="text-sm text-muted-foreground">No measurements detected in alert</p>
+                <AlertMeasurementTableNoData>No measurements detected in alert</AlertMeasurementTableNoData>
               )}
             </CardContent>
-          </Card>
+          </AlertMeasurementCard>
 
           {/* Participants Section */}
-          {(authors.authors.length > 0 || authors.institutions.length > 0 || telescopes.telescopes.length > 0 || telescopes.observatories.length > 0) && (
+          {(authors?.authors?.length > 0 || authors?.institutions?.length > 0 || telescopes?.telescopes?.length > 0 || telescopes?.observatories?.length > 0) && (
           <Card className="border border-gray-200">
             <AlertCardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -466,7 +479,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                   <ParticipantItem>
                     <ParticipantLabel>Authors</ParticipantLabel>
                     <ParticipantValue>
-                      {authors.authors.map((author, index) => (
+                      {authors?.authors?.map((author, index) => (
                         <span key={index}>{author}{index < authors.authors.length - 1 ? ', ' : ''}</span>
                       ))}
                     </ParticipantValue>
@@ -474,7 +487,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                   <ParticipantItem>
                     <ParticipantLabel>Institutions</ParticipantLabel>
                     <ParticipantValue>
-                      {authors.institutions.map((institution, index) => (
+                      {authors?.institutions?.map((institution, index) => (
                         <span key={index}>{institution}{index < authors.institutions.length - 1 ? ', ' : ''}</span>
                       ))}
                     </ParticipantValue>
@@ -484,7 +497,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                   <ParticipantItem>
                     <ParticipantLabel>Telescopes</ParticipantLabel>
                     <ParticipantValue>
-                      {telescopes.telescopes.map((telescope, index) => (
+                      {telescopes?.telescopes?.map((telescope, index) => (
                         <span key={index}>{telescope}{index < telescopes.telescopes.length - 1 ? ', ' : ''}</span>
                       ))}
                     </ParticipantValue>
@@ -492,7 +505,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                   <ParticipantItem>
                     <ParticipantLabel>Observatories</ParticipantLabel>
                     <ParticipantValue>
-                      {telescopes.observatories.map((observatory, index) => (
+                      {telescopes?.observatories?.map((observatory, index) => (
                         <span key={index}>{observatory}{index < telescopes.observatories.length - 1 ? ', ' : ''}</span>
                       ))}
                     </ParticipantValue>
@@ -604,29 +617,28 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
           )}
           
           {/* Image Modal */}
-          <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
-            <DialogContent className="max-w-4xl max-h-[90vh] p-0">
-              <DialogHeader className="p-4 border-b">
-                <div className="flex items-center justify-between">
-                  <DialogTitle className="text-lg font-semibold">Image Preview</DialogTitle>
+          <AlertImageModal open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <div>
+                  <DialogTitle>Image Preview</DialogTitle>
                   <Button
-                    variant="outline"
-                    size="sm"
+                    // variant="outline"
+                    // size="sm"
                     onClick={() => setIsImageModalOpen(false)}
                   >
                     Close
                   </Button>
                 </div>
               </DialogHeader>
-              <div className="p-4">
+              <AlertImageModalImage>
                 <img
                   src={selectedImage}
                   alt="Full size image"
-                  className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
                 />
-              </div>
+              </AlertImageModalImage>
             </DialogContent>
-          </Dialog>
+          </AlertImageModal>
           
           {/* FITS Viewer Modal */}
           <FitsViewerModal

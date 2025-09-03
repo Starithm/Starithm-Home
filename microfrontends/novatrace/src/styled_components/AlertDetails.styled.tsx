@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { getThemeValue } from '@shared/utils/themeUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card';
+import { Dialog } from '@shared/components/ui/dialog';
 
 // Main container
 export const AlertDetailsContainer = styled.div`
@@ -625,4 +626,221 @@ export const AlertFitsFileLeft = styled.div`
 
 export const AlertFitsFileIcon = styled.div`
   color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+`;
+
+export const AlertMeasurementLabel = styled.label`
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+`;
+
+export const AlertMeasurementValue = styled.p`
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
+  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+`;
+
+export const AlertMeasurementItem = styled.div`
+    margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+`;
+export const AlertMeasurementGenericObject = styled.div`
+    label {
+        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+        font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+        color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+    }
+    p {
+        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+    }
+`;
+
+export const AlertNoMeasurementsMessage = styled.p`
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+`;
+
+{/* <div className="mt-6">
+                      <label className="text-sm font-medium text-muted-foreground mb-2">Tables</label>
+                      <div className="border rounded-lg overflow-hidden">
+                        <div className="bg-muted/50 px-4 py-2 border-b">
+                          <h4 className="font-medium text-sm">Data Table</h4>
+                        </div> */}
+
+export const AlertMeasurementTableSection = styled.div`
+    margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+    label {
+        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+        font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+        color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+        margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+    }
+`;
+export const AlertMeasurementTableSectionContent= styled.div`
+border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
+    border-radius: 0.5rem;
+    overflow: hidden;`;
+
+
+export const AlertMeasurementTableSectionContentTitle = styled.div`
+    padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+    border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
+    background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}50;
+    h4 {
+        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+        font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)}; 
+    }
+`;
+                        // Measurement table
+export const AlertMeasurementCard = styled(Card)`
+    border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
+    padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+    CardTitle {
+        display: flex;
+        align-items: center;
+        gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+    }
+    CardContent {
+        border-radius: 0.5rem;
+
+    }
+`;
+export const AlertMeasurementTable = styled.table`
+  width: 100%;
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+`;
+export const AlertMeasurementTableWrapper = styled.div`
+    overflow-x: auto;
+`;
+export const AlertMeasurementGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+
+
+`;
+export const AlertMeasurementTableNoData = styled.p`
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+`;
+export const AlertMeasurementTableHead = styled.thead`
+  background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}4D;
+`;
+
+export const AlertMeasurementTableRow = styled.tr`
+  border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
+  
+  &:hover {
+    background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}33;
+  }
+`;
+
+export const AlertMeasurementTableHeaderCell = styled.th`
+  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  text-align: left;
+  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+  border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
+`;
+
+export const AlertMeasurementTableBody = styled.tbody``;
+
+export const AlertMeasurementTableCell = styled.td`
+  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
+`;
+
+export const AlertMeasurementSectionTitle = styled.h4`
+  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
+`;
+
+// Tables section
+export const AlertTablesSection = styled.div`
+  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+`;
+
+export const AlertTablesSectionLabel = styled.label`
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+`;
+
+export const AlertTablesSectionContainer = styled.div`
+  border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
+  border-radius: 0.5rem;
+  overflow: hidden;
+`;
+
+export const AlertTablesSectionHeader = styled.div`
+  background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}80;
+  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
+`;
+
+export const AlertTablesSectionTitle = styled.h4`
+  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
+`;
+
+{/* <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+            <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+              <DialogHeader className="p-4 border-b">
+                <div className="flex items-center justify-between">
+                  <DialogTitle className="text-lg font-semibold">Image Preview</DialogTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsImageModalOpen(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </DialogHeader>
+              <div className="p-4">
+                <img
+                  src={selectedImage}
+                  alt="Full size image"
+                  className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
+                />
+              </div>
+            </DialogContent>
+          </Dialog> */}
+export const AlertImageModal = styled(Dialog)`
+    DialogContent {
+        max-width: 4rem;
+        max-height: 90vh;
+        padding: 0;
+    }
+    DialogHeader {
+        padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+        order-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
+    }
+    div{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    DialogTitle {
+        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.lg', '1.125rem')};
+        font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
+    }
+    Button {
+        variant: outline;
+        size: sm;
+    }
+`;
+export const AlertImageModalImage = styled.img`
+    padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+    img {
+        width: 100%;
+        height: auto;
+        max-height: 70vh;
+        object-fit: contain;
+        border-radius: 0.5rem;
+    }
 `;

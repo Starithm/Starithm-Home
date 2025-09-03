@@ -13,7 +13,12 @@ import {
   SingleAlertCard, SingleAlertContainer, SingleAlertHeading,
   SingleAlertHeadingText, AlertListContent, AlertListInner, AlertListEmptyState,
   AlertListEmptyIcon, AlertListEmptyTitle, AlertListEmptySubtitle, 
-  AlertListDateText, AlertListContainer
+  AlertListDateText, AlertListContainer,
+  AlertListPaginationWrapper,
+  AlertListPaginationSection,
+  AlertListPaginationNavSection,
+  AlertListPaginationNavSectionSeparator,
+  AlertListPaginationText
 } from "../styled_components/AlertList.styled";
 
 interface AlertsListProps {
@@ -125,33 +130,34 @@ export function AlertsList({
 
       {/* Pagination Controls */}
       {isSearchMode && total && totalPages > 1 && (
-        <div className="p-4 border-t flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
+        <AlertListPaginationWrapper>
+          <AlertListPaginationSection>
+            <AlertListPaginationText>
               Page {currentPage} of {totalPages}
-            </div>
-            <div className="flex items-center space-x-2">
+            </AlertListPaginationText>
+            <AlertListPaginationNavSection>
               <Button
-                variant="outline"
-                size="sm"
+                variant="ghost"
+                size="lg"
                 onClick={() => onPageChange?.(currentPage - 1)}
                 disabled={currentPage <= 1}
               >
                 <ChevronLeft className="h-4 w-4" />
                 Previous
               </Button>
+              <AlertListPaginationNavSectionSeparator />
               <Button
-                variant="outline"
-                size="sm"
+                variant="ghost"
+                size="lg"
                 onClick={() => onPageChange?.(currentPage + 1)}
                 disabled={currentPage >= totalPages}
               >
                 Next
                 <ChevronRight className="h-4 w-4" />
               </Button>
-            </div>
-          </div>
-        </div>
+            </AlertListPaginationNavSection>
+          </AlertListPaginationSection>
+        </AlertListPaginationWrapper>
       )}
     </AlertListContainer>
   );
