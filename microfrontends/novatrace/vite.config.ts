@@ -45,9 +45,17 @@ export default defineConfig({
   },
   server: { port: 5174, host: true },
   build: {
+    // Library mode prevents Vite from requiring an index.html entry
+    lib: {
+      entry: path.resolve(mfRoot, 'main.tsx'),
+      name: 'NovaTraceMicrofrontend',
+      formats: ['es'],
+      fileName: 'index',
+    },
     outDir: "dist",
     emptyOutDir: true,
     rollupOptions: {
+      external: ['react', 'react-dom'],
       output: {
         assetFileNames: "novatrace-assets/[name]-[hash][extname]",
         chunkFileNames: "novatrace-assets/[name]-[hash].js",
