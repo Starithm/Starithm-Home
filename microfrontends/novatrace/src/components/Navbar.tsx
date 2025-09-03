@@ -19,7 +19,14 @@ export function Navbar() {
 
   const navigateToEvents = () => {
     // Navigate to the main app's events route
-    window.parent.postMessage({ type: 'navigate', path: '/novatrace/events' }, '*');
+    const target = '/novatrace/events';
+    // If embedded in a host, ask parent to navigate
+    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'navigate', path: target }, '*');
+    } else {
+      // Fallback: navigate within microfrontend (works in standalone dev)
+      window.location.href = `${target}`;
+    }
   };
 
   const navigateToStatus = () => {

@@ -116,7 +116,7 @@ export const Navigation = styled.div`
 
 // Timeline picker section
 export const TimelinePicker = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')} ${({ theme }) => getThemeValue(theme, 'spacing.8', '2rem')};
+  padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')} ${({ theme }) => getThemeValue(theme, 'spacing.6', '2rem')};
   z-index: 999999;
 `;
 
@@ -160,7 +160,7 @@ export const CelestialSphereContainer = styled.div`
 // Floating event panel
 export const FloatingEventPanel = styled.div`
   position: absolute;
-  top: 1.5rem;
+  top: 25rem;
   left: 1.5rem;
   z-index: 50;
 `;

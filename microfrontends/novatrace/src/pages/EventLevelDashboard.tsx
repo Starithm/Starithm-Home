@@ -258,8 +258,15 @@ export default function EventLevel() {
   }
 
   const navigateToAlertLevel = () => {
-    window.parent.postMessage({ type: 'navigate', path: '/' }, '*');
-  }
+    const target = '/novatrace/alerts';
+    // If embedded in a host, ask parent to navigate
+    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'navigate', path: target }, '*');
+    } else {
+      // Fallback: navigate within microfrontend (works in standalone dev)
+      window.location.href = `${target}`;
+    }
+  };
 
   return (
     <EventLevelContainer>

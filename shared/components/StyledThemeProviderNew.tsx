@@ -13,20 +13,20 @@ interface StyledThemeProviderProps {
 }
 
 export const StyledThemeProviderNew: React.FC<StyledThemeProviderProps> = ({ children }) => {
-  console.log('StyledThemeProviderNew - Component is rendering');
+  // console.log('StyledThemeProviderNew - Component is rendering');
   
   try {
     const { theme } = useTheme();
-    console.log('StyledThemeProviderNew - useTheme() result:', { theme });
+    // console.log('StyledThemeProviderNew - useTheme() result:', { theme });
     
-    // Map your theme state to styled-components theme
-    console.log('StyledThemeProviderNew - theme state:', theme);
+    // // Map your theme state to styled-components theme
+    // console.log('StyledThemeProviderNew - theme state:', theme);
     const styledTheme = theme === 'light' ? lightTheme : darkTheme;
     
     // Debug logging
-    console.log('StyledThemeProviderNew - styledTheme:', styledTheme);
-    console.log('StyledThemeProviderNew - spacing[6]:', styledTheme.spacing[6]);
-    console.log('StyledThemeProviderNew - background color:', styledTheme.background);
+    // console.log('StyledThemeProviderNew - styledTheme:', styledTheme);
+    // console.log('StyledThemeProviderNew - spacing[6]:', styledTheme.spacing[6]);
+    // console.log('StyledThemeProviderNew - background color:', styledTheme.background);
     
     // Safety check
     if (!styledTheme || !styledTheme.spacing) {
@@ -34,7 +34,7 @@ export const StyledThemeProviderNew: React.FC<StyledThemeProviderProps> = ({ chi
       return <div>Theme loading...</div>;
     }
     
-    console.log('StyledThemeProviderNew - About to render with theme:', styledTheme);
+    // console.log('StyledThemeProviderNew - About to render with theme:', styledTheme);
     
     return (
       <StyledThemeProvider theme={styledTheme}>

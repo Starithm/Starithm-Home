@@ -13,6 +13,9 @@ export const MainContent = styled.div`
   display: flex;
   height: calc(100vh - 150px);
   overflow: hidden;
+  align-items: center;
+  justify-content: center;
+
 `;
 
 // Loading state

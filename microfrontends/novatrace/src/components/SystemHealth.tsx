@@ -1,6 +1,20 @@
-import { Card, CardContent } from "@shared/components/ui/card";
-import { Badge } from "@shared/components/ui/badge";
 import { Mail, Brain, Database, Twitter, Check, Clock, Cog } from "lucide-react";
+import {
+  SectionCard,
+  SectionContent,
+  SectionTitle,
+  HealthList,
+  HealthRow,
+  HealthLeft,
+  HealthLabel,
+  StatusBadge,
+  StepsList,
+  StepRow,
+  StepText,
+  StepTitle,
+  StepSub,
+  StatusDot,
+} from "../styled_components/SystemHealth.styled";
 
 interface SystemHealthProps {
   systemStatus: {
@@ -13,17 +27,17 @@ interface SystemHealthProps {
 }
 
 export default function SystemHealth({ systemStatus }: SystemHealthProps) {
-  const getStatusColor = (status: string) => {
+  const getStatusColors = (status: string) => {
     switch (status) {
       case 'online':
-        return 'bg-nova-success bg-opacity-20 text-nova-success';
+        return { bg: 'rgba(16,185,129,0.2)', color: '#10b981' }; // green
       case 'rate_limited':
-        return 'bg-nova-warning bg-opacity-20 text-nova-warning';
+        return { bg: 'rgba(245,158,11,0.2)', color: '#f59e0b' }; // amber
       case 'error':
       case 'offline':
-        return 'bg-nova-error bg-opacity-20 text-nova-error';
+        return { bg: 'rgba(239,68,68,0.2)', color: '#ef4444' }; // red
       default:
-        return 'bg-nova-gray bg-opacity-20 text-nova-gray';
+        return { bg: 'rgba(107,114,128,0.2)', color: '#6b7280' }; // gray
     }
   };
 
@@ -86,21 +100,21 @@ export default function SystemHealth({ systemStatus }: SystemHealthProps) {
       case 'online':
       case 'completed':
         return (
-          <div className="w-8 h-8 bg-nova-success rounded-full flex items-center justify-center">
+          <StatusDot bg="#10b981">
             <Check className="text-white text-xs h-3 w-3" />
-          </div>
+          </StatusDot>
         );
       case 'processing':
         return (
-          <div className="w-8 h-8 bg-nova-blue rounded-full flex items-center justify-center animate-pulse">
+          <StatusDot bg="#3b82f6">
             <Cog className="text-white text-xs h-3 w-3" />
-          </div>
+          </StatusDot>
         );
       default:
         return (
-          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+          <StatusDot bg="#9ca3af">
             <Clock className="text-white text-xs h-3 w-3" />
-          </div>
+          </StatusDot>
         );
     }
   };
@@ -108,46 +122,45 @@ export default function SystemHealth({ systemStatus }: SystemHealthProps) {
   return (
     <>
       {/* System Health */}
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="text-lg font-semibold text-nova-dark mb-4">System Health</h3>
-          
-          <div className="space-y-4">
-            {Object.entries(systemStatus).map(([service, status]) => (
-              <div key={service} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  {getStatusIcon(service, status.status)}
-                  <span className="text-sm text-nova-gray capitalize">
-                    {service === 'llm' ? 'LLM API' : service} Connection
-                  </span>
-                </div>
-                <Badge className={`text-xs px-2 py-1 rounded-full ${getStatusColor(status.status)}`}>
-                  {status.status === 'rate_limited' ? 'Rate Limited' : status.status.charAt(0).toUpperCase() + status.status.slice(1)}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <SectionCard>
+        <SectionContent>
+          <SectionTitle>System Health</SectionTitle>
+          <HealthList>
+            {Object.entries(systemStatus).map(([service, status]) => {
+              const colors = getStatusColors(status.status);
+              return (
+                <HealthRow key={service}>
+                  <HealthLeft>
+                    {getStatusIcon(service, status.status)}
+                    <HealthLabel>{service === 'llm' ? 'LLM API' : service} Connection</HealthLabel>
+                  </HealthLeft>
+                  <StatusBadge bg={colors.bg} color={colors.color}>
+                    {status.status === 'rate_limited' ? 'Rate Limited' : status.status.charAt(0).toUpperCase() + status.status.slice(1)}
+                  </StatusBadge>
+                </HealthRow>
+              );
+            })}
+          </HealthList>
+        </SectionContent>
+      </SectionCard>
 
       {/* Processing Pipeline */}
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="text-lg font-semibold text-nova-dark mb-4">Processing Pipeline</h3>
-          
-          <div className="space-y-3">
+      <SectionCard>
+        <SectionContent>
+          <SectionTitle>Processing Pipeline</SectionTitle>
+          <StepsList>
             {getProcessingSteps().map((step, index) => (
-              <div key={index} className="flex items-center space-x-3">
+              <StepRow key={index}>
                 {getStepIcon(step.status)}
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-nova-dark">{step.name}</p>
-                  <p className="text-xs text-nova-gray">{step.message}</p>
-                </div>
-              </div>
+                <StepText>
+                  <StepTitle>{step.name}</StepTitle>
+                  <StepSub>{step.message}</StepSub>
+                </StepText>
+              </StepRow>
             ))}
-          </div>
-        </CardContent>
-      </Card>
+          </StepsList>
+        </SectionContent>
+      </SectionCard>
     </>
   );
 }
