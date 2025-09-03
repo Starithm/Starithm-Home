@@ -21,9 +21,16 @@ export default defineConfig({
     host: true
   },
   build: {
+    lib: {
+      entry: path.resolve(__dirname, 'src/main.tsx'),
+      name: 'BlogMicrofrontend',
+      formats: ['es'],
+      fileName: 'index',
+    },
     outDir: "dist",
     emptyOutDir: true,
     rollupOptions: {
+      external: ['react', 'react-dom'],
       output: {
         assetFileNames: 'blog-assets/[name]-[hash][extname]',
         chunkFileNames: 'blog-assets/[name]-[hash].js',
