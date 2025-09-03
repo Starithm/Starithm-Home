@@ -16,7 +16,7 @@ import {
   Calendar,
   Link
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
+import { DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
 import { Image, Maximize2, Telescope as TelescopeIcon } from "lucide-react";
 import { Loading, ErrorComponentCompact } from "@shared/components";
 import { FitsViewerModal } from "./FitsViewerModal";
