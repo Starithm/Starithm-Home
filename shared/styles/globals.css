@@ -108,29 +108,30 @@
 
 }
 
+.dark .rdp-root,
 [data-theme="dark"] .rdp-root {
   /* React Day Picker Theme Variables - Dark Mode */
   --rdp-accent-color: var(--starithm-veronica);
   --rdp-accent-background-color: var(--starithm-veronica);
   --rdp-animation_duration: 0.3s;
   --rdp-animation_timing: cubic-bezier(0.4, 0, 0.2, 1);
-  --rdp-day-height: 36px;
-  --rdp-day-width: 36px;
+  --rdp-day-height: 25px;
+  --rdp-day-width: 25px;
   --rdp-chevron-disabled-opacity: 0.3;
   --rdp-day_button-border-radius: 6px;
-  --rdp-day_button-border: 1px solid transparent;
-  --rdp-day_button-height: 36px;
-  --rdp-day_button-width: 36px;
-  --rdp-selected-border: 2px solid var(--starithm-veronica);
+  --rdp-day_button-border: 0.5px solid transparent;
+  --rdp-day_button-height: 25px;
+  --rdp-day_button-width: 25px;
+  --rdp-selected-border: 1px solid var(--starithm-veronica);
   --rdp-disabled-opacity: 0.3;
   --rdp-outside-opacity: 0.5;
   --rdp-today-color: var(--starithm-veronica);
   --rdp-dropdown-gap: 0.5rem;
   --rdp-months-gap: 1rem;
   --rdp-nav_button-disabled-opacity: 0.3;
-  --rdp-nav_button-height: 32px;
-  --rdp-nav_button-width: 32px;
-  --rdp-nav-height: 40px;
+  --rdp-nav_button-height: 25px;
+  --rdp-nav_button-width: 25px;
+  --rdp-nav-height: 36px;
   --rdp-range_middle-background-color: var(--accent);
   --rdp-range_middle-color: var(--accent-foreground);
   --rdp-range_start-color: var(--primary-foreground);
@@ -139,11 +140,12 @@
   --rdp-range_end-color: var(--primary-foreground);
   --rdp-week_number-border-radius: 6px;
   --rdp-week_number-border: 1px solid var(--border);
-  --rdp-week_number-height: 36px;
-  --rdp-week_number-width: 36px;
+  --rdp-week_number-height: 25px;
+  --rdp-week_number-width: 25px;
   --rdp-weekday-opacity: 0.7;
   --rdp-weekday-padding: 0.5rem;
   --rdp-weekday-text-align: center;
+  margin: 10px;
 }
 /* Dropdown Menu Specific Styles */
 [data-slot="dropdown-menu-content"] {

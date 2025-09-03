@@ -2,6 +2,17 @@ import React from "react";
 import { Button } from "@shared/components/ui/button";
 import { Activity, Home } from "lucide-react";
 import { useLocation } from "wouter";
+import {
+  NavWrapper,
+  NavInner,
+  LeftGroup,
+  Brand,
+  LogoBox,
+  BrandText,
+  BrandTitle,
+  BrandSubtitle,
+  RightActions,
+} from "../styled_components/Navbar.styled";
 
 export function Navbar() {
   const [, setLocation] = useLocation();
@@ -22,27 +33,19 @@ export function Navbar() {
   };
 
   return (
-    // <nav className="border-b border-gray-200 dark:border-gray-700 bg-background/95 dark:bg-starithm-bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:supports-[backdrop-filter]:bg-starithm-bg-black/60">
-      <div className="flex h-14 items-center px-4">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-starithm-electric-violet rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">N</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-semibold text-lg text-foreground">NovaTrace</span>
-              <span className="text-xs text-muted-foreground">Powered by Starithm Tech</span>
-            </div>
-          </div>
-          {/* <Badge variant="secondary" className="text-xs">
-            Event Intelligence
-          </Badge> */}
-        </div>
-        
+    <NavWrapper>
+      <NavInner>
+        <LeftGroup>
+          <Brand>
+            <LogoBox>N</LogoBox>
+            <BrandText>
+              <BrandTitle>NovaTrace</BrandTitle>
+              <BrandSubtitle>Powered by Starithm Tech</BrandSubtitle>
+            </BrandText>
+          </Brand>
+        </LeftGroup>
 
-        
-        <div className="flex justify-end absolute right-4 space-x-4">
-          {/* <ThemeToggle variant="icon" size="sm" /> */}
+        <RightActions>
           <Button 
             variant="outline" 
             size="lg"
@@ -64,7 +67,6 @@ export function Navbar() {
             <span>Check Status</span>
           </Button>
           <Button 
-            //variant="primary" 
             variant="outline"
             size="lg" 
             hasIcon={true}
@@ -74,8 +76,8 @@ export function Navbar() {
             <Home className="h-4 w-4" />
             <span>Home</span>
           </Button>
-        </div>
-      </div>
-    // </nav>
+        </RightActions>
+      </NavInner>
+    </NavWrapper>
   );
 }

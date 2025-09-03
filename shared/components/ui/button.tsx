@@ -37,22 +37,22 @@ const buttonVariants = cva(
       size: "default",
       hasIcon: false // Default value
     },
-    // Compound variants to apply padding adjustments when both conditions are met
+    // Compound variants to explicitly ensure left/right padding when an icon is present
     compoundVariants: [
       {
         size: "default",
         hasIcon: true,
-        class: "px-3" // Override padding for default size with an icon
+        class: "pl-4 pr-4" // Explicit horizontal padding
       },
       {
         size: "sm",
         hasIcon: true,
-        class: "px-3" // Override padding for small size with an icon
+        class: "pl-3 pr-3" // Explicit horizontal padding
       },
       {
         size: "lg",
         hasIcon: true,
-        class: "px-3" // Override padding for large size with an icon
+        class: "pl-6 pr-6" // Explicit horizontal padding
       }
     ]
   },
