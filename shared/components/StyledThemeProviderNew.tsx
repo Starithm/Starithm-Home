@@ -17,11 +17,12 @@ export const StyledThemeProviderNew: React.FC<StyledThemeProviderProps> = ({ chi
   
   try {
     const { theme } = useTheme();
-    // console.log('StyledThemeProviderNew - useTheme() result:', { theme });
+    try { console.log('[StyledThemeProvider] theme from context =', theme); } catch {}
     
     // // Map your theme state to styled-components theme
     // console.log('StyledThemeProviderNew - theme state:', theme);
     const styledTheme = theme === 'light' ? lightTheme : darkTheme;
+    try { console.log('[StyledThemeProvider] using styledTheme =', styledTheme.name); } catch {}
     
     // Debug logging
     // console.log('StyledThemeProviderNew - styledTheme:', styledTheme);
@@ -30,7 +31,7 @@ export const StyledThemeProviderNew: React.FC<StyledThemeProviderProps> = ({ chi
     
     // Safety check
     if (!styledTheme || !styledTheme.spacing) {
-      console.error('StyledThemeProviderNew - Invalid theme object:', styledTheme);
+      console.error('[StyledThemeProvider] Invalid theme object:', styledTheme);
       return <div>Theme loading...</div>;
     }
     
@@ -42,7 +43,7 @@ export const StyledThemeProviderNew: React.FC<StyledThemeProviderProps> = ({ chi
       </StyledThemeProvider>
     );
   } catch (error) {
-    console.error('StyledThemeProviderNew - Error occurred:', error);
+    console.error('[StyledThemeProvider] Error occurred:', error);
     return <div>Theme error: {String(error)}</div>;
   }
 };
