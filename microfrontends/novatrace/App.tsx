@@ -18,6 +18,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={AlertsLevel} />
+      <Route path="/alerts" component={AlertsLevel} />
       <Route path="/status" component={StatusDashboard} />
       <Route path="/events" component={EventLevel} />
       <Route path="/novatrace" component={AlertsLevel} />
