@@ -57,7 +57,7 @@ export function AlertModal({ alert, isOpen, onClose, onOpenRawDataModal }: Alert
   const [selectedTimelineAlertId, setSelectedTimelineAlertId] = useState<string | undefined>();
   const [alertDataMap, setAlertDataMap] = useState<Map<string, Alert>>(new Map());
 
-  console.log("AlertModal render - isOpen:", isOpen, "alert:", alert?.alertKey);
+  // console.log("AlertModal render - isOpen:", isOpen, "alert:", alert?.alertKey);
 
   // Set initial alert ID when alert changes
   useEffect(() => {

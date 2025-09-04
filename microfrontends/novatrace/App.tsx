@@ -12,7 +12,6 @@ import EventLevel from "@novatrace/pages/EventLevelDashboard";
 import NotFound from "@novatrace/pages/NotFound";
 import '@shared/styles/globals.css';
 
-console.log("App", getQueryClient );
 
 function Router() {
   return (

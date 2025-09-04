@@ -28,7 +28,7 @@ interface NavigationProps {
 
 export function Navigation({ items, className }: NavigationProps) {
   const [location] = useLocation();
-  console.log(items);
+  // console.log(items);
 
   return (
     <nav className={cn("flex items-center space-x-1", className)}>

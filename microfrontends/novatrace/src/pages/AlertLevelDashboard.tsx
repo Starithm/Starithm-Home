@@ -171,13 +171,13 @@ export default function AlertsLevel() {
 
 
   const handleOpenRawDataModal = (alert: Alert) => {
-    console.log("Opening Raw Data Modal for alert:", alert.alertKey);
+    // console.log("Opening Raw Data Modal for alert:", alert.alertKey);
     setRawDataAlert(alert);
     setIsRawDataModalOpen(true);
   };
 
   const handleOpenAlertModal = (alert: Alert) => {
-    console.log("Opening Alert Modal for alert:", alert.alertKey);
+    // console.log("Opening Alert Modal for alert:", alert.alertKey);
     setModalAlert(alert);
     setIsModalOpen(true);
   };

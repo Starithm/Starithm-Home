@@ -24,10 +24,10 @@ interface RawDataModalProps {
 
 export function RawDataModal({ alert, isOpen, onClose }: RawDataModalProps) {
 
-  console.log("RawDataModal render - isOpen:", isOpen, "alert:", alert?.alertKey);
+  // console.log("RawDataModal render - isOpen:", isOpen, "alert:", alert?.alertKey);
 
   if (!alert) return null;
-  console.log("raw data modal", alert);
+  // console.log("raw data modal", alert);
 
   if (!isOpen) return null;
 

@@ -59,7 +59,7 @@ function Calendar({
     }
   }, [isOpen]);
   
-  console.log("calendar", props, isOpen,position);
+  // console.log("calendar", props, isOpen,position);
       return (
       <div
         role="button"
@@ -102,7 +102,7 @@ function Calendar({
             onSelect={(date: Date) => {
               // Convert the selected date to UTC midnight to ensure consistent timezone handling
               const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-              console.log("selected", date, utcDate)
+              // console.log("selected", date, utcDate)
               props.onSelect?.(utcDate);
               setIsOpen(false);
             }}

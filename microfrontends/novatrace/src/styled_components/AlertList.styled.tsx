@@ -7,7 +7,7 @@ export const AlertListContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  backgroundColor: ${({ theme }) => {console.log("AlertListContainer", theme); return getThemeValue(theme, 'background', '#fff')}};
+  backgroundColor: ${({ theme }) => {return getThemeValue(theme, 'background', '#fff')}};
   width: 35%;
 `;
 export const AlertListHeaderContainer = styled.div`
@@ -20,7 +20,7 @@ export const AlertListHeaderContainer = styled.div`
 export const AlertListHeaderTitle = styled.h2`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.lg', '1.5rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
-  color: ${({ theme }) => {console.log("AlertListHeaderTitle", theme); return getThemeValue(theme, 'foreground', '#000')}};
+  color: ${({ theme }) => {return getThemeValue(theme, 'foreground', '#000')}};
 
 `;
 

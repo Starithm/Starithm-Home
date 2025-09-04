@@ -323,7 +323,7 @@ export default function EventLevel() {
                 mode="single"
                 selected={dateRange.start ? new Date(dateRange.start) : undefined}
                 onSelect={(date) => {
-                  console.log("selected start date", date);
+                  // console.log("selected start date", date);
                   if (date) {
                     handleDateRangeChange(formatDateToUTCString(date), dateRange.end);
                   }
@@ -335,7 +335,7 @@ export default function EventLevel() {
                 mode="single"
                 selected={dateRange.end ? new Date(dateRange.end) : undefined}
                 onSelect={(date) => {
-                  console.log("selected end date in eventlevel", date);
+                  // console.log("selected end date in eventlevel", date);
                   if (date) {
                     handleDateRangeChange(dateRange.start, formatDateToUTCString(date));
                   }

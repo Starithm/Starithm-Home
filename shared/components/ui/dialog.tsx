@@ -9,7 +9,7 @@ import { cn } from "../../utils/cn";
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  console.log("Dialog component render:", props);
+  // console.log("Dialog component render:", props);
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
@@ -52,7 +52,7 @@ function DialogContent({
   children,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content>) {
-  console.log("DialogContent render:", { className, children: !!children });
+  // console.log("DialogContent render:", { className, children: !!children });
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />

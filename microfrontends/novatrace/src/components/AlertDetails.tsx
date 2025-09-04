@@ -226,11 +226,11 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
   const regularUrls = allUrls.filter(url => 
     !/\.(jpg|jpeg|png|gif|bmp|webp|svg|fit|fits)$/i.test(url)
   );
-  console.log({
-    fitsUrls,
-    imageUrls,
-    regularUrls
-  });
+  // console.log({
+  //   fitsUrls,
+  //   imageUrls,
+  //   regularUrls
+  // });
 
   return (
     <AlertDetailsContainer>

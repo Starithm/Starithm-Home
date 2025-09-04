@@ -57,7 +57,7 @@ export function AlertsList({
   pageSize = 20,
   isLoading = false
 }: AlertsListProps) {
-  console.log("alerts", alerts);
+  // console.log("alerts", alerts);
   
   const totalPages = total ? Math.ceil(total / pageSize) : 1;
   const startIndex = (currentPage - 1) * pageSize + 1;

@@ -222,7 +222,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
   // Combine stream alerts and textual circulars chronologically
   const timelineItems: TimelineItem[] = React.useMemo(() => {
     if (!eventDetails) return [];
-    console.log("eventDetails",eventDetails);
+    // console.log("eventDetails",eventDetails);
 
     const items: TimelineItem[] = [
       // Add stream alerts
@@ -339,7 +339,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                           displayValue = value ? 'Yes' : 'No';
                         } else if (typeof value === 'object') {
                             displayValue = '';
-                            console.log("object",value);
+                            // console.log("object",value);
                             if (Array.isArray(value)) {
                               displayValue = value.map(v => v.toString()).join(', ');
                             } else {    
@@ -352,7 +352,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                           if (displayValue === '') {
                             return null;
                           }
-                        console.log(key, displayValue, typeof value);
+                        // console.log(key, displayValue, typeof value);
                         
                                                  return (
                            <TableRow key={key}>
