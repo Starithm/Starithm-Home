@@ -44,11 +44,17 @@
     <link rel="canonical" href="https://starithm.com/">
     
     <!-- Early theme bootstrap to avoid white flash in production -->
+    <style>
+      /* Hard fallback so first paint isn't white if CSS hasn't loaded yet */
+      html.dark, html.dark body { background: #0E0B16; color: #E7DFDD; }
+    </style>
     <script>
       (function() {
         try {
           var saved = localStorage.getItem('starithm-theme');
-          var theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
+          var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
+          // Persist default if none saved so future loads are stable
+          if (!saved) localStorage.setItem('starithm-theme', theme);
           var root = document.documentElement;
           root.classList.remove('light','dark');
           root.classList.add(theme);
@@ -57,6 +63,7 @@
         } catch (e) {
           // fallback to dark if anything goes wrong
           document.documentElement.classList.add('dark');
+          try { localStorage.setItem('starithm-theme', 'dark'); } catch (_) {}
         }
       })();
     </script>

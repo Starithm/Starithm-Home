@@ -36,9 +36,23 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Also support env-driven forcing (Vite): VITE_FORCE_THEME=dark|light
   const envForce = (import.meta as any)?.env?.VITE_FORCE_THEME as Theme | undefined;
   const forced = (forceTheme || envForce);
+  try {
+    console.log('[ThemeProvider] init', {
+      defaultTheme,
+      forceThemeProp: forceTheme,
+      envForce,
+      forcedEffective: forced,
+    });
+  } catch {}
   const [theme, setThemeState] = useState<Theme>(() => {
     // 1) Persisted preference wins
-    const savedTheme = localStorage.getItem('starithm-theme') as Theme;
+    let savedTheme: Theme | null = null;
+    try {
+      savedTheme = localStorage.getItem('starithm-theme') as Theme;
+      console.log('[ThemeProvider] savedTheme from localStorage =', savedTheme);
+    } catch (e) {
+      console.warn('[ThemeProvider] failed reading localStorage', e);
+    }
     if (savedTheme === 'light' || savedTheme === 'dark') {
       return savedTheme;
     }
@@ -51,7 +65,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   const setTheme = (newTheme: Theme) => {
     if (forced) return; // ignore changes when forced
     setThemeState(newTheme);
-    localStorage.setItem('starithm-theme', newTheme);
+    try {
+      localStorage.setItem('starithm-theme', newTheme);
+      console.log('[ThemeProvider] setTheme -> persisted', newTheme);
+    } catch (e) {
+      console.warn('[ThemeProvider] setTheme -> failed to persist', e);
+    }
   };
 
   const toggleTheme = () => {
@@ -73,6 +92,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     if (metaThemeColor) {
       metaThemeColor.setAttribute('content', activeTheme === 'dark' ? '#0E0B16' : '#ffffff');
     }
+    try {
+      console.log('[ThemeProvider] applied theme class on <html> ->', activeTheme);
+    } catch {}
   }, [theme, forced]);
 
   // Listen for system theme changes
