@@ -1,7 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
-import { ThemeToggle } from '../shared/components/ThemeToggle';
-import './App.css';
+import '../shared/styles/globals.css';
+import { getQueryClient } from '@shared/lib/queryClient';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 // Lazy load microfrontends
 const HomeMicrofrontend = lazy(() => import('./microfrontends/HomeMicrofrontend'));
@@ -20,7 +21,7 @@ function App() {
           </Link>
           <div className="nav-links">
             <Link to="/" className="nav-link">Home</Link>
-            <Link to="/novatrace" className="nav-link">NovaTrace</Link>
+            <Link to="/novatrace/events" className="nav-link">NovaTrace</Link>
             {/* <Link to="/blog" className="nav-link">Blog</Link> */}
             {/* <ThemeToggle variant="icon" size="sm" /> */}
           </div>
@@ -29,15 +30,15 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
+        <QueryClientProvider client={getQueryClient()}> 
         <Suspense fallback={<div className="loading">Loading...</div>}>
           <Routes>
             <Route path="/" element={<HomeMicrofrontend />} />
-            <Route path="/novatrace" element={<NovaTraceMicrofrontend />} />
-            <Route path="/novatrace/status" element={<NovaTraceMicrofrontend />} />
-            <Route path="/novatrace/events" element={<NovaTraceMicrofrontend />} />
+            <Route path="/novatrace/*" element={<NovaTraceMicrofrontend />} />
             <Route path="/blog/*" element={<BlogMicrofrontend />} />
-          </Routes>
+          </Routes> 
         </Suspense>
+        </QueryClientProvider>
       </main>
 
       {/* Footer */}

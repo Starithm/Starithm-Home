@@ -3,6 +3,35 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, Clock, FileText } from 'lucide-react';
 // import { ThemeToggle } from '@shared/components/ThemeToggle';
 import { Button } from '@shared/components/ui/button';
+import {
+  BlogContainer,
+  Header,
+  HeaderContainer,
+  HeaderTitle,
+  HeaderSubtitle,
+  Main,
+  FeaturedPostSection,
+  FeaturedPostCard,
+  CategoryBadge,
+  CategoryIcon,
+  CategoryText,
+  FeaturedPostTitle,
+  FeaturedPostExcerpt,
+  FeaturedPostFooter,
+  PostMeta,
+  MetaItem,
+  MetaIcon,
+  BlogPostCardContainer,
+  PostCardCategory,
+  PostCardCategoryText,
+  PostCardTitle,
+  PostCardExcerpt,
+  PostCardFooter,
+  PostCardMeta,
+  PostCardMetaItem,
+  PostCardMetaIcon,
+  PostCardLink
+} from '../styled_components/BlogList.styled';
 
 interface BlogPost {
   id: string;
@@ -14,166 +43,107 @@ interface BlogPost {
   slug: string;
 }
 
-const blogPosts: BlogPost[] = [
-  {
-    id: '1',
-    title: 'Starithm Roadmap: Upcoming Features & Development Timeline',
-    excerpt: 'Explore our comprehensive roadmap featuring upcoming features, improvements, and infrastructure updates planned for the Starithm platform.',
-    date: '2025-01-15',
-    readTime: '5 min read',
-    category: 'Roadmap',
-    slug: 'roadmap'
-  },
-  {
-    id: '2',
-    title: 'Introducing NovaTrace: Real-Time Astronomical Event Intelligence',
-    excerpt: 'Learn about our new NovaTrace dashboard that provides real-time monitoring and analysis of astronomical events from global observatories.',
-    date: '2025-01-10',
-    readTime: '8 min read',
-    category: 'Product',
-    slug: 'novatrace-introduction'
-  },
-  {
-    id: '3',
-    title: 'The Future of Astronomical Data Collaboration',
-    excerpt: 'Discover how Starithm is revolutionizing the way astronomers collaborate and share data across the global research community.',
-    date: '2025-01-05',
-    readTime: '6 min read',
-    category: 'Vision',
-    slug: 'astronomical-collaboration'
-  }
-];
-
 export default function BlogList() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <BlogContainer>
       {/* Header */}
-      <header className="bg-background text-primary-foreground py-12">
-        <div className="container mx-auto px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-bold mb-4">Starithm Blog</h1>
-          <p className="text-xl text-primary-foreground/80 max-w-2xl mx-auto">
+      <Header>
+        <HeaderContainer>
+          <HeaderTitle>Starithm Blog</HeaderTitle>
+          <HeaderSubtitle>
             Updates, insights, and roadmap for the astronomical community
-          </p>
-        </div>
-      </header>
+          </HeaderSubtitle>
+        </HeaderContainer>
+      </Header>
 
       {/* Content */}
-      <main className="container mx-auto px-6 lg:px-8 py-12">
+      <Main>
         {/* Featured Post */}
-        <div className="mb-12">
-          <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 rounded-2xl p-8 border border-border">
-            <div className="flex items-center space-x-2 mb-4">
-              <FileText className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-primary">Roadmap</span>
-            </div>
-            <h3 className="text-2xl font-bold text-foreground mb-4">
+        <FeaturedPostSection>
+          <FeaturedPostCard>
+            <CategoryBadge>
+              <CategoryIcon>
+                <FileText size={20} />
+              </CategoryIcon>
+              <CategoryText>Roadmap</CategoryText>
+            </CategoryBadge>
+            <FeaturedPostTitle>
               Starithm Roadmap: Upcoming Features & Development Timeline
-            </h3>
-            <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
+            </FeaturedPostTitle>
+            <FeaturedPostExcerpt>
               Explore our comprehensive roadmap featuring upcoming features, improvements, and infrastructure updates planned for the Starithm platform. 
               From real-time notifications to advanced data visualization, discover what's coming next.
-            </p>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                <div className="flex items-center space-x-1">
-                  <Calendar className="h-4 w-4" />
+            </FeaturedPostExcerpt>
+            <FeaturedPostFooter>
+              <PostMeta>
+                <MetaItem>
+                  <MetaIcon>
+                    <Calendar size={16} />
+                  </MetaIcon>
                   <span>Aug, 2025</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Clock className="h-4 w-4" />
+                </MetaItem>
+                <MetaItem>
+                  <MetaIcon>
+                    <Clock size={16} />
+                  </MetaIcon>
                   <span>2 min read</span>
-                </div>
-              </div>
-              <Button asChild>
-                <Link 
-                  to="/roadmap"
-                  className="inline-flex items-center space-x-2"
-                >
+                </MetaItem>
+              </PostMeta>
+              <Button asChild size="lg">
+                <Link to="/blog/roadmap">
                   <span>Read Roadmap</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight size={16} />
                 </Link>
               </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* All Posts
-        <div>
-          <h2 className="text-2xl font-bold text-starithm-rich-black mb-6">All Articles</h2>
-          <div className="grid gap-8">
-            {blogPosts.map(post => (
-              <BlogPostCard key={post.id} post={post} />
-            ))}
-          </div>
-        </div>
-
-        {/* Newsletter Signup */}
-        {/* <div className="mt-16 bg-gradient-to-r from-starithm-electric-violet/5 to-starithm-veronica/5 rounded-2xl p-8 border border-starithm-electric-violet/20">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-starithm-rich-black mb-4">
-              Stay Updated
-            </h3>
-            <p className="text-starithm-rich-black/70 mb-6 max-w-2xl mx-auto">
-              Get notified about new features, updates, and astronomical discoveries. 
-              Join our community of researchers and enthusiasts.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-starithm-electric-violet focus:border-transparent min-w-64"
-              />
-                                              <Button>
-                  Subscribe
-                </Button>
-            </div>
-          </div>
-        </div> */}
-      </main>
-    </div>
+            </FeaturedPostFooter>
+          </FeaturedPostCard>
+        </FeaturedPostSection>
+      </Main>
+    </BlogContainer>
   );
 }
 
 function BlogPostCard({ post }: { post: BlogPost }) {
   return (
-    <article className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-center space-x-2 mb-4">
-        <FileText className="h-4 w-4 text-primary-foreground" />
-        <span className="text-sm font-medium text-primary-foreground">{post.category}</span>
-      </div>
+    <BlogPostCardContainer>
+      <PostCardCategory>
+        <FileText size={16} />
+        <PostCardCategoryText>{post.category}</PostCardCategoryText>
+      </PostCardCategory>
       
-      <h3 className="text-xl font-bold text-primary-foreground mb-3">
+      <PostCardTitle>
         {post.title}
-      </h3>
+      </PostCardTitle>
       
-      <p className="text-primary-foreground mb-4 leading-relaxed">
+      <PostCardExcerpt>
         {post.excerpt}
-      </p>
+      </PostCardExcerpt>
       
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4 text-sm text-primary-foreground">
-          <div className="flex items-center space-x-1">
-            <Calendar className="h-4 w-4" />
+      <PostCardFooter>
+        <PostCardMeta>
+          <PostCardMetaItem>
+            <PostCardMetaIcon>
+              <Calendar size={16} />
+            </PostCardMetaIcon>
             <span>{new Date(post.date).toLocaleDateString('en-US', { 
               year: 'numeric', 
               month: 'long', 
               day: 'numeric' 
             })}</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <Clock className="h-4 w-4" />
+          </PostCardMetaItem>
+          <PostCardMetaItem>
+            <PostCardMetaIcon>
+              <Clock size={16} />
+            </PostCardMetaIcon>
             <span>{post.readTime}</span>
-          </div>
-        </div>
+          </PostCardMetaItem>
+        </PostCardMeta>
         
-        <Link 
-          to={`/${post.slug}`}
-          className="inline-flex items-center space-x-2 text-starithm-electric-violet hover:text-starithm-electric-violet/80 transition-colors"
-        >
-          <span className="font-medium">Read more</span>
-          <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
-    </article>
+        <PostCardLink to={`/${post.slug}`}>
+          <span>Read more</span>
+          <ArrowRight size={16} />
+        </PostCardLink>
+      </PostCardFooter>
+    </BlogPostCardContainer>
   );
 }

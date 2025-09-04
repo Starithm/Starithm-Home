@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap');
+@import "../shared/styles/globals.css";
 
 * {
   margin: 0;
@@ -11,8 +12,8 @@ body {
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #ffffff;
-  color: #1a1a1a;
+  /* background-color: #ffffff;
+  color: #1a1a1a; */
 }
 
 /* Ensure Google Sans Code is used everywhere */
@@ -22,13 +23,13 @@ body {
 }
 
 /* Headings - Normal case with letter spacing */
-h1, h2, h3, h4, h5, h6 {
+/* h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.05em;
   font-weight: 600;
 }
 
 /* Specific heading styles */
-h1 {
+/* h1 {
   letter-spacing: 0.08em;
 }
 
@@ -38,7 +39,7 @@ h2 {
 
 h3, h4, h5, h6 {
   letter-spacing: 0.04em;
-}
+} */ */
 
 /* Utility class for uppercase text when needed */
 .text-uppercase {
@@ -49,3 +50,206 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* background-color: white;
+  color: #1a1a1a; */
+}
+
+/* .dark .app {
+  background-color: #0E0B16;
+  color: #e7dfdd;
+} */
+
+.global-nav {
+  background: white;
+  /* border-bottom: 1px solid #e5e7eb; */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  /* position: sticky; */
+  top: 0;
+  z-index: 1000;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.dark .global-nav {
+  background: #0E0B16;
+  /* border-bottom: 1px solid #374151; */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.nav-container {
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none !important;
+  transition: opacity 0.2s;
+  color: inherit;
+}
+
+.nav-brand:hover {
+  opacity: 0.8;
+  text-decoration: none !important;
+}
+
+.nav-brand:visited {
+  text-decoration: none !important;
+}
+
+.nav-brand:active {
+  text-decoration: none !important;
+}
+
+.nav-logo {
+  width: 32px;
+  height: 32px;
+}
+
+.nav-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #770ff5;
+}
+
+.dark .nav-title {
+  color: #e7dfdd;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: #374151;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.dark .nav-link {
+  color: #e7dfdd;
+}
+
+.nav-link:hover {
+  color: #770ff5;
+}
+
+.dark .nav-link:hover {
+  color: #770ff5;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: 1.125rem;
+  color: #6b7280;
+}
+
+.dark .loading {
+  color: #9ca3af;
+}
+
+/* Footer Styles */
+.app-footer {
+  background: white;
+  /* border-top: 1px solid #e5e7eb; */
+  padding: 2rem 0;
+  margin-top: auto;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.dark .app-footer {
+  background: #0E0B16;
+  /* border-top: 1px solid #374151; */
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.footer-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #770ff5;
+}
+
+.dark .footer-title {
+  color: #e7dfdd;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.footer-link {
+  color: #374151;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.dark .footer-link {
+  color: #e7dfdd;
+}
+
+.footer-link:hover {
+  color: #770ff5;
+}
+
+.dark .footer-link:hover {
+  color: #770ff5;
+}
+
+.footer-copyright {
+  text-align: center;
+}
+
+.footer-copyright p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.dark .footer-copyright p {
+  color: #9ca3af;
+}
+
+

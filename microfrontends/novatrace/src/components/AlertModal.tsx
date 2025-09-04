@@ -1,17 +1,36 @@
 import React from "react";
-import { Alert, TimelineItem } from "@/types/Alert";
+import { Alert, TimelineItem } from "@shared/types";
 import { Button } from "@shared/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@shared/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/card";
+import { CardTitle } from "@shared/components/ui/card";
 import { Badge } from "@shared/components/ui/badge";
-import { ScrollArea } from "@shared/components/ui/scroll-area";
 
 import { X, FileText, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { API_ENDPOINTS } from "@/lib/config";
+import { API_ENDPOINTS } from "@shared/lib/config";
 import { AlertDetails } from "./AlertDetails";
 import { getTimeAgo } from "../utils/duration";
+import {
+  Overlay,
+  ModalContainer,
+  HeaderContainer,
+  HeaderRow,
+  TitleGroup,
+  Subtitle,
+  ContentWrapper,
+  LeftPanel,
+  TimelineCard,
+  TimelineHeader,
+  TimelineContent,
+  TimelineInner,
+  TimelineLine,
+  TimelineList,
+  TimelineItemRow,
+  TimelineDot,
+  TimelineEntry,
+  TimelineEmpty,
+  RightPanel,
+} from "../styled_components/AlertModal.styled";
 
 
 interface AlertModalProps {
@@ -38,7 +57,7 @@ export function AlertModal({ alert, isOpen, onClose, onOpenRawDataModal }: Alert
   const [selectedTimelineAlertId, setSelectedTimelineAlertId] = useState<string | undefined>();
   const [alertDataMap, setAlertDataMap] = useState<Map<string, Alert>>(new Map());
 
-  console.log("AlertModal render - isOpen:", isOpen, "alert:", alert?.alertKey);
+  // console.log("AlertModal render - isOpen:", isOpen, "alert:", alert?.alertKey);
 
   // Set initial alert ID when alert changes
   useEffect(() => {
@@ -85,102 +104,88 @@ export function AlertModal({ alert, isOpen, onClose, onOpenRawDataModal }: Alert
 
   return (
     <>
-      {/* Overlay */}
-      <div 
-        className="fixed inset-0 z-[9998] bg-background/50"
-        onClick={onClose}
-      />
-      
-      {/* Modal */}
-      <div className="fixed top-[50%] left-[50%] z-[9999] w-full max-w-7xl h-[90vh] bg-background text-foreground border border-border rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="flex-shrink-0 mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <FileText className="h-5 w-5" />
-              <span className="text-lg font-semibold">Alert Details - {alert.event}</span>
-            </div>
+      <Overlay onClick={onClose} />
+      <ModalContainer>
+        <HeaderContainer>
+          <HeaderRow>
+            <TitleGroup>
+              <FileText size={20} />
+              <span>Alert Details - {alert.event}</span>
+            </TitleGroup>
             <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
+              <X size={16} />
             </Button>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
+          </HeaderRow>
+          <Subtitle>
             View detailed information and timeline for alert {alert.alertKey}
-          </p>
-        </div>
-        
-        <div className="flex-1 flex overflow-hidden">
-          {/* Timeline on Left */}
-          <div className="w-1/3 border-r border-border flex flex-col min-h-0">
-            <Card className="h-full rounded-none border-0 flex flex-col">
-              <CardHeader className="flex-shrink-0">
-                <CardTitle className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5" />
-                  <span>Alert Timeline</span>
+          </Subtitle>
+        </HeaderContainer>
+        <ContentWrapper>
+          <LeftPanel>
+            <TimelineCard>
+              <TimelineHeader>
+                <CardTitle>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Clock size={20} />
+                    Alert Timeline
+                  </span>
                 </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-600 scrollbar-thumb-transparent">
-                <div className="relative p-4">
-                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-border"></div>
-                  <div className="space-y-4">
+              </TimelineHeader>
+              <TimelineContent>
+                <TimelineInner>
+                  <TimelineLine />
+                  <TimelineList>
                     {timeline.length > 0 ? (
                       timeline.map((timelineItem, index) => (
-                        <div key={index} className="relative flex items-start">
-                          <div className={`absolute left-3 w-3 h-3 rounded-full border-2 border-white ${
-                            timelineItem.current ? 'bg-primary' : 'bg-muted'
-                          }`}></div>
-                          <div
-                            className={`ml-8 flex-1 bg-muted/50 rounded-lg p-3 transition-colors cursor-pointer hover:bg-muted ${
-                              selectedTimelineAlert?.alertKey === timelineItem.alertKey ? 'bg-primary/5 border border-primary' : ''
-                            }`}
+                        <TimelineItemRow key={index}>
+                          <TimelineDot isCurrent={!!timelineItem.current} />
+                          <TimelineEntry
+                            selected={selectedTimelineAlert?.alertKey === timelineItem.alertKey}
                             onClick={() => {
-                              console.log("Clicked timeline item:", timelineItem.alertKey, "ID:", timelineItem.id);
                               setSelectedTimelineAlertId(timelineItem.id.toString());
                             }}
                           >
-                            <div className="flex items-center justify-between mb-2">
-                              <Badge variant="outline" className="text-xs">
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                              <Badge variant="outline" style={{ fontSize: '0.75rem' }}>
                                 {timelineItem.alertKey}
                               </Badge>
                               {timelineItem.current && (
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge variant="secondary" style={{ fontSize: '0.75rem' }}>
                                   SELECTED
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-foreground mb-2 line-clamp-2">
+                            <p style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>
                               {timelineItem.summary}
                             </p>
-                            <div className="flex items-center justify-between">
-                              <p className="text-xs text-muted-foreground">
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <p style={{ fontSize: '0.75rem', opacity: 0.8 }}>
                                 {formatDate(new Date(timelineItem.date))}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <p style={{ fontSize: '0.75rem', opacity: 0.8 }}>
                                 {getTimeAgo(new Date(timelineItem.date))}
                               </p>
                             </div>
-                          </div>
-                        </div>
+                          </TimelineEntry>
+                        </TimelineItemRow>
                       ))
                     ) : (
-                      <div className="text-sm text-muted-foreground ml-8">No timeline data available</div>
+                      <TimelineEmpty>No timeline data available</TimelineEmpty>
                     )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* AlertDetails on Right */}
-          <div className="w-2/3 flex flex-col min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-600 scrollbar-thumb-transparent">
+                  </TimelineList>
+                </TimelineInner>
+              </TimelineContent>
+            </TimelineCard>
+          </LeftPanel>
+          <RightPanel>
             <AlertDetails
               selectedAlert={selectedTimelineAlert}
               onOpenRawData={onOpenRawDataModal}
               showTimeline={false}
             />
-          </div>
-        </div>
-      </div>
+          </RightPanel>
+        </ContentWrapper>
+      </ModalContainer>
     </>
   );
 }

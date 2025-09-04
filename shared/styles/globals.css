@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap');
 @import "react-day-picker/style.css";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -110,29 +108,30 @@
 
 }
 
+.dark .rdp-root,
 [data-theme="dark"] .rdp-root {
   /* React Day Picker Theme Variables - Dark Mode */
   --rdp-accent-color: var(--starithm-veronica);
   --rdp-accent-background-color: var(--starithm-veronica);
   --rdp-animation_duration: 0.3s;
   --rdp-animation_timing: cubic-bezier(0.4, 0, 0.2, 1);
-  --rdp-day-height: 36px;
-  --rdp-day-width: 36px;
+  --rdp-day-height: 25px;
+  --rdp-day-width: 25px;
   --rdp-chevron-disabled-opacity: 0.3;
   --rdp-day_button-border-radius: 6px;
-  --rdp-day_button-border: 1px solid transparent;
-  --rdp-day_button-height: 36px;
-  --rdp-day_button-width: 36px;
-  --rdp-selected-border: 2px solid var(--starithm-veronica);
+  --rdp-day_button-border: 0.5px solid transparent;
+  --rdp-day_button-height: 25px;
+  --rdp-day_button-width: 25px;
+  --rdp-selected-border: 1px solid var(--starithm-veronica);
   --rdp-disabled-opacity: 0.3;
   --rdp-outside-opacity: 0.5;
   --rdp-today-color: var(--starithm-veronica);
   --rdp-dropdown-gap: 0.5rem;
   --rdp-months-gap: 1rem;
   --rdp-nav_button-disabled-opacity: 0.3;
-  --rdp-nav_button-height: 32px;
-  --rdp-nav_button-width: 32px;
-  --rdp-nav-height: 40px;
+  --rdp-nav_button-height: 25px;
+  --rdp-nav_button-width: 25px;
+  --rdp-nav-height: 36px;
   --rdp-range_middle-background-color: var(--accent);
   --rdp-range_middle-color: var(--accent-foreground);
   --rdp-range_start-color: var(--primary-foreground);
@@ -141,11 +140,12 @@
   --rdp-range_end-color: var(--primary-foreground);
   --rdp-week_number-border-radius: 6px;
   --rdp-week_number-border: 1px solid var(--border);
-  --rdp-week_number-height: 36px;
-  --rdp-week_number-width: 36px;
+  --rdp-week_number-height: 25px;
+  --rdp-week_number-width: 25px;
   --rdp-weekday-opacity: 0.7;
   --rdp-weekday-padding: 0.5rem;
   --rdp-weekday-text-align: center;
+  margin: 10px;
 }
 /* Dropdown Menu Specific Styles */
 [data-slot="dropdown-menu-content"] {
@@ -182,9 +182,18 @@
   z-index: 99999 !important;
 }
 
-/* Override any iframe or container z-index issues */
-.microfrontend-iframe {
-  z-index: 1 !important;
+/* Microfrontend content containers */
+.microfrontend-container {
+  width: 100%;
+  min-height: calc(100vh - 120px);
+  padding: 2rem;
+}
+
+.blog-content,
+.home-content,
+.novatrace-content {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* Ensure dropdowns are always on top */
@@ -401,4 +410,108 @@ html {
 
 .star:nth-child(4n) {
   animation-delay: 1.5s;
+}
+
+/* Utility Classes for Layout */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Utility Classes */
+.heading-1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.heading-2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+}
+
+.heading-3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.body-text {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
+}
+
+/* Responsive Typography */
+@media (min-width: 1024px) {
+  .heading-1 {
+    font-size: var(--font-size-6xl);
+  }
+  
+  .heading-2 {
+    font-size: var(--font-size-5xl);
+  }
+}
+
+@media (min-width: 1280px) {
+  .heading-1 {
+    font-size: var(--font-size-7xl);
+  }
+}
+
+/* Gradient Utility Classes */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--starithm-electric-violet), var(--starithm-veronica));
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, var(--starithm-veronica), var(--starithm-selective-yellow));
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, var(--starithm-selective-yellow), var(--starithm-electric-violet));
+}
+
+/* Animation Utility Classes */
+.transition {
+  transition: all 0.3s ease;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Spacing Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-6);
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 var(--spacing-8);
+  }
 }

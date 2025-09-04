@@ -16,9 +16,45 @@ import {
   Database,
   Image as ImageIcon
 } from 'lucide-react';
-import { API_ENDPOINTS } from '../lib/config';
+import { API_ENDPOINTS } from '../../../../shared/lib/config';
 import { AlertDetails } from './AlertDetails';
-import { Alert } from '@/types/Alert';
+import { Alert } from '@shared/types';
+import {
+  SidePanel,
+  PanelContainer,
+  PanelHeader,
+  HeaderLeft,
+  ContentScroll,
+  ContentInner,
+  StatsGrid,
+  StatBox,
+  StatNumber,
+  StatLabel,
+  ImageGrid,
+  ImageItem,
+  SkymapImage,
+  ModalOverlay,
+  ModalBackdrop,
+  ModalContainer,
+  ModalHeader,
+  ModalContent,
+  TextualContainer,
+  TextualMetaRow,
+  TextualMetaItem,
+  TextualSummary,
+  TimelineList,
+  TimelineItemCard,
+  TimelineItemContent,
+  ItemRow,
+  IndicatorCol,
+  IndicatorDot,
+  IndicatorConnector,
+  ItemContent,
+  ItemHeader,
+  ItemHeaderLeft,
+  ItemTimestamp,
+  StreamContent,
+} from '../styled_components/EventDetailsPanel.styled';
 
 
 // Constants for table keys to display
@@ -172,18 +208,21 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
   const latestStreamAlert = eventDetails?.stream?.[0];
 
   // Get PNG links from the latest stream alert
-  const skymapLinks = latestStreamAlert?.links?.skymap ? 
-    Object.entries(latestStreamAlert.links.skymap)
-      .filter(([key, value]) => 
-        typeof value === 'string' && 
-        (value.toLowerCase().includes('.png') || key.toLowerCase().includes('png'))
-      )
-      .map(([key, value]) => ({ key, url: value as string })) : [];
+  const getSkymapLinks = (links: Record<string, any>) => {
+    return links?.skymap ? 
+      Object.entries(links.skymap)
+        .filter(([key, value]) => 
+          typeof value === 'string' && 
+          (value.toLowerCase().includes('.png') || key.toLowerCase().includes('png'))
+        )
+        .map(([key, value]) => ({ key, url: value as string })) : [];
+  };
+  const skymapLinks = getSkymapLinks(latestStreamAlert?.links || {});
 
   // Combine stream alerts and textual circulars chronologically
   const timelineItems: TimelineItem[] = React.useMemo(() => {
     if (!eventDetails) return [];
-    console.log("eventDetails",eventDetails);
+    // console.log("eventDetails",eventDetails);
 
     const items: TimelineItem[] = [
       // Add stream alerts
@@ -210,73 +249,75 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
 
   if (isLoading) {
     return (
-      <div className="fixed inset-y-0 right-0 w-1/2 z-[9999] bg-background border-l border-border shadow-2xl">
-        <div className="h-full flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading event details...</p>
+      <SidePanel>
+        <PanelContainer>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Loading event details...</p>
+            </div>
           </div>
-        </div>
-      </div>
+        </PanelContainer>
+      </SidePanel>
     );
   }
 
   if (error || !eventDetails) {
     return (
-      <div className="fixed inset-y-0 right-0 w-1/2 z-[9999] bg-background border-l border-border shadow-2xl">
-        <div className="h-full flex items-center justify-center">
-          <div className="text-center">
-            <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-medium mb-2">Error Loading Event Details</h3>
-            <p className="text-muted-foreground mb-4">
-              Unable to load event details. Please try again.
-            </p>
-            <Button onClick={onClose}>Close</Button>
+      <SidePanel>
+        <PanelContainer>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="text-center">
+              <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <h3 className="text-lg font-medium mb-2">Error Loading Event Details</h3>
+              <p className="text-muted-foreground mb-4">Unable to load event details. Please try again.</p>
+              <Button onClick={onClose}>Close</Button>
+            </div>
           </div>
-        </div>
-      </div>
+        </PanelContainer>
+      </SidePanel>
     );
   }
 
   return (
-    <div className="fixed inset-y-8 right-0 w-1/2 z-[9999] bg-background border-l border-border shadow-2xl">
-      <div className="h-full flex flex-col">
+    <SidePanel>
+      <PanelContainer>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-t border-border flex-shrink-0">
-          <div className="flex items-center gap-3">
+        <PanelHeader>
+          <HeaderLeft>
             <Database className="h-5 w-5" />
-            <span className="font-semibold">Event Details - {eventId}</span>
-          </div>
+            <span>Event Details - {eventId}</span>
+          </HeaderLeft>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
-        </div>
+        </PanelHeader>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4 space-y-6">
+        <ContentScroll>
+          <ContentInner>
             {/* Summary Stats */}
-            <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-secondary-foreground">{eventDetails.stream.length}</div>
-                <div className="text-sm text-muted-foreground">Alerts</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-secondary">{eventDetails.textual.length}</div>
-                <div className="text-sm text-muted-foreground">Circulars</div>
-              </div>
-            </div>
+            <StatsGrid>
+              <StatBox>
+                <StatNumber>{eventDetails.stream.length}</StatNumber>
+                <StatLabel>Alerts</StatLabel>
+              </StatBox>
+              <StatBox>
+                <StatNumber>{eventDetails.textual.length}</StatNumber>
+                <StatLabel>Circulars</StatLabel>
+              </StatBox>
+            </StatsGrid>
 
             {/* Latest Stream Alert Table */}
             {latestStreamAlert && (
-              <Card>
+              <Card className='m-4 border-none'>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Activity className="h-4 w-4" />
                     Latest Info
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className='m-4'>
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -298,7 +339,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                           displayValue = value ? 'Yes' : 'No';
                         } else if (typeof value === 'object') {
                             displayValue = '';
-                            console.log("object",value);
+                            // console.log("object",value);
                             if (Array.isArray(value)) {
                               displayValue = value.map(v => v.toString()).join(', ');
                             } else {    
@@ -311,7 +352,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                           if (displayValue === '') {
                             return null;
                           }
-                        console.log(key, displayValue, typeof value);
+                        // console.log(key, displayValue, typeof value);
                         
                                                  return (
                            <TableRow key={key}>
@@ -338,26 +379,23 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 gap-4">
+                  <ImageGrid>
                     {skymapLinks.map((link, index) => (
-                      <div key={index} className="space-y-4">
-                        <img 
-                          src={link.url} 
+                      <ImageItem key={index}>
+                        <SkymapImage
+                          src={link.url}
                           alt={link.key}
-                          className="w-full max-w-md rounded-lg"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                         />
-                      </div>
+                      </ImageItem>
                     ))}
-                  </div>
+                  </ImageGrid>
                 </CardContent>
               </Card>
             )}
 
             {/* Timeline */}
-            <Card>
+            <Card className="border-none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
@@ -365,7 +403,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <TimelineList>
                   {timelineItems.map((item, index) => {
                     const { date, time } = formatTimestamp(item.timestamp);
                     const isExpanded = expandedItems.has(item.id);
@@ -373,29 +411,25 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                     const isTextualCircular = item.type === 'textual_circular';
 
                     return (
-                      <Card key={item.id} className="border-l-3 border-l-secondary-foreground">
-                        <CardContent className="p-4">
-                          <div className="flex items-start gap-3">
+                      <TimelineItemCard key={item.id}>
+                        <TimelineItemContent>
+                          <ItemRow>
                             {/* Timeline indicator */}
-                            <div className="flex flex-col items-center">
-                              <div className="w-3 h-3 bg-starithm-selective-yellow rounded-full"></div>
-                              {index < timelineItems.length - 1 && (
-                                <div className="w-0.5 h-8 bg-border mt-1"></div>
-                              )}
-                            </div>
+                            <IndicatorCol>
+                              <IndicatorDot />
+                              {index < timelineItems.length - 1 && (<IndicatorConnector />)}
+                            </IndicatorCol>
 
                             {/* Content */}
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
+                            <ItemContent>
+                              <ItemHeader>
+                                <ItemHeaderLeft>
                                   {isStreamAlert ? (
                                     <Activity className="h-4 w-4 text-primary" />
                                   ) : (
                                     <FileText className="h-4 w-4 text-secondary" />
                                   )}
-                                  <span className="font-medium">
-                                    {isStreamAlert ? 'Alert' : 'Circular'}
-                                  </span>
+                                  <span>{isStreamAlert ? 'Alert' : 'Circular'}</span>
                                   {isStreamAlert && (
                                     <Badge variant='default'>
                                       {(item.data as StreamAlert).alertKind}
@@ -406,15 +440,15 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                       {(item.data as Alert).alertKey}
                                     </Badge>
                                   )}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
+                                </ItemHeaderLeft>
+                                <ItemTimestamp>
                                   {date} {time}
-                                </div>
-                              </div>
+                                </ItemTimestamp>
+                              </ItemHeader>
 
                               {/* Stream Alert Content - Tabular Format */}
                               {isStreamAlert && (
-                                <div className="space-y-2">
+                                <StreamContent>
                                   <Table>
                                     <TableHeader>
                                       <TableRow>
@@ -453,6 +487,17 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                       })}
                                     </TableBody>
                                   </Table>
+                                  <ImageGrid>
+                                  {getSkymapLinks((item.data as StreamAlert)?.links || {}).map((link, index) => (
+                                    <ImageItem key={index}>
+                                      <SkymapImage
+                                        src={link.url}
+                                        alt={link.key}
+                                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                      />
+                                    </ImageItem>
+                                  ))}
+                                </ImageGrid>
 
                                   {/* Metadata
                                   <Button
@@ -476,26 +521,26 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                       </pre>
                                     </div>
                                   )} */}
-                                </div>
+                                </StreamContent>
                               )}
 
                               {/* Textual Circular Content - Use EventDetails component */}
                               {isTextualCircular && (
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-4 text-sm">
-                                    <div className="flex items-center gap-1">
+                                <TextualContainer>
+                                  <TextualMetaRow>
+                                    <TextualMetaItem>
                                       <Users className="h-3 w-3" />
                                       <span>{(item.data as Alert).data.authors.authors?.join(', ').slice(0, 100)+'...'}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
+                                    </TextualMetaItem>
+                                    <TextualMetaItem>
                                       <MessageSquare className="h-3 w-3" />
                                       <span>{(item.data as Alert).data.authors.affiliations?.join(', ').slice(0, 100)+'...'}</span>
-                                    </div>
-                                  </div>
+                                    </TextualMetaItem>
+                                  </TextualMetaRow>
 
-                                  <p className="text-sm text-muted-foreground">
+                                  <TextualSummary>
                                     {(item.data as Alert).summary}
-                                  </p>
+                                  </TextualSummary>
 
                                   <Button
                                     variant="outline"
@@ -504,49 +549,37 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                   >
                                     View Details
                                   </Button>
-                                </div>
+                                </TextualContainer>
                               )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                            </ItemContent>
+                          </ItemRow>
+                        </TimelineItemContent>
+                      </TimelineItemCard>
                     );
                   })}
-                </div>
+                </TimelineList>
               </CardContent>
             </Card>
-          </div>
-        </div>
-      </div>
+          </ContentInner>
+        </ContentScroll>
+      </PanelContainer>
 
       {/* Circular Details Modal */}
       {selectedCircular && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center">
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSelectedCircular(null)} />
-          <div className="relative w-full max-w-7xl h-[90vh] bg-background border border-border shadow-2xl rounded-lg flex flex-col z-[10001]">
-            {/* Modal Header with Close Button */}
-            <div className="flex justify-end p-4 border-b border-border bg-background flex-shrink-0">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setSelectedCircular(null)}
-                className="flex items-center gap-2"
-              >
+        <ModalOverlay>
+          <ModalBackdrop onClick={() => setSelectedCircular(null)} />
+          <ModalContainer>
+            <ModalHeader>
+              <Button variant="ghost" size="sm" onClick={() => setSelectedCircular(null)} className="flex items-center gap-2">
                 <X className="h-4 w-4" />
               </Button>
-            </div>
-            {/* Modal Content */}
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <AlertDetails 
-                selectedAlert={selectedCircular as Alert} 
-                showTimeline={false} 
-                onOpenAlertModal={() => {}} 
-                js9Loaded={false} 
-              />
-            </div>
-          </div>
-        </div>
+            </ModalHeader>
+            <ModalContent>
+              <AlertDetails selectedAlert={selectedCircular as Alert} showTimeline={false} onOpenAlertModal={() => {}} js9Loaded={false} />
+            </ModalContent>
+          </ModalContainer>
+        </ModalOverlay>
       )}
-    </div>
+    </SidePanel>
   );
 }

@@ -1,7 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
+import { Dialog } from "@shared/components/ui/dialog";
 import { Button } from "@shared/components/ui/button";
 import { X, Download, RotateCw, ZoomIn, ZoomOut, ExternalLink, FileText } from "lucide-react";
+import {
+  StyledDialogContent,
+  StyledDialogHeader,
+  HeaderRow,
+  StyledDialogTitle,
+  HeaderActions,
+  Body,
+  CenteredSection,
+  RoundIcon,
+  Heading,
+  SubText,
+  VerticalActions,
+  JS9Outer,
+  JS9Panel,
+  JS9Container,
+  JS9HelperText,
+  JS9HelperSub,
+} from "../styled_components/FitsViewerModal.styled";
 
 interface FitsViewerModalProps {
   isOpen: boolean;
@@ -161,14 +179,14 @@ export function FitsViewerModal({ isOpen, onClose, fitsUrl, title = "FITS Viewer
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] p-0">
-        <DialogHeader className="p-4 border-b bg-gray-50">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-lg font-semibold flex items-center space-x-2">
+      <StyledDialogContent>
+        <StyledDialogHeader>
+          <HeaderRow>
+            <StyledDialogTitle>
               <span>🔭</span>
               <span>{title}</span>
-            </DialogTitle>
-            <div className="flex items-center space-x-2">
+            </StyledDialogTitle>
+            <HeaderActions>
               <Button
                 variant="outline"
                 size="sm"
@@ -208,34 +226,33 @@ export function FitsViewerModal({ isOpen, onClose, fitsUrl, title = "FITS Viewer
               >
                 <X className="h-4 w-4" />
               </Button>
-            </div>
-          </div>
-        </DialogHeader>
+            </HeaderActions>
+          </HeaderRow>
+        </StyledDialogHeader>
         
-        <div className="p-6 bg-white">
+        <Body>
           <div className="flex flex-col items-center">
             {fitsType === 'Loading' && (
-              <div className="text-center py-8">
+              <CenteredSection>
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-starithm-electric-violet mx-auto mb-4"></div>
-                <p className="text-gray-600">Analyzing FITS file...</p>
-              </div>
+                <SubText>Analyzing FITS file...</SubText>
+              </CenteredSection>
             )}
 
             {fitsType === 'HEALPix' && (
-              <div className="text-center py-8 max-w-md">
-                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CenteredSection>
+                <RoundIcon bg="#FEF3C7">
                   <span className="text-2xl">🌌</span>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">HEALPix FITS File</h3>
-                <p className="text-gray-600 mb-6">
+                </RoundIcon>
+                <Heading>HEALPix FITS File</Heading>
+                <SubText>
                   This is a HEALPix format FITS file, which JS9 doesn't support. HEALPix files contain 
                   spherical coordinate data rather than 2D images.
-                </p>
-                <div className="flex flex-col space-y-3">
+                </SubText>
+                <VerticalActions>
                   <Button
                     variant="outline"
                     onClick={() => window.open(fitsUrl, '_blank')}
-                    className="flex items-center justify-center space-x-2"
                   >
                     <ExternalLink className="h-4 w-4" />
                     <span>Download FITS File</span>
@@ -246,57 +263,54 @@ export function FitsViewerModal({ isOpen, onClose, fitsUrl, title = "FITS Viewer
                       setShowJS9(true);
                       setFitsType('Image2D'); // Force JS9 view for testing
                     }}
-                    className="flex items-center justify-center space-x-2"
                   >
                     <FileText className="h-4 w-4" />
                     <span>Try JS9 Anyway</span>
                   </Button>
-                </div>
-              </div>
+                </VerticalActions>
+              </CenteredSection>
             )}
 
             {fitsType === 'Image2D' && !showJS9 && (
-              <div className="text-center py-8 max-w-md">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CenteredSection>
+                <RoundIcon bg="#D1FAE5">
                   <span className="text-2xl">🖼️</span>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">2D Image FITS File</h3>
-                <p className="text-gray-600 mb-6">
+                </RoundIcon>
+                <Heading>2D Image FITS File</Heading>
+                <SubText>
                   This appears to be a 2D image FITS file that should work with JS9.
-                </p>
-                <div className="flex flex-col space-y-3">
+                </SubText>
+                <VerticalActions>
                   <Button
                     onClick={() => setShowJS9(true)}
-                    className="flex items-center justify-center space-x-2 bg-starithm-electric-violet hover:bg-starithm-electric-violet/90"
+                    className="bg-starithm-electric-violet hover:bg-starithm-electric-violet/90"
                   >
                     <span>🔭 Open in JS9 Viewer</span>
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => window.open(fitsUrl, '_blank')}
-                    className="flex items-center justify-center space-x-2"
                   >
                     <ExternalLink className="h-4 w-4" />
                     <span>Download FITS File</span>
                   </Button>
-                </div>
-              </div>
+                </VerticalActions>
+              </CenteredSection>
             )}
 
             {fitsType === 'Unknown' && (
-              <div className="text-center py-8 max-w-md">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CenteredSection>
+                <RoundIcon bg="#F3F4F6">
                   <span className="text-2xl">❓</span>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Unknown FITS Format</h3>
-                <p className="text-gray-600 mb-6">
+                </RoundIcon>
+                <Heading>Unknown FITS Format</Heading>
+                <SubText>
                   Unable to determine the format of this FITS file.
-                </p>
-                <div className="flex flex-col space-y-3">
+                </SubText>
+                <VerticalActions>
                   <Button
                     variant="outline"
                     onClick={() => setShowJS9(true)}
-                    className="flex items-center justify-center space-x-2"
                   >
                     <FileText className="h-4 w-4" />
                     <span>Try JS9 Viewer</span>
@@ -304,24 +318,19 @@ export function FitsViewerModal({ isOpen, onClose, fitsUrl, title = "FITS Viewer
                   <Button
                     variant="outline"
                     onClick={() => window.open(fitsUrl, '_blank')}
-                    className="flex items-center justify-center space-x-2"
                   >
                     <ExternalLink className="h-4 w-4" />
                     <span>Download FITS File</span>
                   </Button>
-                </div>
-              </div>
+                </VerticalActions>
+              </CenteredSection>
             )}
 
             {showJS9 && (
-              <div className="w-full">
-                <div className="bg-black p-4 rounded-lg">
+              <JS9Outer>
+                <JS9Panel>
                   <div className="flex flex-col items-center">
-                    <div 
-                      ref={js9ContainerRef}
-                      className="border border-gray-600 rounded-lg overflow-hidden"
-                      style={{ width: '600px', height: '600px' }}
-                    >
+                    <JS9Container ref={js9ContainerRef}>
                       {!js9Loaded && (
                         <div className="w-full h-full flex items-center justify-center text-white">
                           <div className="text-center">
@@ -330,21 +339,20 @@ export function FitsViewerModal({ isOpen, onClose, fitsUrl, title = "FITS Viewer
                           </div>
                         </div>
                       )}
-                    </div>
-                    
-                    <div className="mt-4 text-white text-sm">
+                    </JS9Container>
+                    <JS9HelperText>
                       <p>🔭 Interactive FITS Image Viewer</p>
-                      <p className="text-gray-400 text-xs mt-1">
+                      <JS9HelperSub>
                         Use mouse to pan, scroll to zoom, and buttons above for controls
-                      </p>
-                    </div>
+                      </JS9HelperSub>
+                    </JS9HelperText>
                   </div>
-                </div>
-              </div>
+                </JS9Panel>
+              </JS9Outer>
             )}
           </div>
-        </div>
-      </DialogContent>
+        </Body>
+      </StyledDialogContent>
     </Dialog>
   );
 }

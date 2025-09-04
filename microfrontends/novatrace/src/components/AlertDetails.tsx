@@ -1,30 +1,115 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Alert } from "@/types/Alert";
+import { Alert } from "@shared/types";
 import { Badge } from "@shared/components/ui/badge";
 import { Button } from "@shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/card";
 
-import { API_ENDPOINTS } from "@/lib/config";
+import { API_ENDPOINTS } from "@shared/lib/config";
 import {
-  Clock,
-  MapPin,
   Zap,
   Star,
   TrendingUp,
   FileText,
-  ExternalLink,
   Users,
-  Telescope,
   BarChart3,
   Calendar,
+  Clock,
   Link
 } from "lucide-react";
-import { getTimeAgo } from "../utils/duration";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
+import { DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
 import { Image, Maximize2, Telescope as TelescopeIcon } from "lucide-react";
 import { Loading, ErrorComponentCompact } from "@shared/components";
 import { FitsViewerModal } from "./FitsViewerModal";
+import {
+  EmptyStateContainer,
+  EmptyStateContent,
+  EmptyStateIcon,
+  AlertImagesSection,
+  AlertImagesGrid,
+  AlertImageItem,
+  AlertImageElement,
+  AlertImageExpandButton,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  AlertDetailsContainer,
+  AlertDetailsContent,
+  AlertDetailsInner,
+  AlertHeader,
+  AlertHeaderLeft,
+  AlertHeaderRight,
+  AlertIcon,
+  AlertTitle,
+  AlertSubtitle,
+  AlertTitleSection,
+  EventInfoGrid,
+  EventInfoItem,
+  EventInfoLabel,
+  EventInfoValue,
+  AlertCardSection,
+  AlertCardTitle,
+  AlertCardContent,
+  AlertSummarySection,
+  AlertSummaryContent,
+  AlertSummaryText,
+  AlertSummaryFooter,
+  ParticipantsGrid,
+  ParticipantColumn,
+  ParticipantItem,
+  ParticipantLabel,
+  ParticipantValue,
+  AlertFitsSection,
+  AlertFitsFileName,
+  AlertFitsContent,
+  AlertFitsFileIcon,
+  AlertFitsFileLeft,
+  AlertFitsFileItem,
+  LinksContainer,
+  LinksContent,
+  LinkItem,
+  AlertCardHeader,
+  AlertMeasurementItem,
+  AlertMeasurementLabel,
+  AlertMeasurementValue,
+  AlertMeasurementTable,
+  AlertMeasurementTableHead,
+  AlertMeasurementTableRow,
+  AlertMeasurementTableHeaderCell,
+  AlertMeasurementTableBody,
+  AlertMeasurementTableCell,
+  AlertMeasurementSectionTitle,
+  AlertMeasurementGenericObject,
+  AlertMeasurementTableSection,
+  AlertMeasurementTableSectionContent,
+  AlertMeasurementTableSectionContentTitle,
+  AlertMeasurementTableWrapper,
+  AlertMeasurementTableNoData,
+  AlertMeasurementGrid,
+  AlertMeasurementCard,
+  AlertImageModal,
+  AlertImageModalImage,
+  AlertTablesSectionContainer,
+  AlertTablesSection,
+  AlertTablesSectionLabel,
+  AlertTablesSectionHeader
+} from "../styled_components";
+import {
+  TimelineContainer,
+  TimelineLine,
+  TimelineScrollContainer,
+  TimelineItems,
+  TimelineItem,
+  TimelineDot,
+  TimelineCard,
+  TimelineCardHeader,
+  TimelineCardLeft,
+  TimelineCardRight,
+  TimelineStatusDot,
+  TimelineCardContent,
+  TimelineCardFooter,
+  TimelineEmptyState,
+} from "../styled_components/AlertDetails.styled";
+import { getTimeAgo } from "@novatrace/utils/duration";
 
 interface AlertDetailsProps {
   selectedAlert?: Alert;
@@ -34,7 +119,7 @@ interface AlertDetailsProps {
   js9Loaded?: boolean;
 }
 
-const getEventIcon = (eventType: string) => {
+const getEventIcon = (eventType: string|undefined) => {
   switch (eventType?.toLowerCase()) {
     case 'gamma-ray burst':
     case 'grb':
@@ -89,46 +174,47 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
 
   if (!selectedAlert) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center text-muted-foreground">
+      <AlertDetailsContainer>
+        <EmptyStateContainer>
           <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <h3 className="text-lg font-medium mb-2">No Alert Selected</h3>
+          <EmptyStateTitle>No Alert Selected</EmptyStateTitle>
+          <EmptyStateDescription>Select an alert from the list to view details</EmptyStateDescription>
           <p className="text-sm">Select an alert from the list to view details</p>
-        </div>
-      </div>
+          </EmptyStateContainer>
+        </AlertDetailsContainer>
     );
   }
 
   if (apiError) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+        <AlertDetailsContainer>
         <ErrorComponentCompact
           onRetry={() => {
             setApiError(null);
             // The query will automatically refetch
           }}
         />
-      </div>
+      </AlertDetailsContainer>
     );
   }
 
   if (isLoadingDetails) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <AlertDetailsContainer>
         <Loading title="Loading Alert Details" />
-      </div>
+      </AlertDetailsContainer>
     );
   }
 
   // Use detailed alert data if available, otherwise fall back to selectedAlert
-  const alertData = detailedAlert || selectedAlert;
+  const alertData: Alert = detailedAlert || selectedAlert;
   
   const IconComponent = getEventIcon(alertData.data.basic_data.eventType);
   const measurements = alertData.data.measurements;
   const authors = alertData.data.authors;
   const telescopes = alertData.data.telescopes;
   const timeline = alertData.timeline || [];
-  const allUrls = alertData.data.urls || [];
+  const allUrls: string[] = alertData.data.urls || [];
   
   // Separate image URLs, FITS files, and regular URLs
   const imageUrls = allUrls.filter(url => 
@@ -140,30 +226,32 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
   const regularUrls = allUrls.filter(url => 
     !/\.(jpg|jpeg|png|gif|bmp|webp|svg|fit|fits)$/i.test(url)
   );
-  console.log({
-    fitsUrls,
-    imageUrls,
-    regularUrls
-  });
+  // console.log({
+  //   fitsUrls,
+  //   imageUrls,
+  //   regularUrls
+  // });
 
   return (
-    <div className="flex-1 flex flex-col h-full">
-      <div className="h-full overflow-y-auto">
-        <div className="p-6 space-y-6">
+    <AlertDetailsContainer>
+      <AlertDetailsContent>
+        <AlertDetailsInner>
           {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-3">
-              <IconComponent className="h-8 w-8 text-starithm-electric-violet" />
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">
+          <AlertHeader>
+            <AlertHeaderLeft>
+              <AlertIcon>
+                <IconComponent size={32} />
+              </AlertIcon>
+              <AlertTitleSection>
+                <AlertTitle>
                   {alertData.event}
-                </h1>
-                <p className="text-muted-foreground">
+                </AlertTitle>
+                <AlertSubtitle>
                   {alertData.alertKey} • {alertData.broker}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
+                </AlertSubtitle>
+              </AlertTitleSection>
+            </AlertHeaderLeft>
+            <AlertHeaderRight>
               {isLoadingDetails && (
                 <Badge variant="secondary" className="text-xs">
                   Loading...
@@ -173,170 +261,137 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                 {(alertData.confidenceLevel * 100).toFixed(0)}% Confidence
               </Badge>
               {onOpenRawData && (
-              <Button
-                variant="outline"
-                size="lg"
-                hasIcon={true}
-                className="flex items-center space-x-2"
-                onClick={() => onOpenRawData(alertData)}
-              >
-                <FileText className="h-4 w-4" />
-                Raw Data
-              </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  hasIcon={true}
+                  onClick={() => onOpenRawData(alertData)}
+                >
+                  <FileText className="h-4 w-4" />
+                  Raw Data
+                    </Button>
               )}
-            </div>
-          </div>
-           {/* Event Information Section */}
-           <Card className="border border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+            </AlertHeaderRight>
+          </AlertHeader>
+          {/* Event Information Section */}
+          <AlertCardSection>
+            <AlertCardHeader>
+              <AlertCardTitle>
                 <Calendar className="h-5 w-5" />
                 <span>Event Information</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 rounded-lg mb-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Detection Time</label>
-                  <p className="text-sm">{formatDate(alertData.date)}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Event Type</label>
-                  <p className="text-sm">{alertData.data.basic_data.eventType || 'Unknown'}</p>
-                </div>
-              </div>
-              {/* {alertData.tags.length > 0 && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Tags</label>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {alertData.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )} */}
-            </CardContent>
-          </Card>
-          {/* Summary Section */}
-          {alertData.summary && (
-            <Card className="border-1 border-[#ffc332] bg-gradient-to-r from-starithm-electric-violet/5 via-starithm-veronica/5 to-[#2f0240]">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+              </AlertCardTitle>
+            </AlertCardHeader>
+            <AlertCardContent>
+              <EventInfoGrid>
+                <EventInfoItem>
+                  <EventInfoLabel>Detection Time</EventInfoLabel>
+                  <EventInfoValue>{formatDate(new Date(alertData.date))}</EventInfoValue>
+                </EventInfoItem>
+                <EventInfoItem>
+                  <EventInfoLabel>Event Type</EventInfoLabel>
+                  <EventInfoValue>{alertData.data.basic_data.eventType || 'Unknown'}</EventInfoValue>
+                </EventInfoItem>
+              </EventInfoGrid>
+              
+            </AlertCardContent>
+            </AlertCardSection>
+            <AlertSummarySection>
+              <AlertCardHeader>
+                <AlertCardTitle>
                   <span>Summary</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="rounded-lg mb-4">
-                <p className="text-sm">{alertData.summary}</p>
-                <p className="text-xs text-muted-foreground text-right italic mt-2">
+                </AlertCardTitle>
+              </AlertCardHeader>
+              <AlertSummaryContent>
+                <AlertSummaryText>{alertData.summary}</AlertSummaryText>
+                <AlertSummaryFooter>
                   This is an AI generated summary, it may be incorrect. Please verify information with original sources.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-         
-          {timeline.length > 0 && showTimeline &&(
-            <Card className="border border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                </AlertSummaryFooter>
+              </AlertSummaryContent>
+            </AlertSummarySection>
+          {/* Summary Section */}
+          {/* Timeline Section */}
+          {timeline.length > 0 && showTimeline && (
+            <AlertCardSection>
+              <AlertCardHeader>
+                <AlertCardTitle>
                   <Clock className="h-5 w-5" />
                   <span>Alert Timeline for {alertData.event}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="rounded-lg mb-4 bg-starithm-bg-black">
-                <div className="relative">
-                  {/* Vertical Timeline Line */}
-                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                  
-                  {/* Fixed height scrollable container */}
-                  <div className="max-h-96 overflow-y-auto">
-                    <div className="space-y-4">
-                      {timeline.length > 0 ? 
-                        (timeline.map((timelineItem, index) => (
-                          <div key={index} className="relative flex items-start">
-                            {/* Timeline Dot */}
-                            <div className={`absolute left-3 w-3 h-3 rounded-full border-2 border-border ${
-                              timelineItem.current 
-                                ? 'bg-starithm-electric-violet' 
-                                : 'bg-gray-300'
-                            }`}></div>
-                            
-                            {/* Alert Card */}
-                            <div 
-                              className="ml-8 flex-1 bg-gray-50 rounded-lg p-3 transition-colors cursor-pointer hover:bg-gray-100"
+                </AlertCardTitle>
+              </AlertCardHeader>
+              <AlertCardContent>
+                <TimelineContainer>
+                  <TimelineLine />
+                  <TimelineScrollContainer>
+                    <TimelineItems>
+                      {timeline.length > 0 ? (
+                        timeline.map((timelineItem, index) => (
+                          <TimelineItem key={index}>
+                            <TimelineDot isCurrent={!!timelineItem.current} />
+                            <TimelineCard
                               onClick={() => {
                                 if (onOpenAlertModal) {
-                                  // Open AlertModal with the timeline alert
                                   onOpenAlertModal({
                                     ...alertData,
                                     alertKey: timelineItem.alertKey,
                                     date: new Date(timelineItem.date),
-                                    summary: timelineItem.summary
+                                    summary: timelineItem.summary,
                                   });
                                 }
                               }}
                             >
-                              <div className="flex items-center justify-between mb-2 bg-starithm-bg-black">
-                                <div className="flex items-center space-x-2">
-                                  <Badge variant="outline" className="text-xs border-starithm-electric-violet text-starithm-electric-violet">
+                              <TimelineCardHeader>
+                                <TimelineCardLeft>
+                                  <Badge variant="outline" style={{ fontSize: '0.75rem' }}>
                                     {timelineItem.alertKey}
                                   </Badge>
                                   {timelineItem.current && (
-                                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                                    <Badge variant="secondary" style={{ fontSize: '0.75rem' }}>
                                       SELECTED
                                     </Badge>
                                   )}
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <div className={`w-2 h-2 rounded-full ${
-                                    timelineItem.current ? 'bg-green-500' : 'bg-orange-500'
-                                  }`}></div>
+                                </TimelineCardLeft>
+                                <TimelineCardRight>
+                                  <TimelineStatusDot isCurrent={!!timelineItem.current} />
                                   <span className="text-xs text-muted-foreground">
                                     {timelineItem.current ? '94%' : '76%'}
                                   </span>
                                   <span className="text-xs text-muted-foreground">
                                     {getTimeAgo(new Date(timelineItem.date))}
                                   </span>
-                                </div>
-                              </div>
-                              
-                              <p className="text-sm text-gray-700 mb-2">
+                                </TimelineCardRight>
+                              </TimelineCardHeader>
+                              <TimelineCardContent>
                                 {timelineItem.summary}
-                              </p>
-                              
-                              <p className="text-xs text-muted-foreground">
+                              </TimelineCardContent>
+                              <TimelineCardFooter>
                                 {formatDate(new Date(timelineItem.date))}
-                              </p>
-                            </div>
-                          </div>
+                              </TimelineCardFooter>
+                            </TimelineCard>
+                          </TimelineItem>
                         ))
                       ) : (
-                        <div className="text-sm text-muted-foreground ml-8">
+                        <TimelineEmptyState>
                           No timeline data available for this event
-                        </div>
+                        </TimelineEmptyState>
                       )}
-                    </div>
-                  </div>
-                  
-                  
-                </div>
-              </CardContent>
-            </Card>
+                    </TimelineItems>
+                  </TimelineScrollContainer>
+                </TimelineContainer>
+              </AlertCardContent>
+            </AlertCardSection>
           )}
           {/* Measurements Section */}
-          <Card className="border border-border">
+          <AlertMeasurementCard>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle>
                 <BarChart3 className="h-5 w-5" />
                 <span>Astronomical Measurements</span>
               </CardTitle>
-            </CardHeader>
-            <CardContent className="rounded-lg mb-4">
+            </CardHeader> 
+            <CardContent>
               {Object.keys(measurements).length > 0 ? (
                 <>
-                <div className="grid grid-cols-2 gap-4">
+                <AlertMeasurementGrid>
                     {
                         Object.keys(measurements).map((key) => {
                             const value = measurements[key as keyof typeof measurements];
@@ -349,333 +404,264 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                             }
                             if (Array.isArray(value) && typeof value[0] !== 'object') {
                                 return (
-                                    <div>
-                                        <label className="text-sm font-medium text-muted-foreground">{key.replaceAll('_', ' ')}</label>
-                                        <p className="text-sm">{value.join(', ').replaceAll('"', '')}</p>
-                                    </div>
+                                    <AlertMeasurementItem>
+                                      {/* Replace all underscores with spaces using regex */}
+                                        <AlertMeasurementLabel>{key.replace(/_/g, ' ')}</AlertMeasurementLabel>
+                                        {/* Replace all quotes with spaces using regex */}
+                                        <AlertMeasurementValue>{value.join(', ').replace(/"/g, '')}</AlertMeasurementValue>
+                                    </AlertMeasurementItem>
                                 )
                             }
                             if (Array.isArray(value) && typeof value[0] === 'object') {
                                 return (
-                                  <div className="mt-4">
-                                    <label className="text-sm font-medium text-muted-foreground mb-2">{key.replaceAll('_', ' ')}</label>
-                                    <div className="border rounded-lg overflow-hidden">
-                                      <div className="bg-muted/50 px-4 py-2 border-b">
-                                        <h4 className="font-medium text-sm">{key.replaceAll('_', ' ')} Data</h4>
-                                      </div>
-                                      {Array.isArray(value) && value.length > 0 ? (
-                                        <div className="overflow-x-auto mt-4">
-                                          <table className="w-full text-sm">
-                                            <thead className="bg-muted/30">
-                                              <tr>
-                                                {Object.keys(value[0]).map((column) => (
-                                                  <th key={column} className="px-4 py-2 text-left font-medium text-muted-foreground border-b">
-                                                    {column.replaceAll('_', ' ')}
-                                                  </th>
-                                                ))}
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              {value.map((row, rowIndex) => (
-                                                <tr key={rowIndex} className="border-b hover:bg-muted/20">
-                                                  {Object.values(row).map((cell, cellIndex) => (
-                                                    <td key={cellIndex} className="px-4 py-2 text-foreground">
-                                                      {typeof cell === 'object' ? JSON.stringify(cell).replaceAll('"', '') : String(cell)}
-                                                    </td>
-                                                  ))}
-                                                </tr>
+                                  <AlertTablesSection key={key}>
+                                    <AlertTablesSectionLabel>{key.replace(/_/g, ' ')}</AlertTablesSectionLabel>
+                                    <AlertTablesSectionContainer>
+                                      <AlertTablesSectionHeader>
+                                        <AlertMeasurementSectionTitle>{key.replace(/_/g, ' ')} Data</AlertMeasurementSectionTitle>
+                                      </AlertTablesSectionHeader>
+                                      <AlertMeasurementTable>
+                                          <AlertMeasurementTableHead>
+                                            <AlertMeasurementTableRow>
+                                              {Object.keys(value[0]).map((column) => (
+                                                <AlertMeasurementTableHeaderCell key={column}>
+                                                  {column.replace(/_/g, ' ')}
+                                                </AlertMeasurementTableHeaderCell>
                                               ))}
-                                            </tbody>
-                                          </table>
-                                        </div>
-                                      ) : (
-                                        <div className="p-4 text-sm text-muted-foreground">
-                                          No data available
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
+                                            </AlertMeasurementTableRow>
+                                          </AlertMeasurementTableHead>
+                                          <AlertMeasurementTableBody>
+                                            {value.map((row, rowIndex) => (
+                                              <AlertMeasurementTableRow key={rowIndex}>
+                                                {Object.values(row).map((cell, cellIndex) => (
+                                                  <AlertMeasurementTableCell key={cellIndex}>
+                                                    {typeof cell === 'object' ? JSON.stringify(cell).replace(/"/g, '') : String(cell)}
+                                                  </AlertMeasurementTableCell>
+                                                ))}
+                                              </AlertMeasurementTableRow>
+                                            ))}
+                                          </AlertMeasurementTableBody>
+                                        </AlertMeasurementTable>
+                                    </AlertTablesSectionContainer>
+                                  </AlertTablesSection>
                                 )
                           }
                             if (typeof value === 'object') {
                               return Object.keys(value).map((vKey) => (
-                                  <div key={vKey}>
-                                      <label className="text-sm font-medium text-muted-foreground">{vKey.replaceAll('_', ' ')}</label>
-                                      <p className="text-sm">{JSON.stringify(value[vKey]).replaceAll('"', '')}</p>
-                                  </div>
+                                <AlertMeasurementGenericObject>
+                                      <label>{vKey.replace(/_/g, ' ')}</label>
+                                      <p>{JSON.stringify(value[vKey]).replace(/"/g, '')}</p>
+                                  </AlertMeasurementGenericObject>
                               ))
                           } 
                             return (
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">{key.replaceAll('_', ' ')}</label>
-                                    <p className="text-sm">{String(measurements[key as keyof typeof measurements])}</p>
-                                </div>
+                                <AlertMeasurementItem>
+                                    <AlertMeasurementLabel>{key.replace(/_/g, ' ')}</AlertMeasurementLabel>
+                                    <AlertMeasurementValue>{String(measurements[key as keyof typeof measurements])}</AlertMeasurementValue>
+                                </AlertMeasurementItem>
                             )
                         }).flat()
                     }
-                  {/* {measurements.redshift && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Redshift</label>
-                      <p className="text-sm">{String(measurements.redshift)}</p>
-                    </div>
-                  )}
-                  {measurements.distance && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Distance</label>
-                      <p className="text-sm">{String(measurements.distance)}</p>
-                    </div>
-                  )}
-                  {measurements.magnitude && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Magnitude</label>
-                      <p className="text-sm">{String(measurements.magnitude)}</p>
-                    </div>
-                  )}
-                  {measurements.duration && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Duration</label>
-                      <p className="text-sm">{String(measurements.duration)}</p>
-                    </div>
-                  )}
-                  {measurements.fluence && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Fluence</label>
-                      <p className="text-sm">{String(measurements.fluence)}</p>
-                    </div>
-                  )}
-                  {measurements.energy && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Energy</label>
-                      <p className="text-sm">{String(measurements.energy)}</p>
-                    </div>
-                  )} */}
-                </div>
+                </AlertMeasurementGrid>
                 {
-                  measurements.tables?.length > 0 && (
-                    <div className="mt-6">
-                      <label className="text-sm font-medium text-muted-foreground mb-2">Tables</label>
-                      <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-muted/50 px-4 py-2 border-b">
-                          <h4 className="font-medium text-sm">Data Table</h4>
-                        </div>
+                  measurements?.tables?.length > 0 && (
+                    <AlertMeasurementTableSection>
+                      <label>Tables</label>
+                      <AlertMeasurementTableSectionContent>
+                        <AlertMeasurementTableSectionContentTitle>
+                          <h4>Data Table</h4>
+                        </AlertMeasurementTableSectionContentTitle>
                         {Array.isArray(measurements.tables) && measurements.tables.length > 0 ? (
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                              <thead className="bg-muted/30">
-                                <tr>
+                          <AlertMeasurementTableWrapper>
+                            <AlertMeasurementTable>
+                              <AlertMeasurementTableHead>
+                                <AlertMeasurementTableRow>
                                   {Object.keys(measurements.tables[0]).map((column) => (
-                                    <th key={column} className="px-4 py-2 text-left font-medium text-muted-foreground border-b">
+                                    <AlertMeasurementTableHeaderCell key={column}>
                                       {column}
-                                    </th>
+                                    </AlertMeasurementTableHeaderCell>
                                   ))}
-                                </tr>
-                              </thead>
-                              <tbody>
+                                </AlertMeasurementTableRow>
+                              </AlertMeasurementTableHead>
+                              <AlertMeasurementTableBody>
                                 {measurements.tables.map((row, rowIndex) => (
-                                  <tr key={rowIndex} className="border-b hover:bg-muted/20">
+                                  <AlertMeasurementTableRow key={rowIndex}>
                                     {Object.values(row).map((cell, cellIndex) => (
-                                      <td key={cellIndex} className="px-4 py-2 text-foreground">
+                                      <AlertMeasurementTableCell key={cellIndex}>
                                         {String(cell)}
-                                      </td>
+                                      </AlertMeasurementTableCell>
                                     ))}
-                                  </tr>
+                                  </AlertMeasurementTableRow>
                                 ))}
-                              </tbody>
-                            </table>
-                          </div>
+                              </AlertMeasurementTableBody>
+                            </AlertMeasurementTable>
+                          </AlertMeasurementTableWrapper>
                         ) : (
-                          <div className="p-4 text-sm text-muted-foreground">
+                          <AlertMeasurementTableNoData>
                             No data available
-                          </div>
+                          </AlertMeasurementTableNoData>
                         )}
-                      </div>
-                    </div>
+                      </AlertMeasurementTableSectionContent>
+                    </AlertMeasurementTableSection>
                   )
                 }
                 {
                   measurements.misc_tables && (
-                    <div className="mt-6">
-                      <label className="text-sm font-medium text-muted-foreground mb-2">Miscellaneous Tables</label>
-                      <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-muted/50 px-4 py-2 border-b">
-                          <h4 className="font-medium text-sm">Miscellaneous Data Table</h4>
-                        </div>
+                    <AlertMeasurementTableSection>
+                      <label>Miscellaneous Tables</label>
+                      <AlertMeasurementTableSectionContent>
+                        <AlertMeasurementTableSectionContentTitle>
+                          <h4>Miscellaneous Data Table</h4>
+                        </AlertMeasurementTableSectionContentTitle>
                         {Array.isArray(measurements.misc_tables) && measurements.misc_tables.length > 0 ? (
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                              <thead className="bg-muted/30">
+                          <AlertMeasurementTableWrapper>
+                            <AlertMeasurementTable>
+                              <AlertMeasurementTableHead>
                                 <tr>
                                   {Object.keys(measurements.misc_tables[0]).map((column) => (
-                                    <th key={column} className="px-4 py-2 text-left font-medium text-muted-foreground border-b">
+                                    <AlertMeasurementTableHeaderCell key={column}>
                                       {column}
-                                    </th>
+                                    </AlertMeasurementTableHeaderCell>
                                   ))}
                                 </tr>
-                              </thead>
-                              <tbody>
+                              </AlertMeasurementTableHead>
+                              <AlertMeasurementTableBody>
                                 {measurements.misc_tables.map((row, rowIndex) => (
-                                  <tr key={rowIndex} className="border-b hover:bg-muted/20">
+                                  <AlertMeasurementTableRow key={rowIndex}>
                                     {Object.values(row).map((cell, cellIndex) => (
-                                      <td key={cellIndex} className="px-4 py-2 text-foreground">
+                                      <AlertMeasurementTableCell key={cellIndex}>
                                         {String(cell)}
-                                      </td>
+                                      </AlertMeasurementTableCell>
                                     ))}
-                                  </tr>
+                                  </AlertMeasurementTableRow>
                                 ))}
-                              </tbody>
-                            </table>
-                          </div>
+                              </AlertMeasurementTableBody>
+                            </AlertMeasurementTable>
+                          </AlertMeasurementTableWrapper>
                         ) : (
-                          <div className="p-4 text-sm text-muted-foreground">
+                          <AlertMeasurementTableNoData>
                             No data available
-                          </div>
+                          </AlertMeasurementTableNoData>
                         )}
-                      </div>
-                    </div>
+                      </AlertMeasurementTableSectionContent>
+                    </AlertMeasurementTableSection>
                   )
                 }
                 </>
               ) : (
-                <p className="text-sm text-muted-foreground">No measurements detected in alert</p>
+                <AlertMeasurementTableNoData>No measurements detected in alert</AlertMeasurementTableNoData>
               )}
             </CardContent>
-          </Card>
+          </AlertMeasurementCard>
 
           {/* Participants Section */}
-          {(authors.authors.length > 0 || authors.institutions.length > 0 || telescopes.telescopes.length > 0 || telescopes.observatories.length > 0) && (
+          {(authors?.authors?.length > 0 || authors?.institutions?.length > 0 || telescopes?.telescopes?.length > 0 || telescopes?.observatories?.length > 0) && (
           <Card className="border border-gray-200">
-            <CardHeader>
+            <AlertCardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="h-5 w-5" />
                 <span>Participants</span>
               </CardTitle>
-            </CardHeader>
+            </AlertCardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  {
-                    Object.keys(authors).map((key) => {
-                      return authors[key]?.length > 0 && (<div className="mb-3">
-                        <label className="text-sm font-medium text-muted-foreground">{key.toLocaleUpperCase()}</label>
-                        <div className="text-sm mt-1">
-                          {authors[key].join(', ')}
-                        </div>
-                      </div>)
-                    })
-                  }
-                  </div>
-                  <div>
-                  {
-                    Object.keys(telescopes).map((key) => {
-                      return telescopes[key]?.length > 0 && (<div className="mb-3">
-                        <label className="text-sm font-medium text-muted-foreground">{key.toLocaleUpperCase()}</label>
-                        <div className="text-sm mt-1">
-                          {telescopes[key].join(', ')}
-                        </div>
-                      </div>)
-                    })
-                  }
-                  {/* {authors.authors && authors.authors.length > 0 && (
-                    <div className="mb-3">
-                      <label className="text-sm font-medium text-muted-foreground">Authors</label>
-                      <div className="text-sm mt-1">
-                        {authors.authors.slice(0, 5).join(', ')}
-                        {authors.authors.length > 5 && ` +${authors.authors.length - 5} more`}
-                      </div>
-                    </div>
-                  )}
-                  {authors.institutions && authors.institutions.length > 0 && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Institutions</label>
-                      <div className="text-sm mt-1">
-                        {authors.institutions.slice(0, 3).join(', ')}
-                        {authors.institutions.length > 3 && ` +${authors.institutions.length - 3} more`}
-                      </div>
-                    </div>
-                  )} */}
-                </div>
-
-                {/* <div>
-                  {telescopes.telescopes && telescopes.telescopes.length > 0 && (
-                    <div className="mb-3">
-                      <label className="text-sm font-medium text-muted-foreground">Telescopes</label>
-                      <div className="text-sm mt-1">
-                        {telescopes.telescopes.slice(0, 3).join(', ')}
-                        {telescopes.telescopes.length > 3 && ` +${telescopes.telescopes.length - 3} more`}
-                      </div>
-                    </div>
-                  )}
-                  {telescopes.observatories && telescopes.observatories.length > 0 && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Observatories</label>
-                      <div className="text-sm mt-1">
-                        {telescopes.observatories.slice(0, 3).join(', ')}
-                        {telescopes.observatories.length > 3 && ` +${telescopes.observatories.length - 3} more`}
-                      </div>
-                    </div>
-                  )}
-                </div> */}
-              </div>
+              <ParticipantsGrid>
+                <ParticipantColumn>
+                  <ParticipantItem>
+                    <ParticipantLabel>Authors</ParticipantLabel>
+                    <ParticipantValue>
+                      {authors?.authors?.map((author, index) => (
+                        <span key={index}>{author}{index < authors.authors.length - 1 ? ', ' : ''}</span>
+                      ))}
+                    </ParticipantValue>
+                  </ParticipantItem>
+                  <ParticipantItem>
+                    <ParticipantLabel>Institutions</ParticipantLabel>
+                    <ParticipantValue>
+                      {authors?.institutions?.map((institution, index) => (
+                        <span key={index}>{institution}{index < authors.institutions.length - 1 ? ', ' : ''}</span>
+                      ))}
+                    </ParticipantValue>
+                  </ParticipantItem>
+                </ParticipantColumn>
+                <ParticipantColumn>
+                  <ParticipantItem>
+                    <ParticipantLabel>Telescopes</ParticipantLabel>
+                    <ParticipantValue>
+                      {telescopes?.telescopes?.map((telescope, index) => (
+                        <span key={index}>{telescope}{index < telescopes.telescopes.length - 1 ? ', ' : ''}</span>
+                      ))}
+                    </ParticipantValue>
+                  </ParticipantItem>
+                  <ParticipantItem>
+                    <ParticipantLabel>Observatories</ParticipantLabel>
+                    <ParticipantValue>
+                      {telescopes?.observatories?.map((observatory, index) => (
+                        <span key={index}>{observatory}{index < telescopes.observatories.length - 1 ? ', ' : ''}</span>
+                      ))}
+                    </ParticipantValue>
+                  </ParticipantItem>
+                </ParticipantColumn>
+              </ParticipantsGrid>
             </CardContent>
           </Card>)}
           
           {/* Images Section */}
           {imageUrls.length > 0 && (
-            <Card className="border border-gray-200">
+            <AlertImagesSection>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                <AlertCardTitle>
                   <Image className="h-5 w-5" />
                   <span>Images ({imageUrls.length})</span>
-                </CardTitle>
+                </AlertCardTitle>
               </CardHeader>
               <CardContent>
-                {/* <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4"> */}
+                <AlertImagesGrid>
                   {imageUrls.map((imageUrl, index) => (
-                    <div key={index} className="relative group">
-                      <img
+                    <AlertImageItem key={index}>
+                      <AlertImageElement
                         src={imageUrl}
                         alt={`Image ${index + 1}`}
-                        className="w-1/2 h-25 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
                         onClick={() => {
                           setSelectedImage(imageUrl);
                           setIsImageModalOpen(true);
                         }}
                       />
-                      <button
+                      <AlertImageExpandButton
                         onClick={() => {
                           setSelectedImage(imageUrl);
                           setIsImageModalOpen(true);
                         }}
-                        className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <Maximize2 className="h-4 w-4" />
-                      </button>
-                    </div>
+                      </AlertImageExpandButton>
+                    </AlertImageItem>
                   ))}
-                {/* </div> */}
+                </AlertImagesGrid>
               </CardContent>
-            </Card>
+            </AlertImagesSection>
           )}
           
           {/* FITS Files Section */}
           {fitsUrls.length > 0 && (
-            <Card className="border border-gray-200">
+            <AlertFitsSection>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                <AlertCardTitle>
                   <TelescopeIcon className="h-5 w-5" />
                   <span>FITS Files ({fitsUrls.length})</span>
-                </CardTitle>
+                </AlertCardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col gap-2">
+                <AlertFitsContent>
                   {fitsUrls.map((url, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                      <div className="flex items-center space-x-2">
-                        <TelescopeIcon className="h-4 w-4 text-starithm-electric-violet" />
-                        <span className="text-sm font-mono text-gray-700">
+                    <AlertFitsFileItem key={index}>
+                      <AlertFitsFileLeft>
+                        <AlertFitsFileIcon>
+                          <TelescopeIcon className="h-4 w-4" />
+                        </AlertFitsFileIcon>
+                        <AlertFitsFileName>
                           {url.split('/').pop() || url}
-                        </span>
-                      </div>
+                        </AlertFitsFileName>
+                      </AlertFitsFileLeft>
                       <Button
                         variant="outline"
                         size="sm"
@@ -687,64 +673,62 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                         <TelescopeIcon className="h-4 w-4 mr-2" />
                         View FITS
                       </Button>
-                    </div>
+                    </AlertFitsFileItem>
                   ))}
-                </div>
+                </AlertFitsContent>
               </CardContent>
-            </Card>
+            </AlertFitsSection>
           )}
           
           {/* Links Section */}
           {regularUrls.length > 0 && (
-            <Card className="border border-gray-200">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+            <LinksContainer>
+              <AlertCardHeader>
+                <AlertCardTitle>
                   <Link className="h-5 w-5" />
                   <span>Links</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col gap-2">
+                </AlertCardTitle>
+              </AlertCardHeader>
+              <AlertCardContent>
+                <LinksContent>
                   {regularUrls.map((url, index) => (
-                    <a
+                    <LinkItem
                       key={index}
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-starithm-link hover:underline"
                     >
                       {url}
-                    </a>
+                    </LinkItem>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
+                </LinksContent>
+              </AlertCardContent>
+            </LinksContainer>
           )}
           
           {/* Image Modal */}
-          <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
-            <DialogContent className="max-w-4xl max-h-[90vh] p-0">
-              <DialogHeader className="p-4 border-b">
-                <div className="flex items-center justify-between">
-                  <DialogTitle className="text-lg font-semibold">Image Preview</DialogTitle>
+          <AlertImageModal open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <div>
+                  <DialogTitle>Image Preview</DialogTitle>
                   <Button
-                    variant="outline"
-                    size="sm"
+                    // variant="outline"
+                    // size="sm"
                     onClick={() => setIsImageModalOpen(false)}
                   >
                     Close
                   </Button>
                 </div>
               </DialogHeader>
-              <div className="p-4">
+              <AlertImageModalImage>
                 <img
                   src={selectedImage}
                   alt="Full size image"
-                  className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
                 />
-              </div>
+              </AlertImageModalImage>
             </DialogContent>
-          </Dialog>
+          </AlertImageModal>
           
           {/* FITS Viewer Modal */}
           <FitsViewerModal
@@ -754,8 +738,8 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
             title={`FITS Viewer - ${selectedFitsUrl.split('/').pop() || 'FITS File'}`}
             js9Loaded={js9Loaded}
           />
-        </div>
-      </div>
-    </div>
+        </AlertDetailsInner>
+      </AlertDetailsContent>
+    </AlertDetailsContainer>
   );
 }

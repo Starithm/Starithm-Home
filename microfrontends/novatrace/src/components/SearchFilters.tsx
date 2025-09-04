@@ -9,7 +9,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@shared/components/ui/select";
-import { Calendar, Search, RotateCcw } from "lucide-react";
+import { Calendar as CalendarIcon, Search, RotateCcw } from "lucide-react";
+import { Calendar as DatePicker } from "@shared/components/ui/calendar";
+import {
+  FiltersContainer,
+  HeaderRow,
+  HeaderLeft,
+  HeaderTitle,
+  Actions,
+  FiltersGrid,
+  Field,
+} from "../styled_components/SearchFilters.styled";
 
 interface SearchFiltersProps {
   onSearch: (filters: SearchFilters) => void;
@@ -74,73 +84,49 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
   };
 
   return (
-    <div className="bg-background p-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">Search Filters</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={handleReset}
-            className="flex items-center space-x-1"
-          >
+    <FiltersContainer>
+      <HeaderRow>
+        <HeaderLeft>
+          <Search size={16} />
+          <HeaderTitle>Search Filters</HeaderTitle>
+        </HeaderLeft>
+        <Actions>
+          <Button variant="ghost" size="lg" onClick={handleReset}>
             <RotateCcw className="h-6 w-6" />
-            {/* <span>Reset</span> */}
           </Button>
-          <Button
-            variant="default"
-            size="lg"
-            onClick={handleSearch}
-            disabled={isLoading}
-                            className="flex items-center space-x-2"
-          >
+          <Button variant="default" size="lg" onClick={handleSearch} disabled={isLoading}>
             <Search className="h-4 w-4" />
             <span>{isLoading ? "Searching..." : "Search"}</span>
           </Button>
-        </div>
-      </div>
+        </Actions>
+      </HeaderRow>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-        {/* Start Date */}
-        <div className="space-y-2">
+      <FiltersGrid>
+        <Field>
           <Label htmlFor="startDate" className="text-xs">Start Date</Label>
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              id="startDate"
-              type="date"
-              value={filters.startDate}
-              onChange={(e) => handleFilterChange("startDate", e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </div>
+          <DatePicker
+            triggerClassName="w-full"
+            mode="single"
+            selected={filters.startDate ? new Date(filters.startDate) : undefined}
+            onSelect={(date?: Date) => {
+              handleFilterChange("startDate", date ? date.toISOString().split('T')[0] : "");
+            }}
+          />
+        </Field>
 
-        {/* End Date */}
-        <div className="space-y-2">
+        <Field>
           <Label htmlFor="endDate" className="text-xs">End Date</Label>
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              id="endDate"
-              type="date"
-              value={filters.endDate}
-              onChange={(e) => handleFilterChange("endDate", e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearch();
-                }
-              }}
-              className="pl-10"
-            />
-          </div>
-        </div>
+          <DatePicker
+            triggerClassName="w-full"
+            mode="single"
+            selected={filters.endDate ? new Date(filters.endDate) : undefined}
+            onSelect={(date?: Date) => {
+              handleFilterChange("endDate", date ? date.toISOString().split('T')[0] : "");
+            }}
+          />
+        </Field>
 
-        {/* Broker */}
-        <div className="space-y-2">
+        <Field>
           <Label htmlFor="broker" className="text-xs">Broker</Label>
           <Select
             value={filters.broker}
@@ -162,10 +148,9 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </Field>
 
-        {/* Event */}
-        <div className="space-y-2">
+        <Field>
           <Label htmlFor="event" className="text-xs">Event</Label>
           <Input
             id="event"
@@ -179,10 +164,9 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
               }
             }}
           />
-        </div>
+        </Field>
 
-        {/* Alert Key */}
-        <div className="space-y-2">
+        <Field>
           <Label htmlFor="alertKey" className="text-xs">Alert Key</Label>
           <Input
             id="alertKey"
@@ -196,8 +180,8 @@ export function SearchFilters({ onSearch, onReset, isLoading = false }: SearchFi
               }
             }}
           />
-        </div>
-      </div>
-    </div>
+        </Field>
+      </FiltersGrid>
+    </FiltersContainer>
   );
 }

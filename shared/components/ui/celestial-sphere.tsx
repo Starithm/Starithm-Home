@@ -1,20 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-
+import { Event } from '@shared/types';
 // Use a generic Event interface that matches the expected structure
-interface Event {
-  id: string;
-  canonicalId?: string;
-  alertKind: string;
-  sourceName: string;
-  phase: string;
-  t0: string;
-  producedAt: string;
-  raDeg?: number;
-  decDeg?: number;
-  posErrorDeg?: number;
-  hasSkymap: boolean;
-  classification?: Record<string, any>;
-}
+
 
 interface CelestialSphereProps {
   events: Event[];
