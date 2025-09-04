@@ -21,52 +21,59 @@ export const useTheme = () => {
 interface ThemeProviderProps {
   children: React.ReactNode;
   defaultTheme?: Theme;
+  /**
+   * Force a specific theme and ignore user/system preference.
+   * If provided, toggling has no effect and the app stays on this theme.
+   */
+  forceTheme?: Theme;
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ 
-  children, 
-  defaultTheme = 'dark' 
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+  children,
+  defaultTheme = 'dark',
+  forceTheme,
 }) => {
+  // Also support env-driven forcing (Vite): VITE_FORCE_THEME=dark|light
+  const envForce = (import.meta as any)?.env?.VITE_FORCE_THEME as Theme | undefined;
+  const forced = (forceTheme || envForce);
   const [theme, setThemeState] = useState<Theme>(() => {
-    // Check localStorage first
+    // 1) Persisted preference wins
     const savedTheme = localStorage.getItem('starithm-theme') as Theme;
-    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+    if (savedTheme === 'light' || savedTheme === 'dark') {
       return savedTheme;
     }
-    
-    // Check system preference
-    if (typeof window !== 'undefined') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      return systemTheme;
-    }
-    
+
+    // 2) Default to dark unless explicitly overridden by saved preference
+    // We intentionally ignore system preference here to ensure first load is dark.
     return defaultTheme;
   });
 
   const setTheme = (newTheme: Theme) => {
+    if (forced) return; // ignore changes when forced
     setThemeState(newTheme);
     localStorage.setItem('starithm-theme', newTheme);
   };
 
   const toggleTheme = () => {
+    if (forced) return; // ignore toggle when forced
     setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   useEffect(() => {
     const root = document.documentElement;
-    
+    const activeTheme = forced ?? theme;
     // Remove existing theme classes
     root.classList.remove('light', 'dark');
     
     // Add current theme class
-    root.classList.add(theme);
+    root.classList.add(activeTheme);
     
     // Update meta theme-color
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0E0B16' : '#ffffff');
+      metaThemeColor.setAttribute('content', activeTheme === 'dark' ? '#0E0B16' : '#ffffff');
     }
-  }, [theme]);
+  }, [theme, forced]);
 
   // Listen for system theme changes
   useEffect(() => {
@@ -84,7 +91,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   }, []);
 
   const value = {
-    theme,
+    theme: (forced ?? theme),
     toggleTheme,
     setTheme,
   };
