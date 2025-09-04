@@ -24,6 +24,7 @@ export interface Event {
     tags: string[];
     createdAt: Date;
     updatedAt: Date;
+    timeline: TimelineItem[];
   };
   
   export type MeasurementData = {

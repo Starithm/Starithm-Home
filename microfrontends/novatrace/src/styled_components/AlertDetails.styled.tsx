@@ -168,7 +168,7 @@ export const TimelineLine = styled.div`
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: ${({ theme }) => getThemeValue(theme, 'gray.200', '#e5e7eb')};
+  background-color: ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
 `;
 
 export const TimelineScrollContainer = styled.div`
@@ -198,55 +198,55 @@ export const TimelineDot = styled.div<{ isCurrent: boolean }>`
   background-color: ${({ isCurrent, theme }) => 
     isCurrent 
       ? getThemeValue(theme, 'starithmElectricViolet', '#770ff5')
-      : getThemeValue(theme, 'gray.300', '#d1d5db')
+      : getThemeValue(theme, 'border', '#686868')
   };
 `;
 
 export const TimelineCard = styled.div`
   margin-left: 2rem;
   flex: 1;
-  background-color: ${({ theme }) => getThemeValue(theme, 'gray.50', '#f9fafb')};
+  background-color: ${({ theme }) => getThemeValue(theme, 'background', '#f9fafb')};
   border-radius: 0.5rem;
   padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
   transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
   cursor: pointer;
 
   &:hover {
-    background-color: ${({ theme }) => getThemeValue(theme, 'gray.100', '#f3f4f6')};
+    border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
   }
 `;
 
 export const TimelineCardHeader = styled.div`
   display: flex;
-  aligntItems: center;
-  justifyContent: space-between;
-  marginBottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
-  backgroundColor: ${({ theme }) => getThemeValue(theme, 'starithmBgBlack', '#0E0B16')};
+  alignt-items: center;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  background-color: ${({ theme }) => getThemeValue(theme, 'background', '#0E0B16')};
 `;
 
 export const TimelineCardLeft = styled.div`
   display: flex;
-  aligntItems: center;
+  alignt-items: center;
   gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
 `;
 
 export const TimelineCardRight = styled.div`
   display: flex;
-  alignItems: center;
+  align-items: center;
   gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
 `;
 
 export const TimelineStatusDot = styled.div<{ isCurrent: boolean }>`
   width: 0.5rem;
   height: 0.5rem;
-  borderRadius: 50%;
-  backgroundColor: ${({ isCurrent }) => isCurrent ? '#10b981' : '#f59e0b'};
+  border-radius: 50%;
+  background-color: ${({ isCurrent, theme }) => isCurrent ? getThemeValue(theme, 'starithmElectricViolet', '#770ff5') : getThemeValue(theme, 'starithmVeronica', '#A239CA')};
 `;
 
 export const TimelineCardContent = styled.p`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  color: ${({ theme }) => getThemeValue(theme, 'gray.700', '#374151')};
-  marginBottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  color: ${({ theme }) => getThemeValue(theme, 'foreground', '#374151')};
+  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
 `;
 
 export const TimelineCardFooter = styled.p`
@@ -257,13 +257,13 @@ export const TimelineCardFooter = styled.p`
 export const TimelineEmptyState = styled.div`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
-    marginLeft: 2rem;
+    margin-left: 2rem;
 `;
 
 // Measurements section
 export const MeasurementsGrid = styled.div`
   display: grid;
-  gridTemplateColumns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
 `;
 
@@ -283,12 +283,12 @@ export const MeasurementValue = styled.p`
 export const MeasurementTable = styled.div`
   marginTop: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
   border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
-  borderRadius: 0.5rem;
+  border-radius: 0.5rem;
   overflow: hidden;
 `;
 
 export const MeasurementTableHeader = styled.div`
-  backgroundColor: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}80;
+  background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}80;
   padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
   borderBottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
 `;

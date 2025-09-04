@@ -31,12 +31,26 @@ export function Navbar() {
 
   const navigateToStatus = () => {
     // Navigate to the main app's status route
-    window.parent.postMessage({ type: 'navigate', path: '/novatrace/status' }, '*');
+    const target = '/novatrace/status';
+    // If embedded in a host, ask parent to navigate
+    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'navigate', path: target }, '*');
+    } else {
+      // Fallback: navigate within microfrontend (works in standalone dev)
+      window.location.href = `${target}`;
+    }
   };
 
   const navigateToHome = () => {
     // Navigate to the main app's home route
-    window.parent.postMessage({ type: 'navigate', path: '/' }, '*');
+    const target = '/';
+    // If embedded in a host, ask parent to navigate
+    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'navigate', path: target }, '*');
+    } else {
+      // Fallback: navigate within microfrontend (works in standalone dev)
+      window.location.href = `${target}`;
+    }
   };
 
   return (

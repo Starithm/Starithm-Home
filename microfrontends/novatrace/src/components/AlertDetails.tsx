@@ -14,6 +14,7 @@ import {
   Users,
   BarChart3,
   Calendar,
+  Clock,
   Link
 } from "lucide-react";
 import { DialogContent, DialogHeader, DialogTitle } from "@shared/components/ui/dialog";
@@ -92,6 +93,23 @@ import {
   AlertTablesSectionLabel,
   AlertTablesSectionHeader
 } from "../styled_components";
+import {
+  TimelineContainer,
+  TimelineLine,
+  TimelineScrollContainer,
+  TimelineItems,
+  TimelineItem,
+  TimelineDot,
+  TimelineCard,
+  TimelineCardHeader,
+  TimelineCardLeft,
+  TimelineCardRight,
+  TimelineStatusDot,
+  TimelineCardContent,
+  TimelineCardFooter,
+  TimelineEmptyState,
+} from "../styled_components/AlertDetails.styled";
+import { getTimeAgo } from "@novatrace/utils/duration";
 
 interface AlertDetailsProps {
   selectedAlert?: Alert;
@@ -195,6 +213,7 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
   const measurements = alertData.data.measurements;
   const authors = alertData.data.authors;
   const telescopes = alertData.data.telescopes;
+  const timeline = alertData.timeline || [];
   const allUrls: string[] = alertData.data.urls || [];
   
   // Separate image URLs, FITS files, and regular URLs
@@ -290,6 +309,77 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
               </AlertSummaryContent>
             </AlertSummarySection>
           {/* Summary Section */}
+          {/* Timeline Section */}
+          {timeline.length > 0 && showTimeline && (
+            <AlertCardSection>
+              <AlertCardHeader>
+                <AlertCardTitle>
+                  <Clock className="h-5 w-5" />
+                  <span>Alert Timeline for {alertData.event}</span>
+                </AlertCardTitle>
+              </AlertCardHeader>
+              <AlertCardContent>
+                <TimelineContainer>
+                  <TimelineLine />
+                  <TimelineScrollContainer>
+                    <TimelineItems>
+                      {timeline.length > 0 ? (
+                        timeline.map((timelineItem, index) => (
+                          <TimelineItem key={index}>
+                            <TimelineDot isCurrent={!!timelineItem.current} />
+                            <TimelineCard
+                              onClick={() => {
+                                if (onOpenAlertModal) {
+                                  onOpenAlertModal({
+                                    ...alertData,
+                                    alertKey: timelineItem.alertKey,
+                                    date: new Date(timelineItem.date),
+                                    summary: timelineItem.summary,
+                                  });
+                                }
+                              }}
+                            >
+                              <TimelineCardHeader>
+                                <TimelineCardLeft>
+                                  <Badge variant="outline" style={{ fontSize: '0.75rem' }}>
+                                    {timelineItem.alertKey}
+                                  </Badge>
+                                  {timelineItem.current && (
+                                    <Badge variant="secondary" style={{ fontSize: '0.75rem' }}>
+                                      SELECTED
+                                    </Badge>
+                                  )}
+                                </TimelineCardLeft>
+                                <TimelineCardRight>
+                                  <TimelineStatusDot isCurrent={!!timelineItem.current} />
+                                  <span className="text-xs text-muted-foreground">
+                                    {timelineItem.current ? '94%' : '76%'}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {getTimeAgo(new Date(timelineItem.date))}
+                                  </span>
+                                </TimelineCardRight>
+                              </TimelineCardHeader>
+                              <TimelineCardContent>
+                                {timelineItem.summary}
+                              </TimelineCardContent>
+                              <TimelineCardFooter>
+                                {formatDate(new Date(timelineItem.date))}
+                              </TimelineCardFooter>
+                            </TimelineCard>
+                          </TimelineItem>
+                        ))
+                      ) : (
+                        <TimelineEmptyState>
+                          No timeline data available for this event
+                        </TimelineEmptyState>
+                      )}
+                    </TimelineItems>
+                  </TimelineScrollContainer>
+                </TimelineContainer>
+              </AlertCardContent>
+            </AlertCardSection>
+          )}
           {/* Measurements Section */}
           <AlertMeasurementCard>
             <CardHeader>

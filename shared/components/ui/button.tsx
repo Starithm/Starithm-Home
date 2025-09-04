@@ -132,6 +132,7 @@ const StyledButton = styled.button<{
   font-weight: 500; /* medium */
   transition: color 0.2s, background-color 0.2s, box-shadow 0.2s;
   outline: none;
+  cursor: pointer;
   
   &:focus-visible {
     box-shadow: 0 0 0 2px var(--ring);

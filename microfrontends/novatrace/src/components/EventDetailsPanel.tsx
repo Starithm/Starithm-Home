@@ -208,13 +208,16 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
   const latestStreamAlert = eventDetails?.stream?.[0];
 
   // Get PNG links from the latest stream alert
-  const skymapLinks = latestStreamAlert?.links?.skymap ? 
-    Object.entries(latestStreamAlert.links.skymap)
-      .filter(([key, value]) => 
-        typeof value === 'string' && 
-        (value.toLowerCase().includes('.png') || key.toLowerCase().includes('png'))
-      )
-      .map(([key, value]) => ({ key, url: value as string })) : [];
+  const getSkymapLinks = (links: Record<string, any>) => {
+    return links?.skymap ? 
+      Object.entries(links.skymap)
+        .filter(([key, value]) => 
+          typeof value === 'string' && 
+          (value.toLowerCase().includes('.png') || key.toLowerCase().includes('png'))
+        )
+        .map(([key, value]) => ({ key, url: value as string })) : [];
+  };
+  const skymapLinks = getSkymapLinks(latestStreamAlert?.links || {});
 
   // Combine stream alerts and textual circulars chronologically
   const timelineItems: TimelineItem[] = React.useMemo(() => {
@@ -307,7 +310,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
 
             {/* Latest Stream Alert Table */}
             {latestStreamAlert && (
-              <Card className='m-4'>
+              <Card className='m-4 border-none'>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Activity className="h-4 w-4" />
@@ -484,6 +487,17 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                       })}
                                     </TableBody>
                                   </Table>
+                                  <ImageGrid>
+                                  {getSkymapLinks((item.data as StreamAlert)?.links || {}).map((link, index) => (
+                                    <ImageItem key={index}>
+                                      <SkymapImage
+                                        src={link.url}
+                                        alt={link.key}
+                                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                      />
+                                    </ImageItem>
+                                  ))}
+                                </ImageGrid>
 
                                   {/* Metadata
                                   <Button

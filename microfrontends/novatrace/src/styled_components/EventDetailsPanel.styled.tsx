@@ -10,6 +10,10 @@ export const SidePanel = styled.div`
   background-color: ${p => getThemeValue(p.theme, 'background', '#fff')};
   border-left: 1px solid ${p => getThemeValue(p.theme, 'border', '#e5e7eb')};
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+  /* Ensure text selection is allowed inside the panel even if parent disables it */
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
 `;
 
 export const PanelContainer = styled.div`
