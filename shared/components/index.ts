@@ -7,7 +7,7 @@ export { Toaster } from './ui/toaster';
 export * from './ui/toast';
 
 // Theme Components
-export { ThemeProvider, useTheme } from './ThemeProvider';
+export { UnifiedThemeProvider, useTheme } from './UnifiedThemeProvider';
 export { ThemeToggle } from './ThemeToggle';
 export { ThemeDemo } from './ThemeDemo';
 

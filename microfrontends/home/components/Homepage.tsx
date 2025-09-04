@@ -87,7 +87,7 @@ export function Homepage() {
                   size="lg"
                   onClick={() => {
                     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-                    window.open(`${baseUrl}/novatrace`, '_blank');
+                    window.open(`${baseUrl}/novatrace/alerts`, '_blank');
                   }}
                 >
                   View Live Alerts
