@@ -62,7 +62,7 @@ export default defineConfig({
       ...buildMfeAliases(["home", "novatrace", "blog"]),
 
     },
-    dedupe: ["react", "react-dom", "react-router-dom", "@tanstack/react-query"],
+    dedupe: ["react", "react-dom", "react-router-dom", "@tanstack/react-query", "styled-components"],
   },
   server: { port: 3000, open: true, host: true, proxy: { "/api": { target: "http://localhost:5004", changeOrigin: true, secure: false } } },
   build: {
@@ -80,6 +80,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ["react", "react-dom", "react-router-dom"],
+    include: ["react", "react-dom", "react-router-dom", "styled-components"],
   },
 });

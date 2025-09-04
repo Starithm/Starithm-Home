@@ -13,16 +13,16 @@ A comprehensive dark/light theme system for all Starithm microfrontends with pro
 
 ## Quick Start
 
-### 1. Wrap Your App with ThemeProvider
+### 1. Wrap Your App with UnifiedThemeProvider
 
 ```tsx
-import { ThemeProvider } from '../../../shared/components/ThemeProvider';
+import { UnifiedThemeProvider } from '../../../shared/components/UnifiedThemeProvider';
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark">
+    <UnifiedThemeProvider defaultTheme="dark">
       <YourApp />
-    </ThemeProvider>
+    </UnifiedThemeProvider>
   );
 }
 ```

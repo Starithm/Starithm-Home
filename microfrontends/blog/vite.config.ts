@@ -30,7 +30,7 @@ export default defineConfig({
     outDir: "dist",
     emptyOutDir: true,
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'styled-components'],
       output: {
         assetFileNames: 'blog-assets/[name]-[hash][extname]',
         chunkFileNames: 'blog-assets/[name]-[hash].js',

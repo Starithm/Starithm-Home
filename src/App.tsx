@@ -28,6 +28,7 @@ function App() {
         </div>
       </nav>
 
+
       {/* Main Content */}
       <main className="main-content">
         <QueryClientProvider client={getQueryClient()}> 
