@@ -115,10 +115,18 @@ export default function EventLevel() {
 
   // State for search trigger
   const [searchTrigger, setSearchTrigger] = useState(1); // Start with 1 to trigger initial load
+  const [filtersModified, setFiltersModified] = useState(false); // Track if filters have been modified
+
+  // Reset filtersModified flag on initial load
+  useEffect(() => {
+    if (searchTrigger === 1) {
+      setFiltersModified(false);
+    }
+  }, [searchTrigger]);
 
   // Fetch events with all filter parameters
   const { data: events = [], isLoading, error } = useQuery({
-    queryKey: ['events', filters, dateRange, selectedSources, selectedAlertTypes, searchTrigger],
+    queryKey: ['events', searchTrigger], // Only depend on searchTrigger
     queryFn: async () => {
       const response = await fetch(API_ENDPOINTS.events, {
         method: 'POST',
@@ -126,12 +134,12 @@ export default function EventLevel() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: dateRange.start,
-          to: dateRange.end,
+          fromDate: dateRange.start,
+          toDate: dateRange.end,
           canonicalId: filters.search,
           sourceName: selectedSources.length > 0 ? selectedSources : undefined,
           alertKind: selectedAlertTypes.length > 0 ? selectedAlertTypes : undefined,
-          limit: 100,
+          limit: 200,
           offset: 0
         }),
       });
@@ -149,19 +157,39 @@ export default function EventLevel() {
   // Use events directly since filtering is done by the API
   const filteredEvents: Event[] = events;
 
-  // Auto-select first event on initial load
+  // Auto-select first event when data changes
   useEffect(() => {
-    if (filteredEvents.length > 0 && !selectedEvent) {
-      setSelectedEvent(filteredEvents[0]);
+    if (filteredEvents.length > 0) {
+      // Check if current selectedEvent still exists in the new filteredEvents
+      const currentEventExists = selectedEvent && filteredEvents.some(event => 
+        event.id === selectedEvent.id || event.canonicalId === selectedEvent.canonicalId
+      );
+      
+      // If no event is selected or current selected event doesn't exist in new data, select first event
+      if (!selectedEvent || !currentEventExists) {
+        setSelectedEvent(filteredEvents[0]);
+      }
+    } else {
+      // Clear selection if no events
+      setSelectedEvent(null);
     }
   }, [filteredEvents, selectedEvent]);
 
   const handleFilterChange = (key: keyof EventFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+    setFiltersModified(true);
+    console.log("filters", filters);
   };
 
   const handleDateRangeChange = (start: string, end: string) => {
     setDateRange({ start, end });
+    setFiltersModified(true);
+    console.log("dateRange", dateRange);
+  };
+
+  const handleSearch = () => {
+    setSearchTrigger(prev => prev + 1);
+    setFiltersModified(false); // Reset the modified flag after search
   };
 
   const handleClearFilters = () => {
@@ -173,6 +201,9 @@ export default function EventLevel() {
       alertKind: '',
       phase: ''
     });
+    setFiltersModified(false); // Reset the modified flag
+    // Also trigger a new search with cleared filters
+    setSearchTrigger(prev => prev + 1);
   };
 
   const handleEventClick = (event: Event) => {
@@ -350,10 +381,11 @@ export default function EventLevel() {
               className="w-48"
             />
             <Button 
-              variant="default" 
+              variant={filtersModified ? "default" : "outline"}
               size="lg" 
-              onClick={() => setSearchTrigger(prev => prev + 1)}
+              onClick={handleSearch}
               disabled={isLoading}
+              className={filtersModified ? "bg-blue-600 hover:bg-blue-700" : ""}
             >
               {isLoading ? "Searching..." : "Search"}
             </Button>
