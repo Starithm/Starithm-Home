@@ -5,6 +5,9 @@ import { UnifiedThemeProvider } from '../shared/components/UnifiedThemeProvider'
 import App from './App.tsx'
 import './index.css'
 import '../shared/styles/globals.css'
+import { inject } from '@vercel/analytics'
+
+inject()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
