@@ -11,6 +11,7 @@ export interface Event {
     posErrorDeg?: number;
     hasSkymap: boolean;
     classification?: Record<string, any>;
+    additionalInfo?: string | null;
   }
   export type Alert = {
     id: number;

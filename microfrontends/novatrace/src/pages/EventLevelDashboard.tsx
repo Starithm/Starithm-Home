@@ -154,6 +154,19 @@ export default function EventLevel() {
     enabled: searchTrigger > 0, // Only run when search is triggered
   });
 
+  // Fetch AI summary for selected event
+  const { data: selectedEventDetail } = useQuery({
+    queryKey: ['eventDetail', selectedEvent?.canonicalId],
+    queryFn: async () => {
+      if (!selectedEvent?.canonicalId) return null;
+      const response = await fetch(API_ENDPOINTS.eventDetails(selectedEvent.canonicalId));
+      if (!response.ok) return null;
+      return response.json();
+    },
+    enabled: !!selectedEvent?.canonicalId,
+    refetchInterval: (query) => query.state.data?.aiSummary ? false : 10000,
+  });
+
   // Use events directly since filtering is done by the API
   const filteredEvents: Event[] = events;
 
@@ -454,10 +467,21 @@ export default function EventLevel() {
                         {selectedEvent.canonicalId || selectedEvent.id}
                       </EventTitle>
                       <EventSubtitle>
-                        {selectedEvent.sourceName} • {selectedEvent.alertKind}
+                        <span style={{ color: 'var(--starithm-veronica)' }}>{selectedEvent.sourceName}</span> • {selectedEvent.alertKind}
                       </EventSubtitle>
                     </div>
                   </EventPanelLeft>
+                  {selectedEventDetail?.aiSummary?.significance && (
+                    <span style={{
+                      fontSize: '0.65rem',
+                      fontWeight: 600,
+                      color: 'var(--starithm-selective-yellow)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      {selectedEventDetail.aiSummary.significance}
+                    </span>
+                  )}
                 </EventPanelTop>
               </EventPanelContent>
 
@@ -479,6 +503,12 @@ export default function EventLevel() {
                     )
                   }
                 </BadgeContainer>
+
+                {selectedEventDetail && (
+                  <span style={{ fontSize: '0.65rem', color: 'var(--muted-foreground)' }}>
+                    {selectedEventDetail.stream?.length ?? 0} notices • {selectedEventDetail.textual?.length ?? 0} circulars
+                  </span>
+                )}
 
                 {/* Timing */}
                 <SectionContainer>
@@ -520,6 +550,19 @@ export default function EventLevel() {
                       </SectionRow>
                     </SectionContent>
                   </SectionContainer>
+                )}
+
+                {/* AI Summary / Additional Info */}
+                {(selectedEventDetail?.aiSummary || selectedEvent.additionalInfo) && (
+                  <div style={{ fontSize: '0.7rem', color: 'var(--starithm-selective-yellow)', padding: '0.5rem 0', lineHeight: '1.4' }}>
+                    {selectedEventDetail?.aiSummary ? (
+                      <span style={{ fontWeight: 600 }}>
+                        {selectedEventDetail.aiSummary.headline}
+                      </span>
+                    ) : (
+                      <span>{selectedEvent.additionalInfo}</span>
+                    )}
+                  </div>
                 )}
 
                 {/* Actions */}
