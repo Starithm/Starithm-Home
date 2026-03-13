@@ -525,6 +525,14 @@ function DetailedViewTab({ alert }: { alert: StreamAlert }) {
 export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPanelProps) {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [selectedCircular, setSelectedCircular] = useState<Alert | null>(null);
+  const [expandedNotices, setExpandedNotices] = useState<Set<string>>(new Set());
+
+  const toggleNotice = (id: string) =>
+    setExpandedNotices(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
 
   const { data: eventDetails, isLoading, error } = useQuery({
     queryKey: ['eventDetails', eventId],
@@ -696,6 +704,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                               const pos = sa.raDeg != null && sa.decDeg != null;
                               const t0Fmt = sa.t0 ? formatTimestamp(sa.t0) : null;
                               const skymaps = getSkymapLinks(sa.links || {});
+                              const isExpanded = expandedNotices.has(item.id);
 
                               return (
                                 <StreamContent>
@@ -725,7 +734,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                                       {Object.entries(sa.classification).map(([k, v]) => (
                                         <span key={k} style={{ fontSize: '0.65rem', color: 'var(--muted-foreground)' }}>
-                                          {k}: {typeof v === 'number' ? `${(v * 100).toFixed(1)}%` : String(v)}
+                                          {k}: {typeof v === 'number' ? `${(v * 100).toFixed(1)}%` : typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)}
                                         </span>
                                       ))}
                                     </div>
@@ -744,6 +753,26 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                       ))}
                                     </ImageGrid>
                                   )}
+
+                                  <button
+                                    onClick={() => toggleNotice(item.id)}
+                                    style={{
+                                      alignSelf: 'flex-start',
+                                      fontSize: '0.65rem',
+                                      color: 'var(--muted-foreground)',
+                                      background: 'none',
+                                      border: 'none',
+                                      cursor: 'pointer',
+                                      padding: '0.125rem 0',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '0.25rem',
+                                    }}
+                                  >
+                                    {isExpanded ? '▲ Hide payload' : '▼ Show payload'}
+                                  </button>
+
+                                  {isExpanded && <DetailedViewTab alert={sa} />}
                                 </StreamContent>
                               );
                             })()}
