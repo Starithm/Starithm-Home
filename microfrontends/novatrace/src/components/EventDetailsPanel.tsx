@@ -534,6 +534,11 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
       return (await response.json()) as EventDetailsResponse;
     },
     enabled: !!eventId && isOpen,
+    refetchInterval: (query) => {
+      const aiSummary = query.state.data?.aiSummary;
+      if (!aiSummary || aiSummary.significance === 'processing') return 4000;
+      return false;
+    },
   });
 
   const latestStreamAlert = eventDetails?.stream?.[0];
