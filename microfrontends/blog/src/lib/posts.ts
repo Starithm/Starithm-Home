@@ -64,14 +64,10 @@ export async function fetchPostList(): Promise<PostMeta[]> {
 }
 
 export async function fetchPost(slug: string): Promise<Post | null> {
-  const res = await fetch(API_BASE);
+  const res = await fetch(`${RAW_BASE}/posts/${slug}.md`);
   if (!res.ok) return null;
-  const files: Array<{ name: string }> = await res.json();
 
-  const file = files.find(f => f.name.includes(slug) || f.name === `${slug}.md`);
-  if (!file) return null;
-
-  const raw = await fetch(`${RAW_BASE}/posts/${file.name}`).then(r => r.text());
+  const raw = await res.text();
   const { meta, content } = parseFrontmatter(raw);
 
   return {

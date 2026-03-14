@@ -18,6 +18,7 @@
 
       { "source": "/blog", "destination": "/index.html" },
       { "source": "/blog/", "destination": "/index.html" },
+      { "source": "/blog/posts/:slug", "destination": "/index.html" },
       { "source": "/blog/(.*)", "destination": "/index.html" }
     ],
 
