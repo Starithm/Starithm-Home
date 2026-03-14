@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ArrowLeft, Calendar, Clock, User, ExternalLink } from 'lucide-react';
@@ -7,11 +7,16 @@ import { fetchPost, Post } from '../lib/posts';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const [post, setPost] = useState<Post | null>((location.state as any)?.post ?? null);
+  const [loading, setLoading] = useState(!(location.state as any)?.post);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if ((location.state as any)?.post) {
+      document.title = `${(location.state as any).post.title} — Starithm Blog`;
+      return;
+    }
     if (!slug) return;
     setLoading(true);
     fetchPost(slug)

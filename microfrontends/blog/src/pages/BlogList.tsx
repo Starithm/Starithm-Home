@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, Clock, FileText } from 'lucide-react';
 import { Button } from '@shared/components/ui/button';
-import { fetchPostList, PostMeta } from '../lib/posts';
+import { fetchPostList, Post } from '../lib/posts';
 import {
   BlogContainer,
   Header,
@@ -34,7 +34,7 @@ import {
 } from '../styled_components/BlogList.styled';
 
 export default function BlogList() {
-  const [posts, setPosts] = useState<PostMeta[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -106,7 +106,7 @@ export default function BlogList() {
   );
 }
 
-function BlogPostCard({ post }: { post: PostMeta }) {
+function BlogPostCard({ post }: { post: Post }) {
   return (
     <BlogPostCardContainer>
       <PostCardCategory>
@@ -130,7 +130,7 @@ function BlogPostCard({ post }: { post: PostMeta }) {
           </PostCardMetaItem>
         </PostCardMeta>
 
-        <PostCardLink to={`/blog/posts/${post.slug}`}>
+        <PostCardLink to={`/blog/posts/${post.slug}`} state={{ post }}>
           <span>Read more</span>
           <ArrowRight size={16} />
         </PostCardLink>

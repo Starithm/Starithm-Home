@@ -35,7 +35,7 @@ function parseFrontmatter(raw: string): { meta: Partial<PostMeta>; content: stri
   return { meta, content: match[2].trim() };
 }
 
-export async function fetchPostList(): Promise<PostMeta[]> {
+export async function fetchPostList(): Promise<Post[]> {
   const res = await fetch(API_BASE);
   if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
   const files: Array<{ name: string; download_url: string }> = await res.json();
@@ -45,7 +45,7 @@ export async function fetchPostList(): Promise<PostMeta[]> {
   const posts = await Promise.all(
     mdFiles.map(async (file) => {
       const raw = await fetch(`${RAW_BASE}/posts/${file.name}`).then(r => r.text());
-      const { meta } = parseFrontmatter(raw);
+      const { meta, content } = parseFrontmatter(raw);
       return {
         slug: meta.slug || file.name.replace('.md', ''),
         title: meta.title || file.name,
@@ -56,7 +56,8 @@ export async function fetchPostList(): Promise<PostMeta[]> {
         arxiv_url: meta.arxiv_url || '',
         authors: meta.authors || '',
         read_time: meta.read_time || '5 min read',
-      } as PostMeta;
+        content,
+      } as Post;
     })
   );
 
