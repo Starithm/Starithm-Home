@@ -1,25 +1,19 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import BlogList from '../../microfrontends/blog/src/pages/BlogList';
+import BlogPost from '../../microfrontends/blog/src/pages/BlogPost';
 import Roadmap from '../../microfrontends/blog/src/pages/Roadmap';
 import NotFound from '../../microfrontends/blog/src/pages/NotFound';
 
 const BlogMicrofrontend: React.FC = () => {
-  const location = useLocation();
-
-  const renderContent = () => {
-    if (location.pathname === '/blog/roadmap') {
-      return <Roadmap />;
-    } else if (location.pathname === '/blog') {
-      return <BlogList />;
-    } else {
-      return <NotFound />;
-    }
-  };
-
   return (
     <div className="microfrontend-container">
-      {renderContent()}
+      <Routes>
+        <Route path="/" element={<BlogList />} />
+        <Route path="/roadmap" element={<Roadmap />} />
+        <Route path="/posts/:slug" element={<BlogPost />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </div>
   );
 };
