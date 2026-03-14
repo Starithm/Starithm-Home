@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, Clock, FileText } from 'lucide-react';
-// import { ThemeToggle } from '@shared/components/ThemeToggle';
 import { Button } from '@shared/components/ui/button';
+import { fetchPostList, PostMeta } from '../lib/posts';
 import {
   BlogContainer,
   Header,
@@ -18,7 +18,7 @@ import {
   FeaturedPostTitle,
   FeaturedPostExcerpt,
   FeaturedPostFooter,
-  PostMeta,
+  PostMeta as PostMetaStyled,
   MetaItem,
   MetaIcon,
   BlogPostCardContainer,
@@ -33,62 +33,53 @@ import {
   PostCardLink
 } from '../styled_components/BlogList.styled';
 
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  readTime: string;
-  category: string;
-  slug: string;
-}
-
 export default function BlogList() {
+  const [posts, setPosts] = useState<PostMeta[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPostList()
+      .then(setPosts)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <BlogContainer>
-      {/* Header */}
       <Header>
         <HeaderContainer>
           <HeaderTitle>Starithm Blog</HeaderTitle>
           <HeaderSubtitle>
-            Updates, insights, and roadmap for the astronomical community
+            Updates, insights, and research for the astronomical community
           </HeaderSubtitle>
         </HeaderContainer>
       </Header>
 
-      {/* Content */}
       <Main>
-        {/* Featured Post */}
+        {/* Featured — Roadmap always pinned */}
         <FeaturedPostSection>
           <FeaturedPostCard>
             <CategoryBadge>
-              <CategoryIcon>
-                <FileText size={20} />
-              </CategoryIcon>
+              <CategoryIcon><FileText size={20} /></CategoryIcon>
               <CategoryText>Roadmap</CategoryText>
             </CategoryBadge>
             <FeaturedPostTitle>
               Starithm Roadmap: Upcoming Features & Development Timeline
             </FeaturedPostTitle>
             <FeaturedPostExcerpt>
-              Explore our comprehensive roadmap featuring upcoming features, improvements, and infrastructure updates planned for the Starithm platform. 
-              From real-time notifications to advanced data visualization, discover what's coming next.
+              Explore our comprehensive roadmap featuring upcoming features, improvements, and infrastructure updates planned for the Starithm platform.
             </FeaturedPostExcerpt>
             <FeaturedPostFooter>
-              <PostMeta>
+              <PostMetaStyled>
                 <MetaItem>
-                  <MetaIcon>
-                    <Calendar size={16} />
-                  </MetaIcon>
-                  <span>Aug, 2025</span>
+                  <MetaIcon><Calendar size={16} /></MetaIcon>
+                  <span>Mar, 2026</span>
                 </MetaItem>
                 <MetaItem>
-                  <MetaIcon>
-                    <Clock size={16} />
-                  </MetaIcon>
+                  <MetaIcon><Clock size={16} /></MetaIcon>
                   <span>2 min read</span>
                 </MetaItem>
-              </PostMeta>
+              </PostMetaStyled>
               <Button asChild size="lg">
                 <Link to="/blog/roadmap">
                   <span>Read Roadmap</span>
@@ -98,48 +89,48 @@ export default function BlogList() {
             </FeaturedPostFooter>
           </FeaturedPostCard>
         </FeaturedPostSection>
+
+        {/* Research posts */}
+        {loading && (
+          <p style={{ color: '#888', textAlign: 'center', padding: '2rem' }}>Loading posts...</p>
+        )}
+        {!loading && posts.length > 0 && (
+          <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', padding: '0 0 2rem' }}>
+            {posts.map(post => (
+              <BlogPostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        )}
       </Main>
     </BlogContainer>
   );
 }
 
-function BlogPostCard({ post }: { post: BlogPost }) {
+function BlogPostCard({ post }: { post: PostMeta }) {
   return (
     <BlogPostCardContainer>
       <PostCardCategory>
         <FileText size={16} />
         <PostCardCategoryText>{post.category}</PostCardCategoryText>
       </PostCardCategory>
-      
-      <PostCardTitle>
-        {post.title}
-      </PostCardTitle>
-      
-      <PostCardExcerpt>
-        {post.excerpt}
-      </PostCardExcerpt>
-      
+
+      <PostCardTitle>{post.title}</PostCardTitle>
+
+      <PostCardExcerpt>{post.excerpt}</PostCardExcerpt>
+
       <PostCardFooter>
         <PostCardMeta>
           <PostCardMetaItem>
-            <PostCardMetaIcon>
-              <Calendar size={16} />
-            </PostCardMetaIcon>
-            <span>{new Date(post.date).toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}</span>
+            <PostCardMetaIcon><Calendar size={16} /></PostCardMetaIcon>
+            <span>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
           </PostCardMetaItem>
           <PostCardMetaItem>
-            <PostCardMetaIcon>
-              <Clock size={16} />
-            </PostCardMetaIcon>
-            <span>{post.readTime}</span>
+            <PostCardMetaIcon><Clock size={16} /></PostCardMetaIcon>
+            <span>{post.read_time}</span>
           </PostCardMetaItem>
         </PostCardMeta>
-        
-        <PostCardLink to={`/${post.slug}`}>
+
+        <PostCardLink to={`/blog/posts/${post.slug}`}>
           <span>Read more</span>
           <ArrowRight size={16} />
         </PostCardLink>

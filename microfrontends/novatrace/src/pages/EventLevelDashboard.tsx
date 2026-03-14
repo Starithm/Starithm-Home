@@ -92,6 +92,11 @@ interface DateRange {
 }
 
 export default function EventLevel() {
+  const deepLinkId = React.useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id') || null;
+  }, []);
+
   const [filters, setFilters] = useState<EventFilters>({
     search: '',
     sourceName: '',
@@ -170,23 +175,29 @@ export default function EventLevel() {
   // Use events directly since filtering is done by the API
   const filteredEvents: Event[] = events;
 
-  // Auto-select first event when data changes
+  // Auto-select first event when data changes; honour deep-link ?id= param
   useEffect(() => {
-    if (filteredEvents.length > 0) {
-      // Check if current selectedEvent still exists in the new filteredEvents
-      const currentEventExists = selectedEvent && filteredEvents.some(event => 
-        event.id === selectedEvent.id || event.canonicalId === selectedEvent.canonicalId
-      );
-      
-      // If no event is selected or current selected event doesn't exist in new data, select first event
-      if (!selectedEvent || !currentEventExists) {
-        setSelectedEvent(filteredEvents[0]);
-      }
-    } else {
-      // Clear selection if no events
+    if (filteredEvents.length === 0) {
       setSelectedEvent(null);
+      return;
     }
-  }, [filteredEvents, selectedEvent]);
+
+    if (deepLinkId && !selectedEvent) {
+      const match = filteredEvents.find(e => e.canonicalId === deepLinkId || e.id === deepLinkId);
+      if (match) {
+        setSelectedEvent(match);
+        setShowEventDetailsModal(true);
+        return;
+      }
+    }
+
+    const currentEventExists = selectedEvent && filteredEvents.some(
+      e => e.id === selectedEvent.id || e.canonicalId === selectedEvent.canonicalId
+    );
+    if (!selectedEvent || !currentEventExists) {
+      setSelectedEvent(filteredEvents[0]);
+    }
+  }, [filteredEvents, selectedEvent, deepLinkId]);
 
   const handleFilterChange = (key: keyof EventFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));

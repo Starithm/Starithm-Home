@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Analytics } from '@vercel/analytics/react';
 import Roadmap from "./pages/Roadmap";
 import BlogList from "./pages/BlogList";
+import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/roadmap" element={<Roadmap />} />
+          <Route path="/blog/posts/:slug" element={<BlogPost />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
