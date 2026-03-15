@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://starithm.ai/sitemap.xml
