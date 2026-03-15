@@ -12,7 +12,7 @@
     "dev:shell": "vite --port 3000 --open",
     "install:all": "npm install && cd microfrontends/home && npm install && cd ../novatrace && npm install && cd ../blog && npm install && cd ../../shared && npm install",
     "build:all": "npm run build && cd microfrontends/home && npm install && NODE_ENV=production npm run build && cd ../novatrace && npm install && NODE_ENV=production npm run build && cd ../blog && npm install && NODE_ENV=production npm run build && cd ../.. && npm run copy-microfrontends",
-    "copy-microfrontends": "mkdir -p dist/home dist/novatrace dist/blog && cp -r microfrontends/home/dist/* dist/home/ && cp -r microfrontends/novatrace/dist/* dist/novatrace/ && cp -r microfrontends/blog/dist/* dist/blog/ && echo 'Copy completed'",
+    "copy-microfrontends": "mkdir -p dist/home dist/novatrace dist/blog && cp -r microfrontends/home/dist/* dist/home/ && cp -r microfrontends/novatrace/dist/* dist/novatrace/ && cp -r microfrontends/blog/dist/* dist/blog/ && cp microfrontends/blog/dist/sitemap.xml dist/sitemap.xml && cp microfrontends/blog/dist/robots.txt dist/robots.txt && echo 'Copy completed'",
     "preview:all": "concurrently \"npm run preview\" \"cd microfrontends/home && npm run preview\" \"cd microfrontends/novatrace && npm run preview\""
   },
   "dependencies": {
