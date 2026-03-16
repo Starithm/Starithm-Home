@@ -289,7 +289,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   return (
     <div style={s}>
       {/* Nav */}
-      <div style={{ borderBottom: '1px solid #1a1a1a', padding: '0.75rem 1.5rem 0.75rem 2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ borderBottom: '1px solid #1a1a1a', padding: '0.75rem 1.5rem 0.75rem 2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <Link to="/novatrace/events" style={{ color: '#888', textDecoration: 'none', fontSize: '0.875rem' }}>
           ← All Events
         </Link>
@@ -306,7 +306,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
         </div>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: '0', padding: '2rem 1.5rem 2rem 2rem' }}>
+      <div style={{ maxWidth: 1100, margin: '0', padding: '2rem 1.5rem 2rem 2.5rem' }}>
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
@@ -349,7 +349,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
           <div>
             {/* AI Summary */}
             {event.aiSummary && (
-              <Section title="Starithm Summary">
+              <Section title="Starithm Summary" subtitle={<span title="If you find any inaccuracy please email at contact.starithm@gmail.com" style={{ cursor: 'help' }}>* Automated</span>}>
                 <p style={{ color: '#f5c518', lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>{event.aiSummary.details}</p>
               </Section>
             )}
@@ -567,7 +567,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
             )}
 
             {/* Cite block */}
-            <Section title="Cite This Event">
+            <Section title="Cite This Event" subtitle="Citation (for website reference only, not primary source)">
               <pre style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, padding: '1rem', fontSize: '0.75rem', color: '#a78bfa', overflowX: 'auto', margin: 0 }}>{`@misc{starithm_${event.canonicalId.toLowerCase().replace(/[^a-z0-9]/g, '_')},
   title     = {${event.aiSummary?.headline || event.canonicalId}},
   author    = {{Starithm Platform}},
@@ -724,12 +724,15 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, subtitle, children }: { title: string; subtitle?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: '1.75rem' }}>
-      <h2 style={{ fontSize: '0.875rem', fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.875rem', paddingBottom: '0.5rem', borderBottom: '1px solid #1a1a1a' }}>
-        {title}
-      </h2>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '0.875rem', paddingBottom: '0.5rem', borderBottom: '1px solid #1a1a1a' }}>
+        <h2 style={{ fontSize: '0.875rem', fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+          {title}
+        </h2>
+        {subtitle && <span style={{ fontSize: '0.7rem', color: '#555', fontStyle: 'italic' }}>{subtitle}</span>}
+      </div>
       {children}
     </div>
   );
