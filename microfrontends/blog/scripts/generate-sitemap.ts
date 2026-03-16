@@ -21,6 +21,8 @@ function parseFrontmatter(raw: string): Record<string, string> {
   return meta;
 }
 
+const NOVATRACE_API = 'https://novatrace-microservice.onrender.com';
+
 async function main() {
   console.log('Fetching post list from GitHub...');
   const res = await fetch(API_BASE);
@@ -39,6 +41,16 @@ async function main() {
     })
   );
 
+  console.log('Fetching event list from Novatrace API...');
+  let events: Array<{ canonicalId: string; updatedAt: string }> = [];
+  try {
+    const evRes = await fetch(`${NOVATRACE_API}/api/public/events`);
+    if (evRes.ok) events = await evRes.json();
+    console.log(`  Found ${events.length} events`);
+  } catch (e) {
+    console.warn('  Could not fetch events (non-fatal):', e);
+  }
+
   const staticRoutes = [
     { url: `${SITE_BASE}/blog`, priority: '1.0', changefreq: 'daily' },
     { url: `${SITE_BASE}/blog/roadmap`, priority: '0.8', changefreq: 'weekly' },
@@ -51,7 +63,14 @@ async function main() {
     changefreq: 'monthly',
   }));
 
-  const allRoutes = [...staticRoutes, ...postRoutes];
+  const eventRoutes = events.map(e => ({
+    url: `${SITE_BASE}/novatrace/events/${e.canonicalId}`,
+    lastmod: e.updatedAt ? new Date(e.updatedAt).toISOString().slice(0, 10) : undefined,
+    priority: '0.8',
+    changefreq: 'weekly',
+  }));
+
+  const allRoutes = [...staticRoutes, ...eventRoutes, ...postRoutes];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

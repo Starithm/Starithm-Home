@@ -9,6 +9,7 @@ import StatusDashboard from "@novatrace/pages/StatusDashboard";
 import AlertsLevel from "@novatrace/pages/AlertLevelDashboard";
 import EventLevel from "@novatrace/pages/EventLevelDashboard";
 import NotFound from "@novatrace/pages/NotFound";
+import PublicEventPage from "@novatrace/pages/PublicEventPage";
 import '@shared/styles/globals.css';
 
 
@@ -23,6 +24,8 @@ function Router() {
       <Route path="/novatrace/alerts" component={AlertsLevel} />
       <Route path="/novatrace/status" component={StatusDashboard} />
       <Route path="/novatrace/events" component={EventLevel} />
+      <Route path="/novatrace/events/:canonicalId" component={PublicEventPage} />
+      <Route path="/events/:canonicalId" component={PublicEventPage} />
       <Route component={NotFound} />
     </Switch>
   );

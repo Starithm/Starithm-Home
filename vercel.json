@@ -10,6 +10,7 @@
 
       { "source": "/novatrace", "destination": "/index.html" },
       { "source": "/novatrace/", "destination": "/index.html" },
+      { "source": "/novatrace/events/(.*)", "destination": "/index.html" },
       { "source": "/novatrace/(.*)", "destination": "/index.html" },
 
       { "source": "/home", "destination": "/index.html" },
