@@ -372,6 +372,12 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                   const p = payload;
                   const getObs = (key: string) => p.obs_support_info?.[key] ?? p[`obs_support_info_${key}`] ?? null;
                   const classLabel = topClassification(n.classification);
+                  const payloadImageUrls = Object.entries(p)
+                    .filter(([k, v]) => k.endsWith('_url') && typeof v === 'string' && IMAGE_EXTS.test(v))
+                    .map(([k, v]) => ({ label: k.replace(/_url$/, '').replace(/_/g, ' '), url: v as string }));
+                  const payloadFitsUrls = Object.entries(p)
+                    .filter(([k, v]) => k.endsWith('_url') && typeof v === 'string' && /\.fits(\.gz)?(\?.*)?$/i.test(v as string))
+                    .map(([k, v]) => ({ label: k.replace(/_url$/, '').replace(/_/g, ' '), url: v as string }));
                   const curatedFields: Array<[string, any]> = [
                     ['ID', n.id],
                     ['Instrument', p.instrument],
@@ -417,6 +423,28 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                               <span key={m.label} style={{ fontSize: '0.7rem', color: '#666' }}>
                                 <span style={{ color: '#444' }}>{m.label}: </span>{m.value}
                               </span>
+                            ))}
+                          </div>
+                        )}
+                        {payloadImageUrls.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
+                            {payloadImageUrls.map(({ label, url }) => (
+                              <a key={url} href={url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                                <span style={{ fontSize: '0.62rem', color: '#555', textTransform: 'capitalize' }}>{label}</span>
+                                <img src={url} alt={label} style={{ maxHeight: 160, maxWidth: 260, borderRadius: 4, border: '1px solid #2a2a2a' }} onError={e => { (e.currentTarget as HTMLImageElement).parentElement!.style.display = 'none'; }} />
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                        {payloadFitsUrls.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem', marginTop: '0.25rem' }}>
+                            {payloadFitsUrls.map(({ label, url }) => (
+                              <a key={url} href={url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', color: '#770ff5', background: 'rgba(119,15,245,0.08)', padding: '0.15rem 0.5rem', borderRadius: 4, textDecoration: 'none' }}>
+                                <ExternalLink size={10} />
+                                <span style={{ textTransform: 'capitalize' }}>{label}</span>
+                                <span style={{ color: '#444' }}>.fits</span>
+                              </a>
                             ))}
                           </div>
                         )}
