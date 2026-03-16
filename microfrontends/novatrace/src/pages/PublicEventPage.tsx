@@ -46,17 +46,18 @@ const SIGNIFICANCE_COLORS: Record<string, string> = {
   low: '#22c55e',
 };
 
-function formatCoordinate(value: number, type: 'ra' | 'dec'): string {
+function formatCoordinate(value: number | string, type: 'ra' | 'dec'): string {
+  const v = Number(value);
   if (type === 'ra') {
-    const h = Math.floor(value / 15);
-    const m = Math.floor((value % 15) * 4);
-    const s = ((value % 15) * 4 - m) * 60;
+    const h = Math.floor(v / 15);
+    const m = Math.floor((v % 15) * 4);
+    const s = ((v % 15) * 4 - m) * 60;
     return `${h}h ${m}m ${s.toFixed(1)}s`;
   }
-  const sign = value >= 0 ? '+' : '-';
-  const d = Math.floor(Math.abs(value));
-  const m = Math.floor((Math.abs(value) % 1) * 60);
-  const s = ((Math.abs(value) % 1) * 60 - m) * 60;
+  const sign = v >= 0 ? '+' : '-';
+  const d = Math.floor(Math.abs(v));
+  const m = Math.floor((Math.abs(v) % 1) * 60);
+  const s = ((Math.abs(v) % 1) * 60 - m) * 60;
   return `${sign}${d}° ${m}' ${s.toFixed(1)}"`;
 }
 
@@ -72,7 +73,7 @@ function topClassification(cls: Record<string, number> | null): string {
   return Object.entries(cls)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 2)
-    .map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`)
+    .map(([k, v]) => `${k} ${(Number(v) * 100).toFixed(0)}%`)
     .join(' · ');
 }
 
@@ -213,7 +214,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                     {n.raDeg != null && (
                       <div style={{ color: '#666', fontSize: '0.75rem', marginTop: '0.25rem' }}>
                         {formatCoordinate(n.raDeg, 'ra')} {formatCoordinate(n.decDeg!, 'dec')}
-                        {n.posErrorDeg != null && ` ± ${n.posErrorDeg.toFixed(2)}°`}
+                        {n.posErrorDeg != null && ` ± ${Number(n.posErrorDeg).toFixed(2)}°`}
                       </div>
                     )}
                     {n.links && Object.entries(n.links).filter(([, v]) => typeof v === 'string' && v.startsWith('http')).slice(0, 2).map(([k, v]) => (
@@ -262,7 +263,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                 <>
                   <SideField label="RA" value={formatCoordinate(event.raDeg, 'ra')} />
                   <SideField label="Dec" value={formatCoordinate(event.decDeg!, 'dec')} />
-                  {event.posErrorDeg != null && <SideField label="Error" value={`± ${event.posErrorDeg.toFixed(2)}°`} />}
+                  {event.posErrorDeg != null && <SideField label="Error" value={`± ${Number(event.posErrorDeg).toFixed(2)}°`} />}
                 </>
               ) : <span style={{ color: '#555', fontSize: '0.8rem' }}>No position data</span>}
             </SideCard>
