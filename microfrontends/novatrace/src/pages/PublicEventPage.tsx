@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'wouter';
+import { Link } from 'react-router-dom';
 import { Calendar, Clock, MapPin, Radio, FileText, ExternalLink, AlertTriangle, Copy, Check } from 'lucide-react';
 import { API_ENDPOINTS } from '@shared/lib/config';
 
