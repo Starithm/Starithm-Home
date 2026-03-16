@@ -219,7 +219,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   const [copied, setCopied] = useState(false);
   const [expandedNotices, setExpandedNotices] = useState<Set<string>>(new Set());
   const [expandedCirculars, setExpandedCirculars] = useState<Set<string>>(new Set());
-  const [rawModal, setRawModal] = useState<{ title: string; data: any } | null>(null);
+  const [rawModal, setRawModal] = useState<{ title: string; data: any; type: 'notice' | 'circular' } | null>(null);
 
   const toggleNotice = (id: string) => setExpandedNotices(prev => {
     const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next;
@@ -376,7 +376,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                         )}
                       </button>
                       <button
-                        onClick={() => setRawModal({ title: `Notice #${i + 1} — Raw Data`, data: n })}
+                        onClick={() => setRawModal({ title: `Notice #${i + 1} — ${n.id}`, data: n, type: 'notice' })}
                         style={{ background: 'none', border: 'none', borderLeft: '1px solid #1e1e1e', cursor: 'pointer', padding: '0 0.75rem', color: '#444', fontSize: '0.65rem', whiteSpace: 'nowrap' }}
                       >raw</button>
                       </div>
@@ -433,9 +433,14 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                     const institutions = c.data?.authors?.institutions;
                     const measurements = c.data?.measurements;
                     const hasMeasurements = measurements && Object.keys(measurements).length > 0;
-                    const imageUrls = (c.data?.urls || []).filter((u: string) => IMAGE_EXTS.test(u));
+                    const allUrls: string[] = c.data?.urls || [];
+                    const imageUrls = allUrls.filter((u: string) => IMAGE_EXTS.test(u));
+                    const linkUrls = allUrls.filter((u: string) => !IMAGE_EXTS.test(u));
                     const tags = c.tags?.length ? c.tags : null;
-                    const hasExtra = hasMeasurements || imageUrls.length > 0 || (authors && authors.length > 0);
+                    const redshift = measurements
+                      ? (measurements.redshift ?? measurements.z ?? measurements.redshift_z ?? null)
+                      : null;
+                    const hasExtra = hasMeasurements || imageUrls.length > 0 || linkUrls.length > 0 || (authors && authors.length > 0);
                     return (
                       <div key={c.alertKey} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden' }}>
                         {/* Always-visible header */}
@@ -444,9 +449,12 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                           onClick={() => hasExtra && toggleCircular(c.alertKey)}
                           style={{ flex: 1, background: 'none', border: 'none', cursor: hasExtra ? 'pointer' : 'default', padding: '0.875rem 1rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                             <span style={{ color: '#770ff5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
                             <span style={{ color: '#444', fontSize: '0.7rem', fontFamily: 'monospace' }}>{c.alertKey}</span>
+                            {redshift != null && (
+                              <span style={{ fontSize: '0.7rem', color: '#f5c518', fontWeight: 600 }}>z = {typeof redshift === 'number' ? redshift.toFixed(4) : redshift}</span>
+                            )}
                             {tags && tags.slice(0, 2).map(t => (
                               <span key={t} style={{ fontSize: '0.62rem', color: '#770ff5', background: 'rgba(119,15,245,0.08)', padding: '0.1rem 0.4rem', borderRadius: 3 }}>{t}</span>
                             ))}
@@ -457,7 +465,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                           <p style={{ color: '#aaa', fontSize: '0.8rem', lineHeight: 1.6, margin: 0 }}>{c.summary}</p>
                         </button>
                         <button
-                          onClick={() => setRawModal({ title: `Circular #${i + 1} — Raw Data`, data: c })}
+                          onClick={() => setRawModal({ title: `Circular #${i + 1} — ${c.alertKey}`, data: c, type: 'circular' })}
                           style={{ background: 'none', border: 'none', borderLeft: '1px solid #1e1e1e', cursor: 'pointer', padding: '0 0.75rem', color: '#444', fontSize: '0.65rem', whiteSpace: 'nowrap' }}
                         >raw</button>
                         </div>
@@ -500,6 +508,18 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                                       style={{ maxWidth: '100%', maxHeight: 220, borderRadius: 6, border: '1px solid #2a2a2a', cursor: 'pointer' }}
                                       onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                     />
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                            {/* Links */}
+                            {linkUrls.length > 0 && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                <div style={{ fontSize: '0.68rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Links</div>
+                                {linkUrls.map((url: string, idx: number) => (
+                                  <a key={idx} href={url} target="_blank" rel="noopener noreferrer"
+                                    style={{ fontSize: '0.75rem', color: '#f5c518', textDecoration: 'underline', wordBreak: 'break-all', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                    <ExternalLink size={11} style={{ flexShrink: 0 }} />{url}
                                   </a>
                                 ))}
                               </div>
@@ -564,13 +584,106 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
             onClick={e => e.stopPropagation()}
             style={{ background: '#111', border: '1px solid #2a2a2a', borderRadius: 10, width: '100%', maxWidth: 720, maxHeight: '80vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
           >
-            <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
               <span style={{ color: '#aaa', fontSize: '0.8rem', fontFamily: 'monospace' }}>{rawModal.title}</span>
               <button onClick={() => setRawModal(null)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1 }}>✕</button>
             </div>
-            <pre style={{ margin: 0, padding: '1rem', overflowY: 'auto', fontSize: '0.72rem', color: '#a78bfa', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-              {JSON.stringify(rawModal.data, null, 2)}
-            </pre>
+            <div style={{ overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {rawModal.type === 'notice' ? (() => {
+                const n = rawModal.data;
+                const p = n.payload || {};
+                const getVal = (a: any, b?: any) => a != null ? a : (b != null ? b : null);
+                const fields: Array<[string, any]> = [
+                  ['ID', n.id],
+                  ['Instrument', p.instrument],
+                  ['RA', n.raDeg != null ? formatCoordinate(n.raDeg, 'ra') : null],
+                  ['Dec', n.decDeg != null ? formatCoordinate(n.decDeg, 'dec') : null],
+                  ['Trigger Time', n.t0 ? formatDate(n.t0) : (p.trigger_time || null)],
+                  ['Importance', p.importance],
+                  ['Trigger ID', p.trigger_id],
+                  ['Moon Distance', getVal(p.obs_support_info?.moon_distance, p.obs_support_info_moon_distance)],
+                  ['Sun Distance', getVal(p.obs_support_info?.sun_distance, p.obs_support_info_sun_distance)],
+                  ['Hi Energy', p.hi_energy],
+                ].filter(([, v]) => v != null && v !== '');
+                const imgFields: Array<[string, string]> = [
+                  ['Lightcurve', getVal(p.lightcurve_url, n.links?.lightcurve_url)],
+                  ['Location Map', getVal(p.locationmap_url, n.links?.locationmap_url)],
+                ].filter(([, u]) => u) as Array<[string, string]>;
+                return (
+                  <>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem' }}>
+                      <tbody>
+                        {fields.map(([label, value]) => (
+                          <tr key={label}>
+                            <td style={{ padding: '0.3rem 0.5rem', color: '#555', fontFamily: 'monospace', borderBottom: '1px solid #181818', width: '38%', verticalAlign: 'top' }}>{label}</td>
+                            <td style={{ padding: '0.3rem 0.5rem', color: '#ccc', fontFamily: 'monospace', borderBottom: '1px solid #181818', wordBreak: 'break-word' }}>{String(value)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {imgFields.map(([label, url]) => (
+                      <div key={label} style={{ marginTop: '0.5rem' }}>
+                        <div style={{ fontSize: '0.68rem', color: '#555', marginBottom: '0.25rem' }}>{label}</div>
+                        <a href={url} target="_blank" rel="noopener noreferrer">
+                          <img src={url} alt={label} style={{ maxWidth: '100%', maxHeight: 240, borderRadius: 6, border: '1px solid #2a2a2a' }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                        </a>
+                      </div>
+                    ))}
+                  </>
+                );
+              })() : (() => {
+                const raw = rawModal.data.data?.raw;
+                if (!raw) return <span style={{ color: '#555', fontSize: '0.8rem' }}>No raw data</span>;
+                if (typeof raw === 'string') return <pre style={{ margin: 0, fontSize: '0.72rem', color: '#a78bfa', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{raw}</pre>;
+                return (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem' }}>
+                    <tbody>
+                      {Object.entries(raw).map(([key, value]) => {
+                        const label = key.replace(/_/g, ' ');
+                        // Classification-style: { key: { probability: n } }
+                        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                          const entries = Object.entries(value as Record<string, any>);
+                          const allHaveProb = entries.length > 0 && entries.every(([, v]) => typeof v === 'object' && v !== null && 'probability' in v);
+                          if (allHaveProb) {
+                            return entries.map(([k, v]) => (
+                              <tr key={`${key}_${k}`}>
+                                <td style={{ padding: '0.3rem 0.5rem', color: '#555', fontFamily: 'monospace', borderBottom: '1px solid #181818', width: '38%' }}>{label}: {k.replace(/_/g, ' ')}</td>
+                                <td style={{ padding: '0.3rem 0.5rem', color: '#ccc', fontFamily: 'monospace', borderBottom: '1px solid #181818' }}>probability: {String((v as any).probability)}</td>
+                              </tr>
+                            ));
+                          }
+                          return (
+                            <tr key={key}>
+                              <td style={{ padding: '0.3rem 0.5rem', color: '#555', fontFamily: 'monospace', borderBottom: '1px solid #181818', width: '38%', verticalAlign: 'top' }}>{label}</td>
+                              <td style={{ padding: '0.3rem 0.5rem', color: '#ccc', fontFamily: 'monospace', borderBottom: '1px solid #181818', wordBreak: 'break-word' }}>{JSON.stringify(value)}</td>
+                            </tr>
+                          );
+                        }
+                        // Image URLs
+                        if (typeof value === 'string' && IMAGE_EXTS.test(value)) {
+                          return (
+                            <tr key={key}>
+                              <td style={{ padding: '0.3rem 0.5rem', color: '#555', fontFamily: 'monospace', borderBottom: '1px solid #181818', verticalAlign: 'top' }}>{label}</td>
+                              <td style={{ padding: '0.3rem 0.5rem', borderBottom: '1px solid #181818' }}>
+                                <a href={value} target="_blank" rel="noopener noreferrer">
+                                  <img src={value} alt={label} style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 4, border: '1px solid #2a2a2a' }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                                </a>
+                              </td>
+                            </tr>
+                          );
+                        }
+                        return (
+                          <tr key={key}>
+                            <td style={{ padding: '0.3rem 0.5rem', color: '#555', fontFamily: 'monospace', borderBottom: '1px solid #181818', width: '38%' }}>{label}</td>
+                            <td style={{ padding: '0.3rem 0.5rem', color: '#ccc', fontFamily: 'monospace', borderBottom: '1px solid #181818', wordBreak: 'break-word' }}>{String(value ?? '—')}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                );
+              })()}
+            </div>
           </div>
         </div>
       )}

@@ -122,7 +122,27 @@ export const SingleAlertCard = styled(Card)<{ isSelected: boolean }>`
 export const AlertListContent = styled.div`
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   flex-direction: row;
+  scrollbar-width: thin;
+  scrollbar-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')}60 transparent;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')}50;
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')}90;
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
 `;
 
 export const AlertListInner = styled.div`

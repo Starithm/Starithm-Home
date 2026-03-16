@@ -85,6 +85,26 @@ export const TimelineContent = styled(CardContent)`
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')}60 transparent;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')}50;
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')}90;
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
 `;
 
 export const TimelineInner = styled.div`
@@ -152,6 +172,26 @@ export const RightPanel = styled.div`
   flex-direction: column;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')}60 transparent;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')}50;
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${({ theme }) => getThemeValue(theme, 'border', '#e5e7eb')}90;
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
 `;
 
 export const TimelineEmpty = styled.div`
