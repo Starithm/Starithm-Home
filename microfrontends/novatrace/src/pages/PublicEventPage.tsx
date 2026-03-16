@@ -203,12 +203,19 @@ function CircularMeasurements({ measurements }: { measurements: Record<string, a
   );
 }
 
-function topClassification(cls: Record<string, number> | null): string {
+function topClassification(cls: Record<string, any> | null): string {
   if (!cls) return '';
+  const extract = (v: any): number => {
+    if (typeof v === 'number') return v;
+    if (typeof v === 'object' && v !== null && 'probability' in v) return Number(v.probability);
+    return Number(v);
+  };
   return Object.entries(cls)
+    .map(([k, v]) => [k, extract(v)] as [string, number])
+    .filter(([, v]) => !isNaN(v))
     .sort(([, a], [, b]) => b - a)
     .slice(0, 2)
-    .map(([k, v]) => `${k} ${(Number(v) * 100).toFixed(0)}%`)
+    .map(([k, v]) => `${k.replace(/_/g, ' ')} ${(v * 100).toFixed(0)}%`)
     .join(' · ');
 }
 
@@ -277,7 +284,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   return (
     <div style={s}>
       {/* Nav */}
-      <div style={{ borderBottom: '1px solid #1a1a1a', padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ borderBottom: '1px solid #1a1a1a', padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <Link to="/novatrace/events" style={{ color: '#888', textDecoration: 'none', fontSize: '0.875rem' }}>
           ← All Events
         </Link>
@@ -294,7 +301,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
         </div>
       </div>
 
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '2.5rem 1.5rem' }}>
+      <div style={{ maxWidth: 1100, margin: '0', padding: '2rem 1.5rem 2rem 1rem' }}>
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
@@ -338,7 +345,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
             {/* AI Summary */}
             {event.aiSummary && (
               <Section title="Starithm Summary">
-                <p style={{ color: '#770ff5', lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>{event.aiSummary.details}</p>
+                <p style={{ color: '#f5c518', lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>{event.aiSummary.details}</p>
               </Section>
             )}
 
@@ -349,24 +356,45 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                   const isExpanded = expandedNotices.has(n.id);
                   const metrics = getPayloadMetrics(event.alertKind, n.payload || {});
                   const payload = n.payload || {};
+                  const p = payload;
+                  const getObs = (key: string) => p.obs_support_info?.[key] ?? p[`obs_support_info_${key}`] ?? null;
+                  const curatedFields: Array<[string, any]> = [
+                    ['ID', n.id],
+                    ['Instrument', p.instrument],
+                    ['RA', n.raDeg != null ? formatCoordinate(n.raDeg, 'ra') : null],
+                    ['Dec', n.decDeg != null ? formatCoordinate(n.decDeg!, 'dec') : null],
+                    ['Importance', p.importance],
+                    ['Trigger ID', p.trigger_id],
+                    ['Moon Dist', getObs('moon_distance')],
+                    ['Sun Dist', getObs('sun_distance')],
+                    ['Hi Energy', p.hi_energy],
+                  ].filter(([, v]) => v != null && v !== '');
+                  const classLabel = topClassification(n.classification);
                   return (
                     <div key={n.id} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden' }}>
                       {/* Always-visible header — click to expand */}
-                      <div style={{ display: 'flex', alignItems: 'stretch' }}>
                       <button
                         onClick={() => toggleNotice(n.id)}
-                        style={{ flex: 1, background: 'none', border: 'none', cursor: 'pointer', padding: '0.875rem 1rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
+                        style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '0.875rem 1rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                           <span style={{ color: '#770ff5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
                           {n.phase && <span style={{ color: '#888', fontSize: '0.75rem', textTransform: 'capitalize' }}>{n.phase.replace(/_/g, ' ')}</span>}
-                          {n.classification && <span style={{ color: '#666', fontSize: '0.72rem' }}>{topClassification(n.classification)}</span>}
+                          {classLabel && <span style={{ color: '#666', fontSize: '0.72rem' }}>{classLabel}</span>}
                           <span style={{ color: '#444', fontSize: '0.7rem', marginLeft: 'auto' }}>{isExpanded ? '▲' : '▼'}</span>
                           {n.t0 && <span style={{ color: '#555', fontSize: '0.72rem' }}>{formatDate(n.t0)}</span>}
                         </div>
-                        <div style={{ color: '#777', fontSize: '0.75rem' }}>{n.topic}</div>
-                        {!isExpanded && metrics.length > 0 && (
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem 1rem' }}>
+                        {curatedFields.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem 1rem' }}>
+                            {curatedFields.map(([label, value]) => (
+                              <span key={label as string} style={{ fontSize: '0.7rem', color: '#666' }}>
+                                <span style={{ color: '#444' }}>{label}: </span>{String(value)}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {metrics.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem 1rem' }}>
                             {metrics.map(m => (
                               <span key={m.label} style={{ fontSize: '0.7rem', color: '#666' }}>
                                 <span style={{ color: '#444' }}>{m.label}: </span>{m.value}
@@ -375,11 +403,6 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                           </div>
                         )}
                       </button>
-                      <button
-                        onClick={() => setRawModal({ title: `Notice #${i + 1} — ${n.id}`, data: n, type: 'notice' })}
-                        style={{ background: 'none', border: 'none', borderLeft: '1px solid #1e1e1e', cursor: 'pointer', padding: '0 0.75rem', color: '#444', fontSize: '0.65rem', whiteSpace: 'nowrap' }}
-                      >raw</button>
-                      </div>
 
                       {/* Expanded: full payload table */}
                       {isExpanded && (
