@@ -242,7 +242,12 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
         if (r.status === 404) { setNotFound(true); return null; }
         return r.json();
       })
-      .then(data => { if (data) setEvent(data); })
+      .then(data => {
+        if (data) {
+          setEvent(data);
+          setExpandedCirculars(new Set((data.circulars as Array<{ alertKey: string }>).map(c => c.alertKey)));
+        }
+      })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [canonicalId]);
@@ -284,7 +289,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   return (
     <div style={s}>
       {/* Nav */}
-      <div style={{ borderBottom: '1px solid #1a1a1a', padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ borderBottom: '1px solid #1a1a1a', padding: '0.75rem 1.5rem 0.75rem 2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <Link to="/novatrace/events" style={{ color: '#888', textDecoration: 'none', fontSize: '0.875rem' }}>
           ← All Events
         </Link>
@@ -301,7 +306,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
         </div>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: '0', padding: '2rem 1.5rem 2rem 1rem' }}>
+      <div style={{ maxWidth: 1100, margin: '0', padding: '2rem 1.5rem 2rem 2rem' }}>
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
@@ -363,6 +368,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                     ['Instrument', p.instrument],
                     ['RA', n.raDeg != null ? formatCoordinate(n.raDeg, 'ra') : null],
                     ['Dec', n.decDeg != null ? formatCoordinate(n.decDeg!, 'dec') : null],
+                    ['Classification', classLabel || null],
                     ['Importance', p.importance],
                     ['Trigger ID', p.trigger_id],
                     ['Moon Dist', getObs('moon_distance')],
@@ -379,8 +385,8 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                           <span style={{ color: '#770ff5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
-                          {n.phase && <span style={{ color: '#888', fontSize: '0.75rem', textTransform: 'capitalize' }}>{n.phase.replace(/_/g, ' ')}</span>}
-                          {classLabel && <span style={{ color: '#666', fontSize: '0.72rem' }}>{classLabel}</span>}
+                          <span style={{ color: '#aaa', fontSize: '0.75rem', fontFamily: 'monospace' }}>{n.id || p.trigger_id || ''}</span>
+                          {n.phase && <span style={{ color: '#666', fontSize: '0.72rem', textTransform: 'capitalize' }}>{n.phase.replace(/_/g, ' ')}</span>}
                           <span style={{ color: '#444', fontSize: '0.7rem', marginLeft: 'auto' }}>{isExpanded ? '▲' : '▼'}</span>
                           {n.t0 && <span style={{ color: '#555', fontSize: '0.72rem' }}>{formatDate(n.t0)}</span>}
                         </div>
