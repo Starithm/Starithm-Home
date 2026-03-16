@@ -195,7 +195,11 @@ export default function EventLevel() {
       e => e.id === selectedEvent.id || e.canonicalId === selectedEvent.canonicalId
     );
     if (!selectedEvent || !currentEventExists) {
-      setSelectedEvent(filteredEvents[0]);
+      const first = filteredEvents[0];
+      setSelectedEvent(first);
+      const url = new URL(window.location.href);
+      url.searchParams.set('id', first.canonicalId || first.id);
+      window.history.replaceState(null, '', url.toString());
     }
   }, [filteredEvents, selectedEvent, deepLinkId]);
 
