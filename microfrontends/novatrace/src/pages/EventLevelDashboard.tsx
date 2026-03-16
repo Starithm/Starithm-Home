@@ -232,14 +232,23 @@ export default function EventLevel() {
 
   const handleEventClick = (event: Event) => {
     setSelectedEvent(event);
+    const url = new URL(window.location.href);
+    url.searchParams.set('id', event.canonicalId || event.id);
+    window.history.replaceState(null, '', url.toString());
   };
 
   const handleEventChange = (event: Event) => {
     setSelectedEvent(event);
+    const url = new URL(window.location.href);
+    url.searchParams.set('id', event.canonicalId || event.id);
+    window.history.replaceState(null, '', url.toString());
   };
 
   const handleClosePanel = () => {
     setSelectedEvent(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('id');
+    window.history.replaceState(null, '', url.toString());
   };
 
   const getEventIcon = (alertKind: string) => {

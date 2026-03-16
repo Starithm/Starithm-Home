@@ -15,6 +15,8 @@ import {
   MapPin,
   Link as LinkIcon,
   Zap,
+  Share2,
+  Check,
 } from 'lucide-react';
 import { API_ENDPOINTS } from '../../../../shared/lib/config';
 import { AlertDetails } from './AlertDetails';
@@ -526,6 +528,15 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [selectedCircular, setSelectedCircular] = useState<Alert | null>(null);
   const [expandedNotices, setExpandedNotices] = useState<Set<string>>(new Set());
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = () => {
+    const url = `${window.location.origin}/novatrace/events?id=${eventId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const toggleNotice = (id: string) =>
     setExpandedNotices(prev => {
@@ -615,6 +626,9 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
             <PanelTitle>Event Details</PanelTitle>
             <PanelSubtitle>Complete analysis and timeline</PanelSubtitle>
           </PanelHeaderText>
+          <Button variant="ghost" size="sm" onClick={handleShare} title="Copy shareable link">
+            {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+          </Button>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
