@@ -72,7 +72,7 @@ function formatCoordinate(value: number | string, type: 'ra' | 'dec'): string {
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short',
+    hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
   });
 }
 
@@ -128,6 +128,27 @@ function CircularMeasurements({ measurements }: { measurements: Record<string, a
         if (key === 'tables') return null;
         const label = key.replace(/_/g, ' ');
 
+        // other_measurements: nested object → expand as key-value list
+        if (key === 'other_measurements' && typeof value === 'object' && !Array.isArray(value)) {
+          const subEntries = Object.entries(value).filter(([, v]) => v != null);
+          if (subEntries.length === 0) return null;
+          return (
+            <div key={key}>
+              <div style={{ fontSize: '0.7rem', color: '#555', marginBottom: '0.25rem', textTransform: 'capitalize' }}>{label}</div>
+              <div style={{ paddingLeft: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                {subEntries.map(([k, v]) => (
+                  <div key={k} style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#555', minWidth: 100 }}>{k.replace(/_/g, ' ')}:</span>
+                    <span style={{ fontSize: '0.72rem', color: '#aaa' }}>
+                      {typeof v === 'object' ? JSON.stringify(v).replace(/"/g, '') : String(v)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        }
+
         // Array of objects → table
         if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object') {
           const cols = Object.keys(value[0]);
@@ -160,7 +181,7 @@ function CircularMeasurements({ measurements }: { measurements: Record<string, a
           );
         }
 
-        // Nested object
+        // Nested object (generic)
         if (typeof value === 'object') {
           return (
             <div key={key} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'baseline' }}>
@@ -196,6 +217,16 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [expandedNotices, setExpandedNotices] = useState<Set<string>>(new Set());
+  const [expandedCirculars, setExpandedCirculars] = useState<Set<string>>(new Set());
+  const [rawModal, setRawModal] = useState<{ title: string; data: any } | null>(null);
+
+  const toggleNotice = (id: string) => setExpandedNotices(prev => {
+    const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next;
+  });
+  const toggleCircular = (key: string) => setExpandedCirculars(prev => {
+    const next = new Set(prev); next.has(key) ? next.delete(key) : next.add(key); return next;
+  });
 
   useEffect(() => {
     if (!canonicalId) return;
@@ -307,7 +338,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
             {/* AI Summary */}
             {event.aiSummary && (
               <Section title="Starithm Summary">
-                <p style={{ color: '#ccc', lineHeight: 1.8, margin: 0 }}>{event.aiSummary.details}</p>
+                <p style={{ color: '#770ff5', lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>{event.aiSummary.details}</p>
               </Section>
             )}
 
@@ -315,38 +346,77 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
             <Section title={`Alert Timeline (${event.notices.length} notices)`}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {event.notices.map((n, i) => {
+                  const isExpanded = expandedNotices.has(n.id);
                   const metrics = getPayloadMetrics(event.alertKind, n.payload || {});
+                  const payload = n.payload || {};
                   return (
-                    <div key={n.id} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, padding: '0.875rem 1rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
-                        <span style={{ color: '#770ff5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
-                        {n.phase && <span style={{ color: '#888', fontSize: '0.75rem', textTransform: 'capitalize' }}>{n.phase.replace('_', ' ')}</span>}
-                        {n.t0 && <span style={{ color: '#555', fontSize: '0.75rem', marginLeft: 'auto' }}>{formatDate(n.t0)}</span>}
+                    <div key={n.id} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden' }}>
+                      {/* Always-visible header — click to expand */}
+                      <div style={{ display: 'flex', alignItems: 'stretch' }}>
+                      <button
+                        onClick={() => toggleNotice(n.id)}
+                        style={{ flex: 1, background: 'none', border: 'none', cursor: 'pointer', padding: '0.875rem 1rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ color: '#770ff5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
+                          {n.phase && <span style={{ color: '#888', fontSize: '0.75rem', textTransform: 'capitalize' }}>{n.phase.replace(/_/g, ' ')}</span>}
+                          {n.classification && <span style={{ color: '#666', fontSize: '0.72rem' }}>{topClassification(n.classification)}</span>}
+                          <span style={{ color: '#444', fontSize: '0.7rem', marginLeft: 'auto' }}>{isExpanded ? '▲' : '▼'}</span>
+                          {n.t0 && <span style={{ color: '#555', fontSize: '0.72rem' }}>{formatDate(n.t0)}</span>}
+                        </div>
+                        <div style={{ color: '#777', fontSize: '0.75rem' }}>{n.topic}</div>
+                        {!isExpanded && metrics.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem 1rem' }}>
+                            {metrics.map(m => (
+                              <span key={m.label} style={{ fontSize: '0.7rem', color: '#666' }}>
+                                <span style={{ color: '#444' }}>{m.label}: </span>{m.value}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => setRawModal({ title: `Notice #${i + 1} — Raw Data`, data: n })}
+                        style={{ background: 'none', border: 'none', borderLeft: '1px solid #1e1e1e', cursor: 'pointer', padding: '0 0.75rem', color: '#444', fontSize: '0.65rem', whiteSpace: 'nowrap' }}
+                      >raw</button>
                       </div>
-                      <div style={{ color: '#aaa', fontSize: '0.8rem', marginBottom: '0.25rem' }}>{n.topic}</div>
-                      {n.classification && (
-                        <div style={{ color: '#888', fontSize: '0.75rem' }}>{topClassification(n.classification)}</div>
-                      )}
-                      {n.raDeg != null && (
-                        <div style={{ color: '#666', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                          {formatCoordinate(n.raDeg, 'ra')} {formatCoordinate(n.decDeg!, 'dec')}
-                          {n.posErrorDeg != null && ` ± ${Number(n.posErrorDeg).toFixed(2)}°`}
-                        </div>
-                      )}
-                      {metrics.length > 0 && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem 1.25rem', marginTop: '0.5rem' }}>
-                          {metrics.map(m => (
-                            <span key={m.label} style={{ fontSize: '0.72rem', color: '#888' }}>
-                              <span style={{ color: '#555' }}>{m.label}: </span>{m.value}
-                            </span>
+
+                      {/* Expanded: full payload table */}
+                      {isExpanded && (
+                        <div style={{ borderTop: '1px solid #1e1e1e', padding: '0.75rem 1rem' }}>
+                          {n.raDeg != null && (
+                            <div style={{ color: '#666', fontSize: '0.75rem', marginBottom: '0.5rem' }}>
+                              {formatCoordinate(n.raDeg, 'ra')} {formatCoordinate(n.decDeg!, 'dec')}
+                              {n.posErrorDeg != null && ` ± ${Number(n.posErrorDeg).toFixed(2)}°`}
+                            </div>
+                          )}
+                          {n.links && Object.entries(n.links).filter(([, v]) => typeof v === 'string' && (v as string).startsWith('http')).map(([k, v]) => (
+                            <a key={k} href={v as string} target="_blank" rel="noopener noreferrer" style={{ color: '#770ff5', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.5rem', marginRight: '0.75rem' }}>
+                              <ExternalLink size={11} /> {k}
+                            </a>
                           ))}
+                          {Object.keys(payload).length > 0 && (
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.72rem', marginTop: '0.25rem' }}>
+                              <thead>
+                                <tr>
+                                  <th style={{ width: '38%', padding: '0.25rem 0.5rem', color: '#555', fontWeight: 500, textAlign: 'left', borderBottom: '1px solid #222' }}>Field</th>
+                                  <th style={{ padding: '0.25rem 0.5rem', color: '#555', fontWeight: 500, textAlign: 'left', borderBottom: '1px solid #222' }}>Value</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {Object.entries(payload).map(([k, v]) => (
+                                  <tr key={k}>
+                                    <td style={{ padding: '0.25rem 0.5rem', color: '#555', fontFamily: 'monospace', borderBottom: '1px solid #181818', verticalAlign: 'top', wordBreak: 'break-all' }}>{k}</td>
+                                    <td style={{ padding: '0.25rem 0.5rem', color: '#999', fontFamily: 'monospace', borderBottom: '1px solid #181818', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                      {typeof v === 'object' ? JSON.stringify(v) : String(v ?? '—')}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
                         </div>
                       )}
-                      {n.links && Object.entries(n.links).filter(([, v]) => typeof v === 'string' && (v as string).startsWith('http')).slice(0, 2).map(([k, v]) => (
-                        <a key={k} href={v as string} target="_blank" rel="noopener noreferrer" style={{ color: '#770ff5', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.375rem', marginRight: '0.75rem' }}>
-                          <ExternalLink size={11} /> {k}
-                        </a>
-                      ))}
                     </div>
                   );
                 })}
@@ -358,57 +428,82 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
               <Section title={`Community Circulars (${event.circulars.length})`}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {event.circulars.map((c, i) => {
+                    const isExpanded = expandedCirculars.has(c.alertKey);
                     const authors = c.data?.authors?.authors;
                     const institutions = c.data?.authors?.institutions;
                     const measurements = c.data?.measurements;
                     const hasMeasurements = measurements && Object.keys(measurements).length > 0;
                     const imageUrls = (c.data?.urls || []).filter((u: string) => IMAGE_EXTS.test(u));
                     const tags = c.tags?.length ? c.tags : null;
+                    const hasExtra = hasMeasurements || imageUrls.length > 0 || (authors && authors.length > 0);
                     return (
-                      <div key={c.alertKey} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, padding: '0.875rem 1rem' }}>
-                        {/* Header row */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.375rem' }}>
-                          <span style={{ color: '#770ff5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
-                          <span style={{ color: '#444', fontSize: '0.7rem', fontFamily: 'monospace' }}>{c.alertKey}</span>
-                          <span style={{ color: '#555', fontSize: '0.75rem', marginLeft: 'auto' }}>{c.date?.slice(0, 10)}</span>
+                      <div key={c.alertKey} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden' }}>
+                        {/* Always-visible header */}
+                        <div style={{ display: 'flex', alignItems: 'stretch' }}>
+                        <button
+                          onClick={() => hasExtra && toggleCircular(c.alertKey)}
+                          style={{ flex: 1, background: 'none', border: 'none', cursor: hasExtra ? 'pointer' : 'default', padding: '0.875rem 1rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ color: '#770ff5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
+                            <span style={{ color: '#444', fontSize: '0.7rem', fontFamily: 'monospace' }}>{c.alertKey}</span>
+                            {tags && tags.slice(0, 2).map(t => (
+                              <span key={t} style={{ fontSize: '0.62rem', color: '#770ff5', background: 'rgba(119,15,245,0.08)', padding: '0.1rem 0.4rem', borderRadius: 3 }}>{t}</span>
+                            ))}
+                            {hasExtra && <span style={{ color: '#444', fontSize: '0.7rem', marginLeft: 'auto' }}>{isExpanded ? '▲' : '▼'}</span>}
+                            <span style={{ color: '#555', fontSize: '0.72rem', marginLeft: hasExtra ? '0' : 'auto' }}>{c.date ? formatDate(c.date) : ''}</span>
+                          </div>
+                          {/* Summary always shown */}
+                          <p style={{ color: '#aaa', fontSize: '0.8rem', lineHeight: 1.6, margin: 0 }}>{c.summary}</p>
+                        </button>
+                        <button
+                          onClick={() => setRawModal({ title: `Circular #${i + 1} — Raw Data`, data: c })}
+                          style={{ background: 'none', border: 'none', borderLeft: '1px solid #1e1e1e', cursor: 'pointer', padding: '0 0.75rem', color: '#444', fontSize: '0.65rem', whiteSpace: 'nowrap' }}
+                        >raw</button>
                         </div>
-                        {/* Authors */}
-                        {authors && authors.length > 0 && (
-                          <div style={{ color: '#666', fontSize: '0.72rem', marginBottom: '0.25rem' }}>
-                            {authors.slice(0, 5).join(', ')}{authors.length > 5 ? ` +${authors.length - 5} more` : ''}
-                          </div>
-                        )}
-                        {/* Institutions */}
-                        {institutions && institutions.length > 0 && (
-                          <div style={{ color: '#555', fontSize: '0.68rem', marginBottom: '0.375rem', fontStyle: 'italic' }}>
-                            {institutions.slice(0, 2).join('; ')}{institutions.length > 2 ? ` +${institutions.length - 2} more` : ''}
-                          </div>
-                        )}
-                        {/* Summary */}
-                        <p style={{ color: '#aaa', fontSize: '0.8rem', lineHeight: 1.6, margin: 0 }}>{c.summary}</p>
-                        {/* Tags */}
-                        {tags && (
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem', marginTop: '0.5rem' }}>
-                            {tags.map(t => (
-                              <span key={t} style={{ fontSize: '0.65rem', color: '#770ff5', background: 'rgba(119,15,245,0.08)', padding: '0.125rem 0.5rem', borderRadius: 3 }}>{t}</span>
-                            ))}
-                          </div>
-                        )}
-                        {/* Measurements */}
-                        {hasMeasurements && <CircularMeasurements measurements={measurements} />}
-                        {/* Images */}
-                        {imageUrls.length > 0 && (
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.625rem' }}>
-                            {imageUrls.map((url: string, idx: number) => (
-                              <a key={idx} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
-                                <img
-                                  src={url}
-                                  alt={`Circular image ${idx + 1}`}
-                                  style={{ maxWidth: '100%', maxHeight: 220, borderRadius: 6, border: '1px solid #2a2a2a', cursor: 'pointer' }}
-                                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                                />
-                              </a>
-                            ))}
+
+                        {/* Expanded content */}
+                        {isExpanded && (
+                          <div style={{ borderTop: '1px solid #1e1e1e', padding: '0.75rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                            {/* Authors */}
+                            {authors && authors.length > 0 && (
+                              <div>
+                                <div style={{ fontSize: '0.68rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.25rem' }}>Authors</div>
+                                <div style={{ color: '#777', fontSize: '0.75rem' }}>
+                                  {authors.join(', ')}
+                                </div>
+                                {institutions && institutions.length > 0 && (
+                                  <div style={{ color: '#555', fontSize: '0.68rem', fontStyle: 'italic', marginTop: '0.2rem' }}>
+                                    {institutions.join('; ')}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            {/* All tags */}
+                            {tags && tags.length > 2 && (
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+                                {tags.map(t => (
+                                  <span key={t} style={{ fontSize: '0.65rem', color: '#770ff5', background: 'rgba(119,15,245,0.08)', padding: '0.125rem 0.5rem', borderRadius: 3 }}>{t}</span>
+                                ))}
+                              </div>
+                            )}
+                            {/* Measurements */}
+                            {hasMeasurements && <CircularMeasurements measurements={measurements} />}
+                            {/* Images */}
+                            {imageUrls.length > 0 && (
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                {imageUrls.map((url: string, idx: number) => (
+                                  <a key={idx} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
+                                    <img
+                                      src={url}
+                                      alt={`Image ${idx + 1}`}
+                                      style={{ maxWidth: '100%', maxHeight: 220, borderRadius: 6, border: '1px solid #2a2a2a', cursor: 'pointer' }}
+                                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                    />
+                                  </a>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -458,6 +553,27 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
           </div>
         </div>
       </div>
+
+      {/* Raw data modal */}
+      {rawModal && (
+        <div
+          onClick={() => setRawModal(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#111', border: '1px solid #2a2a2a', borderRadius: 10, width: '100%', maxWidth: 720, maxHeight: '80vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+          >
+            <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ color: '#aaa', fontSize: '0.8rem', fontFamily: 'monospace' }}>{rawModal.title}</span>
+              <button onClick={() => setRawModal(null)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1 }}>✕</button>
+            </div>
+            <pre style={{ margin: 0, padding: '1rem', overflowY: 'auto', fontSize: '0.72rem', color: '#a78bfa', lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+              {JSON.stringify(rawModal.data, null, 2)}
+            </pre>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
