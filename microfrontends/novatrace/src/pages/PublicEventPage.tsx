@@ -363,6 +363,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                   const payload = n.payload || {};
                   const p = payload;
                   const getObs = (key: string) => p.obs_support_info?.[key] ?? p[`obs_support_info_${key}`] ?? null;
+                  const classLabel = topClassification(n.classification);
                   const curatedFields: Array<[string, any]> = [
                     ['ID', n.id],
                     ['Instrument', p.instrument],
@@ -375,7 +376,6 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                     ['Sun Dist', getObs('sun_distance')],
                     ['Hi Energy', p.hi_energy],
                   ].filter(([, v]) => v != null && v !== '');
-                  const classLabel = topClassification(n.classification);
                   return (
                     <div key={n.id} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden' }}>
                       {/* Always-visible header — click to expand */}
