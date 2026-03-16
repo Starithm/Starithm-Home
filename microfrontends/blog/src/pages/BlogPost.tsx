@@ -112,7 +112,7 @@ export default function BlogPost() {
               h2: ({ children }) => <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#fff', marginTop: '2rem', marginBottom: '0.75rem' }}>{children}</h2>,
               h3: ({ children }) => <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#fff', marginTop: '1.5rem', marginBottom: '0.5rem' }}>{children}</h3>,
               p: ({ children }) => <p style={{ marginBottom: '1.25rem', color: '#ccc' }}>{children}</p>,
-              a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#770ff5', textDecoration: 'underline' }}>{children}</a>,
+              a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#f5c518', textDecoration: 'underline' }}>{children}</a>,
               strong: ({ children }) => <strong style={{ color: '#fff', fontWeight: 600 }}>{children}</strong>,
               code: ({ children }) => <code style={{ background: '#1a1a1a', padding: '0.125rem 0.375rem', borderRadius: 3, fontSize: '0.875rem', color: '#a78bfa' }}>{children}</code>,
               blockquote: ({ children }) => <blockquote style={{ borderLeft: '3px solid #770ff5', paddingLeft: '1rem', margin: '1.5rem 0', color: '#888' }}>{children}</blockquote>,
