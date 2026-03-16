@@ -638,6 +638,10 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
               Monitored in real-time by{' '}
               <Link to="/novatrace/events" style={{ color: '#770ff5', textDecoration: 'none' }}>Starithm</Link>
               {' '}— multi-messenger astronomical event tracking.
+              <p style={{ marginTop: '0.5rem', fontSize: '0.72rem', color: '#444', fontStyle: 'italic', marginBottom: 0 }}>
+                If you find any inaccuracy, please email{' '}
+                <a href="mailto:contact.starithm@gmail.com" style={{ color: '#555', textDecoration: 'underline' }}>contact.starithm@gmail.com</a>
+              </p>
             </div>
           </div>
         </div>
