@@ -92,10 +92,7 @@ interface DateRange {
 }
 
 export default function EventLevel() {
-  const deepLinkId = React.useMemo(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('id') || null;
-  }, []);
+  const getDeepLinkId = () => new URLSearchParams(window.location.search).get('id') || null;
 
   const [filters, setFilters] = useState<EventFilters>({
     search: '',
@@ -182,7 +179,9 @@ export default function EventLevel() {
       return;
     }
 
-    if (deepLinkId && !selectedEvent) {
+    const deepLinkId = getDeepLinkId();
+
+    if (deepLinkId && deepLinkId !== selectedEvent?.canonicalId && deepLinkId !== selectedEvent?.id) {
       const match = filteredEvents.find(e => e.canonicalId === deepLinkId || e.id === deepLinkId);
       if (match) {
         setSelectedEvent(match);
@@ -201,7 +200,7 @@ export default function EventLevel() {
       url.searchParams.set('id', first.canonicalId || first.id);
       window.history.replaceState(null, '', url.toString());
     }
-  }, [filteredEvents, selectedEvent, deepLinkId]);
+  }, [filteredEvents]);
 
   const handleFilterChange = (key: keyof EventFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));

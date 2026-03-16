@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'wouter';
+import { Link } from 'wouter';
 import { Calendar, Clock, MapPin, Radio, FileText, ExternalLink, AlertTriangle, Copy, Check } from 'lucide-react';
 import { API_ENDPOINTS } from '@shared/lib/config';
 
@@ -76,8 +76,7 @@ function topClassification(cls: Record<string, number> | null): string {
     .join(' · ');
 }
 
-export default function PublicEventPage() {
-  const { canonicalId } = useParams<{ canonicalId: string }>();
+export default function PublicEventPage({ canonicalId }: { canonicalId?: string }) {
   const [event, setEvent] = useState<PublicEvent | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
