@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, MapPin, Radio, FileText, ExternalLink, AlertTriangle, Copy, Check } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@shared/components/ui/tooltip';
 import { API_ENDPOINTS } from '@shared/lib/config';
 
 interface PublicEvent {
@@ -349,7 +350,14 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
           <div>
             {/* AI Summary */}
             {event.aiSummary && (
-              <Section title="Starithm Summary" subtitle={<span title="If you find any inaccuracy please email at contact.starithm@gmail.com" style={{ cursor: 'help' }}>* Automated</span>}>
+              <Section title="Starithm Summary" subtitle={
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span style={{ cursor: 'help', fontStyle: 'italic', color: '#555', fontSize: '0.7rem' }}>* Automated</span>
+                  </TooltipTrigger>
+                  <TooltipContent>If you find any inaccuracy please email at contact.starithm@gmail.com</TooltipContent>
+                </Tooltip>
+              }>
                 <p style={{ color: '#f5c518', lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>{event.aiSummary.details}</p>
               </Section>
             )}
