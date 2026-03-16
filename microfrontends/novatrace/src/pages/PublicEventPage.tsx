@@ -375,6 +375,10 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                     ['Moon Dist', getObs('moon_distance')],
                     ['Sun Dist', getObs('sun_distance')],
                     ['Hi Energy', p.hi_energy],
+                    ['FAR', p.far ?? null],
+                    ['Alert Type', p.alert_type ?? null],
+                    ['Nu Energy', p.nu_energy ?? null],
+                    ['HEALPix', p.healpix_url ?? (n.links as any)?.healpix_url ?? null],
                   ].filter(([, v]) => v != null && v !== '');
                   return (
                     <div key={n.id} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden' }}>
