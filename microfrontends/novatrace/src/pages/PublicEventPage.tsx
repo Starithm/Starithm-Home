@@ -182,12 +182,23 @@ function CircularMeasurements({ measurements }: { measurements: Record<string, a
           );
         }
 
-        // Nested object (generic)
+        // Nested object (generic) — expand as key-value pairs, skip nulls
         if (typeof value === 'object') {
+          const subEntries = Object.entries(value).filter(([, v]) => v !== null && v !== undefined);
+          if (subEntries.length === 0) return null;
           return (
-            <div key={key} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'baseline' }}>
-              <span style={{ fontSize: '0.7rem', color: '#666' }}>{label}:</span>
-              <span style={{ fontSize: '0.72rem', color: '#aaa' }}>{JSON.stringify(value).replace(/"/g, '')}</span>
+            <div key={key}>
+              <div style={{ fontSize: '0.7rem', color: '#555', marginBottom: '0.25rem', textTransform: 'capitalize' }}>{label}</div>
+              <div style={{ paddingLeft: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                {subEntries.map(([k, v]) => (
+                  <div key={k} style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#555', minWidth: 100 }}>{k.replace(/_/g, ' ')}:</span>
+                    <span style={{ fontSize: '0.72rem', color: '#aaa' }}>
+                      {typeof v === 'object' ? JSON.stringify(v).replace(/"/g, '') : String(v)}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           );
         }

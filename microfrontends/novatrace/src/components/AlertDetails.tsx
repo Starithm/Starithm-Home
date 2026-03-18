@@ -447,10 +447,12 @@ export function AlertDetails({ selectedAlert, onOpenRawData, showTimeline = true
                                 )
                           }
                             if (typeof value === 'object') {
-                              return Object.keys(value).map((vKey) => (
-                                <AlertMeasurementGenericObject>
+                              const nonNullEntries = Object.entries(value).filter(([, v]) => v !== null && v !== undefined);
+                              if (nonNullEntries.length === 0) return null;
+                              return nonNullEntries.map(([vKey, vVal]) => (
+                                <AlertMeasurementGenericObject key={vKey}>
                                       <label>{vKey.replace(/_/g, ' ')}</label>
-                                      <p>{JSON.stringify(value[vKey]).replace(/"/g, '')}</p>
+                                      <p>{typeof vVal === 'object' ? JSON.stringify(vVal).replace(/"/g, '') : String(vVal)}</p>
                                   </AlertMeasurementGenericObject>
                               ))
                           } 
