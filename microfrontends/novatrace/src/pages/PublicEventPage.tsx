@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { MeasurementsDisplay } from '../components/MeasurementsDisplay';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, MapPin, Radio, FileText, ExternalLink, AlertTriangle, Copy, Check } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@shared/components/ui/tooltip';
@@ -118,102 +119,6 @@ function getPayloadMetrics(alertKind: string, payload: Record<string, any>): Arr
 
 const IMAGE_EXTS = /\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?.*)?$/i;
 
-function CircularMeasurements({ measurements }: { measurements: Record<string, any> }) {
-  const entries = Object.entries(measurements).filter(([, v]) => v != null);
-  if (entries.length === 0) return null;
-
-  return (
-    <div style={{ marginTop: '0.625rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-      <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Measurements</div>
-      {entries.map(([key, value]) => {
-        if (key === 'tables') return null;
-        const label = key.replace(/_/g, ' ');
-
-        // other_measurements: nested object → expand as key-value list
-        if (key === 'other_measurements' && typeof value === 'object' && !Array.isArray(value)) {
-          const subEntries = Object.entries(value).filter(([, v]) => v != null);
-          if (subEntries.length === 0) return null;
-          return (
-            <div key={key}>
-              <div style={{ fontSize: '0.7rem', color: '#555', marginBottom: '0.25rem', textTransform: 'capitalize' }}>{label}</div>
-              <div style={{ paddingLeft: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                {subEntries.map(([k, v]) => (
-                  <div key={k} style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
-                    <span style={{ fontSize: '0.7rem', color: '#555', minWidth: 100 }}>{k.replace(/_/g, ' ')}:</span>
-                    <span style={{ fontSize: '0.72rem', color: '#aaa' }}>
-                      {typeof v === 'object' ? JSON.stringify(v).replace(/"/g, '') : String(v)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        }
-
-        // Array of objects → table
-        if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object') {
-          const cols = Object.keys(value[0]);
-          return (
-            <div key={key} style={{ overflowX: 'auto' }}>
-              <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '0.25rem' }}>{label}</div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.72rem' }}>
-                <thead>
-                  <tr>{cols.map(c => <th key={c} style={{ padding: '0.25rem 0.5rem', color: '#555', fontWeight: 500, textAlign: 'left', borderBottom: '1px solid #222' }}>{c.replace(/_/g, ' ')}</th>)}</tr>
-                </thead>
-                <tbody>
-                  {value.map((row, i) => (
-                    <tr key={i}>
-                      {cols.map(c => <td key={c} style={{ padding: '0.25rem 0.5rem', color: '#999', borderBottom: '1px solid #1a1a1a' }}>{typeof row[c] === 'object' ? JSON.stringify(row[c]).replace(/"/g, '') : String(row[c] ?? '—')}</td>)}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          );
-        }
-
-        // Array of primitives
-        if (Array.isArray(value)) {
-          return (
-            <div key={key} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'baseline' }}>
-              <span style={{ fontSize: '0.7rem', color: '#666' }}>{label}:</span>
-              <span style={{ fontSize: '0.72rem', color: '#aaa' }}>{value.join(', ').replace(/"/g, '')}</span>
-            </div>
-          );
-        }
-
-        // Nested object (generic) — expand as key-value pairs, skip nulls
-        if (typeof value === 'object') {
-          const subEntries = Object.entries(value).filter(([, v]) => v !== null && v !== undefined);
-          if (subEntries.length === 0) return null;
-          return (
-            <div key={key}>
-              <div style={{ fontSize: '0.7rem', color: '#555', marginBottom: '0.25rem', textTransform: 'capitalize' }}>{label}</div>
-              <div style={{ paddingLeft: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                {subEntries.map(([k, v]) => (
-                  <div key={k} style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
-                    <span style={{ fontSize: '0.7rem', color: '#555', minWidth: 100 }}>{k.replace(/_/g, ' ')}:</span>
-                    <span style={{ fontSize: '0.72rem', color: '#aaa' }}>
-                      {typeof v === 'object' ? JSON.stringify(v).replace(/"/g, '') : String(v)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        }
-
-        // Scalar
-        return (
-          <div key={key} style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
-            <span style={{ fontSize: '0.7rem', color: '#666', minWidth: 90 }}>{label}:</span>
-            <span style={{ fontSize: '0.72rem', color: '#aaa' }}>{String(value)}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 function topClassification(cls: Record<string, any> | null): string {
   if (!cls) return '';
@@ -576,7 +481,12 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                               </div>
                             )}
                             {/* Measurements */}
-                            {hasMeasurements && <CircularMeasurements measurements={measurements} />}
+                            {hasMeasurements && (
+                              <div style={{ marginTop: '0.625rem' }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>Measurements</div>
+                                <MeasurementsDisplay measurements={measurements} />
+                              </div>
+                            )}
                             {/* Images */}
                             {imageUrls.length > 0 && (
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
