@@ -35,8 +35,11 @@ function parseFrontmatter(raw: string): { meta: Partial<PostMeta>; content: stri
   return { meta, content: match[2].trim() };
 }
 
+const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
+const GITHUB_HEADERS = GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {};
+
 export async function fetchPostList(): Promise<Post[]> {
-  const res = await fetch(API_BASE);
+  const res = await fetch(API_BASE, { headers: GITHUB_HEADERS });
   if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
   const files: Array<{ name: string; download_url: string }> = await res.json();
 
