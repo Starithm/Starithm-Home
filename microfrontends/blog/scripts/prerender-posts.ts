@@ -106,7 +106,8 @@ function buildHtml(post: Post, template: string): string {
 <script>document.getElementById('__prerender__').style.display='none';</script>`;
 
   return template
-    .replace(/(<head[^>]*>)/, `$1\n  ${metaTags}`)
+    .replace(/<title>[^<]*<\/title>/, '')           // remove existing title
+    .replace(/(<head[^>]*>)/, `$1\n  ${metaTags}`)  // inject our SEO tags (includes title)
     .replace(/(<body[^>]*>)/, `$1\n${noscript}`);
 }
 
@@ -182,6 +183,7 @@ async function main() {
   ].join('\n  ');
 
   const listHtml = template
+    .replace(/<title>[^<]*<\/title>/, '')
     .replace(/(<head[^>]*>)/, `$1\n  ${listMetaTags}`)
     .replace(/(<body[^>]*>)/, `$1\n${listNoscript}`);
 
