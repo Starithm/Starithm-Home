@@ -165,6 +165,7 @@ async function main() {
     })
   );
 
+  // Pre-render individual post pages
   for (const post of posts) {
     const outDir = path.join(distDir, 'posts', post.slug);
     fs.mkdirSync(outDir, { recursive: true });
@@ -172,7 +173,38 @@ async function main() {
     console.log(`  ✓ ${post.slug}`);
   }
 
-  console.log(`✅ Pre-rendered ${posts.length} blog posts to dist/posts/`);
+  // Pre-render the blog list page (/blog) so Googlebot can discover all post links
+  const listNoscript = `<noscript>
+<div style="max-width:900px;margin:0 auto;padding:2rem;font-family:sans-serif;color:#111;line-height:1.7">
+  <h1 style="font-size:2rem;margin-bottom:.5rem">Starithm Blog</h1>
+  <p style="color:#666;margin-bottom:2rem">Astronomy research, multi-messenger astrophysics, and engineering from the Starithm team.</p>
+  <ul style="list-style:none;padding:0">
+    ${posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(p => `<li style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #eee">
+      <a href="/blog/posts/${p.slug}" style="color:#6b21a8;font-size:1.2rem;font-weight:600;text-decoration:none">${p.title}</a>
+      <p style="color:#666;font-size:.85rem;margin:.25rem 0">${p.category} · ${p.date} · ${p.read_time}</p>
+      ${p.excerpt ? `<p style="color:#444;margin:.5rem 0">${p.excerpt}</p>` : ''}
+    </li>`).join('\n    ')}
+  </ul>
+</div>
+</noscript>`;
+
+  const listMetaTags = [
+    `<title>Starithm Blog | Astronomy Research & Engineering</title>`,
+    `<meta name="description" content="Astronomy research summaries, multi-messenger astrophysics insights, and engineering updates from the Starithm team." />`,
+    `<meta property="og:title" content="Starithm Blog" />`,
+    `<meta property="og:description" content="Astronomy research summaries and engineering updates from Starithm." />`,
+    `<meta property="og:url" content="${SITE_BASE}/blog" />`,
+    `<link rel="canonical" href="${SITE_BASE}/blog" />`,
+  ].join('\n  ');
+
+  const listHtml = template
+    .replace(/(<head[^>]*>)/, `$1\n  ${listMetaTags}`)
+    .replace(/(<body[^>]*>)/, `$1\n${listNoscript}`);
+
+  fs.writeFileSync(path.join(distDir, 'index.html'), listHtml);
+  console.log(`  ✓ blog list page (index.html)`);
+
+  console.log(`✅ Pre-rendered ${posts.length} blog posts + list page to dist/`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
