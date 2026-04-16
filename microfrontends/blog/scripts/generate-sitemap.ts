@@ -59,7 +59,7 @@ async function main() {
   const postRoutes = posts.map(p => ({
     url: `${SITE_BASE}/blog/posts/${p.slug}`,
     lastmod: p.date,
-    priority: '0.7',
+    priority: '0.8',
     changefreq: 'monthly',
   }));
 
