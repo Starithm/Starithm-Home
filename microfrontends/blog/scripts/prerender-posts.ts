@@ -111,13 +111,34 @@ function buildHtml(post: Post, template: string): string {
     .replace(/(<body[^>]*>)/, `$1\n${noscript}`);
 }
 
+function buildTemplate(distDir: string): string {
+  // Library mode vite doesn't emit index.html — build the shell from the hashed asset filenames.
+  const assetsDir = path.join(distDir, 'blog-assets');
+  if (!fs.existsSync(assetsDir)) {
+    throw new Error('dist/blog-assets/ not found — run vite build first');
+  }
+  const files = fs.readdirSync(assetsDir);
+  const jsFile = files.find(f => f.endsWith('.js'));
+  const cssFile = files.find(f => f.endsWith('.css'));
+  if (!jsFile) throw new Error('No JS bundle found in dist/blog-assets/');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  ${cssFile ? `<link rel="stylesheet" crossorigin href="/blog/blog-assets/${cssFile}">` : ''}
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" crossorigin src="/blog/blog-assets/${jsFile}"></script>
+</body>
+</html>`;
+}
+
 async function main() {
   const distDir = path.resolve(__dirname, '../dist');
-  const templatePath = path.join(distDir, 'index.html');
-  if (!fs.existsSync(templatePath)) {
-    throw new Error('dist/index.html not found — run vite build first');
-  }
-  const template = fs.readFileSync(templatePath, 'utf-8');
+  const template = buildTemplate(distDir);
 
   console.log('Fetching post list from GitHub...');
   const res = await fetch(API_BASE);
