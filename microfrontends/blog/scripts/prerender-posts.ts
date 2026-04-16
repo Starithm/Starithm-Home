@@ -92,8 +92,7 @@ function buildHtml(post: Post, template: string): string {
 
   const contentHtml = markdownToHtml(post.content);
 
-  const noscript = `<noscript>
-<div style="max-width:800px;margin:0 auto;padding:2rem;font-family:sans-serif;color:#111;line-height:1.7">
+  const noscript = `<div id="__prerender__" style="max-width:800px;margin:0 auto;padding:2rem;font-family:sans-serif;color:#111;line-height:1.7">
   <nav style="margin-bottom:1.5rem"><a href="/blog" style="color:#6b21a8">← Starithm Blog</a></nav>
   <p style="color:#666;font-size:.9rem">${esc(post.category)} · ${esc(post.date)} · ${esc(post.read_time)}</p>
   <h1 style="font-size:2rem;margin:.5rem 0">${esc(post.title)}</h1>
@@ -104,7 +103,7 @@ function buildHtml(post: Post, template: string): string {
   <hr style="margin:2rem 0" />
   <p><a href="${url}" style="color:#6b21a8">View on Starithm →</a></p>
 </div>
-</noscript>`;
+<script>document.getElementById('__prerender__').style.display='none';</script>`;
 
   return template
     .replace(/(<head[^>]*>)/, `$1\n  ${metaTags}`)
@@ -174,8 +173,7 @@ async function main() {
   }
 
   // Pre-render the blog list page (/blog) so Googlebot can discover all post links
-  const listNoscript = `<noscript>
-<div style="max-width:900px;margin:0 auto;padding:2rem;font-family:sans-serif;color:#111;line-height:1.7">
+  const listNoscript = `<div id="__prerender__" style="max-width:900px;margin:0 auto;padding:2rem;font-family:sans-serif;color:#111;line-height:1.7">
   <h1 style="font-size:2rem;margin-bottom:.5rem">Starithm Blog</h1>
   <p style="color:#666;margin-bottom:2rem">Astronomy research, multi-messenger astrophysics, and engineering from the Starithm team.</p>
   <ul style="list-style:none;padding:0">
@@ -186,7 +184,7 @@ async function main() {
     </li>`).join('\n    ')}
   </ul>
 </div>
-</noscript>`;
+<script>document.getElementById('__prerender__').style.display='none';</script>`;
 
   const listMetaTags = [
     `<title>Starithm Blog | Astronomy Research & Engineering</title>`,
