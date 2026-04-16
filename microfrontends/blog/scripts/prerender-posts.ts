@@ -111,28 +111,14 @@ function buildHtml(post: Post, template: string): string {
 }
 
 function buildTemplate(distDir: string): string {
-  // Library mode vite doesn't emit index.html — build the shell from the hashed asset filenames.
-  const assetsDir = path.join(distDir, 'blog-assets');
-  if (!fs.existsSync(assetsDir)) {
-    throw new Error('dist/blog-assets/ not found — run vite build first');
+  // Use the root shell index.html (built before blog in build:all).
+  // It loads React + all MFE bundles and handles routing — correct entry point for all pages.
+  const rootIndexPath = path.resolve(distDir, '../../../dist/index.html');
+  if (fs.existsSync(rootIndexPath)) {
+    return fs.readFileSync(rootIndexPath, 'utf-8');
   }
-  const files = fs.readdirSync(assetsDir);
-  const jsFile = files.find(f => f.endsWith('.js'));
-  const cssFile = files.find(f => f.endsWith('.css'));
-  if (!jsFile) throw new Error('No JS bundle found in dist/blog-assets/');
-
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  ${cssFile ? `<link rel="stylesheet" crossorigin href="/blog/blog-assets/${cssFile}">` : ''}
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" crossorigin src="/blog/blog-assets/${jsFile}"></script>
-</body>
-</html>`;
+  // Fallback for local dev: minimal shell pointing to root assets
+  throw new Error(`Root dist/index.html not found at ${rootIndexPath}. Run root vite build first.`);
 }
 
 async function main() {
