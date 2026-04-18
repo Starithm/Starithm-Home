@@ -137,15 +137,14 @@ export const MetaIcon = styled.div`
 
 // Blog post card (for future use)
 export const BlogPostCardContainer = styled.article`
-  background-color: ${({ theme }) => getThemeValue(theme, 'background', 'white')};
+  position: relative;
+  background-color: ${({ theme }) => getThemeValue(theme, 'card', '#1a1a2e')};
   border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   padding: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
-  transition: box-shadow ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
-
-  &:hover {
-    box-shadow: ${({ theme }) => getThemeValue(theme, 'shadows.md', '0 4px 6px -1px rgba(0, 0, 0, 0.1)')};
-  }
+  will-change: transform;
+  transform-style: preserve-3d;
+  overflow: hidden;
 `;
 
 export const PostCardCategory = styled.div`

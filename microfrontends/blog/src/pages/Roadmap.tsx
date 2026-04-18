@@ -169,6 +169,13 @@ const roadmapItems: RoadmapItem[] = [
     status: 'planned',
     category: 'infrastructure',
   },
+  {
+    id: '19',
+    title: 'Automated Multi-Messenger Spectral Analysis',
+    description: 'For confirmed multi-messenger events, automatically run joint spectral analysis across Fermi-GBM, Swift-XRT, and optical data using frameworks like 3ML — producing structured Starithm Analysis Reports with fitted spectral parameters, light curves, and joint posteriors. Researchers get the analysis done within minutes of event confirmation, without running the pipeline themselves.',
+    status: 'planned',
+    category: 'feature',
+  },
 ];
 
 const getStatusIcon = (status: RoadmapItem['status']) => {
