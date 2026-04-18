@@ -139,7 +139,9 @@ function BlogPostCard({ post }: { post: Post }) {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={handleMouseLeave}
+      onClick={() => window.location.href = `/blog/posts/${post.slug}`}
       style={{
+        cursor: 'pointer',
         transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) ${hovered ? 'translateY(-4px)' : ''}`,
         transition: hovered ? 'transform 0.1s ease-out, box-shadow 0.2s ease' : 'transform 0.4s ease, box-shadow 0.4s ease',
         boxShadow: hovered ? '0 20px 40px rgba(119, 15, 245, 0.15), 0 8px 16px rgba(0,0,0,0.2)' : undefined,
