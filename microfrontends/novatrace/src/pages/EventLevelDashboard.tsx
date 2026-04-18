@@ -362,20 +362,6 @@ export default function EventLevel() {
           </HeaderTop>
         </HeaderContent>
         
-        {/* Navigation */}
-        <Navigation>
-          <Button 
-            variant="outline" 
-            size="lg"
-            hasIcon={true}
-            onClick={navigateToAlertLevel}
-            className="flex items-center space-x-2"
-          >
-            <Activity size={16} />
-            <span>Alert Level Dashboard</span>
-          </Button>
-        </Navigation>
-        
         {/* Timeline Picker */}
         <TimelinePicker>
           <TimelineContent>
@@ -626,6 +612,12 @@ export default function EventLevel() {
               <StatusDot delay="0.3s" />
               <StatusDot delay="0.6s" />
             </StatusDots>
+            <span
+              onClick={navigateToAlertLevel}
+              style={{ cursor: 'pointer', color: 'var(--starithm-electric-violet, #770ff5)', fontSize: '0.75rem', marginLeft: '0.75rem' }}
+            >
+              Search GCN Circulars →
+            </span>
           </StatusRight>
         </StatusContent>
       </StatusBar>
