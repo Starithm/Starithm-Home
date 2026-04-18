@@ -20,7 +20,7 @@ export const Header = styled.div`
 `;
 
 export const HeaderContent = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')} ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: 0.3rem ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
 `;
 
 export const HeaderTop = styled.div`
@@ -163,6 +163,7 @@ export const FloatingEventPanel = styled.div`
   top: 25rem;
   left: 1.5rem;
   z-index: 50;
+  pointer-events: all;
 `;
 
 export const EventPanel = styled.div`
