@@ -160,10 +160,15 @@ export const CelestialSphereContainer = styled.div`
 // Floating event panel
 export const FloatingEventPanel = styled.div`
   position: absolute;
-  top: 25rem;
+  top: 0;
   left: 1.5rem;
+  bottom: 0;
   z-index: 50;
   pointer-events: all;
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem 0;
+  overflow-y: auto;
 `;
 
 export const EventPanel = styled.div`

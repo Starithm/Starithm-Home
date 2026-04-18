@@ -10,12 +10,12 @@ export const ErrorContainer = styled.div`
 
 // Main content area
 export const MainContent = styled.div`
+  position: relative;
   display: flex;
   height: calc(100vh - 210px);
   overflow: hidden;
   align-items: center;
   justify-content: center;
-
 `;
 
 // Loading state
