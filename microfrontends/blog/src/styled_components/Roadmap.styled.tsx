@@ -49,7 +49,9 @@ export const HeaderContent = styled.div`
 export const BackLink = styled(Link)`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
   transition: opacity ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
 
   &:hover {
@@ -174,6 +176,14 @@ export const RoadmapSectionIcon = styled.div<{ color?: string }>`
 export const RoadmapItemsGrid = styled.div`
   display: grid;
   gap: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+
+  @media (min-width: ${({ theme }) => getThemeValue(theme, 'breakpoints.md', '768px')}) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: ${({ theme }) => getThemeValue(theme, 'breakpoints.lg', '1024px')}) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
 // Individual roadmap item
