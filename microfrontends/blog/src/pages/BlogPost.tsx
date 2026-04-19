@@ -116,6 +116,7 @@ export default function BlogPost() {
               strong: ({ children }) => <strong style={{ color: '#fff', fontWeight: 600 }}>{children}</strong>,
               code: ({ children }) => <code style={{ background: '#1a1a1a', padding: '0.125rem 0.375rem', borderRadius: 3, fontSize: '0.875rem', color: '#a78bfa' }}>{children}</code>,
               blockquote: ({ children }) => <blockquote style={{ borderLeft: '3px solid #770ff5', paddingLeft: '1rem', margin: '1.5rem 0', color: '#888' }}>{children}</blockquote>,
+              img: ({ src, alt }) => <img src={src} alt={alt} style={{ maxWidth: '100%', borderRadius: '0.5rem', margin: '1.5rem 0', background: '#fff', padding: '0.5rem', display: 'block' }} />,
             }}
           >
             {post.content}
