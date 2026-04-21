@@ -422,9 +422,14 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                     const imageUrls = allUrls.filter((u: string) => IMAGE_EXTS.test(u));
                     const linkUrls = allUrls.filter((u: string) => !IMAGE_EXTS.test(u));
                     const tags = c.tags?.length ? c.tags : null;
-                    const redshift = measurements
+                    const rawRedshift = measurements
                       ? (measurements.redshift ?? measurements.z ?? measurements.redshift_z ?? null)
                       : null;
+                    const redshift = rawRedshift == null
+                      ? null
+                      : typeof rawRedshift === 'object'
+                        ? (rawRedshift.value ?? rawRedshift.range ?? null)
+                        : rawRedshift;
                     const hasExtra = hasMeasurements || imageUrls.length > 0 || linkUrls.length > 0 || (authors && authors.length > 0);
                     return (
                       <div key={c.alertKey} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden' }}>
