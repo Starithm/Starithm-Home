@@ -77,17 +77,7 @@ export function Navbar() {
             <Activity className="h-4 w-4" />
             <span>Event Level Dashboard</span>
           </Button>
-          <Button 
-            variant="outline" 
-            size="lg"
-            hasIcon={true}
-            onClick={navigateToStatus}
-            className="flex items-center space-x-2"
-          >
-            <Activity className="h-4 w-4" />
-            <span>Check Status</span>
-          </Button>
-          <Button 
+<Button 
             variant="outline"
             size="lg" 
             hasIcon={true}
