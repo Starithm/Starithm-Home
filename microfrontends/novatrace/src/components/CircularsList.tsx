@@ -87,7 +87,10 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                     {hasExtra && <span style={{ color: '#444', fontSize: '0.7rem', marginLeft: 'auto' }}>{isExpanded ? '▲' : '▼'}</span>}
                     <span style={{ color: '#555', fontSize: '0.72rem', marginLeft: hasExtra ? '0' : 'auto' }}>{c.date ? formatDate(c.date) : ''}</span>
                   </div>
-                  <p style={{ color: '#aaa', fontSize: '0.8rem', lineHeight: 1.6, margin: 0 }}>{c.summary}</p>
+                  {(() => {
+                    const text = c.summary || (typeof c.data?.raw === 'string' ? c.data.raw.slice(0, 400).trimEnd() + (c.data.raw.length > 400 ? '…' : '') : null);
+                    return text ? <p style={{ color: '#aaa', fontSize: '0.8rem', lineHeight: 1.6, margin: 0 }}>{text}</p> : null;
+                  })()}
                 </button>
                 <button
                   onClick={() => setRawModal({ title: `Circular #${i + 1} — ${c.alertKey}`, data: c })}
@@ -134,14 +137,19 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                     </div>
                   )}
                   {linkUrls.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                      <div style={{ fontSize: '0.68rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Links</div>
-                      {linkUrls.map((url: string, idx: number) => (
-                        <a key={idx} href={url} target="_blank" rel="noopener noreferrer"
-                          style={{ fontSize: '0.75rem', color: '#f5c518', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <ExternalLink size={11} style={{ flexShrink: 0 }} />{urlLabel(url)}
-                        </a>
-                      ))}
+                    <div>
+                      <div style={{ fontSize: '0.68rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.25rem' }}>Links</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', color: '#f5c518' }}>
+                        {linkUrls.map((url: string, idx: number) => (
+                          <React.Fragment key={idx}>
+                            <a href={url} target="_blank" rel="noopener noreferrer"
+                              style={{ color: '#f5c518', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                              <ExternalLink size={11} style={{ flexShrink: 0 }} />{urlLabel(url)}
+                            </a>
+                            {idx < linkUrls.length - 1 && <span style={{ color: '#444' }}>,</span>}
+                          </React.Fragment>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
