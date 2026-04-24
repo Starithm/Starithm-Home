@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { getQueryClient } from "@shared/lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@novatrace/components/ui/toaster";
@@ -22,7 +22,7 @@ function Router() {
       <Route path="/alerts" component={AlertsLevel} />
       <Route path="/status" component={StatusDashboard} />
       <Route path="/events" component={EventLevel} />
-      <Route path="/novatrace" component={AlertsLevel} />
+      <Route path="/novatrace"><Redirect to="/novatrace/events" /></Route>
       <Route path="/novatrace/alerts" component={AlertsLevel} />
       <Route path="/novatrace/status" component={StatusDashboard} />
       <Route path="/novatrace/events" component={EventLevel} />
