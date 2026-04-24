@@ -4,6 +4,8 @@ import Status from '../../microfrontends/novatrace/src/pages/StatusDashboard';
 import AlertsLevel from '../../microfrontends/novatrace/src/pages/AlertLevelDashboard';
 import EventLevel from '../../microfrontends/novatrace/src/pages/EventLevelDashboard';
 import PublicEventPage from '../../microfrontends/novatrace/src/pages/PublicEventPage';
+import SearchPage from '../../microfrontends/novatrace/src/pages/SearchPage';
+import CircularEventPage from '../../microfrontends/novatrace/src/pages/CircularEventPage';
 import NotFound from '../../microfrontends/novatrace/src/pages/NotFound';
 
 const NovaTraceMicrofrontend: React.FC = () => {
@@ -13,6 +15,9 @@ const NovaTraceMicrofrontend: React.FC = () => {
     const eventsMatch = location.pathname.match(/^\/novatrace\/events\/(.+)$/);
     if (eventsMatch) return <PublicEventPage canonicalId={eventsMatch[1]} />;
 
+    const circularsMatch = location.pathname.match(/^\/novatrace\/circulars\/(.+)$/);
+    if (circularsMatch) return <CircularEventPage eventName={decodeURIComponent(circularsMatch[1])} />;
+
     switch (location.pathname) {
       case '/novatrace/status':
         return <Status />;
@@ -20,6 +25,8 @@ const NovaTraceMicrofrontend: React.FC = () => {
         return <EventLevel />;
       case '/novatrace/alerts':
         return <AlertsLevel />;
+      case '/novatrace/search':
+        return <SearchPage />;
       default:
         return <NotFound />;
     }
