@@ -1,5 +1,5 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Status from '../../microfrontends/novatrace/src/pages/StatusDashboard';
 import AlertsLevel from '../../microfrontends/novatrace/src/pages/AlertLevelDashboard';
 import EventLevel from '../../microfrontends/novatrace/src/pages/EventLevelDashboard';
@@ -10,6 +10,13 @@ import NotFound from '../../microfrontends/novatrace/src/pages/NotFound';
 
 const NovaTraceMicrofrontend: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === '/novatrace' || location.pathname === '/novatrace/') {
+      navigate('/novatrace/events', { replace: true });
+    }
+  }, [location.pathname]);
 
   const renderContent = () => {
     const eventsMatch = location.pathname.match(/^\/novatrace\/events\/(.+)$/);
