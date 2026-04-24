@@ -19,6 +19,15 @@ export interface Circular {
 
 const IMAGE_EXTS = /\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?.*)?$/i;
 
+function urlLabel(url: string): string {
+  try {
+    const parts = new URL(url).pathname.split('/').filter(Boolean);
+    return parts.slice(-2).join('-') || url;
+  } catch {
+    return url;
+  }
+}
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
@@ -45,7 +54,7 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
           const institutions = c.data?.authors?.institutions;
           const measurements = c.data?.measurements;
           const hasMeasurements = measurements && Object.keys(measurements).length > 0;
-          const allUrls: string[] = c.data?.urls || [];
+          const allUrls: string[] = [...new Set(c.data?.urls || [])];
           const imageUrls = allUrls.filter((u: string) => IMAGE_EXTS.test(u));
           const linkUrls = allUrls.filter((u: string) => !IMAGE_EXTS.test(u));
           const tags = c.tags?.length ? c.tags : null;
@@ -129,8 +138,8 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                       <div style={{ fontSize: '0.68rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Links</div>
                       {linkUrls.map((url: string, idx: number) => (
                         <a key={idx} href={url} target="_blank" rel="noopener noreferrer"
-                          style={{ fontSize: '0.75rem', color: '#f5c518', textDecoration: 'underline', wordBreak: 'break-all', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <ExternalLink size={11} style={{ flexShrink: 0 }} />{url}
+                          style={{ fontSize: '0.75rem', color: '#f5c518', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <ExternalLink size={11} style={{ flexShrink: 0 }} />{urlLabel(url)}
                         </a>
                       ))}
                     </div>
