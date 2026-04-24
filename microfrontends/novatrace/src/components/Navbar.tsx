@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@shared/components/ui/button";
-import { Activity, Home } from "lucide-react";
+import { Activity, Home, Search } from "lucide-react";
 import { useLocation } from "wouter";
 import {
   NavWrapper,
@@ -41,6 +41,15 @@ export function Navbar() {
     }
   };
 
+  const navigateToSearch = () => {
+    const target = '/novatrace/search';
+    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'navigate', path: target }, '*');
+    } else {
+      window.location.href = target;
+    }
+  };
+
   const navigateToHome = () => {
     // Navigate to the main app's home route
     const target = '/';
@@ -77,9 +86,19 @@ export function Navbar() {
             <Activity className="h-4 w-4" />
             <span>Event Level Dashboard</span>
           </Button>
-<Button 
+<Button
             variant="outline"
-            size="lg" 
+            size="lg"
+            hasIcon={true}
+            onClick={navigateToSearch}
+            className="flex items-center space-x-2"
+          >
+            <Search className="h-4 w-4" />
+            <span>Search</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
             hasIcon={true}
             onClick={navigateToHome}
             className="flex items-center space-x-2"

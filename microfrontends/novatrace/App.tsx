@@ -10,6 +10,8 @@ import AlertsLevel from "@novatrace/pages/AlertLevelDashboard";
 import EventLevel from "@novatrace/pages/EventLevelDashboard";
 import NotFound from "@novatrace/pages/NotFound";
 import PublicEventPage from "@novatrace/pages/PublicEventPage";
+import SearchPage from "@novatrace/pages/SearchPage";
+import CircularEventPage from "@novatrace/pages/CircularEventPage";
 import '@shared/styles/globals.css';
 
 
@@ -26,6 +28,10 @@ function Router() {
       <Route path="/novatrace/events" component={EventLevel} />
       <Route path="/novatrace/events/:canonicalId" component={PublicEventPage} />
       <Route path="/events/:canonicalId" component={PublicEventPage} />
+      <Route path="/novatrace/search" component={SearchPage} />
+      <Route path="/search" component={SearchPage} />
+      <Route path="/novatrace/circulars/:eventName" component={CircularEventPage} />
+      <Route path="/circulars/:eventName" component={CircularEventPage} />
       <Route component={NotFound} />
     </Switch>
   );
