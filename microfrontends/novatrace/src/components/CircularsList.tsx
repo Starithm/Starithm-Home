@@ -19,9 +19,14 @@ export interface Circular {
 
 const IMAGE_EXTS = /\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?.*)?$/i;
 
+function normalizeUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url;
+  return `https://${url}`;
+}
+
 function urlLabel(url: string): string {
   try {
-    const parts = new URL(url).pathname.split('/').filter(Boolean);
+    const parts = new URL(normalizeUrl(url)).pathname.split('/').filter(Boolean);
     return parts.slice(-2).join('-') || url;
   } catch {
     return url;
@@ -125,9 +130,9 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                   {imageUrls.length > 0 && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                       {imageUrls.map((url: string, idx: number) => (
-                        <a key={idx} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
+                        <a key={idx} href={normalizeUrl(url)} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
                           <img
-                            src={url}
+                            src={normalizeUrl(url)}
                             alt={`Image ${idx + 1}`}
                             style={{ maxWidth: '100%', maxHeight: 220, borderRadius: 6, border: '1px solid #2a2a2a', cursor: 'pointer' }}
                             onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
@@ -142,7 +147,7 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', color: '#f5c518' }}>
                         {linkUrls.map((url: string, idx: number) => (
                           <React.Fragment key={idx}>
-                            <a href={url} target="_blank" rel="noopener noreferrer"
+                            <a href={normalizeUrl(url)} target="_blank" rel="noopener noreferrer"
                               style={{ color: '#f5c518', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                               <ExternalLink size={11} style={{ flexShrink: 0 }} />{urlLabel(url)}
                             </a>

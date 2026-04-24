@@ -15,6 +15,14 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+function navigateTo(path: string) {
+  if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'navigate', path }, '*');
+  } else {
+    window.location.href = path;
+  }
+}
+
 export default function SearchPage() {
   const [, navigate] = useLocation();
   const [query, setQuery] = useState('');
@@ -51,7 +59,7 @@ export default function SearchPage() {
       {/* Header */}
       <div style={{ borderBottom: '1px solid #1a1a1a', padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <button
-          onClick={() => navigate('/novatrace/events')}
+          onClick={() => navigateTo('/novatrace/events')}
           style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: '0.75rem', padding: 0 }}
         >
           ← Events
@@ -118,7 +126,7 @@ export default function SearchPage() {
             {results.map(r => (
               <button
                 key={r.event}
-                onClick={() => navigate(`/novatrace/circulars/${encodeURIComponent(r.event)}`)}
+                onClick={() => navigateTo(`/novatrace/circulars/${encodeURIComponent(r.event)}`)}
                 style={{
                   background: '#111', border: '1px solid #1e1e1e', borderRadius: 8,
                   padding: '0.875rem 1rem', textAlign: 'left', cursor: 'pointer',

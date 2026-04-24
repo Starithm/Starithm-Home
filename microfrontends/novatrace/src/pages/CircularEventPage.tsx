@@ -19,6 +19,14 @@ function formatDate(iso: string): string {
   });
 }
 
+function navigateTo(path: string) {
+  if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'navigate', path }, '*');
+  } else {
+    window.location.href = path;
+  }
+}
+
 export default function CircularEventPage({ eventName }: { eventName?: string }) {
   const [, navigate] = useLocation();
   const [data, setData] = useState<CircularEvent | null>(null);
@@ -50,7 +58,7 @@ export default function CircularEventPage({ eventName }: { eventName?: string })
     return (
       <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
         <span style={{ color: '#555', fontFamily: 'monospace', fontSize: '0.8rem' }}>No circulars found for "{eventName}".</span>
-        <button onClick={() => navigate('/novatrace/search')} style={{ background: 'none', border: 'none', color: '#770ff5', cursor: 'pointer', fontFamily: 'monospace', fontSize: '0.75rem' }}>← Back to search</button>
+        <button onClick={() => navigateTo('/novatrace/search')} style={{ background: 'none', border: 'none', color: '#770ff5', cursor: 'pointer', fontFamily: 'monospace', fontSize: '0.75rem' }}>← Back to search</button>
       </div>
     );
   }
@@ -61,7 +69,7 @@ export default function CircularEventPage({ eventName }: { eventName?: string })
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#e0e0e0', fontFamily: 'system-ui, sans-serif' }}>
       {/* Header */}
       <div style={{ borderBottom: '1px solid #1a1a1a', padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <button onClick={() => navigate('/novatrace/search')} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: '0.75rem', padding: 0 }}>
+        <button onClick={() => navigateTo('/novatrace/search')} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: '0.75rem', padding: 0 }}>
           ← Search
         </button>
         <span style={{ color: '#333' }}>|</span>
