@@ -14,6 +14,9 @@ export { ThemeDemo } from './ThemeDemo';
 // Shared Components
 export { NotFound } from './NotFound';
 
+// Hooks
+export * from '../hooks';
+
 // Theme Utilities
 export * from '../utils/themeUtils';
 
