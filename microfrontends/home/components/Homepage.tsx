@@ -140,6 +140,14 @@ export function Homepage() {
         </SectionContainer>
       </MetricsSection>
 
+      <div style={{ width: '100%', background: 'var(--starithm-rich-black, #0E0B16)' }}>
+        <iframe
+          src="/scale-animation.html"
+          style={{ width: '100%', height: '100vh', border: 'none', display: 'block' }}
+          title="The Scale of Multi-Messenger Astronomy"
+        />
+      </div>
+
       <FeaturesSection>
         <SectionContainer>
           <SectionHeader>

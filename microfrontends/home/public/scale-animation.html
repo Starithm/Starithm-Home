@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Scale of the Problem Starithm Solves</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0E0B16;
+    --accent:   #770ff5;
+    --accent2:  #9A48FF;
+    --purple2:  #A239CA;
+    --purple2h: #C84BF7;
+    --yellow:   #FFB400;
+    --text:     #E7DFDD;
+    --dim:      #5a5265;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  /* Starfield background */
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  #stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  /* Fade overlay */
+  #curtain {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 100;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.7s ease;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .scene.active { display: flex; }
+
+  /* Progress bar */
+  #progress-bar {
+    position: fixed;
+    bottom: 0; left: 0;
+    height: 2px;
+    background: var(--accent);
+    width: 0%;
+    z-index: 200;
+    transition: width linear;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* Scene label */
+  #scene-label {
+    position: fixed;
+    top: 28px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    z-index: 200;
+    font-family: system-ui, sans-serif;
+    white-space: nowrap;
+  }
+
+  /* Nav dots */
+  #nav-dots {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 8px;
+    z-index: 200;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--dim);
+    cursor: pointer;
+    transition: background 0.4s;
+  }
+  .dot.active { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+  /* =================== SCENE 1 =================== */
+  #s1 { overflow: hidden; }
+  #s1-circles {
+    position: relative;
+    width: min(720px, 92vw);
+    height: min(460px, 58vh);
+  }
+  .asset-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(119,15,245,0.04);
+    border: 1px solid rgba(119,15,245,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(50px) scale(0.65);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1);
+  }
+  .asset-circle.landed { opacity: 1; transform: translateY(0) scale(1); }
+  .asset-circle .circle-label {
+    font-size: clamp(8px, 1.1vw, 11px);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    padding: 0 10px;
+    opacity: 0.75;
+  }
+  .asset-circle .circle-val {
+    font-size: clamp(13px, 1.8vw, 20px);
+    font-family: monospace;
+    color: var(--accent2);
+    margin-top: 5px;
+    font-weight: bold;
+  }
+  #s1-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    pointer-events: none;
+    opacity: 0;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: opacity 1s, transform 1s cubic-bezier(0.22,1,0.36,1);
+    box-shadow: 0 0 30px rgba(119,15,245,0.15), inset 0 0 30px rgba(119,15,245,0.05);
+  }
+  #s1-ring.visible { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  @keyframes pulse-ring {
+    0%,100% { opacity: 0.3; transform: translate(-50%,-50%) scale(1); }
+    50%      { opacity: 0.7; transform: translate(-50%,-50%) scale(1.03); }
+  }
+  #s1-ring.pulsing { animation: pulse-ring 2.2s ease-in-out infinite; }
+
+  #s1-counter {
+    margin-top: 36px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s;
+  }
+  #s1-counter.visible { opacity: 1; }
+  #s1-counter .big {
+    font-size: clamp(16px, 2.6vw, 26px);
+    font-family: monospace;
+    color: var(--accent2);
+    letter-spacing: 0.06em;
+  }
+  #s1-counter .sub {
+    font-size: clamp(10px, 1.3vw, 12px);
+    color: var(--dim);
+    letter-spacing: 0.14em;
+    margin-top: 12px;
+    font-family: system-ui;
+    text-transform: uppercase;
+  }
+
+  /* =================== SCENE 2 =================== */
+  #s2-orbit-container {
+    position: relative;
+    width: min(600px, 90vw);
+    height: min(600px, 90vw);
+  }
+  #s2-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 1s;
+  }
+  #s2-center.visible { opacity: 1; }
+  #s2-center .total {
+    font-size: clamp(16px, 2.4vw, 24px);
+    font-family: monospace;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  #s2-center .label {
+    font-size: clamp(8px, 1vw, 11px);
+    letter-spacing: 0.12em;
+    color: var(--dim);
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
+  @keyframes total-pulse {
+    0%,100% { opacity: 1; text-shadow: 0 0 20px var(--accent); }
+    50%      { opacity: 0.55; text-shadow: none; }
+  }
+  #s2-center.pulsing .total { animation: total-pulse 1.4s ease-in-out infinite; }
+
+  .orbit-node {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(154,72,255,0.3);
+    background: rgba(14,11,22,0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.3);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    padding: 8px;
+    box-shadow: 0 0 20px rgba(119,15,245,0.1);
+  }
+  .orbit-node.visible { opacity: 1; transform: scale(1); }
+  .orbit-node .o-name {
+    font-size: clamp(7px, 1vw, 10px);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dim);
+    line-height: 1.3;
+    white-space: pre-line;
+  }
+  .orbit-node .o-val {
+    font-size: clamp(9px, 1.2vw, 13px);
+    font-family: monospace;
+    color: var(--text);
+    margin-top: 4px;
+    font-weight: bold;
+  }
+  #s2-orbit-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    border-radius: 50%;
+    border: 1px dashed rgba(90,82,101,0.3);
+    pointer-events: none;
+    transform: translate(-50%,-50%);
+  }
+
+  /* =================== SCENE 3 =================== */
+  #s3 { flex-direction: column; gap: 0; }
+  #s3-clock {
+    position: relative;
+    width: min(130px, 20vw);
+    height: min(130px, 20vw);
+    margin-bottom: 36px;
+    flex-shrink: 0;
+  }
+  #s3-clock svg { width: 100%; height: 100%; }
+  #s3-ticks {
+    display: flex; flex-direction: column;
+    gap: 9px; align-items: flex-start;
+    width: min(580px, 86vw);
+  }
+  .tick-row {
+    font-family: monospace;
+    font-size: clamp(12px, 1.9vw, 17px);
+    color: var(--text);
+    opacity: 0;
+    transform: translateX(-14px);
+    transition: opacity 0.5s, transform 0.5s ease;
+    white-space: nowrap;
+  }
+  .tick-row.visible { opacity: 1; transform: translateX(0); }
+  .tick-row .tval { color: var(--yellow); }
+  #s3-bar-wrap {
+    margin-top: 30px;
+    width: min(580px, 86vw);
+    opacity: 0;
+    transition: opacity 0.8s;
+  }
+  #s3-bar-wrap.visible { opacity: 1; }
+  #s3-bar-track {
+    height: 5px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  #s3-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--purple2h));
+    width: 0%;
+    border-radius: 3px;
+    transition: width 1.8s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 12px var(--accent);
+  }
+  #s3-bar-label {
+    font-size: clamp(11px, 1.5vw, 14px);
+    color: var(--text);
+    font-family: system-ui;
+    line-height: 1.5;
+  }
+  #s3-bar-label .hl { color: var(--yellow); font-family: monospace; }
+  #s3-bar-sub {
+    font-size: clamp(9px, 1.2vw, 12px);
+    color: var(--dim);
+    margin-top: 14px;
+    font-family: system-ui;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* =================== SCENE 4 =================== */
+  #s4 { position: relative; overflow: hidden; }
+  #s4-canvas { position: absolute; left: -10px; right: -10px; top: -60px; bottom: -10px; width: calc(100% + 20px); height: calc(100% + 70px); }
+  #s4-overlay {
+    position: relative; z-index: 5;
+    display: flex; flex-direction: column;
+    align-items: center; width: 100%;
+    pointer-events: none;
+  }
+  #s4-counter {
+    font-size: clamp(11px, 1.5vw, 14px);
+    font-family: monospace;
+    color: var(--text);
+    letter-spacing: 0.06em;
+    margin-top: 34px;
+    opacity: 0;
+    transition: opacity 0.8s;
+    text-align: center;
+    padding: 0 16px;
+  }
+  #s4-counter.visible { opacity: 1; }
+  #s4-counter .hl { color: var(--accent2); }
+  #s4-filter {
+    position: absolute;
+    width: 110%;
+    left: -5%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--purple2h), var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 1s;
+    box-shadow: 0 0 24px 4px rgba(119,15,245,0.5);
+    z-index: 10;
+  }
+  #s4-filter.visible { opacity: 1; }
+  #s4-filter-label {
+    position: absolute;
+    font-size: clamp(10px, 1.4vw, 13px);
+    font-family: system-ui;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--purple2h);
+    opacity: 0;
+    transition: opacity 1s;
+    z-index: 11;
+    text-align: center;
+    padding: 0 20px;
+  }
+  #s4-filter-label.visible { opacity: 1; }
+  #s4-bottom-label {
+    position: absolute;
+    bottom: 56px;
+    font-size: clamp(9px, 1.2vw, 12px);
+    font-family: system-ui;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    opacity: 0;
+    transition: opacity 1s;
+    z-index: 11;
+    text-align: center;
+    padding: 0 20px;
+    line-height: 1.8;
+    text-transform: uppercase;
+  }
+  #s4-bottom-label.visible { opacity: 1; }
+
+  /* =================== SCENE 5 =================== */
+  #s5 { flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+  #s5-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.7s;
+    margin-bottom: 48px;
+    flex-shrink: 0;
+  }
+  #s5-dot.visible { opacity: 1; }
+  @keyframes dot-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(154,72,255,0.8); }
+    70%  { box-shadow: 0 0 0 24px rgba(154,72,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(154,72,255,0); }
+  }
+  #s5-dot.pulsing { animation: dot-pulse 1.6s ease-out infinite; }
+  #s5-lines { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .s5-line {
+    font-family: monospace;
+    font-size: clamp(12px, 1.7vw, 16px);
+    color: var(--text);
+    opacity: 0;
+    letter-spacing: 0.05em;
+    text-align: center;
+    min-height: 1.5em;
+    transition: opacity 0.5s;
+  }
+  .s5-line.visible { opacity: 1; }
+  #s5-brand {
+    font-size: clamp(36px, 7vw, 80px);
+    letter-spacing: 0.22em;
+    font-family: system-ui, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 1.2s;
+    margin-top: 36px;
+    text-align: center;
+    text-shadow: 0 0 60px rgba(119,15,245,0.5);
+  }
+  #s5-brand.visible { opacity: 1; }
+  #s5-sub {
+    font-size: clamp(11px, 1.5vw, 15px);
+    font-family: system-ui, sans-serif;
+    color: rgba(231,223,221,0.65);
+    opacity: 0;
+    transition: opacity 1.2s;
+    margin-top: 16px;
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+  #s5-sub.visible { opacity: 1; }
+
+  @media (max-width: 480px) {
+    #s1-circles { height: 52vh; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Persistent starfield -->
+<canvas id="starfield"></canvas>
+
+<div id="curtain"></div>
+<div id="progress-bar"></div>
+<div id="scene-label"></div>
+<div id="nav-dots">
+  <div class="dot" onclick="goToScene(0)"></div>
+  <div class="dot" onclick="goToScene(1)"></div>
+  <div class="dot" onclick="goToScene(2)"></div>
+  <div class="dot" onclick="goToScene(3)"></div>
+  <div class="dot" onclick="goToScene(4)"></div>
+</div>
+
+<div id="stage">
+
+  <!-- SCENE 1 -->
+  <div class="scene" id="s1" data-screen-label="01 Assets at Stake">
+    <div id="s1-circles">
+      <div id="s1-ring"></div>
+      <div class="asset-circle" id="c-hubble" style="width:220px;height:220px;top:50%;left:50%;margin-top:-110px;margin-left:-210px;">
+        <span class="circle-label">HUBBLE</span>
+        <span class="circle-val">$16B</span>
+      </div>
+      <div class="asset-circle" id="c-jwst" style="width:186px;height:186px;top:50%;left:50%;margin-top:-93px;margin-left:24px;">
+        <span class="circle-label">JAMES WEBB</span>
+        <span class="circle-val">$10B</span>
+      </div>
+      <div class="asset-circle" id="c-rubin" style="width:102px;height:102px;top:73%;left:50%;margin-top:-51px;margin-left:-22px;">
+        <span class="circle-label">RUBIN/LSST</span>
+        <span class="circle-val">$1.3B</span>
+      </div>
+    </div>
+    <div id="s1-counter">
+      <div class="big">~$30B IN TDAMM ASSETS WORLDWIDE</div>
+      <div class="sub">FERMI &nbsp;·&nbsp; SWIFT &nbsp;·&nbsp; LIGO &nbsp;·&nbsp; ICECUBE &nbsp;·&nbsp; CTAO</div>
+    </div>
+  </div>
+
+  <!-- SCENE 2 -->
+  <div class="scene" id="s2" data-screen-label="02 Funding Behind It">
+    <div id="s2-orbit-container">
+      <div id="s2-orbit-ring"></div>
+      <div id="s2-center">
+        <div class="total">$4B+ / year</div>
+        <div class="label">flowing into the sky</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div class="scene" id="s3" data-screen-label="03 Cost of One Hour">
+    <div id="s3-clock">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="rgba(90,82,101,0.4)" stroke-width="1.5"/>
+        <g stroke="rgba(90,82,101,0.5)" stroke-width="1">
+          <line x1="50" y1="6"  x2="50" y2="14"/>
+          <line x1="50" y1="86" x2="50" y2="94"/>
+          <line x1="6"  y1="50" x2="14" y2="50"/>
+          <line x1="86" y1="50" x2="94" y2="50"/>
+          <line x1="21" y1="15" x2="26" y2="23"/>
+          <line x1="74" y1="77" x2="79" y2="85"/>
+          <line x1="79" y1="15" x2="74" y2="23"/>
+          <line x1="26" y1="77" x2="21" y2="85"/>
+        </g>
+        <line id="hour-hand"   x1="50" y1="50" x2="50" y2="24" stroke="rgba(90,82,101,0.8)" stroke-width="2"   stroke-linecap="round"/>
+        <line id="minute-hand" x1="50" y1="50" x2="50" y2="16" stroke="#9A48FF"              stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="50" cy="50" r="2.5" fill="#770ff5"/>
+      </svg>
+    </div>
+    <div id="s3-ticks">
+      <div class="tick-row" id="t1">JWST &nbsp;&nbsp;&nbsp;&nbsp;<span class="tval">$170,000 / hr</span></div>
+      <div class="tick-row" id="t2">HUBBLE &nbsp;&nbsp;<span class="tval">$11,000 / hr</span></div>
+      <div class="tick-row" id="t3">VLT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tval">$22,000 / hr</span></div>
+      <div class="tick-row" id="t4">CHANDRA &nbsp;<span class="tval">$9,500 / hr</span></div>
+      <div class="tick-row" id="t5">RUBIN &nbsp;&nbsp;&nbsp;<span class="tval">$4,200 / hr</span></div>
+      <div class="tick-row" id="t6">LIGO &nbsp;&nbsp;&nbsp;&nbsp;<span class="tval">$3,100 / hr</span></div>
+    </div>
+    <div id="s3-bar-wrap">
+      <div id="s3-bar-track"><div id="s3-bar-fill"></div></div>
+      <div id="s3-bar-label">6 hours unidentified = <span class="hl">$1,020,000</span> in missed JWST windows</div>
+      <div id="s3-bar-sub">One kilonova. &nbsp;One uncorrelated alert. &nbsp;Gone.</div>
+    </div>
+  </div>
+
+  <!-- SCENE 4 -->
+  <div class="scene" id="s4" data-screen-label="04 The Deluge">
+    <canvas id="s4-canvas"></canvas>
+    <div id="s4-overlay">
+      <div id="s4-counter"><span class="hl">7,000,000</span> alerts / night — Rubin Observatory, since Feb 25, 2026</div>
+    </div>
+    <div id="s4-filter"></div>
+    <div id="s4-filter-label">Starithm catches what humans can't</div>
+    <div id="s4-bottom-label">44,000+ GCN Circulars &nbsp;·&nbsp; Structured &nbsp;·&nbsp; Reasoned &nbsp;·&nbsp; Cross-matched</div>
+  </div>
+
+  <!-- SCENE 5 -->
+  <div class="scene" id="s5" data-screen-label="05 The Opportunity">
+    <div id="s5-dot"></div>
+    <div id="s5-lines">
+      <div class="s5-line" id="l1"></div>
+      <div class="s5-line" id="l2"></div>
+      <div class="s5-line" id="l3"></div>
+    </div>
+    <div id="s5-brand">STARITHM</div>
+    <div id="s5-sub">The Operating System for the Dynamic Sky.</div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// STARFIELD — persistent, behind all scenes
+// ============================================================
+(function initStarfield() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  const STAR_COUNT = 320;
+  let stars = [];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Generate stars with twinkle phase
+  stars = Array.from({ length: STAR_COUNT }, () => ({
+    x:      Math.random(),
+    y:      Math.random(),
+    r:      Math.random() < 0.08 ? 1.4 : (Math.random() < 0.25 ? 0.9 : 0.5),
+    base:   0.12 + Math.random() * 0.45,
+    phase:  Math.random() * Math.PI * 2,
+    // only ~20% of stars twinkle; the rest are static
+    twinkle: Math.random() < 0.20,
+    freq:   0.00004 + Math.random() * 0.00010,   // very slow
+    amp:    0.10 + Math.random() * 0.15,          // subtle amplitude
+    hue:    Math.random() < 0.12 ? 270 : 0,
+    sat:    Math.random() < 0.12 ? 60 : 0,
+  }));
+
+  let t = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const W = canvas.width, H = canvas.height;
+    t++;
+    stars.forEach(s => {
+      const alpha = s.twinkle
+        ? s.base + Math.sin(t * s.freq * 1000 + s.phase) * s.amp
+        : s.base;
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+      if (s.hue === 0) {
+        ctx.fillStyle = `rgba(231,223,221,${Math.max(0, alpha)})`;
+      } else {
+        ctx.fillStyle = `hsla(${s.hue},${s.sat}%,85%,${Math.max(0, alpha)})`;
+      }
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ============================================================
+// CORE ENGINE
+// ============================================================
+const SCENE_DURATION = 6000;
+const FADE_MS        = 700;   // slower fade
+
+const SCENES = [s1Init, s2Init, s3Init, s4Init, s5Init];
+const LABELS = [
+  "01 — THE ASSETS AT STAKE",
+  "02 — THE FUNDING BEHIND IT",
+  "03 — THE COST OF ONE HOUR",
+  "04 — THE DELUGE",
+  "05 — THE OPPORTUNITY"
+];
+
+let currentScene = -1;
+let autoTimer = null;
+let sceneCleanup = null;
+
+const curtain     = document.getElementById('curtain');
+const progressBar = document.getElementById('progress-bar');
+const sceneLabel  = document.getElementById('scene-label');
+const dots        = document.querySelectorAll('.dot');
+
+function goToScene(idx) {
+  if (idx === currentScene) return;
+  clearTimeout(autoTimer);
+  fadeToBlack(() => {
+    hideAll();
+    if (sceneCleanup) { sceneCleanup(); sceneCleanup = null; }
+    currentScene = idx;
+    updateNav();
+    sceneLabel.textContent = LABELS[idx];
+    document.querySelectorAll('.scene')[idx].classList.add('active');
+    resetScene(idx);
+    fadeIn(() => {
+      SCENES[idx]();
+      startProgress(idx);
+    });
+  });
+}
+
+function startProgress(idx) {
+  progressBar.style.transition = 'none';
+  progressBar.style.width = '0%';
+  requestAnimationFrame(() => {
+    progressBar.style.transition = `width ${SCENE_DURATION}ms linear`;
+    progressBar.style.width = '100%';
+  });
+  autoTimer = setTimeout(() => goToScene((idx + 1) % 5), SCENE_DURATION);
+}
+
+function fadeToBlack(cb) {
+  curtain.style.opacity = '1';
+  setTimeout(cb, FADE_MS);
+}
+function fadeIn(cb) {
+  curtain.style.opacity = '0';
+  setTimeout(cb, FADE_MS);
+}
+function hideAll() {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+}
+function updateNav() {
+  dots.forEach((d, i) => d.classList.toggle('active', i === currentScene));
+}
+
+function typeWriter(el, text, speed, cb) {
+  let i = 0;
+  el.textContent = '';
+  el.classList.add('visible');
+  function tick() {
+    if (i <= text.length) {
+      el.textContent = text.slice(0, i++);
+      setTimeout(tick, speed);
+    } else if (cb) cb();
+  }
+  tick();
+}
+
+// ============================================================
+// RESET per scene
+// ============================================================
+function resetScene(idx) {
+  if (idx === 0) {
+    ['c-hubble','c-jwst','c-rubin'].forEach(id =>
+      document.getElementById(id).classList.remove('landed'));
+    const ring = document.getElementById('s1-ring');
+    ring.classList.remove('visible','pulsing');
+    ring.style.width = ''; ring.style.height = '';
+    document.getElementById('s1-counter').classList.remove('visible');
+
+  } else if (idx === 1) {
+    document.querySelectorAll('.orbit-node').forEach(n => n.remove());
+    document.getElementById('s2-center').classList.remove('visible','pulsing');
+
+  } else if (idx === 2) {
+    ['t1','t2','t3','t4','t5','t6'].forEach(id =>
+      document.getElementById(id).classList.remove('visible'));
+    document.getElementById('s3-bar-wrap').classList.remove('visible');
+    const fill = document.getElementById('s3-bar-fill');
+    fill.style.transition = 'none';
+    fill.style.width = '0%';
+    resetClock();
+
+  } else if (idx === 3) {
+    ['s4-counter','s4-filter','s4-filter-label','s4-bottom-label']
+      .forEach(id => document.getElementById(id).classList.remove('visible'));
+
+  } else if (idx === 4) {
+    document.getElementById('s5-dot').classList.remove('visible','pulsing');
+    ['l1','l2','l3'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('visible');
+      el.textContent = '';
+    });
+    document.getElementById('s5-brand').classList.remove('visible');
+    document.getElementById('s5-sub').classList.remove('visible');
+  }
+}
+
+// ============================================================
+// SCENE 1
+// ============================================================
+function s1Init() {
+  const timers = [];
+  timers.push(setTimeout(() => document.getElementById('c-hubble').classList.add('landed'), 300));
+  timers.push(setTimeout(() => document.getElementById('c-jwst').classList.add('landed'),   900));
+  timers.push(setTimeout(() => document.getElementById('c-rubin').classList.add('landed'), 1500));
+  timers.push(setTimeout(() => {
+    const ring = document.getElementById('s1-ring');
+    ring.style.width  = '490px';
+    ring.style.height = '380px';
+    ring.classList.add('visible');
+    setTimeout(() => ring.classList.add('pulsing'), 1000);
+  }, 2100));
+  timers.push(setTimeout(() => document.getElementById('s1-counter').classList.add('visible'), 2800));
+  sceneCleanup = () => timers.forEach(clearTimeout);
+}
+
+// ============================================================
+// SCENE 2 — proportional bubble sizes (sqrt scale)
+// ============================================================
+const orbitAgencies = [
+  { name: 'NASA\nAstrophysics', val: '$1.595B', budget: 1595 },
+  { name: 'ESA\nScience',       val: '$1.4B',   budget: 1400 },
+  { name: 'NSF AST',            val: '$800M',   budget: 800  },
+  { name: 'SARAO',              val: '$106M',   budget: 106  },
+  { name: 'CTAO',               val: '$32M/yr', budget: 32   },
+  { name: 'ISRO',               val: '$68M',    budget: 68   },
+];
+
+function s2Init() {
+  const container  = document.getElementById('s2-orbit-container');
+  const size       = container.offsetWidth;
+  const orbitR     = size * 0.37;
+
+  // sqrt-scale budgets → pixel diameters (55–145px)
+  const sqrts = orbitAgencies.map(a => Math.sqrt(a.budget));
+  const minS  = Math.min(...sqrts), maxS = Math.max(...sqrts);
+  const minPx = 55, maxPx = 145;
+  const toPx  = v => minPx + ((v - minS) / (maxS - minS)) * (maxPx - minPx);
+
+  // Orbit ring
+  const ring = document.getElementById('s2-orbit-ring');
+  ring.style.width   = (orbitR * 2) + 'px';
+  ring.style.height  = (orbitR * 2) + 'px';
+
+  const timers = [];
+  orbitAgencies.forEach((agency, i) => {
+    const px    = toPx(Math.sqrt(agency.budget));
+    const angle = (i / orbitAgencies.length) * Math.PI * 2 - Math.PI / 2;
+    const cx    = Math.cos(angle) * orbitR + size / 2;
+    const cy    = Math.sin(angle) * orbitR + size / 2;
+
+    const node = document.createElement('div');
+    node.className = 'orbit-node';
+    node.style.left   = (cx - px / 2) + 'px';
+    node.style.top    = (cy - px / 2) + 'px';
+    node.style.width  = px + 'px';
+    node.style.height = px + 'px';
+
+    const nameEl = document.createElement('div');
+    nameEl.className   = 'o-name';
+    nameEl.textContent = agency.name;
+    node.appendChild(nameEl);
+
+    const valEl = document.createElement('div');
+    valEl.className   = 'o-val';
+    valEl.textContent = agency.val;
+    // size value text relative to bubble
+    valEl.style.fontSize = Math.max(8, px * 0.15) + 'px';
+    node.appendChild(valEl);
+
+    container.appendChild(node);
+    timers.push(setTimeout(() => node.classList.add('visible'), 300 + i * 420));
+  });
+
+  timers.push(setTimeout(() => {
+    const center = document.getElementById('s2-center');
+    center.classList.add('visible');
+    setTimeout(() => center.classList.add('pulsing'), 700);
+  }, 300 + orbitAgencies.length * 420 + 300));
+
+  sceneCleanup = () => timers.forEach(clearTimeout);
+}
+
+// ============================================================
+// SCENE 3
+// ============================================================
+let clockAngle = 0, clockRAF = null;
+
+function resetClock() {
+  cancelAnimationFrame(clockRAF);
+  clockAngle = 0;
+  document.getElementById('minute-hand').setAttribute('x2','50');
+  document.getElementById('minute-hand').setAttribute('y2','16');
+  document.getElementById('hour-hand').setAttribute('x2','50');
+  document.getElementById('hour-hand').setAttribute('y2','24');
+}
+
+function animateClock() {
+  const mh = document.getElementById('minute-hand');
+  const hh = document.getElementById('hour-hand');
+  function update() {
+    clockAngle += 1.4;
+    const mRad = (clockAngle - 90) * Math.PI / 180;
+    const hRad = (clockAngle / 12 - 90) * Math.PI / 180;
+    mh.setAttribute('x2', (50 + Math.cos(mRad) * 34).toFixed(2));
+    mh.setAttribute('y2', (50 + Math.sin(mRad) * 34).toFixed(2));
+    hh.setAttribute('x2', (50 + Math.cos(hRad) * 26).toFixed(2));
+    hh.setAttribute('y2', (50 + Math.sin(hRad) * 26).toFixed(2));
+    clockRAF = requestAnimationFrame(update);
+  }
+  update();
+}
+
+function s3Init() {
+  animateClock();
+  const timers = [];
+  ['t1','t2','t3','t4','t5','t6'].forEach((id, i) => {
+    timers.push(setTimeout(() =>
+      document.getElementById(id).classList.add('visible'), 400 + i * 480));
+  });
+  timers.push(setTimeout(() => {
+    const wrap = document.getElementById('s3-bar-wrap');
+    wrap.classList.add('visible');
+    setTimeout(() => {
+      document.getElementById('s3-bar-fill').style.transition = 'width 1.8s cubic-bezier(0.4,0,0.2,1)';
+      document.getElementById('s3-bar-fill').style.width = '100%';
+    }, 100);
+  }, 400 + 6 * 480 + 200));
+  sceneCleanup = () => { timers.forEach(clearTimeout); cancelAnimationFrame(clockRAF); };
+}
+
+// ============================================================
+// SCENE 4 — wide-coverage particle rain + starry backdrop
+// ============================================================
+let s4Canvas, s4Ctx, s4RAF, s4Phase = 0, s4Dots = [], s4FilterY = 0;
+
+function s4Init() {
+  s4Canvas = document.getElementById('s4-canvas');
+  s4Ctx    = s4Canvas.getContext('2d');
+  s4Phase  = 0;
+
+  const DOT_COUNT = 4200;
+
+  function resize() {
+    s4Canvas.width  = s4Canvas.offsetWidth;
+    s4Canvas.height = s4Canvas.offsetHeight;
+    s4FilterY = s4Canvas.height * 0.50;
+    positionFilter();
+  }
+  resize();
+
+  // Dots spread across full width + some height pre-seeded
+  s4Dots = Array.from({ length: DOT_COUNT }, (_, i) => ({
+    x:     (Math.random() - 0.05) * s4Canvas.width * 1.1,
+    // seed first 40% into visible area so rain looks dense immediately
+    y:     i < DOT_COUNT * 0.4
+           ? Math.random() * s4Canvas.height
+           : -Math.random() * s4Canvas.height * 0.8,
+    speed: 0.5 + Math.random() * 2.8,
+    size:  Math.random() < 0.03 ? 2 : (Math.random() < 0.15 ? 1.3 : 0.8),
+    alpha: 0.25 + Math.random() * 0.75,
+    targetX: 0, targetY: 0, organizeProgress: 0,
+  }));
+
+  const timers = [];
+  timers.push(setTimeout(() =>
+    document.getElementById('s4-counter').classList.add('visible'), 300));
+
+  timers.push(setTimeout(() => {
+    s4Phase = 1;
+    document.getElementById('s4-filter').classList.add('visible');
+    document.getElementById('s4-filter-label').classList.add('visible');
+    positionFilter();
+
+    const cols = 70, rows = Math.ceil(DOT_COUNT / cols);
+    const sx   = s4Canvas.width * 0.05;
+    const sy   = s4FilterY + 28;
+    const gx   = (s4Canvas.width * 0.9) / cols;
+    const gy   = Math.min(8, (s4Canvas.height - sy - 50) / rows);
+    s4Dots.forEach((d, i) => {
+      d.targetX = sx + (i % cols) * gx;
+      d.targetY = sy + Math.floor(i / cols) * gy;
+    });
+  }, 3000));
+
+  timers.push(setTimeout(() =>
+    document.getElementById('s4-bottom-label').classList.add('visible'), 3900));
+
+  function positionFilter() {
+    const fe = document.getElementById('s4-filter');
+    const fl = document.getElementById('s4-filter-label');
+    fe.style.top = (s4FilterY - 60) + 'px';
+    fl.style.top = (s4FilterY - 60 - 28) + 'px';
+    fl.style.left = '0'; fl.style.right = '0';
+  }
+
+  function draw() {
+    const W = s4Canvas.width, H = s4Canvas.height;
+    s4Ctx.clearRect(0, 0, W, H);
+
+    s4Dots.forEach(d => {
+      if (s4Phase === 0) {
+        d.y += d.speed;
+        if (d.y > H + 4) {
+          d.y = -Math.random() * 80 - 6;
+          d.x = (Math.random() - 0.05) * W * 1.1;
+        }
+      } else {
+        if (d.y < s4FilterY) {
+          d.y += d.speed * 0.7;
+        } else {
+          d.x += (d.targetX - d.x) * 0.035;
+          d.y += (d.targetY - d.y) * 0.035;
+        }
+      }
+
+      const below = d.y >= s4FilterY && s4Phase === 1;
+      s4Ctx.beginPath();
+      s4Ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
+      s4Ctx.fillStyle = below
+        ? `rgba(154,72,255,${d.alpha * 0.65})`
+        : `rgba(231,223,221,${d.alpha * 0.45})`;
+      s4Ctx.fill();
+    });
+
+    s4RAF = requestAnimationFrame(draw);
+  }
+  draw();
+
+  const onResize = () => resize();
+  window.addEventListener('resize', onResize);
+  sceneCleanup = () => {
+    timers.forEach(clearTimeout);
+    cancelAnimationFrame(s4RAF);
+    window.removeEventListener('resize', onResize);
+  };
+}
+
+// ============================================================
+// SCENE 5
+// ============================================================
+const s5Lines = [
+  { id: 'l1', text: '739+ canonical events identified' },
+  { id: 'l2', text: '~4,000 MMA researchers  ·  12,742 IAU members' },
+  { id: 'l3', text: '>97% extraction accuracy  ·  $0.40 / 1M tokens' },
+];
+
+function s5Init() {
+  const timers = [];
+  const dot = document.getElementById('s5-dot');
+  timers.push(setTimeout(() => {
+    dot.classList.add('visible');
+    setTimeout(() => dot.classList.add('pulsing'), 400);
+  }, 300));
+
+  let offset = 800;
+  s5Lines.forEach(({ id, text }) => {
+    timers.push(setTimeout(() => typeWriter(document.getElementById(id), text, 26, null), offset));
+    offset += text.length * 26 + 250;
+  });
+
+  timers.push(setTimeout(() =>
+    document.getElementById('s5-brand').classList.add('visible'), offset));
+  timers.push(setTimeout(() =>
+    document.getElementById('s5-sub').classList.add('visible'), offset + 600));
+
+  sceneCleanup = () => timers.forEach(clearTimeout);
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+window.addEventListener('load', () => goToScene(0));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') goToScene((currentScene + 1) % 5);
+  if (e.key === 'ArrowLeft')                   goToScene((currentScene + 4) % 5);
+});
+</script>
+</body>
+</html>
