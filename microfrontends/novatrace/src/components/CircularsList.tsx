@@ -36,7 +36,7 @@ function urlLabel(url: string): string {
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+    hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short',
   });
 }
 

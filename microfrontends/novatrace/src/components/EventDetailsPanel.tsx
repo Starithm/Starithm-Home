@@ -112,10 +112,43 @@ interface AISummary {
   generatedAt: string;
 }
 
+interface CrossMatchCandidate {
+  type: 'gcn';
+  canonicalId: string;
+  confidence: number | null;
+  matchMethod: string | null;
+  alertKind: string | null;
+  verified: boolean;
+}
+
+interface OpticalCandidate {
+  objectId: string;
+  ra?: number | null;
+  dec?: number | null;
+  separation_deg?: number | null;
+  dt_trigger_min?: number | null;
+  rb?: number | null;
+  fink_class?: string | null;
+  anomaly_score?: number | null;
+  elong?: number | null;
+  sherlock_class?: string | null;
+  llm_confidence?: number | null;
+  llm_reason?: string | null;
+  lasair_url?: string;
+}
+
+interface CrossMatch {
+  groupId?: string;
+  reasoning?: string;
+  candidates?: CrossMatchCandidate[];
+}
+
 interface EventDetailsResponse {
   stream: StreamAlert[];
   textual: Alert[];
   aiSummary?: AISummary | null;
+  cross_match?: CrossMatch | null;
+  optical_counterparts?: OpticalCandidate[];
 }
 
 interface TimelineItem {
@@ -140,7 +173,7 @@ type TabType = 'overview' | 'timeline' | 'detailed';
 function formatTimestamp(timestamp: string) {
   const date = new Date(timestamp);
   return {
-    date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }),
     time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'UTC' }),
   };
 }
@@ -163,7 +196,7 @@ function formatCoordinate(value: number, type: 'ra' | 'dec') {
 function renderTableValue(key: string, value: unknown): string {
   if (value === null || value === undefined) return '—';
   if (key === 't0' || key === 'receivedAt' || key === 'producedAt' || key === 'createdAt' || key === 'updatedAt') {
-    return new Date(value as string).toLocaleString();
+    return new Date(value as string).toLocaleString('en-US', { timeZone: 'UTC', timeZoneName: 'short' });
   }
   if (key === 'raDeg') return formatCoordinate(value as number, 'ra');
   if (key === 'decDeg') return formatCoordinate(value as number, 'dec');
@@ -324,7 +357,7 @@ function TabBar({ active, onChange, counts }: {
 // Overview Tab
 // ---------------------------------------------------------------------------
 
-function OverviewTab({ alert, aiSummary }: { alert: StreamAlert; aiSummary?: AISummary | null }) {
+function OverviewTab({ alert, aiSummary, cross_match, optical_counterparts }: { alert: StreamAlert; aiSummary?: AISummary | null; cross_match?: CrossMatch | null; optical_counterparts?: OpticalCandidate[] }) {
   const payload = (alert.payload as Record<string, any>) || {};
   const metrics = getMissionMetrics(alert.alertKind, payload);
   const externalLinks = getExternalLinks(alert);
@@ -477,6 +510,72 @@ function OverviewTab({ alert, aiSummary }: { alert: StreamAlert; aiSummary?: AIS
                     onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                   />
                 </a>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* GCN Cross-Match */}
+      {cross_match?.candidates?.some(c => c.verified) && (
+        <SectionCard icon={<Share2 className="h-3.5 w-3.5" />} title="Multi-Messenger Cross-Match">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {cross_match.reasoning && (
+              <p style={{ fontSize: '0.7rem', color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
+                {cross_match.reasoning}
+              </p>
+            )}
+            {cross_match.candidates.filter(c => c.verified).map(c => (
+              <div key={c.canonicalId} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', padding: '0.5rem', backgroundColor: '#1B1818', borderRadius: '0.375rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', fontWeight: 600 }}>{c.canonicalId}</span>
+                  {c.alertKind && <Badge variant="outline">{c.alertKind}</Badge>}
+                  {c.confidence != null && (
+                    <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 600, color: c.confidence >= 0.9 ? '#22c55e' : '#eab308' }}>
+                      {(c.confidence * 100).toFixed(0)}%
+                    </span>
+                  )}
+                </div>
+                {c.matchMethod && (
+                  <span style={{ fontSize: '0.65rem', color: 'var(--muted-foreground)' }}>via {c.matchMethod}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* Optical Counterpart Candidates */}
+      {(optical_counterparts?.length ?? 0) > 0 && (
+        <SectionCard icon={<MapPin className="h-3.5 w-3.5" />} title={`Optical Counterpart Candidates (${optical_counterparts!.length})`}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {optical_counterparts!.map(o => (
+              <div key={o.objectId} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', padding: '0.5rem', backgroundColor: '#1B1818', borderRadius: '0.375rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  {o.lasair_url ? (
+                    <a href={o.lasair_url} target="_blank" rel="noopener noreferrer"
+                      style={{ fontFamily: 'monospace', fontSize: '0.7rem', fontWeight: 600, color: 'var(--starithm-veronica)', textDecoration: 'none' }}>
+                      {o.objectId}
+                    </a>
+                  ) : (
+                    <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', fontWeight: 600 }}>{o.objectId}</span>
+                  )}
+                  {o.fink_class && <Badge variant="outline">{o.fink_class}</Badge>}
+                  {o.llm_confidence != null && (
+                    <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 600, color: o.llm_confidence >= 0.7 ? '#22c55e' : o.llm_confidence >= 0.4 ? '#eab308' : '#6b7280' }}>
+                      {(o.llm_confidence * 100).toFixed(0)}%
+                    </span>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', fontSize: '0.65rem', color: 'var(--muted-foreground)' }}>
+                  {o.separation_deg != null && <span>sep {o.separation_deg.toFixed(3)}°</span>}
+                  {o.dt_trigger_min != null && <span>dt {o.dt_trigger_min.toFixed(1)} min</span>}
+                  {o.rb != null && <span>rb {o.rb.toFixed(2)}</span>}
+                  {o.sherlock_class && <span>host: {o.sherlock_class}</span>}
+                </div>
+                {o.llm_reason && (
+                  <span style={{ fontSize: '0.65rem', color: 'var(--muted-foreground)', fontStyle: 'italic' }}>{o.llm_reason}</span>
+                )}
               </div>
             ))}
           </div>
@@ -679,7 +778,12 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
         <ContentScroll>
           {/* Overview */}
           {activeTab === 'overview' && latestStreamAlert && (
-            <OverviewTab alert={latestStreamAlert} aiSummary={eventDetails?.aiSummary} />
+            <OverviewTab
+              alert={latestStreamAlert}
+              aiSummary={eventDetails?.aiSummary}
+              cross_match={eventDetails?.cross_match}
+              optical_counterparts={eventDetails?.optical_counterparts}
+            />
           )}
 
           {/* Timeline */}

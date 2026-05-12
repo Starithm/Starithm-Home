@@ -49,7 +49,7 @@ export function RawDataModal({ alert, isOpen, onClose }: RawDataModalProps) {
           <Meta>
             <MetaTitle>{alert.event}</MetaTitle>
             <MetaText>{alert.alertKey}</MetaText>
-            <MetaText>{new Date(alert.date).toLocaleString()}</MetaText>
+            <MetaText>{new Date(alert.date).toLocaleString('en-US', { timeZone: 'UTC', timeZoneName: 'short' })}</MetaText>
           </Meta>
           
           <CodeWrapper>

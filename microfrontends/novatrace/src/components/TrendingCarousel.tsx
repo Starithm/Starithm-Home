@@ -149,7 +149,7 @@ export function TrendingCarousel({ onAlertClick }: TrendingCarouselProps) {
                   Latest: {getTimeAgo(new Date(currentEvent.latestAlert))}
                 </TimeText>
                 <TimeText>
-                  {new Date(currentEvent.latestAlert).toLocaleDateString()}
+                  {new Date(currentEvent.latestAlert).toLocaleDateString('en-US', { timeZone: 'UTC' })}
                 </TimeText>
               </CountWrap>
             </RowRight>

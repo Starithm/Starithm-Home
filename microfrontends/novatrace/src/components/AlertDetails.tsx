@@ -141,7 +141,8 @@ const formatDate = (date: Date) => {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-    timeZoneName: 'short'
+    timeZone: 'UTC',
+    timeZoneName: 'short',
   }).format(new Date(date));
 };
 

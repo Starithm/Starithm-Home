@@ -503,14 +503,24 @@ export default function EventLevel() {
                   </Badge>
                   {
                     selectedEvent.phase && (
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className={`${getPhaseColor(selectedEvent.phase)} text-white`}
                       >
                         {selectedEvent.phase}
                       </Badge>
                     )
                   }
+                  {selectedEventDetail?.cross_match?.candidates?.some((c: any) => c.verified) && (
+                    <Badge variant="outline" style={{ color: '#a855f7', borderColor: '#a855f7' }}>
+                      Multi-Messenger
+                    </Badge>
+                  )}
+                  {(selectedEventDetail?.optical_counterparts?.length ?? 0) > 0 && (
+                    <Badge variant="outline" style={{ color: '#38bdf8', borderColor: '#38bdf8' }}>
+                      {selectedEventDetail.optical_counterparts.length} Optical
+                    </Badge>
+                  )}
                 </BadgeContainer>
 
                 {selectedEventDetail && (
@@ -530,7 +540,7 @@ export default function EventLevel() {
                   <SectionContent>
                     <SectionRow>
                       <SectionLabel>T0:</SectionLabel>
-                      <SectionValue>{new Date(selectedEvent.t0).toLocaleString()}</SectionValue>
+                      <SectionValue>{new Date(selectedEvent.t0).toLocaleString('en-US', { timeZone: 'UTC', timeZoneName: 'short' })}</SectionValue>
                     </SectionRow>
                     <SectionRow>
                       <SectionLabel>Time Ago:</SectionLabel>
