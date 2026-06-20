@@ -1,21 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Event } from '@shared/types';
 import { Button } from '@shared/components/ui/button';
-import { Input } from '@shared/components/ui/input';
 import { Badge } from '@shared/components/ui/badge';
 import { Calendar as CalendarComponent } from '@shared/components/ui/calendar';
 
-import { 
-  Calendar, 
-  MapPin, 
-  Telescope, 
+import {
+  MapPin,
+  Telescope,
   Star,
-  Activity, 
+  Activity,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Clock,
-  RotateCcw
+  RotateCcw,
+  ArrowRight,
+  Calendar,
+  Radio,
+  Layers,
+  Home as HomeIcon,
+  Crosshair,
+  Info,
 } from 'lucide-react';
 import { API_ENDPOINTS } from '@shared/lib/config';
 import { ErrorComponent, Navigation as NavComponent, CelestialSphere } from '@shared/components';
@@ -38,11 +45,15 @@ import {
   LiveDot,
   LiveText,
   Navigation,
-  TimelinePicker,
-  TimelineContent,
-  TimelineLabel,
-  TimelineIcon,
-  TimelineText,
+  SearchSection,
+  SearchBarWrapper,
+  SearchBarInput,
+  SearchBarSendButton,
+  SearchErrorText,
+  FilterPillsRow,
+  FilterPillWrapper,
+  FilterPill,
+  PillDropdownItem,
   DateRangeContainer,
   DateRangeSeparator,
   CelestialSphereContainer,
@@ -103,6 +114,22 @@ export default function EventLevel() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const [selectedAlertTypes, setSelectedAlertTypes] = useState<string[]>([]);
+  const [nlQuery, setNlQuery] = useState('');
+  const [nlLoading, setNlLoading] = useState(false);
+  const [nlError, setNlError] = useState<string | null>(null);
+  const [semanticQuery, setSemanticQuery] = useState<string | null>(null);
+  const [openPill, setOpenPill] = useState<'date' | 'types' | 'instruments' | 'sky' | null>(null);
+  const [coneSearch, setConeSearch] = useState<{ raDeg: number; decDeg: number; radiusDeg: number } | null>(null);
+  const [coneRa, setConeRa] = useState('');
+  const [coneDec, setConeDec] = useState('');
+  const [coneRadius, setConeRadius] = useState('');
+  const pillsRef = useRef<HTMLDivElement>(null);
+  const dateRef = useRef<HTMLDivElement>(null);
+  const typesRef = useRef<HTMLDivElement>(null);
+  const instrumentsRef = useRef<HTMLDivElement>(null);
+  const skyRef = useRef<HTMLDivElement>(null);
+  const portalDropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   // Helper function to format date in UTC
   const formatDateToUTCString = (date: Date): string => {
     return date.toISOString().split('T')[0];
@@ -138,9 +165,11 @@ export default function EventLevel() {
         body: JSON.stringify({
           fromDate: dateRange.start,
           toDate: dateRange.end,
-          canonicalId: filters.search,
+          canonicalId: filters.search || undefined,
           sourceName: selectedSources.length > 0 ? selectedSources : undefined,
           alertKind: selectedAlertTypes.length > 0 ? selectedAlertTypes : undefined,
+          ...(coneSearch ? { raDeg: coneSearch.raDeg, decDeg: coneSearch.decDeg, radiusDeg: coneSearch.radiusDeg } : {}),
+          ...(semanticQuery ? { semanticQuery } : {}),
           limit: 200,
           offset: 0
         }),
@@ -154,6 +183,17 @@ export default function EventLevel() {
       return data.events || [];
     },
     enabled: searchTrigger > 0, // Only run when search is triggered
+  });
+
+  // Fetch available filter options (source names + alert kinds)
+  const { data: filterOptions } = useQuery({
+    queryKey: ['eventFilters'],
+    queryFn: async () => {
+      const response = await fetch(API_ENDPOINTS.eventFilters);
+      if (!response.ok) return { sourceNames: [], alertKinds: [] };
+      return response.json() as Promise<{ sourceNames: string[]; alertKinds: string[] }>;
+    },
+    staleTime: 5 * 60 * 1000, // re-fetch at most every 5 min
   });
 
   // Fetch AI summary for selected event
@@ -202,6 +242,19 @@ export default function EventLevel() {
     }
   }, [filteredEvents]);
 
+  // Close pill dropdowns on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const inPills = pillsRef.current?.contains(e.target as Node);
+      const inPortal = portalDropdownRef.current?.contains(e.target as Node);
+      if (!inPills && !inPortal) {
+        setOpenPill(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
   const handleFilterChange = (key: keyof EventFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
     setFiltersModified(true);
@@ -214,22 +267,78 @@ export default function EventLevel() {
     console.log("dateRange", dateRange);
   };
 
+  const toggleSource = (source: string) => {
+    setSelectedSources(prev =>
+      prev.includes(source) ? prev.filter(s => s !== source) : [...prev, source]
+    );
+    setSearchTrigger(prev => prev + 1);
+  };
+
+  const toggleAlertType = (kind: string) => {
+    setSelectedAlertTypes(prev =>
+      prev.includes(kind) ? prev.filter(k => k !== kind) : [...prev, kind]
+    );
+    setSearchTrigger(prev => prev + 1);
+  };
+
   const handleSearch = () => {
     setSearchTrigger(prev => prev + 1);
-    setFiltersModified(false); // Reset the modified flag after search
+    setFiltersModified(false);
+  };
+
+  const handleNLSearch = async () => {
+    if (!nlQuery.trim()) return;
+    setNlLoading(true);
+    setNlError(null);
+    try {
+      const res = await fetch(API_ENDPOINTS.nlSearch, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: nlQuery }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        setNlError(data.error);
+        return;
+      }
+      const f = data.filters;
+      if (f.sourceName) setSelectedSources(f.sourceName);
+      if (f.alertKind) setSelectedAlertTypes(f.alertKind);
+      if (f.fromDate || f.toDate) {
+        setDateRange({
+          start: f.fromDate ?? dateRange.start,
+          end: f.toDate ?? dateRange.end,
+        });
+      }
+      if (f.canonicalId) handleFilterChange('search', f.canonicalId);
+      if (f.raDeg != null && f.decDeg != null && f.radiusDeg != null) {
+        setConeSearch({ raDeg: f.raDeg, decDeg: f.decDeg, radiusDeg: f.radiusDeg });
+        setConeRa(String(f.raDeg));
+        setConeDec(String(f.decDeg));
+        setConeRadius(String(f.radiusDeg));
+      }
+      setSemanticQuery(f.semanticQuery ?? null);
+      setFiltersModified(false);
+      setSearchTrigger(prev => prev + 1);
+    } catch {
+      setNlError('Search service unavailable');
+    } finally {
+      setNlLoading(false);
+    }
   };
 
   const handleClearFilters = () => {
     setSelectedSources([]);
     setSelectedAlertTypes([]);
-    setFilters({
-      search: '',
-      sourceName: '',
-      alertKind: '',
-      phase: ''
-    });
-    setFiltersModified(false); // Reset the modified flag
-    // Also trigger a new search with cleared filters
+    setFilters({ search: '', sourceName: '', alertKind: '', phase: '' });
+    setNlQuery('');
+    setNlError(null);
+    setSemanticQuery(null);
+    setConeSearch(null);
+    setConeRa('');
+    setConeDec('');
+    setConeRadius('');
+    setFiltersModified(false);
     setSearchTrigger(prev => prev + 1);
   };
 
@@ -314,6 +423,15 @@ export default function EventLevel() {
     }
   };
 
+  const formatDatePillLabel = () => {
+    const fmt = (d: string) => {
+      const [, m, day] = d.split('-');
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${months[parseInt(m)-1]} ${parseInt(day)}`;
+    };
+    return `${fmt(dateRange.start)} – ${fmt(dateRange.end)}`;
+  };
+
   if (error) {
     return (
       <ErrorContainer>
@@ -326,14 +444,24 @@ export default function EventLevel() {
 
   const navigateToAlertLevel = () => {
     const target = '/novatrace/alerts';
-    // If embedded in a host, ask parent to navigate
     if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
       window.parent.postMessage({ type: 'navigate', path: target }, '*');
     } else {
-      // Fallback: navigate within microfrontend (works in standalone dev)
       window.location.href = `${target}`;
     }
   };
+
+  const navigateHome = () => {
+    const target = '/';
+    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'navigate', path: target }, '*');
+    } else {
+      window.location.href = target;
+    }
+  };
+
+  const displayAlertKinds = filterOptions?.alertKinds?.length ? filterOptions.alertKinds : ['grb', 'gw', 'neutrino', 'frb', 'xray'];
+  const displaySourceNames = filterOptions?.sourceNames?.length ? filterOptions.sourceNames : ['Fermi GBM', 'Swift BAT', 'IceCube', 'LVK', 'SVOM', 'Einstein Probe WXT', 'CHIME', 'DSA-110'];
 
   return (
     <EventLevelContainer>
@@ -358,64 +486,130 @@ export default function EventLevel() {
                 <LiveDot />
                 <LiveText>Live</LiveText>
               </LiveIndicator>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={navigateHome}
+                title="Starithm Home"
+                style={{ color: 'var(--muted-foreground)' }}
+              >
+                <HomeIcon size={18} />
+              </Button>
             </HeaderRight>
           </HeaderTop>
         </HeaderContent>
         
-        {/* Timeline Picker */}
-        <TimelinePicker>
-          <TimelineContent>
-            <TimelineLabel>
-              <TimelineIcon>
-                <Calendar size={16} />
-              </TimelineIcon>
-              <TimelineText>Timeline</TimelineText>
-            </TimelineLabel>
-            <DateRangeContainer>
-              <CalendarComponent
-                mode="single"
-                selected={dateRange.start ? new Date(dateRange.start) : undefined}
-                onSelect={(date) => {
-                  // console.log("selected start date", date);
-                  if (date) {
-                    handleDateRangeChange(formatDateToUTCString(date), dateRange.end);
-                  }
-                }}
-                initialFocus={false}
-              />
-              <DateRangeSeparator>to</DateRangeSeparator>
-              <CalendarComponent
-                mode="single"
-                selected={dateRange.end ? new Date(dateRange.end) : undefined}
-                onSelect={(date) => {
-                  // console.log("selected end date in eventlevel", date);
-                  if (date) {
-                    handleDateRangeChange(dateRange.start, formatDateToUTCString(date));
-                  }
-                }}
-                initialFocus={false}
-              />
-            </DateRangeContainer>
-            <Input
-              placeholder="Search by name or id"
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="w-48"
+        {/* Search + filter pills */}
+        <SearchSection ref={pillsRef}>
+          {/* NL search bar */}
+          <SearchBarWrapper>
+            <SearchBarInput
+              placeholder="Search in natural language — e.g. Fermi GRBs last week with position"
+              value={nlQuery}
+              onChange={e => { setNlQuery(e.target.value); setNlError(null); }}
+              onKeyDown={e => e.key === 'Enter' && handleNLSearch()}
             />
-            <Button 
-              variant={filtersModified ? "default" : "outline"}
-              size="lg" 
-              onClick={handleSearch}
-              disabled={isLoading}
-              className={filtersModified ? "bg-blue-600 hover:bg-blue-700" : ""}
+            <SearchBarSendButton
+              onClick={handleNLSearch}
+              disabled={nlLoading || !nlQuery.trim()}
+              title="Search"
             >
-              {isLoading ? "Searching..." : "Search"}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={handleClearFilters}>
-              <RotateCcw size={24} />
-            </Button>
-          </TimelineContent>
-        </TimelinePicker>
+              {nlLoading
+                ? <RotateCcw size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                : <ArrowRight size={14} />
+              }
+            </SearchBarSendButton>
+          </SearchBarWrapper>
+          {nlError && <SearchErrorText>{nlError}</SearchErrorText>}
+
+          {/* Filter pills */}
+          <FilterPillsRow>
+            {/* Date range pill */}
+            <FilterPillWrapper ref={dateRef}>
+              <FilterPill $active onClick={() => { const r = dateRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'date' ? null : 'date'); }}>
+                <Calendar size={13} />
+                {formatDatePillLabel()}
+                <ChevronDown size={11} />
+              </FilterPill>
+            </FilterPillWrapper>
+
+            {/* Types pill */}
+            <FilterPillWrapper ref={typesRef}>
+              <FilterPill
+                $active={selectedAlertTypes.length > 0}
+                onClick={() => { const r = typesRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'types' ? null : 'types'); }}
+              >
+                <Layers size={13} />
+                {selectedAlertTypes.length > 0 ? selectedAlertTypes.join(', ') : 'All types'}
+                <ChevronDown size={11} />
+              </FilterPill>
+            </FilterPillWrapper>
+
+            {/* Instruments pill */}
+            <FilterPillWrapper ref={instrumentsRef}>
+              <FilterPill
+                $active={selectedSources.length > 0}
+                onClick={() => { const r = instrumentsRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'instruments' ? null : 'instruments'); }}
+              >
+                <Radio size={13} />
+                {selectedSources.length > 0 ? selectedSources.join(', ') : 'All instruments'}
+                <ChevronDown size={11} />
+              </FilterPill>
+            </FilterPillWrapper>
+
+            {/* Sky region (cone search) pill */}
+            <FilterPillWrapper ref={skyRef}>
+              <FilterPill
+                $active={coneSearch !== null}
+                onClick={() => { const r = skyRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'sky' ? null : 'sky'); }}
+              >
+                <Crosshair size={13} />
+                {coneSearch
+                  ? `RA ${coneSearch.raDeg}° Dec ${coneSearch.decDeg > 0 ? '+' : ''}${coneSearch.decDeg}° r=${coneSearch.radiusDeg}°`
+                  : 'Sky region'}
+                <ChevronDown size={11} />
+              </FilterPill>
+            </FilterPillWrapper>
+
+            {/* Info — GCN circulars search coming soon */}
+            <div
+              style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
+              onMouseEnter={e => { const t = e.currentTarget.lastElementChild as HTMLElement; if (t) t.style.display = 'block'; }}
+              onMouseLeave={e => { const t = e.currentTarget.lastElementChild as HTMLElement; if (t) t.style.display = 'none'; }}
+            >
+              <button style={{ background: 'none', border: 'none', cursor: 'default', color: 'var(--muted-foreground)', padding: '0.2rem 0.15rem', display: 'flex', alignItems: 'center', opacity: 0.45 }}>
+                <Info size={13} />
+              </button>
+              <div style={{
+                display: 'none',
+                position: 'absolute',
+                bottom: 'calc(100% + 6px)',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'var(--card)',
+                border: '1px solid var(--border)',
+                borderRadius: '0.5rem',
+                padding: '0.35rem 0.7rem',
+                fontSize: '0.7rem',
+                color: 'var(--muted-foreground)',
+                whiteSpace: 'nowrap',
+                zIndex: 999999,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
+                pointerEvents: 'none',
+              }}>
+                Searching across GCN circulars is coming soon
+              </div>
+            </div>
+
+            {/* Clear button — only when filters active */}
+            {(selectedSources.length > 0 || selectedAlertTypes.length > 0 || nlQuery || coneSearch) && (
+              <FilterPill onClick={handleClearFilters} style={{ opacity: 0.6 }}>
+                <RotateCcw size={11} />
+                Clear
+              </FilterPill>
+            )}
+          </FilterPillsRow>
+        </SearchSection>
       </Header>
 
       {/* Main Content */}
@@ -425,6 +619,7 @@ export default function EventLevel() {
             events={filteredEvents}
             onEventClick={handleEventClick}
             selectedEvent={selectedEvent}
+            coneSearch={coneSearch}
             className="w-full h-full"
           />
         </CelestialSphereContainer>
@@ -550,7 +745,7 @@ export default function EventLevel() {
                 </SectionContainer>
 
                 {/* Position */}
-                {selectedEvent.raDeg && selectedEvent.decDeg && (
+                {selectedEvent.raDeg != null && selectedEvent.decDeg != null && (
                   <SectionContainer>
                     <SectionHeader>
                       <SectionIcon>
@@ -558,16 +753,20 @@ export default function EventLevel() {
                       </SectionIcon>
                       <SectionTitle>Position</SectionTitle>
                     </SectionHeader>
-                    <SectionContent>
-                      <SectionRow>
-                        <SectionLabel>RA:</SectionLabel>
-                        <SectionValue>{formatCoordinate(selectedEvent.raDeg, 'ra')}</SectionValue>
-                      </SectionRow>
-                      <SectionRow>
-                        <SectionLabel>Dec:</SectionLabel>
-                        <SectionValue>{formatCoordinate(selectedEvent.decDeg, 'dec')}</SectionValue>
-                      </SectionRow>
-                    </SectionContent>
+                    {selectedEvent.raDeg === 0 && selectedEvent.decDeg === 0 ? (
+                      <span style={{ fontSize: '0.7rem', color: 'var(--muted-foreground)' }}>No position available</span>
+                    ) : (
+                      <SectionContent>
+                        <SectionRow>
+                          <SectionLabel>RA:</SectionLabel>
+                          <SectionValue>{formatCoordinate(selectedEvent.raDeg, 'ra')}</SectionValue>
+                        </SectionRow>
+                        <SectionRow>
+                          <SectionLabel>Dec:</SectionLabel>
+                          <SectionValue>{formatCoordinate(selectedEvent.decDeg, 'dec')}</SectionValue>
+                        </SectionRow>
+                      </SectionContent>
+                    )}
                   </SectionContainer>
                 )}
 
@@ -628,16 +827,156 @@ export default function EventLevel() {
             >
               Search GCN Circulars →
             </span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--muted-foreground)', marginLeft: '1rem', opacity: 0.6 }}>
+              Powered by Starithm Tech
+            </span>
           </StatusRight>
         </StatusContent>
       </StatusBar>
 
       {/* Event Details Panel */}
-      <EventDetailsPanel 
-        eventId={selectedEvent?.canonicalId || selectedEvent?.id || ''} 
-        isOpen={showEventDetailsModal} 
-        onClose={() => setShowEventDetailsModal(false)} 
+      <EventDetailsPanel
+        eventId={selectedEvent?.canonicalId || selectedEvent?.id || ''}
+        isOpen={showEventDetailsModal}
+        onClose={() => setShowEventDetailsModal(false)}
       />
+
+      {/* Pill dropdowns rendered via portal to escape backdrop-filter / WebGL compositing */}
+      {openPill && createPortal(
+        <div
+          ref={portalDropdownRef}
+          style={{
+            position: 'fixed',
+            top: dropdownPos.top,
+            left: dropdownPos.left,
+            background: 'var(--card)',
+            border: '1px solid var(--border)',
+            borderRadius: '0.875rem',
+            padding: '0.4rem',
+            zIndex: 999999,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+            minWidth: openPill === 'date' ? 280 : openPill === 'sky' ? 220 : 200,
+          }}
+        >
+          {openPill === 'date' && (
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', padding: '0.25rem 0.25rem 0' }}>
+              <CalendarComponent
+                mode="single"
+                selected={dateRange.start ? new Date(dateRange.start) : undefined}
+                onSelect={date => { if (date) { handleDateRangeChange(formatDateToUTCString(date), dateRange.end); setSearchTrigger(p => p + 1); } }}
+                initialFocus={false}
+              />
+              <DateRangeSeparator>to</DateRangeSeparator>
+              <CalendarComponent
+                mode="single"
+                selected={dateRange.end ? new Date(dateRange.end) : undefined}
+                onSelect={date => { if (date) { handleDateRangeChange(dateRange.start, formatDateToUTCString(date)); setSearchTrigger(p => p + 1); } }}
+                initialFocus={false}
+              />
+            </div>
+          )}
+          {openPill === 'types' && displayAlertKinds.map(kind => (
+            <PillDropdownItem
+              key={kind}
+              $selected={selectedAlertTypes.includes(kind)}
+              onClick={() => toggleAlertType(kind)}
+            >
+              {selectedAlertTypes.includes(kind) ? '✓ ' : '  '}{kind.toUpperCase()}
+            </PillDropdownItem>
+          ))}
+          {openPill === 'instruments' && displaySourceNames.map(src => (
+            <PillDropdownItem
+              key={src}
+              $selected={selectedSources.includes(src)}
+              onClick={() => toggleSource(src)}
+            >
+              {selectedSources.includes(src) ? '✓ ' : '  '}{src}
+            </PillDropdownItem>
+          ))}
+          {openPill === 'sky' && (
+            <div style={{ padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+              {(['RA (deg, 0–360)', 'Dec (deg, −90 to +90)', 'Radius (deg)'] as const).map((label, i) => {
+                const [val, setter] = [
+                  [coneRa, setConeRa],
+                  [coneDec, setConeDec],
+                  [coneRadius, setConeRadius],
+                ][i] as [string, React.Dispatch<React.SetStateAction<string>>];
+                return (
+                  <React.Fragment key={label}>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--muted-foreground)' }}>{label}</span>
+                    <input
+                      type="number"
+                      value={val}
+                      onChange={e => setter(e.target.value)}
+                      placeholder={i === 0 ? '150' : i === 1 ? '-30' : '5'}
+                      style={{
+                        width: '100%',
+                        background: 'var(--muted)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '0.375rem',
+                        padding: '0.3rem 0.5rem',
+                        fontSize: '0.75rem',
+                        color: 'var(--foreground)',
+                        outline: 'none',
+                      }}
+                    />
+                  </React.Fragment>
+                );
+              })}
+              <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.25rem' }}>
+                <button
+                  onClick={() => {
+                    const ra = parseFloat(coneRa);
+                    const dec = parseFloat(coneDec);
+                    const radius = parseFloat(coneRadius);
+                    if (!isNaN(ra) && !isNaN(dec) && !isNaN(radius) && radius > 0) {
+                      setConeSearch({ raDeg: ra, decDeg: dec, radiusDeg: radius });
+                      setOpenPill(null);
+                      setSearchTrigger(prev => prev + 1);
+                    }
+                  }}
+                  style={{
+                    flex: 1,
+                    background: '#770ff5',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.5rem',
+                    padding: '0.35rem 0.5rem',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Apply
+                </button>
+                {coneSearch && (
+                  <button
+                    onClick={() => {
+                      setConeSearch(null);
+                      setConeRa('');
+                      setConeDec('');
+                      setConeRadius('');
+                      setOpenPill(null);
+                      setSearchTrigger(prev => prev + 1);
+                    }}
+                    style={{
+                      background: 'transparent',
+                      color: 'var(--muted-foreground)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '0.5rem',
+                      padding: '0.35rem 0.5rem',
+                      fontSize: '0.75rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>,
+        document.body
+      )}
     </EventLevelContainer>
   );
 }

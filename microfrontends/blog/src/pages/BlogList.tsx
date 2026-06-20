@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, Clock, FileText } from 'lucide-react';
 import { Button } from '@shared/components/ui/button';
+import styled from 'styled-components';
 import { fetchPostList, Post } from '../lib/posts';
 import {
   BlogContainer,
@@ -33,9 +34,27 @@ import {
   PostCardLink
 } from '../styled_components/BlogList.styled';
 
+const POSTS_PER_PAGE = 12;
+
+const PageButton = styled.button<{ $active?: boolean }>`
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid ${({ $active }) => $active ? '#770ff5' : 'var(--border, #333)'};
+  background: ${({ $active }) => $active ? '#770ff5' : 'transparent'};
+  color: ${({ $active }) => $active ? 'white' : 'var(--foreground)'};
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  &:hover:not(:disabled) { border-color: #770ff5; color: ${({ $active }) => $active ? 'white' : '#770ff5'}; }
+  &:disabled { opacity: 0.3; cursor: default; }
+`;
+
 export default function BlogList() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     fetchPostList()
@@ -43,6 +62,9 @@ export default function BlogList() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+  const pagePosts = posts.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
 
   return (
     <BlogContainer>
@@ -95,11 +117,33 @@ export default function BlogList() {
           <p style={{ color: '#888', textAlign: 'center', padding: '2rem' }}>Loading posts...</p>
         )}
         {!loading && posts.length > 0 && (
-          <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', padding: '0 0 2rem' }}>
-            {posts.map(post => (
-              <BlogPostCard key={post.slug} post={post} />
-            ))}
-          </div>
+          <>
+            <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', padding: '0 0 1.5rem' }}>
+              {pagePosts.map(post => (
+                <BlogPostCard key={post.slug} post={post} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 0 2.5rem' }}>
+                <PageButton disabled={page === 1} onClick={() => { setPage(p => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+                  ←
+                </PageButton>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                  <PageButton
+                    key={p}
+                    $active={p === page}
+                    onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  >
+                    {p}
+                  </PageButton>
+                ))}
+                <PageButton disabled={page === totalPages} onClick={() => { setPage(p => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+                  →
+                </PageButton>
+              </div>
+            )}
+          </>
         )}
       </Main>
     </BlogContainer>

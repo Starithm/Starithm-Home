@@ -39,32 +39,23 @@ const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
 const GITHUB_HEADERS = GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {};
 
 export async function fetchPostList(): Promise<Post[]> {
-  const res = await fetch(API_BASE, { headers: GITHUB_HEADERS });
-  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
-  const files: Array<{ name: string; download_url: string }> = await res.json();
+  // Single request: index.json contains all post frontmatter sorted by date
+  const res = await fetch(`${RAW_BASE}/posts/index.json`, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`Failed to fetch post index: ${res.status}`);
+  const entries: Partial<PostMeta>[] = await res.json();
 
-  const mdFiles = files.filter(f => f.name.endsWith('.md'));
-
-  const posts = await Promise.all(
-    mdFiles.map(async (file) => {
-      const raw = await fetch(`${RAW_BASE}/posts/${file.name}`).then(r => r.text());
-      const { meta, content } = parseFrontmatter(raw);
-      return {
-        slug: meta.slug || file.name.replace('.md', ''),
-        title: meta.title || file.name,
-        date: meta.date || '',
-        category: meta.category || 'Astronomy Research',
-        excerpt: meta.excerpt || '',
-        arxiv_id: meta.arxiv_id || '',
-        arxiv_url: meta.arxiv_url || '',
-        authors: meta.authors || '',
-        read_time: meta.read_time || '5 min read',
-        content,
-      } as Post;
-    })
-  );
-
-  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return entries.map(meta => ({
+    slug: meta.slug || '',
+    title: meta.title || '',
+    date: meta.date || '',
+    category: meta.category || 'Astronomy Research',
+    excerpt: meta.excerpt || '',
+    arxiv_id: meta.arxiv_id || '',
+    arxiv_url: meta.arxiv_url || '',
+    authors: meta.authors || '',
+    read_time: meta.read_time || '5 min read',
+    content: '',
+  }));
 }
 
 export async function fetchPost(slug: string): Promise<Post | null> {

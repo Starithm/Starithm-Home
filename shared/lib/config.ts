@@ -12,6 +12,8 @@ export const API_ENDPOINTS = {
   alertDetails: (id: string) => `${API_BASE_URL}/api/alerts/${id}`,
   process: `${API_BASE_URL}/api/process`,
   events: `${API_BASE_URL}/api/events`,
+  eventFilters: `${API_BASE_URL}/api/filters`,
+  nlSearch: `${API_BASE_URL}/api/search/nl`,
   eventDetails: (id: string) => `${API_BASE_URL}/api/events/${id}`,
   publicEvent: (id: string) => `${API_BASE_URL}/api/public/events/${id}`,
   publicEventList: `${API_BASE_URL}/api/public/events`,

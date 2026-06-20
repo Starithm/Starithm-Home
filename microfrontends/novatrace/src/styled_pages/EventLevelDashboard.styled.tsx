@@ -17,10 +17,16 @@ export const EventLevelContainer = styled.div`
 export const Header = styled.div`
   background-color: ${({ theme }) => getThemeValue(theme, 'card', 'white')}CC;
   backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 200;
+  overflow: visible;
 `;
 
 export const HeaderContent = styled.div`
   padding: 0.3rem ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  @media (max-width: 640px) {
+    padding: 0.3rem 0.75rem;
+  }
 `;
 
 export const HeaderTop = styled.div`
@@ -56,6 +62,9 @@ export const HeaderTitle = styled.h1`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xl', '1.25rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 export const HeaderRight = styled.div`
@@ -67,6 +76,9 @@ export const HeaderRight = styled.div`
 
 export const EventCount = styled.div`
   text-align: right;
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 export const EventCountNumber = styled.div`
@@ -84,6 +96,9 @@ export const LiveIndicator = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 export const LiveDot = styled.div`
@@ -114,32 +129,126 @@ export const Navigation = styled.div`
   padding: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')} ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
 `;
 
-// Timeline picker section
-export const TimelinePicker = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')} ${({ theme }) => getThemeValue(theme, 'spacing.6', '2rem')};
-  z-index: 999999;
+// Search section
+export const SearchSection = styled.div`
+  padding: 0.5rem 1.5rem 0;
+  z-index: 9999;
+  overflow: visible;
+  @media (max-width: 640px) {
+    padding: 0.5rem 0.75rem 0;
+  }
 `;
 
-export const TimelineContent = styled.div`
+export const SearchBarWrapper = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
   width: 100%;
+  margin-bottom: 0.5rem;
 `;
 
-export const TimelineLabel = styled.div`
+export const SearchBarInput = styled.input`
+  width: 100%;
+  background: ${({ theme }) => getThemeValue(theme, 'background', '#0e0b16')};
+  border: 1px solid #770ff5;
+  border-radius: 0.875rem;
+  padding: 0.6rem 3rem 0.6rem 1rem;
+  font-size: 0.875rem;
+  color: ${({ theme }) => getThemeValue(theme, 'foreground', '#e7dfdd')};
+  outline: none;
+  transition: border-color 0.15s;
+  &::placeholder { color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')}; }
+  &:focus { border-color: #a239ca; box-shadow: 0 0 0 2px rgba(119,15,245,0.2); }
+`;
+
+export const SearchBarSendButton = styled.button`
+  position: absolute;
+  right: 0.4rem;
+  @keyframes spin { to { transform: rotate(360deg); } }
+  background: #770ff5;
+  border: none;
+  border-radius: 0.5rem;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+  &:hover { opacity: 0.85; }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
 `;
 
-export const TimelineIcon = styled.div`
-  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
+export const SearchErrorText = styled.span`
+  font-size: 0.65rem;
+  color: var(--destructive, #ef4444);
+  padding: 0.15rem 0.25rem 0;
+  display: block;
 `;
 
-export const TimelineText = styled.span`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+// Filter chip pills row — no overflow so absolute dropdowns aren't clipped by scroll container
+export const FilterPillsRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0 0.625rem;
+  flex-wrap: wrap;
+`;
+
+export const FilterPillWrapper = styled.div`
+  position: relative;
+  flex-shrink: 0;
+`;
+
+export const FilterPill = styled.button<{ $active?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid ${({ $active }) => $active ? 'transparent' : 'var(--border)'};
+  background: ${({ $active }) => $active ? '#770ff5' : 'var(--card)'};
+  color: ${({ $active }) => $active ? 'white' : 'var(--foreground)'};
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  line-height: 1.4;
+  &:hover { border-color: #770ff5; }
+`;
+
+export const PillDropdown = styled.div`
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  padding: 0.4rem;
+  min-width: 200px;
+  z-index: 99999;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+`;
+
+export const PillDropdownItem = styled.button<{ $selected?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.35rem 0.625rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: ${({ $selected }) => $selected ? 'rgba(119, 15, 245, 0.15)' : 'transparent'};
+  color: ${({ $selected }) => $selected ? '#770ff5' : 'var(--foreground)'};
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  transition: background 0.1s;
+  &:hover { background: var(--muted); }
 `;
 
 export const DateRangeContainer = styled.div`
@@ -169,6 +278,10 @@ export const FloatingEventPanel = styled.div`
   align-items: flex-start;
   padding: 1rem 0;
   overflow-y: auto;
+  @media (max-width: 640px) {
+    left: 0.75rem;
+    right: 0.75rem;
+  }
 `;
 
 export const EventPanel = styled.div`
@@ -178,6 +291,9 @@ export const EventPanel = styled.div`
   border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')}80;
   border-radius: 1rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  @media (max-width: 640px) {
+    width: 100%;
+  }
 `;
 
 export const EventPanelHeader = styled.div`
@@ -303,6 +419,9 @@ export const StatusLeft = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 export const StatusItem = styled.span``;

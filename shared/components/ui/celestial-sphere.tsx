@@ -3,10 +3,17 @@ import { Event } from '@shared/types';
 // Use a generic Event interface that matches the expected structure
 
 
+interface ConeSearch {
+  raDeg: number;
+  decDeg: number;
+  radiusDeg: number;
+}
+
 interface CelestialSphereProps {
   events: Event[];
   onEventClick: (event: Event) => void;
   selectedEvent?: Event | null;
+  coneSearch?: ConeSearch | null;
   className?: string;
 }
 
@@ -22,7 +29,7 @@ interface DragState {
   momentum: { x: number; y: number };
 }
 
-export function CelestialSphere({ events, onEventClick, selectedEvent, className }: CelestialSphereProps) {
+export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearch, className }: CelestialSphereProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameRef = useRef<number>();
   
@@ -363,6 +370,87 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, className
     ctx.stroke();
     ctx.setLineDash([]);
 
+    // Draw cone search region
+    if (coneSearch) {
+      const { raDeg: cRA, decDeg: cDec, radiusDeg: r } = coneSearch;
+      const cRArad = (cRA * Math.PI) / 180;
+      const cDecRad = (cDec * Math.PI) / 180;
+      const rRad = (r * Math.PI) / 180;
+
+      // Generate the small-circle boundary at angular radius r from center
+      const STEPS = 180;
+      const circlePoints: Array<{ ra: number; dec: number }> = [];
+      for (let i = 0; i <= STEPS; i++) {
+        const bearing = (i / STEPS) * 2 * Math.PI;
+        // Standard spherical destination formula
+        const sinDec = Math.sin(cDecRad) * Math.cos(rRad)
+          + Math.cos(cDecRad) * Math.sin(rRad) * Math.cos(bearing);
+        const dec2 = Math.asin(Math.max(-1, Math.min(1, sinDec)));
+        const dRA = Math.atan2(
+          Math.sin(bearing) * Math.sin(rRad) * Math.cos(cDecRad),
+          Math.cos(rRad) - Math.sin(cDecRad) * sinDec
+        );
+        const ra2 = ((cRA + dRA * 180 / Math.PI) % 360 + 360) % 360;
+        circlePoints.push({ ra: ra2, dec: dec2 * 180 / Math.PI });
+      }
+
+      const screenPts = circlePoints.map(p => ({
+        ...celestialToScreen(p.ra, p.dec, width, height),
+      }));
+
+      // Clip drawing to sphere disk
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      ctx.clip();
+
+      // Filled shaded region (visible portion only)
+      ctx.beginPath();
+      let inPath = false;
+      for (const pt of screenPts) {
+        if (!pt.isVisible) { inPath = false; continue; }
+        if (!inPath) { ctx.moveTo(pt.x, pt.y); inPath = true; }
+        else ctx.lineTo(pt.x, pt.y);
+      }
+      ctx.fillStyle = 'rgba(119, 15, 245, 0.10)';
+      ctx.fill();
+
+      // Dashed boundary — only visible segments
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(119, 15, 245, 0.75)';
+      ctx.setLineDash([5, 3]);
+      ctx.beginPath();
+      inPath = false;
+      for (const pt of screenPts) {
+        if (!pt.isVisible) { if (inPath) { ctx.stroke(); ctx.beginPath(); inPath = false; } continue; }
+        if (!inPath) { ctx.moveTo(pt.x, pt.y); inPath = true; }
+        else ctx.lineTo(pt.x, pt.y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.restore();
+
+      // Center crosshair
+      const cp = celestialToScreen(cRA, cDec, width, height);
+      if (cp.isVisible) {
+        const dfc = Math.sqrt((cp.x - centerX) ** 2 + (cp.y - centerY) ** 2);
+        if (dfc <= radius) {
+          const ARM = 9;
+          ctx.strokeStyle = 'rgba(119, 15, 245, 0.9)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(cp.x - ARM, cp.y); ctx.lineTo(cp.x + ARM, cp.y);
+          ctx.moveTo(cp.x, cp.y - ARM); ctx.lineTo(cp.x, cp.y + ARM);
+          ctx.stroke();
+          ctx.fillStyle = 'rgba(119, 15, 245, 1)';
+          ctx.beginPath();
+          ctx.arc(cp.x, cp.y, 2.5, 0, 2 * Math.PI);
+          ctx.fill();
+        }
+      }
+    }
+
     // Sort events by depth for proper 3D rendering
     const eventPositions = events
       .filter(event => event.raDeg !== undefined && event.decDeg !== undefined)
@@ -514,7 +602,7 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, className
     ctx.fillText(azText, width - 20, height - 30);
     ctx.fillText(altText, width - 20, height - 15);
 
-  }, [events, selectedEvent, viewState, dragState, celestialToScreen]);
+  }, [events, selectedEvent, coneSearch, viewState, dragState, celestialToScreen]);
 
   // Handle click events
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {

@@ -284,11 +284,11 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                   const getObs = (key: string) => p.obs_support_info?.[key] ?? p[`obs_support_info_${key}`] ?? null;
                   const classLabel = topClassification(n.classification);
                   const payloadImageUrls = Object.entries(p)
-                    .filter(([k, v]) => k.endsWith('_url') && typeof v === 'string' && IMAGE_EXTS.test(v))
-                    .map(([k, v]) => ({ label: k.replace(/_url$/, '').replace(/_/g, ' '), url: v as string }));
+                    .filter(([k, v]) => k.toLowerCase().endsWith('_url') && typeof v === 'string' && IMAGE_EXTS.test(v))
+                    .map(([k, v]) => ({ label: k.replace(/_url$/i, '').replace(/[_]/g, ' '), url: v as string }));
                   const payloadFitsUrls = Object.entries(p)
-                    .filter(([k, v]) => k.endsWith('_url') && typeof v === 'string' && /\.fits(\.gz)?(\?.*)?$/i.test(v as string))
-                    .map(([k, v]) => ({ label: k.replace(/_url$/, '').replace(/_/g, ' '), url: v as string }));
+                    .filter(([k, v]) => k.toLowerCase().endsWith('_url') && typeof v === 'string' && /\.fits(\.gz)?(\?.*)?$/i.test(v as string))
+                    .map(([k, v]) => ({ label: k.replace(/_url$/i, '').replace(/[_]/g, ' '), url: v as string }));
                   const curatedFields: Array<[string, any]> = [
                     ['ID', n.id],
                     ['Instrument', p.instrument],
@@ -487,8 +487,8 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                   ['Hi Energy', p.hi_energy],
                 ].filter(([, v]) => v != null && v !== '');
                 const imgFields: Array<[string, string]> = [
-                  ['Lightcurve', getVal(p.lightcurve_url, n.links?.lightcurve_url)],
-                  ['Location Map', getVal(p.locationmap_url, n.links?.locationmap_url)],
+                  ['Lightcurve', getVal(p.lightcurve_url ?? p.LightCurve_URL, n.links?.lightcurve_url)],
+                  ['Location Map', getVal(p.locationmap_url ?? p.LocationMap_URL, n.links?.locationmap_url)],
                 ].filter(([, u]) => u) as Array<[string, string]>;
                 return (
                   <>

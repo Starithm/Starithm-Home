@@ -75,6 +75,19 @@ import {
   BadgeRow,
 } from '../styled_components/EventDetailsPanel.styled';
 
+function parseSummaryText(raw: any): string {
+  if (!raw) return '';
+  if (typeof raw === 'string') {
+    const t = raw.trim();
+    if (t.startsWith('{')) {
+      try { const p = JSON.parse(t); if (typeof p?.summary === 'string') return p.summary; } catch { /* ok */ }
+    }
+    return t;
+  }
+  if (typeof raw === 'object' && typeof (raw as any).summary === 'string') return (raw as any).summary;
+  return String(raw);
+}
+
 // Keys shown in timeline stream-alert cards
 const STREAM_ALERT_TABLE_KEYS = [
   'canonicalId', 'alertKind', 'sourceName', 'raDeg', 'decDeg', 'posErrorDeg',
@@ -281,7 +294,11 @@ function getExternalLinks(alert: StreamAlert): Array<{ label: string; url: strin
   if (l.gracedb) result.push({ label: 'GraceDB', url: l.gracedb });
   if (l.data_archive_page) result.push({ label: 'Data Archive', url: l.data_archive_page });
   if (p.data_archive_page) result.push({ label: 'Data Archive', url: p.data_archive_page });
-  if (p.lightcurve_url) result.push({ label: 'Lightcurve', url: p.lightcurve_url });
+  // Fermi GBM classic VOEvent uses Pascal-case keys
+  const lcUrl = p.lightcurve_url || p.LightCurve_URL;
+  const lmUrl = p.locationmap_url || p.LocationMap_URL;
+  if (lcUrl) result.push({ label: 'Lightcurve', url: lcUrl });
+  if (lmUrl) result.push({ label: 'Location Map', url: lmUrl });
   if (l.circular) result.push({ label: 'Circular', url: l.circular });
 
   return result;
@@ -408,18 +425,22 @@ function OverviewTab({ alert, aiSummary, cross_match, optical_counterparts }: { 
       {/* Position */}
       {alert.raDeg != null && alert.decDeg != null && (
         <SectionCard icon={<MapPin className="h-3.5 w-3.5" />} title="Position">
-          <FieldGrid>
-            <Field label="Right Ascension" value={formatCoordinate(alert.raDeg, 'ra')} />
-            <Field label="Declination" value={formatCoordinate(alert.decDeg, 'dec')} />
-            <Field label="RA (deg)" value={alert.raDeg.toFixed(5)} />
-            <Field label="Dec (deg)" value={alert.decDeg.toFixed(5)} />
-            {alert.posErrorDeg && (
-              <Field
-                label="Error Radius"
-                value={`${(alert.posErrorDeg as any).radius}° (${(alert.posErrorDeg as any).type})`}
-              />
-            )}
-          </FieldGrid>
+          {alert.raDeg === 0 && alert.decDeg === 0 ? (
+            <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>No position available</span>
+          ) : (
+            <FieldGrid>
+              <Field label="Right Ascension" value={formatCoordinate(alert.raDeg, 'ra')} />
+              <Field label="Declination" value={formatCoordinate(alert.decDeg, 'dec')} />
+              <Field label="RA (deg)" value={alert.raDeg.toFixed(5)} />
+              <Field label="Dec (deg)" value={alert.decDeg.toFixed(5)} />
+              {alert.posErrorDeg && (alert.posErrorDeg as any).radius != null && !isNaN(Number((alert.posErrorDeg as any).radius)) && (
+                <Field
+                  label="Error Radius"
+                  value={`${(alert.posErrorDeg as any).radius}° (${(alert.posErrorDeg as any).type})`}
+                />
+              )}
+            </FieldGrid>
+          )}
         </SectionCard>
       )}
 
@@ -699,7 +720,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
     );
   }
 
-  if (error || !eventDetails) {
+  if (!isLoading && (error || !eventDetails)) {
     return (
       <SidePanel>
         <PanelContainer>
@@ -824,9 +845,10 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                               const sa = item.data as StreamAlert;
                               const payload = (sa.payload as Record<string, any>) || {};
                               const source = sa.sourceName || payload.instrument;
-                              const pos = sa.raDeg != null && sa.decDeg != null;
+                              const pos = sa.raDeg != null && sa.decDeg != null && !(sa.raDeg === 0 && sa.decDeg === 0);
                               const t0Fmt = sa.t0 ? formatTimestamp(sa.t0) : null;
                               const skymaps = getSkymapLinks(sa.links || {});
+                              const noticeLinks = getExternalLinks(sa);
                               const isExpanded = expandedNotices.has(item.id);
 
                               return (
@@ -847,9 +869,12 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                     <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.7rem', color: 'var(--muted-foreground)' }}>
                                       <span>RA {formatCoordinate(sa.raDeg, 'ra')}</span>
                                       <span>Dec {formatCoordinate(sa.decDeg, 'dec')}</span>
-                                      {sa.posErrorDeg != null && (
-                                        <span>± {typeof sa.posErrorDeg === 'object' ? (sa.posErrorDeg as any).radius : sa.posErrorDeg}°</span>
-                                      )}
+                                      {sa.posErrorDeg != null && (() => {
+                                        const r = typeof sa.posErrorDeg === 'object' ? (sa.posErrorDeg as any).radius : sa.posErrorDeg;
+                                        return r != null && !isNaN(Number(r)) && Number(r) > 0
+                                          ? <span>± {r}°</span>
+                                          : null;
+                                      })()}
                                     </div>
                                   )}
 
@@ -875,6 +900,29 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                         </ImageItem>
                                       ))}
                                     </ImageGrid>
+                                  )}
+
+                                  {noticeLinks.length > 0 && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                      {noticeLinks.filter(l => !isImageUrl(l.url) && l.label !== 'GraceDB' && l.label !== 'Circular').map(l => (
+                                        <LinkButton key={l.label} href={l.url} target="_blank" rel="noopener noreferrer" style={{ alignSelf: 'flex-start' }}>
+                                          <LinkIcon className="h-3 w-3" />
+                                          {l.label}
+                                        </LinkButton>
+                                      ))}
+                                      {noticeLinks.filter(l => isImageUrl(l.url)).map(l => (
+                                        <div key={l.label} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                          <FieldLabel>{l.label}</FieldLabel>
+                                          <a href={l.url} target="_blank" rel="noopener noreferrer">
+                                            <SkymapImage
+                                              src={l.url}
+                                              alt={l.label}
+                                              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                            />
+                                          </a>
+                                        </div>
+                                      ))}
+                                    </div>
                                   )}
 
                                   <button
@@ -912,7 +960,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                     <span>{(item.data as Alert).data.authors.affiliations?.join(', ').slice(0, 100) + '...'}</span>
                                   </TextualMetaItem>
                                 </TextualMetaRow>
-                                <TextualSummary>{(item.data as Alert).summary}</TextualSummary>
+                                <TextualSummary>{parseSummaryText((item.data as Alert).summary)}</TextualSummary>
                                 <Button
                                   variant="outline"
                                   size="lg"

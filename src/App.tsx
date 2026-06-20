@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import '../shared/styles/globals.css';
 import { getQueryClient } from '@shared/lib/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -10,51 +10,51 @@ const NovaTraceMicrofrontend = lazy(() => import('./microfrontends/NovaTraceMicr
 const BlogMicrofrontend = lazy(() => import('./microfrontends/BlogMicrofrontend'));
 
 function App() {
+  const location = useLocation();
+  const isNovaTrace = location.pathname.startsWith('/novatrace');
+
   return (
     <div className="app">
-      {/* Global Navigation */}
-      <nav className="global-nav">
-        <div className="nav-container">
-          <Link to="/" className="nav-brand">
-            <img src="/logo_without_name.png" alt="Starithm" className="nav-logo" />
-            <span className="nav-title">Starithm</span>
-          </Link>
-          <div className="nav-links">
-            <Link to="/" className="nav-link">Home</Link>
-            <Link to="/novatrace/events" className="nav-link">NovaTrace</Link>
-            {/* <Link to="/blog" className="nav-link">Blog</Link> */}
-            {/* <ThemeToggle variant="icon" size="sm" /> */}
+      {/* Global Navigation — hidden on NovaTrace (it has its own header) */}
+      {!isNovaTrace && (
+        <nav className="global-nav">
+          <div className="nav-container">
+            <Link to="/" className="nav-brand">
+              <img src="/logo_without_name.png" alt="Starithm" className="nav-logo" />
+              <span className="nav-title">Starithm</span>
+            </Link>
+            <div className="nav-links">
+              <Link to="/" className="nav-link">Home</Link>
+              <Link to="/novatrace/events" className="nav-link">NovaTrace</Link>
+            </div>
           </div>
-        </div>
-      </nav>
-
+        </nav>
+      )}
 
       {/* Main Content */}
       <main className="main-content">
-        <QueryClientProvider client={getQueryClient()}> 
-        <Suspense fallback={<div className="loading">Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<HomeMicrofrontend />} />
-            <Route path="/novatrace/*" element={<NovaTraceMicrofrontend />} />
-            <Route path="/blog/*" element={<BlogMicrofrontend />} />
-          </Routes> 
-        </Suspense>
+        <QueryClientProvider client={getQueryClient()}>
+          <Suspense fallback={<div className="loading">Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<HomeMicrofrontend />} />
+              <Route path="/novatrace/*" element={<NovaTraceMicrofrontend />} />
+              <Route path="/blog/*" element={<BlogMicrofrontend />} />
+            </Routes>
+          </Suspense>
         </QueryClientProvider>
       </main>
 
-      {/* Footer */}
-      <footer className="app-footer">
-        <div className="footer-content">
-          {/* <div className="footer-brand">
-            <img src="/logo_without_name.png" alt="Starithm" className="footer-logo" />
-            <span className="footer-title">Starithm</span>
-          </div> */}
-          <div className="footer-copyright">
-            <p>&copy; 2025 Starithm. All rights reserved.</p>
-            <p>Astronomer's Platform</p>
+      {/* Footer — hidden on NovaTrace */}
+      {!isNovaTrace && (
+        <footer className="app-footer">
+          <div className="footer-content">
+            <div className="footer-copyright">
+              <p>&copy; 2025 Starithm. All rights reserved.</p>
+              <p>Astronomer's Platform</p>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   );
 }
