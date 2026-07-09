@@ -3,6 +3,7 @@ import { Button } from "@shared/components/ui/button";
 import { Activity, Home, Search } from "lucide-react";
 import { useLocation } from "wouter";
 import { SignInButton, UserButton, useAuth } from "@clerk/react";
+import { saveReturnUrl } from '@shared/lib/auth';
 import {
   NavWrapper,
   NavInner,
@@ -110,7 +111,7 @@ export function Navbar() {
           </Button>
           {!isSignedIn ? (
             <SignInButton mode="modal" forceRedirectUrl={typeof window !== 'undefined' ? window.location.href : '/'}>
-              <button style={{ padding: '0.4rem 1rem', borderRadius: 6, border: '1px solid rgba(139,92,246,0.4)', background: 'rgba(139,92,246,0.1)', color: 'rgba(167,139,250,0.9)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 500 }}>
+              <button onClick={saveReturnUrl} style={{ padding: '0.4rem 1rem', borderRadius: 6, border: '1px solid rgba(139,92,246,0.4)', background: 'rgba(139,92,246,0.1)', color: 'rgba(167,139,250,0.9)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 500 }}>
                 Sign in
               </button>
             </SignInButton>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth, useUser, SignInButton, useClerk } from '@clerk/react';
+import { saveReturnUrl } from '../lib/auth';
 import { API_ENDPOINTS } from '../lib/config';
 import styled from 'styled-components';
 
@@ -323,12 +324,12 @@ export const CommentThread: React.FC<Props> = ({ canonicalId, alertKey, compact 
           <Textarea
             placeholder="Sign in to leave a comment or share photometry data…"
             readOnly
-            onClick={() => openSignIn({ forceRedirectUrl: window.location.href })}
+            onClick={() => { saveReturnUrl(); openSignIn({ forceRedirectUrl: window.location.href }); }}
             style={{ cursor: 'pointer', opacity: 0.5, minHeight: compact ? '60px' : undefined, fontSize: compact ? '0.82rem' : undefined }}
           />
           <SignInPrompt style={{ marginTop: '0.5rem' }}>
             <SignInButton mode="modal" forceRedirectUrl={typeof window !== 'undefined' ? window.location.href : '/'}>
-              <button style={{ background: 'none', border: 'none', color: 'rgba(167,139,250,0.8)', cursor: 'pointer', fontSize: '0.84rem', padding: 0 }}>
+              <button onClick={saveReturnUrl} style={{ background: 'none', border: 'none', color: 'rgba(167,139,250,0.8)', cursor: 'pointer', fontSize: '0.84rem', padding: 0 }}>
                 Sign in
               </button>
             </SignInButton>

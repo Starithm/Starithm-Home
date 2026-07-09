@@ -1,10 +1,11 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect, useRef } from 'react';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import '../shared/styles/globals.css';
 import { getQueryClient } from '@shared/lib/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { saveReturnUrl, consumeReturnUrl } from '@shared/lib/auth';
 
 // Lazy load microfrontends
 const HomeMicrofrontend = lazy(() => import('./microfrontends/HomeMicrofrontend'));
@@ -15,6 +16,15 @@ function App() {
   const location = useLocation();
   const isNovaTrace = location.pathname.startsWith('/novatrace');
   const { isSignedIn } = useAuth();
+  const prevSignedIn = useRef<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    if (prevSignedIn.current === false && isSignedIn === true) {
+      const returnUrl = consumeReturnUrl();
+      if (returnUrl) window.location.href = returnUrl;
+    }
+    prevSignedIn.current = isSignedIn;
+  }, [isSignedIn]);
 
   return (
     <div className="app">
@@ -31,7 +41,7 @@ function App() {
               <Link to="/novatrace/events" className="nav-link">NovaTrace</Link>
               {!isSignedIn && (
                 <SignInButton mode="modal">
-                  <button className="nav-link nav-signin-btn">Sign in</button>
+                  <button className="nav-link nav-signin-btn" onClick={saveReturnUrl}>Sign in</button>
                 </SignInButton>
               )}
               {isSignedIn && <UserButton afterSignOutUrl="/" />}
