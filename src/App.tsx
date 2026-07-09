@@ -1,5 +1,7 @@
 import React, { Suspense, lazy } from 'react';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import '../shared/styles/globals.css';
 import { getQueryClient } from '@shared/lib/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -12,6 +14,7 @@ const BlogMicrofrontend = lazy(() => import('./microfrontends/BlogMicrofrontend'
 function App() {
   const location = useLocation();
   const isNovaTrace = location.pathname.startsWith('/novatrace');
+  const { isSignedIn } = useAuth();
 
   return (
     <div className="app">
@@ -26,6 +29,12 @@ function App() {
             <div className="nav-links">
               <Link to="/" className="nav-link">Home</Link>
               <Link to="/novatrace/events" className="nav-link">NovaTrace</Link>
+              {!isSignedIn && (
+                <SignInButton mode="modal">
+                  <button className="nav-link nav-signin-btn">Sign in</button>
+                </SignInButton>
+              )}
+              {isSignedIn && <UserButton afterSignOutUrl="/" />}
             </div>
           </div>
         </nav>
@@ -39,6 +48,7 @@ function App() {
               <Route path="/" element={<HomeMicrofrontend />} />
               <Route path="/novatrace/*" element={<NovaTraceMicrofrontend />} />
               <Route path="/blog/*" element={<BlogMicrofrontend />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
             </Routes>
           </Suspense>
         </QueryClientProvider>

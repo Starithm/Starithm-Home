@@ -5,6 +5,7 @@ import { Section } from '../components/Section';
 import { CircularsList } from '../components/CircularsList';
 import type { Circular } from '../components/CircularsList';
 import { API_ENDPOINTS } from '@shared/lib/config';
+import { CommentThread } from '@shared/components/CommentThread';
 
 interface CircularEvent {
   event: string;
@@ -100,6 +101,8 @@ export default function CircularEventPage({ eventName }: { eventName?: string })
         <Section title={`Community Circulars (${data.circularCount})`}>
           <CircularsList circulars={sortedCirculars} allExpandedByDefault />
         </Section>
+
+        <CommentThread canonicalId={data.event} />
       </div>
     </div>
   );

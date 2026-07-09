@@ -19,4 +19,12 @@ export const API_ENDPOINTS = {
   publicEventList: `${API_BASE_URL}/api/public/events`,
   publicSearch: (q: string) => `${API_BASE_URL}/api/public/search?q=${encodeURIComponent(q)}`,
   publicCirculars: (eventName: string) => `${API_BASE_URL}/api/public/circulars/${encodeURIComponent(eventName)}`,
+  comments: (params: { canonicalId?: string; alertKey?: string }) => {
+    const q = params.canonicalId
+      ? `canonicalId=${encodeURIComponent(params.canonicalId)}`
+      : `alertKey=${encodeURIComponent(params.alertKey!)}`;
+    return `${API_BASE_URL}/api/comments?${q}`;
+  },
+  createComment: `${API_BASE_URL}/api/comments`,
+  deleteComment: (id: string) => `${API_BASE_URL}/api/comments/${id}`,
 } as const;

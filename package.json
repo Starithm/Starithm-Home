@@ -16,6 +16,8 @@
     "preview:all": "concurrently \"npm run preview\" \"cd microfrontends/home && npm run preview\" \"cd microfrontends/novatrace && npm run preview\""
   },
   "dependencies": {
+    "@clerk/react": "^6.11.3",
+    "@clerk/themes": "^2.4.57",
     "@tanstack/react-query": "^5.66.3",
     "@vercel/analytics": "^1.6.1",
     "react": "^18.2.0",

@@ -20,6 +20,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { API_ENDPOINTS } from '../../../../shared/lib/config';
+import { CommentThread } from '@shared/components/CommentThread';
 import { AlertDetails } from './AlertDetails';
 import { Alert } from '@shared/types';
 import {
@@ -177,7 +178,7 @@ interface EventDetailsPanelProps {
   onClose: () => void;
 }
 
-type TabType = 'overview' | 'timeline' | 'detailed';
+type TabType = 'overview' | 'timeline' | 'detailed' | 'discussion';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -358,6 +359,7 @@ function TabBar({ active, onChange, counts }: {
     { key: 'overview', label: 'Overview' },
     { key: 'timeline', label: `Timeline (${counts.timeline})` },
     { key: 'detailed', label: 'Detailed View' },
+    { key: 'discussion', label: 'Discussion' },
   ];
   return (
     <TabBarContainer>
@@ -983,6 +985,13 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
           {/* Detailed View */}
           {activeTab === 'detailed' && latestStreamAlert && (
             <DetailedViewTab alert={latestStreamAlert} />
+          )}
+
+          {/* Discussion */}
+          {activeTab === 'discussion' && (
+            <ContentInner>
+              <CommentThread canonicalId={latestStreamAlert?.canonicalId ?? eventId} />
+            </ContentInner>
           )}
         </ContentScroll>
       </PanelContainer>

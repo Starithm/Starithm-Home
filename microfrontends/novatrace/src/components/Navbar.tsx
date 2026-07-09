@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@shared/components/ui/button";
 import { Activity, Home, Search } from "lucide-react";
 import { useLocation } from "wouter";
+import { SignInButton, UserButton, useAuth } from "@clerk/react";
 import {
   NavWrapper,
   NavInner,
@@ -16,6 +17,7 @@ import {
 
 export function Navbar() {
   const [, setLocation] = useLocation();
+  const { isSignedIn } = useAuth();
 
   const navigateToEvents = () => {
     // Navigate to the main app's events route
@@ -106,6 +108,15 @@ export function Navbar() {
             <Home className="h-4 w-4" />
             <span>Home</span>
           </Button>
+          {!isSignedIn ? (
+            <SignInButton mode="modal" forceRedirectUrl={typeof window !== 'undefined' ? window.location.href : '/'}>
+              <button style={{ padding: '0.4rem 1rem', borderRadius: 6, border: '1px solid rgba(139,92,246,0.4)', background: 'rgba(139,92,246,0.1)', color: 'rgba(167,139,250,0.9)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 500 }}>
+                Sign in
+              </button>
+            </SignInButton>
+          ) : (
+            <UserButton afterSignOutUrl="/" />
+          )}
         </RightActions>
       </NavInner>
     </NavWrapper>
