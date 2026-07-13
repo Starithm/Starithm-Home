@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ArrowLeft, Calendar, Clock, User, ExternalLink } from 'lucide-react';
-import { fetchPost, Post } from '../lib/posts';
+import { ArrowLeft, ArrowRight, Calendar, Clock, User, ExternalLink } from 'lucide-react';
+import { fetchPost, fetchPostList, Post, PostMeta } from '../lib/posts';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -11,21 +11,34 @@ export default function BlogPost() {
   const [post, setPost] = useState<Post | null>((location.state as any)?.post ?? null);
   const [loading, setLoading] = useState(!(location.state as any)?.post);
   const [error, setError] = useState(false);
+  const [prevPost, setPrevPost] = useState<PostMeta | null>(null);
+  const [nextPost, setNextPost] = useState<PostMeta | null>(null);
 
   useEffect(() => {
     if ((location.state as any)?.post) {
       document.title = `${(location.state as any).post.title} — Starithm Blog`;
-      return;
+    } else {
+      if (!slug) return;
+      setLoading(true);
+      fetchPost(slug)
+        .then(p => {
+          setPost(p);
+          if (p) document.title = `${p.title} — Starithm Blog`;
+        })
+        .catch(() => setError(true))
+        .finally(() => setLoading(false));
     }
+  }, [slug]);
+
+  // Fetch post list for prev/next navigation (index.json is newest-first)
+  useEffect(() => {
     if (!slug) return;
-    setLoading(true);
-    fetchPost(slug)
-      .then(p => {
-        setPost(p);
-        if (p) document.title = `${p.title} — Starithm Blog`;
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+    fetchPostList().then(posts => {
+      const idx = posts.findIndex(p => p.slug === slug);
+      if (idx === -1) return;
+      setNextPost(idx > 0 ? posts[idx - 1] : null);       // newer
+      setPrevPost(idx < posts.length - 1 ? posts[idx + 1] : null); // older
+    }).catch(() => {});
   }, [slug]);
 
   if (loading) {
@@ -122,6 +135,44 @@ export default function BlogPost() {
             {post.content}
           </ReactMarkdown>
         </div>
+
+        {/* Prev / Next navigation */}
+        {(prevPost || nextPost) && (
+          <nav style={{ borderTop: '1px solid #1a1a1a', marginTop: '3rem', paddingTop: '2rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              {prevPost && (
+                <Link
+                  to={`/blog/${prevPost.slug}`}
+                  state={{ post: prevPost }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', textDecoration: 'none', padding: '1rem', borderRadius: 8, border: '1px solid #1e1e1e', background: '#0f0f0f', transition: 'border-color 0.2s' }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = '#770ff5')}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e1e')}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <ArrowLeft size={12} /> Previous
+                  </span>
+                  <span style={{ fontSize: '0.88rem', color: '#ccc', lineHeight: 1.4 }}>{prevPost.title}</span>
+                </Link>
+              )}
+            </div>
+            <div>
+              {nextPost && (
+                <Link
+                  to={`/blog/${nextPost.slug}`}
+                  state={{ post: nextPost }}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.375rem', textDecoration: 'none', padding: '1rem', borderRadius: 8, border: '1px solid #1e1e1e', background: '#0f0f0f', transition: 'border-color 0.2s' }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = '#770ff5')}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e1e')}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    Next <ArrowRight size={12} />
+                  </span>
+                  <span style={{ fontSize: '0.88rem', color: '#ccc', lineHeight: 1.4, textAlign: 'right' }}>{nextPost.title}</span>
+                </Link>
+              )}
+            </div>
+          </nav>
+        )}
       </article>
     </div>
   );
