@@ -74,7 +74,7 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
           const hasExtra = hasMeasurements || imageUrls.length > 0 || linkUrls.length > 0 || (authors && authors.length > 0);
 
           return (
-            <div key={c.alertKey} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden' }}>
+            <div key={c.alertKey} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden', maxWidth: '100%', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', alignItems: 'stretch' }}>
                 <button
                   onClick={() => hasExtra && toggleCircular(c.alertKey)}
@@ -94,7 +94,7 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                   </div>
                   {(() => {
                     const text = c.summary || (typeof c.data?.raw === 'string' ? c.data.raw.slice(0, 400).trimEnd() + (c.data.raw.length > 400 ? '…' : '') : null);
-                    return text ? <p style={{ color: '#aaa', fontSize: '0.8rem', lineHeight: 1.6, margin: 0 }}>{text}</p> : null;
+                    return text ? <p style={{ color: '#aaa', fontSize: '0.8rem', lineHeight: 1.6, margin: 0, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{text}</p> : null;
                   })()}
                 </button>
                 <button

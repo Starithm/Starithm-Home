@@ -39,8 +39,10 @@ const NovaTraceMicrofrontend: React.FC = () => {
     }
   };
 
+  const isEventPage = /^\/novatrace\/events\/.+$/.test(location.pathname);
+
   return (
-    <div className="microfrontend-container">
+    <div className="microfrontend-container" style={isEventPage ? { padding: 0 } : undefined}>
       {renderContent()}
     </div>
   );

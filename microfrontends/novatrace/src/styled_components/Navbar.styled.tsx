@@ -58,9 +58,47 @@ export const BrandSubtitle = styled.span`
 
 export const RightActions = styled.div`
   position: absolute;
-  right: 1rem; /* right-4 */
+  right: 1rem;
   display: flex;
   align-items: center;
   gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+export const HamburgerBtn = styled.button`
+  display: none;
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
+  padding: 0.35rem;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+  &:hover { background: rgba(119, 15, 245, 0.1); }
+  @media (max-width: 768px) {
+    display: flex;
+  }
+`;
+
+export const DrawerNav = styled.nav`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+`;
+
+export const DrawerDivider = styled.div`
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0.75rem 0;
+`;
+
+export const DrawerSignInRow = styled.div`
+  padding: 0 1rem;
 `;
 

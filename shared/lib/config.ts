@@ -27,4 +27,5 @@ export const API_ENDPOINTS = {
   },
   createComment: `${API_BASE_URL}/api/comments`,
   deleteComment: (id: string) => `${API_BASE_URL}/api/comments/${id}`,
+  uploadCommentFile: `${API_BASE_URL}/api/comments/upload-file`,
 } as const;

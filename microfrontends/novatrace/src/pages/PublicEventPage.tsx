@@ -149,6 +149,15 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   const [copied, setCopied] = useState(false);
   const [expandedNotices, setExpandedNotices] = useState<Set<string>>(new Set());
   const [rawModal, setRawModal] = useState<{ title: string; data: any; type: 'notice' } | null>(null);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
+
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 768px)');
+    setIsMobile(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
 
   const toggleNotice = (id: string) => setExpandedNotices(prev => {
     const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next;
@@ -181,7 +190,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
     });
   };
 
-  const s = { background: '#0a0a0a', color: '#fff', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' };
+  const s: React.CSSProperties = { background: '#0a0a0a', color: '#fff', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', width: '100%', maxWidth: '100%', overflowX: 'hidden', boxSizing: 'border-box' };
 
   if (loading) return (
     <div style={{ ...s, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -203,21 +212,27 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   const sigColor = SIGNIFICANCE_COLORS[event.aiSummary?.significance || 'medium'] || '#888';
 
   return (
-    <div style={s}>
+    <div style={s} className="pep-root">
       {/* Nav */}
-      <div style={{ borderBottom: '1px solid #1a1a1a', padding: '0.75rem 1.5rem 0.75rem 2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <Link to="/novatrace/events" style={{ color: '#888', textDecoration: 'none', fontSize: '0.875rem' }}>
-          ← All Events
-        </Link>
-        <span style={{ color: '#333' }}>/</span>
-        <span style={{ color: '#aaa', fontSize: '0.875rem', fontFamily: 'monospace' }}>{event.canonicalId}</span>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div className="pep-nav" style={{ borderBottom: '1px solid #1a1a1a', padding: isMobile ? '0.6rem 1rem' : '0.75rem 1.5rem 0.75rem 2.5rem', display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'space-between' : 'flex-start', gap: isMobile ? '0.5rem' : '1rem', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, overflow: 'hidden' }}>
+          <Link to="/novatrace/events" style={{ color: '#888', textDecoration: 'none', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>
+            ← All Events
+          </Link>
+          {!isMobile && (
+            <>
+              <span style={{ color: '#333' }}>/</span>
+              <span style={{ color: '#aaa', fontSize: '0.875rem', fontFamily: 'monospace' }}>{event.canonicalId}</span>
+            </>
+          )}
+        </div>
+        <div style={{ marginLeft: isMobile ? '0' : 'auto', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <button
             onClick={handleCopyLink}
-            style={{ background: 'none', border: '1px solid #333', color: '#aaa', padding: '0.375rem 0.75rem', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8rem' }}
+            style={{ background: 'none', border: '1px solid #333', color: '#aaa', padding: '0.375rem 0.75rem', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
-            {copied ? 'Copied!' : 'Copy link'}
+            {!isMobile && (copied ? 'Copied!' : 'Copy link')}
           </button>
           {!isSignedIn ? (
             <SignInButton mode="modal" forceRedirectUrl={window.location.href}>
@@ -234,7 +249,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
         </div>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: '0', padding: '2rem 1.5rem 2rem 2.5rem' }}>
+      <div className="pep-content" style={{ maxWidth: isMobile ? '100%' : 1100, width: '100%', margin: '0', padding: isMobile ? '1rem' : '2rem 1.5rem 2rem 2.5rem', boxSizing: 'border-box', overflowX: 'hidden' }}>
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
@@ -248,7 +263,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
             )}
           </div>
 
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, lineHeight: 1.3, marginBottom: '0.75rem', color: '#fff' }}>
+          <h1 style={{ fontSize: isMobile ? '1.15rem' : '1.75rem', fontWeight: 700, lineHeight: 1.3, marginBottom: '0.75rem', color: '#fff', wordBreak: 'break-word', overflowWrap: 'anywhere', maxWidth: '100%', width: '100%' }}>
             {event.aiSummary?.headline || event.canonicalId}
           </h1>
 
@@ -272,9 +287,9 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '1.5rem', alignItems: 'start' }}>
+        <div className="pep-grid" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 280px', gap: '1.5rem', alignItems: 'start' }}>
           {/* Main column */}
-          <div>
+          <div style={{ minWidth: 0 }}>
             {/* AI Summary */}
             {event.aiSummary && (
               <Section title="Starithm Summary" subtitle={
@@ -285,7 +300,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                   <TooltipContent>If you find any inaccuracy please email at contact.starithm@gmail.com</TooltipContent>
                 </Tooltip>
               }>
-                <p style={{ color: '#f5c518', lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>{event.aiSummary.details}</p>
+                <p style={{ color: '#f5c518', lineHeight: 1.8, margin: 0, fontStyle: 'italic', overflowWrap: 'anywhere', wordBreak: 'break-word', width: '100%' }}>{event.aiSummary.details}</p>
               </Section>
             )}
 
@@ -322,7 +337,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                     ['HEALPix', p.healpix_url ?? (n.links as any)?.healpix_url ?? null],
                   ].filter(([, v]) => v != null && v !== '');
                   return (
-                    <div key={n.id} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden' }}>
+                    <div key={n.id} style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 8, overflow: 'hidden', maxWidth: '100%', boxSizing: 'border-box' }}>
                       {/* Always-visible header — click to expand */}
                       <button
                         onClick={() => toggleNotice(n.id)}
@@ -439,7 +454,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
           </div>
 
           {/* Sidebar */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: 0 }}>
             <SideCard title="Position">
               {event.raDeg != null ? (
                 <>

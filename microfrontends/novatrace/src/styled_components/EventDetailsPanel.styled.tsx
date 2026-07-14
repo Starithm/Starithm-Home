@@ -15,6 +15,17 @@ export const SidePanel = styled.div`
   -webkit-user-select: text;
   -moz-user-select: text;
   user-select: text;
+  @media (max-width: 768px) {
+    inset: unset;
+    top: 5vh;
+    left: 4%;
+    right: 4%;
+    bottom: 5vh;
+    width: 92%;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 100vmax rgba(0, 0, 0, 0.55);
+  }
 `;
 
 export const OverviewSectionCard = styled.div`
@@ -107,6 +118,10 @@ export const TabButton = styled.button<{ $active?: boolean }>`
   &:hover {
     color: ${p => getThemeValue(p.theme, 'foreground', '#111')};
     background-color: ${p => `${getThemeValue(p.theme, 'muted', '#f3f4f6')}40`};
+  }
+  @media (max-width: 768px) {
+    font-size: 0.72rem;
+    padding: 0.35rem 0;
   }
 `;
 

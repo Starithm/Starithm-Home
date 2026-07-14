@@ -16,6 +16,13 @@ export const MainContent = styled.div`
   overflow: hidden;
   align-items: center;
   justify-content: center;
+  @media (max-width: 640px) {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 210px);
+    overflow: visible;
+    align-items: stretch;
+  }
 `;
 
 // Loading state

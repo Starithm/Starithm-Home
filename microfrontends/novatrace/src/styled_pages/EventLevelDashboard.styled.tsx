@@ -264,6 +264,11 @@ export const DateRangeSeparator = styled.span`
 export const CelestialSphereContainer = styled.div`
   height: 100%;
   padding: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+  @media (max-width: 640px) {
+    height: 200px;
+    flex-shrink: 0;
+    padding: 0.5rem;
+  }
 `;
 
 // Floating event panel
@@ -279,8 +284,11 @@ export const FloatingEventPanel = styled.div`
   padding: 1rem 0;
   overflow-y: auto;
   @media (max-width: 640px) {
-    left: 0.75rem;
-    right: 0.75rem;
+    position: static;
+    overflow-y: visible;
+    padding: 0.75rem;
+    flex: 1;
+    align-items: stretch;
   }
 `;
 
@@ -293,6 +301,8 @@ export const EventPanel = styled.div`
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
   @media (max-width: 640px) {
     width: 100%;
+    border-radius: 0.75rem;
+    box-shadow: none;
   }
 `;
 
