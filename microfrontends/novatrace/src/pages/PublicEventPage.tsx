@@ -171,10 +171,72 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
         return r.json();
       })
       .then(data => {
-        if (data) setEvent(data);
+        if (!data) return;
+        setEvent(data);
+
+        const url = `https://starithm.ai/novatrace/events/${canonicalId}`;
+        const headline = data.aiSummary?.headline || canonicalId;
+        const description = data.aiSummary?.details
+          ? data.aiSummary.details.slice(0, 200).trimEnd() + '...'
+          : `${data.alertKind} event ${canonicalId} — ${data.noticeCount} notices, ${data.circularCount} circulars.`;
+        const title = `${headline} — Starithm`;
+
+        document.title = title;
+
+        const setMeta = (sel: string, attr: string, val: string) => {
+          let el = document.querySelector(sel) as HTMLMetaElement | null;
+          if (!el) { el = document.createElement('meta'); document.head.appendChild(el); }
+          el.setAttribute(attr, val);
+        };
+        const setLink = (rel: string, href: string) => {
+          let el = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement | null;
+          if (!el) { el = document.createElement('link'); el.rel = rel; document.head.appendChild(el); }
+          el.href = href;
+        };
+
+        setMeta('meta[name="description"]', 'content', description);
+        setMeta('meta[property="og:type"]', 'content', 'article');
+        setMeta('meta[property="og:url"]', 'content', url);
+        setMeta('meta[property="og:title"]', 'content', title);
+        setMeta('meta[property="og:description"]', 'content', description);
+        setMeta('meta[property="twitter:url"]', 'content', url);
+        setMeta('meta[property="twitter:title"]', 'content', title);
+        setMeta('meta[property="twitter:description"]', 'content', description);
+        setLink('canonical', url);
+
+        // JSON-LD NewsArticle
+        const existing = document.getElementById('ld-event');
+        if (existing) existing.remove();
+        const ld = document.createElement('script');
+        ld.id = 'ld-event';
+        ld.type = 'application/ld+json';
+        ld.text = JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'NewsArticle',
+          headline,
+          description,
+          url,
+          ...(data.t0 ? { datePublished: data.t0 } : {}),
+          publisher: { '@type': 'Organization', name: 'Starithm', url: 'https://starithm.ai' },
+          mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+          keywords: `${data.alertKind}, astronomy, GCN, transient, ${canonicalId}`,
+          about: {
+            '@type': 'Event',
+            name: canonicalId,
+            description: `${data.alertKind} transient event detected with ${data.noticeCount} notices and ${data.circularCount} GCN circulars.`,
+          },
+        });
+        document.head.appendChild(ld);
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
+
+    return () => {
+      document.title = 'Starithm — Astronomical Event Intelligence';
+      document.getElementById('ld-event')?.remove();
+      const canon = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (canon) canon.href = 'https://starithm.ai/';
+    };
   }, [canonicalId]);
 
   useEffect(() => {

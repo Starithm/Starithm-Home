@@ -14,20 +14,80 @@ export default function BlogPost() {
   const [prevPost, setPrevPost] = useState<PostMeta | null>(null);
   const [nextPost, setNextPost] = useState<PostMeta | null>(null);
 
+  const applyPostMeta = (p: Post) => {
+    const url = `https://starithm.ai/blog/posts/${p.slug}`;
+    const title = `${p.title} — Starithm Blog`;
+    const description = p.excerpt || `${p.category} research from Starithm.`;
+
+    document.title = title;
+
+    const setMeta = (sel: string, attr: string, val: string) => {
+      let el = document.querySelector(sel) as HTMLMetaElement | null;
+      if (!el) { el = document.createElement('meta'); document.head.appendChild(el); }
+      el.setAttribute(attr, val);
+    };
+    const setLink = (rel: string, href: string) => {
+      let el = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement | null;
+      if (!el) { el = document.createElement('link'); el.rel = rel; document.head.appendChild(el); }
+      el.href = href;
+    };
+
+    setMeta('meta[name="description"]', 'content', description);
+    setMeta('meta[property="og:type"]', 'content', 'article');
+    setMeta('meta[property="og:url"]', 'content', url);
+    setMeta('meta[property="og:title"]', 'content', title);
+    setMeta('meta[property="og:description"]', 'content', description);
+    setMeta('meta[property="twitter:url"]', 'content', url);
+    setMeta('meta[property="twitter:title"]', 'content', title);
+    setMeta('meta[property="twitter:description"]', 'content', description);
+    setLink('canonical', url);
+
+    // JSON-LD BlogPosting
+    const existing = document.getElementById('ld-blogpost');
+    if (existing) existing.remove();
+    const ld = document.createElement('script');
+    ld.id = 'ld-blogpost';
+    ld.type = 'application/ld+json';
+    ld.text = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: p.title,
+      description: p.excerpt,
+      url,
+      datePublished: p.date,
+      author: p.authors ? { '@type': 'Person', name: p.authors } : { '@type': 'Organization', name: 'Starithm' },
+      publisher: { '@type': 'Organization', name: 'Starithm', url: 'https://starithm.ai' },
+      ...(p.arxiv_url ? { sameAs: p.arxiv_url, citation: { '@type': 'CreativeWork', url: p.arxiv_url } } : {}),
+      mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+      keywords: `astronomy, ${p.category}, astrophysics, GCN, transients`,
+    });
+    document.head.appendChild(ld);
+  };
+
   useEffect(() => {
-    if ((location.state as any)?.post) {
-      document.title = `${(location.state as any).post.title} — Starithm Blog`;
+    const statePost = (location.state as any)?.post as Post | undefined;
+    if (statePost) {
+      setPost(statePost);
+      applyPostMeta(statePost);
     } else {
       if (!slug) return;
       setLoading(true);
       fetchPost(slug)
         .then(p => {
           setPost(p);
-          if (p) document.title = `${p.title} — Starithm Blog`;
+          if (p) applyPostMeta(p);
         })
         .catch(() => setError(true))
         .finally(() => setLoading(false));
     }
+
+    return () => {
+      // Restore defaults on unmount
+      document.title = 'Starithm — Astronomical Event Intelligence';
+      document.getElementById('ld-blogpost')?.remove();
+      const canon = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (canon) canon.href = 'https://starithm.ai/';
+    };
   }, [slug]);
 
   // Fetch post list for prev/next navigation (index.json is newest-first)

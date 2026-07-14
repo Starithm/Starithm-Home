@@ -8,6 +8,7 @@
       { "source": "/novatrace-assets/(.*)", "destination": "/novatrace/novatrace-assets/$1" },
       { "source": "/blog-assets/(.*)", "destination": "/blog/blog-assets/$1" },
 
+      { "source": "/feed.xml", "destination": "/api/feed" },
       { "source": "/novatrace/events/:id", "destination": "/api/event-page" },
 
       { "source": "/novatrace", "destination": "/index.html" },

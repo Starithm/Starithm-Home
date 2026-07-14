@@ -269,6 +269,52 @@ function formatTime(iso: string) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+const UUID_PREFIX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-/i;
+
+// Recover a display name + type from a stored attachment URL. Object keys are
+// `<uuid>-<original-name>.<ext>`, so strip the query/hash, take the basename,
+// and drop the UUID prefix to reveal the human filename.
+function parseAttachment(url: string): { filename: string; ext: string; isImage: boolean } {
+  const clean = url.split(/[?#]/)[0];
+  const ext = clean.split('.').pop()?.toLowerCase() ?? '';
+  const base = decodeURIComponent(clean.split('/').pop() ?? clean);
+  const filename = base.replace(UUID_PREFIX, '') || ext.toUpperCase() || 'file';
+  return { filename, ext, isImage: IMAGE_EXTS.includes(ext) };
+}
+
+const fileLinkStyle: React.CSSProperties = {
+  display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+  padding: '0.3rem 0.65rem', borderRadius: 6,
+  background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)',
+  color: 'rgba(167,139,250,0.85)', fontSize: '0.75rem', textDecoration: 'none',
+  maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+};
+
+// Renders one stored attachment: inline image (with a real filename tooltip),
+// falling back to a labelled download link if it's not an image or fails to load.
+function CommentAttachment({ url }: { url: string }) {
+  const [failed, setFailed] = useState(false);
+  const { filename, isImage } = parseAttachment(url);
+
+  if (isImage && !failed) {
+    return (
+      <CommentImage
+        src={url}
+        alt={filename}
+        title={filename}
+        onClick={() => window.open(url, '_blank')}
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" download={filename} title={filename} style={fileLinkStyle}>
+      ↓ {filename}
+    </a>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export const CommentThread: React.FC<Props> = ({ canonicalId, alertKey, compact = false }) => {
@@ -386,30 +432,9 @@ export const CommentThread: React.FC<Props> = ({ canonicalId, alertKey, compact 
           )}
           {c.imageUrls && c.imageUrls.length > 0 && (
             <ImageRow>
-              {c.imageUrls.map((url, i) => {
-                const ext = url.split('.').pop()?.toLowerCase() ?? '';
-                const isImg = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
-                const filename = decodeURIComponent(url.split('/').pop() ?? url).replace(/^[a-f0-9-]{36}\./, '');
-                return isImg ? (
-                  <CommentImage key={i} src={url} alt="observation" onClick={() => window.open(url, '_blank')} />
-                ) : (
-                  <a
-                    key={i}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
-                      padding: '0.3rem 0.65rem', borderRadius: 6,
-                      background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)',
-                      color: 'rgba(167,139,250,0.85)', fontSize: '0.75rem', textDecoration: 'none',
-                    }}
-                  >
-                    ↓ {filename || ext.toUpperCase()}
-                  </a>
-                );
-              })}
+              {c.imageUrls.map((url, i) => (
+                <CommentAttachment key={i} url={url} />
+              ))}
             </ImageRow>
           )}
           {userId === c.userId && (

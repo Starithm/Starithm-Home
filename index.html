@@ -13,18 +13,18 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://starithm.com/">
+    <meta property="og:url" content="https://starithm.ai/">
     <meta property="og:title" content="Starithm - Real-time Astronomical Event Intelligence Platform">
     <meta property="og:description" content="Discover real-time astronomical events, cosmic alerts, and space observations. Monitor gamma-ray bursts, supernovae, and gravitational waves with our advanced astronomer's platform.">
-    <meta property="og:image" content="/social-media-4.png">
+    <meta property="og:image" content="https://starithm.ai/social-media-4.png">
     <meta property="og:site_name" content="Starithm">
-    
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://starithm.com/">
+    <meta property="twitter:url" content="https://starithm.ai/">
     <meta property="twitter:title" content="Starithm - Real-time Astronomical Event Intelligence Platform">
     <meta property="twitter:description" content="Discover real-time astronomical events, cosmic alerts, and space observations. Monitor gamma-ray bursts, supernovae, and gravitational waves.">
-    <meta property="twitter:image" content="/social-media-4.png">
+    <meta property="twitter:image" content="https://starithm.ai/social-media-4.png">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -41,8 +41,34 @@
     <!-- Additional SEO -->
     <meta name="theme-color" content="#8D0FF5">
     <meta name="msapplication-TileColor" content="#8D0FF5">
-    <link rel="canonical" href="https://starithm.com/">
-    
+    <link rel="canonical" href="https://starithm.ai/">
+    <link rel="alternate" type="application/rss+xml" title="Starithm Blog" href="https://starithm.ai/feed.xml">
+
+    <!-- WebSite JSON-LD structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Starithm",
+      "url": "https://starithm.ai",
+      "description": "Real-time multi-messenger astronomy alert platform. Aggregates GCN Kafka notices and GCN Circulars for gamma-ray bursts, gravitational waves, X-ray transients, and other cosmic events.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Starithm",
+        "url": "https://starithm.ai",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://starithm.ai/logo_without_name.png"
+        }
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://starithm.ai/novatrace/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- Early theme bootstrap to avoid white flash in production -->
     <style>
       /* Hard fallback so first paint isn't white if CSS hasn't loaded yet */
