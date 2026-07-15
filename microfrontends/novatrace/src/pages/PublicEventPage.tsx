@@ -160,6 +160,10 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   const [expandedNotices, setExpandedNotices] = useState<Set<string>>(new Set());
   const [rawModal, setRawModal] = useState<{ title: string; data: any; type: 'notice' } | null>(null);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
+  const [coordFmt, setCoordFmt] = useState<'hms' | 'deg'>('hms');
+
+  const fmtRA = (v: number) => coordFmt === 'deg' ? `${Number(v).toFixed(4)}°` : formatCoordinate(v, 'ra');
+  const fmtDec = (v: number) => coordFmt === 'deg' ? `${Number(v) >= 0 ? '+' : ''}${Number(v).toFixed(4)}°` : formatCoordinate(v, 'dec');
 
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 768px)');
@@ -527,11 +531,11 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
 
           {/* Sidebar */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: 0 }}>
-            <SideCard title="Position">
+            <SideCard title="Position" action={event.raDeg != null ? <CoordUnitToggle value={coordFmt} onChange={setCoordFmt} /> : undefined}>
               {event.raDeg != null ? (
                 <>
-                  <SideField label="RA" value={formatCoordinate(event.raDeg, 'ra')} />
-                  <SideField label="Dec" value={formatCoordinate(event.decDeg!, 'dec')} />
+                  <SideField label="RA" value={fmtRA(event.raDeg)} />
+                  <SideField label="Dec" value={fmtDec(event.decDeg!)} />
                   {posErrorRadius(event.posErrorDeg) != null && <SideField label="Error" value={`± ${posErrorRadius(event.posErrorDeg)!.toFixed(2)}°`} />}
                 </>
               ) : <span style={{ color: '#555', fontSize: '0.8rem' }}>No position data</span>}
@@ -677,11 +681,37 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
   );
 }
 
-function SideCard({ title, children }: { title: string; children: React.ReactNode }) {
+function SideCard({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div style={{ background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: 8, padding: '1rem' }}>
-      <div style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#555', marginBottom: '0.75rem' }}>{title}</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+        <div style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#555' }}>{title}</div>
+        {action}
+      </div>
       {children}
+    </div>
+  );
+}
+
+// Small deg / h:m:s unit switch for the Position card.
+function CoordUnitToggle({ value, onChange }: { value: 'hms' | 'deg'; onChange: (v: 'hms' | 'deg') => void }) {
+  const opt = (v: 'hms' | 'deg', label: string) => (
+    <button
+      onClick={() => onChange(v)}
+      style={{
+        background: value === v ? 'rgba(119,15,245,0.15)' : 'transparent',
+        color: value === v ? '#a78bfa' : '#666',
+        border: 'none', cursor: 'pointer', padding: '0.1rem 0.4rem', borderRadius: 4,
+        fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.03em',
+      }}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div style={{ display: 'flex', gap: 2, background: '#141414', border: '1px solid #222', borderRadius: 5, padding: 1 }}>
+      {opt('hms', 'h:m:s')}
+      {opt('deg', 'deg')}
     </div>
   );
 }
