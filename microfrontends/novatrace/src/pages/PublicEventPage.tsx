@@ -17,7 +17,7 @@ interface PublicEvent {
   t0: string | null;
   raDeg: number | null;
   decDeg: number | null;
-  posErrorDeg: number | null;
+  posErrorDeg: number | { radius?: number; type?: string } | null;
   noticeCount: number;
   circularCount: number;
   aiSummary: {
@@ -34,7 +34,7 @@ interface PublicEvent {
     producedAt: string | null;
     raDeg: number | null;
     decDeg: number | null;
-    posErrorDeg: number | null;
+    posErrorDeg: number | { radius?: number; type?: string } | null;
     classification: Record<string, number> | null;
     links: Record<string, any> | null;
     payload: Record<string, any> | null;
@@ -81,6 +81,16 @@ function formatDate(iso: string): string {
     year: 'numeric', month: 'short', day: 'numeric',
     hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short',
   });
+}
+
+// posErrorDeg comes from the DB as a jsonb object like { radius, type } (see
+// migration 006_alter_pos_error_to_jsonb); older rows may be a plain number.
+// Returns the error radius in degrees, or null if not a finite value.
+function posErrorRadius(v: unknown): number | null {
+  if (v == null) return null;
+  const raw = typeof v === 'object' ? (v as any).radius : v;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : null;
 }
 
 function getPayloadMetrics(alertKind: string, payload: Record<string, any>): Array<{ label: string; value: string }> {
@@ -460,7 +470,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                           {n.raDeg != null && (
                             <div style={{ color: '#666', fontSize: '0.75rem', marginBottom: '0.5rem' }}>
                               {formatCoordinate(n.raDeg, 'ra')} {formatCoordinate(n.decDeg!, 'dec')}
-                              {n.posErrorDeg != null && ` ± ${Number(n.posErrorDeg).toFixed(2)}°`}
+                              {posErrorRadius(n.posErrorDeg) != null && ` ± ${posErrorRadius(n.posErrorDeg)!.toFixed(2)}°`}
                             </div>
                           )}
                           {n.links && Object.entries(n.links).filter(([, v]) => typeof v === 'string' && (v as string).startsWith('http')).map(([k, v]) => (
@@ -522,7 +532,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                 <>
                   <SideField label="RA" value={formatCoordinate(event.raDeg, 'ra')} />
                   <SideField label="Dec" value={formatCoordinate(event.decDeg!, 'dec')} />
-                  {event.posErrorDeg != null && <SideField label="Error" value={`± ${Number(event.posErrorDeg).toFixed(2)}°`} />}
+                  {posErrorRadius(event.posErrorDeg) != null && <SideField label="Error" value={`± ${posErrorRadius(event.posErrorDeg)!.toFixed(2)}°`} />}
                 </>
               ) : <span style={{ color: '#555', fontSize: '0.8rem' }}>No position data</span>}
             </SideCard>

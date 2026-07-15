@@ -77,8 +77,9 @@ function Calendar({
         {props.selected ? props.selected.toISOString().split('T')[0] : placeholder}
       </span>
       {isOpen && createPortal(
-        <div 
+        <div
           ref={popupRef}
+          data-calendar-popup
           className="fixed bg-background border border-border/30 rounded-lg shadow-xl p-6 cursor-pointer mb-2"
           style={{ 
             top: position.top + 1,

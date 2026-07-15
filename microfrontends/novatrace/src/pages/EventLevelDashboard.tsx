@@ -248,9 +248,14 @@ export default function EventLevel() {
   // Close pill dropdowns on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      const inPills = pillsRef.current?.contains(e.target as Node);
-      const inPortal = portalDropdownRef.current?.contains(e.target as Node);
-      if (!inPills && !inPortal) {
+      const target = e.target as Node;
+      const inPills = pillsRef.current?.contains(target);
+      const inPortal = portalDropdownRef.current?.contains(target);
+      // The date picker opens its day grid in its own portal (document.body),
+      // so a day click isn't inside portalDropdownRef — don't treat it as an
+      // outside click, otherwise the dropdown closes before selection lands.
+      const inCalendarPopup = target instanceof Element && !!target.closest('[data-calendar-popup]');
+      if (!inPills && !inPortal && !inCalendarPopup) {
         setOpenPill(null);
       }
     };
