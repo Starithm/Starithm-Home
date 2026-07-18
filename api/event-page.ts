@@ -1,6 +1,13 @@
 export const config = { runtime: 'edge' };
 
-const BOT_REGEX = /googlebot|google-extended|google-inspectiontool|storebot-google|bingbot|slurp|duckduckbot|baiduspider|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|gptbot|claudebot|anthropic-ai|perplexitybot|youbot|ccbot|cohere-ai|diffbot|bytespider|applebot|ia_archiver|amazonbot|brightbot|imagesiftbot/i;
+// Two classes of AI agent, both need the prerendered HTML:
+//   - training/index crawlers: gptbot, claudebot, perplexitybot, ...
+//   - LIVE user-initiated retrieval (fires when a user asks an assistant about an
+//     event): chatgpt-user, oai-searchbot, claude-user/claude-web/claude-searchbot,
+//     perplexity-user. Substring matching means the *bot tokens do NOT cover these
+//     (e.g. "claudebot" !~ "Claude-User"), so they must be listed explicitly — else a
+//     live "tell me about GRB 2607xxx" fetch falls through to the empty React shell.
+const BOT_REGEX = /googlebot|google-extended|google-inspectiontool|storebot-google|bingbot|slurp|duckduckbot|baiduspider|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-user|claude-web|claude-searchbot|anthropic-ai|perplexitybot|perplexity-user|youbot|ccbot|cohere-ai|diffbot|bytespider|applebot|ia_archiver|amazonbot|brightbot|imagesiftbot/i;
 const R2_PUBLIC_BASE = 'https://pub-e117ee2751fa4adab6edfadc77df240b.r2.dev/event-html';
 
 async function serveSpa(req: Request): Promise<Response> {
