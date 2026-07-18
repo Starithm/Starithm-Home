@@ -254,6 +254,20 @@ const roadmapItems: RoadmapItem[] = [
     category: 'infrastructure',
   },
   {
+    id: '32',
+    title: 'GRB Optical Afterglow Lightcurve Pipeline',
+    description: 'Extract photometry from GCN circulars (magnitude, filter, time since trigger), convert to standard Rc band using Lupton 2005 colour corrections, and render an interactive log-log lightcurve on each event page with a power-law decay fit. Starithm\'s event grouping means photometry from 20 different circulars about the same GRB is already assembled — no other platform starts with that.',
+    status: 'planned',
+    category: 'feature',
+  },
+  {
+    id: '33',
+    title: 'Published Science — NASA ADS Integration',
+    description: 'Query NASA ADS for refereed papers and GCN circulars matching each event by name. A "Published Science" section on event pages closes the loop from real-time alerts → circulars → peer-reviewed results — all in one place. No other platform in the multi-messenger ecosystem does this.',
+    status: 'planned',
+    category: 'feature',
+  },
+  {
     id: '31',
     title: 'Citizen Science Amateur Observer Portal',
     description: 'When a low-redshift (z < 0.05) or bright (m < 18) transient is identified, the platform dispatches localised target notifications to registered amateur observers in clear-sky regions via web push and Slack. The frontend renders difference imaging stamps for transient verification. Amateurs upload photometry directly, which is grouped under the canonical event timeline.',

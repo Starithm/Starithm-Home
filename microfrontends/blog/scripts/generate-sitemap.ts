@@ -4,42 +4,20 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const SITE_BASE = 'https://starithm.ai';
-const GITHUB_REPO = 'Starithm/starithm-blog-posts';
-const GITHUB_BRANCH = 'main';
-const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}`;
-const API_BASE = `https://api.github.com/repos/${GITHUB_REPO}/contents/posts`;
-
-function parseFrontmatter(raw: string): Record<string, string> {
-  const match = raw.match(/^---\n([\s\S]*?)\n---/);
-  if (!match) return {};
-  const meta: Record<string, string> = {};
-  for (const line of match[1].split('\n')) {
-    const colon = line.indexOf(':');
-    if (colon === -1) continue;
-    meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim().replace(/^"|"$/g, '');
-  }
-  return meta;
-}
+const INDEX_URL = 'https://raw.githubusercontent.com/Starithm/starithm-blog-posts/main/posts/index.json';
 
 const NOVATRACE_API = 'https://novatrace-microservice.onrender.com';
 
 async function main() {
-  console.log('Fetching post list from GitHub...');
-  const res = await fetch(API_BASE);
-  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
-  const files: Array<{ name: string }> = await res.json();
-  const mdFiles = files.filter(f => f.name.endsWith('.md'));
+  console.log('Fetching post index from GitHub...');
+  const res = await fetch(INDEX_URL);
+  if (!res.ok) throw new Error(`Failed to fetch index.json: ${res.status}`);
+  const entries: Array<Record<string, string>> = await res.json();
 
-  const posts = await Promise.all(
-    mdFiles.map(async (file) => {
-      const raw = await fetch(`${RAW_BASE}/posts/${file.name}`).then(r => r.text());
-      const meta = parseFrontmatter(raw);
-      return {
-        slug: meta.slug || file.name.replace('.md', ''),
-        date: meta.date || new Date().toISOString().slice(0, 10),
-      };
-    })
-  );
+  const posts = entries.map(e => ({
+    slug: e.slug,
+    date: e.date || new Date().toISOString().slice(0, 10),
+  }));
 
   console.log('Fetching event list from Novatrace API...');
   let events: Array<{ canonicalId: string; updatedAt: string }> = [];

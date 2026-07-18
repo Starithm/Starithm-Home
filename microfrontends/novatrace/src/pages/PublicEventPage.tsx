@@ -224,21 +224,51 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
         const ld = document.createElement('script');
         ld.id = 'ld-event';
         ld.type = 'application/ld+json';
+        // schema.org/Event is deliberately NOT used — an astronomical transient is
+        // not a scheduled gathering, and Google's Event spec requires startDate +
+        // location (venue sense). Dataset is the honest fit (and feeds Dataset Search).
         ld.text = JSON.stringify({
           '@context': 'https://schema.org',
-          '@type': 'NewsArticle',
-          headline,
-          description,
-          url,
-          ...(data.t0 ? { datePublished: data.t0 } : {}),
-          publisher: { '@type': 'Organization', name: 'Starithm', url: 'https://starithm.ai' },
-          mainEntityOfPage: { '@type': 'WebPage', '@id': url },
-          keywords: `${data.alertKind}, astronomy, GCN, transient, ${canonicalId}`,
-          about: {
-            '@type': 'Event',
-            name: canonicalId,
-            description: `${data.alertKind} transient event detected with ${data.noticeCount} notices and ${data.circularCount} GCN circulars.`,
-          },
+          '@graph': [
+            {
+              '@type': 'NewsArticle',
+              '@id': `${url}#article`,
+              headline,
+              description,
+              url,
+              ...(data.t0 ? { datePublished: data.t0 } : {}),
+              publisher: { '@type': 'Organization', name: 'Starithm', url: 'https://starithm.ai' },
+              mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+              keywords: `${data.alertKind}, astronomy, GCN, transient, ${canonicalId}`,
+              about: { '@id': `${url}#dataset` },
+            },
+            {
+              '@type': 'Dataset',
+              '@id': `${url}#dataset`,
+              name: `${canonicalId} — multi-messenger alert data`,
+              description,
+              url,
+              identifier: canonicalId,
+              creator: { '@type': 'Organization', name: 'Starithm', url: 'https://starithm.ai' },
+              isAccessibleForFree: true,
+              ...(data.t0 ? { temporalCoverage: data.t0 } : {}),
+              keywords: ['astronomy', 'multi-messenger astronomy', 'transient', 'GCN', canonicalId,
+                ...(data.alertKind ? [data.alertKind] : []),
+                ...(data.sourceName ? [data.sourceName] : [])],
+              variableMeasured: [
+                ...(data.raDeg != null ? [{ '@type': 'PropertyValue', name: 'Right ascension (J2000)', value: data.raDeg, unitText: 'deg' }] : []),
+                ...(data.decDeg != null ? [{ '@type': 'PropertyValue', name: 'Declination (J2000)', value: data.decDeg, unitText: 'deg' }] : []),
+                ...(data.aiSummary?.significance ? [{ '@type': 'PropertyValue', name: 'Significance', value: data.aiSummary.significance }] : []),
+                { '@type': 'PropertyValue', name: 'GCN notice count', value: data.noticeCount },
+                { '@type': 'PropertyValue', name: 'GCN circular count', value: data.circularCount },
+              ],
+              distribution: {
+                '@type': 'DataDownload',
+                encodingFormat: 'application/json',
+                contentUrl: API_ENDPOINTS.publicEvent(canonicalId),
+              },
+            },
+          ],
         });
         document.head.appendChild(ld);
       })
