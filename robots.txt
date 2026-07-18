@@ -11,5 +11,7 @@ Allow: /
 # Uncomment the line below if this is a development/staging environment
 # Disallow: /
 
-# Sitemap location (when you create a sitemap)
-# Sitemap: https://starithm.com/sitemap.xml
+# NOTE: this repo-root file is NOT deployed. Vercel serves dist/ (outputDirectory in
+# vercel.json), into which public/robots.txt is copied at build. Edit public/robots.txt.
+# Sitemap location
+# Sitemap: https://starithm.ai/sitemap.xml
