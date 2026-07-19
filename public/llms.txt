@@ -1,0 +1,37 @@
+# Starithm
+
+> Real-time astronomical event intelligence. Starithm ingests multi-messenger
+> alerts from NASA's GCN (General Coordinates Network) — gamma-ray bursts,
+> gravitational waves, neutrinos, fast radio bursts and X-ray transients — and
+> aggregates the streaming GCN Notices and follow-up GCN Circulars for each event
+> into a single canonical record with an AI-generated summary.
+
+Starithm (https://starithm.ai) is a platform for astronomers. Every astronomical
+event has one page combining its real-time GCN notices, the human-written GCN
+Circulars that follow, sky position, and an AI summary, marked up with Schema.org
+`NewsArticle` + `Dataset` metadata and a ready-to-use citation. Event and blog
+pages are prerendered server-side, so their full content is available to agents
+without executing JavaScript.
+
+## Key pages
+
+- [Home](https://starithm.ai/): platform overview.
+- [Events](https://starithm.ai/novatrace/events): live list of astronomical events (GRBs, gravitational waves, neutrinos, FRBs, X-ray transients).
+- [Event detail](https://starithm.ai/novatrace/events/GBM_794811435): a single event — AI summary, sky position (RA/Dec, J2000), significance, GCN notice and circular counts, source instruments, and a BibTeX citation. URL pattern: `https://starithm.ai/novatrace/events/{canonicalId}`.
+- [Blog](https://starithm.ai/blog): explainers on new events and recent astrophysics papers.
+- [Roadmap](https://starithm.ai/blog/roadmap): what Starithm is building next.
+
+## Data and feeds
+
+- [Sitemap](https://starithm.ai/sitemap.xml): all event and blog URLs.
+- [RSS feed](https://starithm.ai/feed.xml): latest blog posts.
+- [robots.txt](https://starithm.ai/robots.txt): crawler policy — AI agents are welcome.
+- [llms-full.txt](https://starithm.ai/llms-full.txt): a fuller, single-file description of the platform, its data model, and how to cite it.
+
+## About
+
+Starithm sources alerts from the [GCN](https://gcn.nasa.gov) real-time Kafka
+streams and the GCN Circulars archive. Event names follow standard designations
+(e.g. `GRB 260714B`, `IceCube-260712A`, `S250303ay`). Content is provided for
+research and educational use; please cite the event page (BibTeX is shown on each
+page) alongside the original GCN notices and circulars.

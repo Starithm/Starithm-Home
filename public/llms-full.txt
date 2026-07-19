@@ -1,0 +1,110 @@
+# Starithm — full platform description for AI agents
+
+> Real-time astronomical event intelligence. Starithm ingests multi-messenger
+> alerts from NASA's GCN (General Coordinates Network), aggregates the streaming
+> notices and the follow-up GCN Circulars for each event into one canonical
+> record, and publishes a page per event with an AI-generated summary and
+> structured (Schema.org) metadata.
+
+Site: https://starithm.ai
+
+This document describes the platform, its data model, its coverage, and how to
+reference it. It is intended for retrieval and reasoning agents that need to
+understand Starithm without crawling every page.
+
+## What Starithm is
+
+Astronomical transients are announced through NASA's GCN as two complementary
+streams:
+
+- **GCN Notices** — machine-generated, near-instant alerts from instruments (sky
+  position, trigger time, significance), often several per event as the position
+  is refined.
+- **GCN Circulars** — human-written follow-up reports from observers around the
+  world (redshifts, classifications, photometry, counterpart detections).
+
+These arrive scattered across dozens of Kafka topics and a separate circulars
+archive. Starithm's job is to **assemble them**: it groups every notice and
+circular that refers to the same physical event under a single **canonical
+event** record, then presents that record as one coherent, continuously updated
+page with an AI-written summary that leads with the key fact.
+
+## What is on an event page
+
+Each event page (`https://starithm.ai/novatrace/events/{canonicalId}`) contains:
+
+- **AI summary** — a headline and a short, factual description generated from the
+  event's notices and circulars, with a significance level. Summaries are
+  validated before publication to reject degenerate model output.
+- **Sky position** — right ascension and declination (J2000), with the position
+  error radius, toggleable between decimal degrees and h:m:s / d:m:s.
+- **Source instruments** — which facilities reported the event.
+- **Counts** — number of GCN notices and GCN circulars aggregated for the event.
+- **Citation** — a BibTeX block for referencing the event record.
+- **Structured metadata** — Schema.org JSON-LD emitting a `NewsArticle`
+  (the summary as a news item) and a `Dataset` (the event's measurements: RA/Dec,
+  significance, notice/circular counts), so the page feeds both AI search and
+  scientific dataset indexes.
+
+Event pages are prerendered server-side for crawlers and AI agents, so the full
+content and metadata are present in the initial HTML without running JavaScript.
+
+## Coverage
+
+Starithm covers multiple messengers and instruments, including:
+
+- **Gamma-ray bursts** — Fermi GBM, Fermi LAT, SVOM (ECLAIRs / GRM / MXT).
+- **Gravitational waves** — LIGO / Virgo / KAGRA (LVK) public alerts.
+- **Neutrinos** — IceCube (track alerts), Super-Kamiokande (supernova alerts).
+- **Fast radio bursts** — CHIME/FRB, DSA-110.
+- **X-ray transients** — Einstein Probe (WXT).
+
+Event names use standard designations, e.g. `GRB 260714B` (gamma-ray burst),
+`IceCube-260712A` (neutrino), `S250303ay` (gravitational-wave superevent),
+`EP240414a` (Einstein Probe transient). The canonical id in a Starithm URL is
+derived from the triggering instrument's identifier.
+
+## Data model and terms
+
+- **Canonical event** — one physical transient. It links all of that event's
+  streaming notices and follow-up circulars, and carries the best-known position
+  and the aggregated counts.
+- **Notice** — one machine-generated GCN alert (a single row in the stream).
+- **Circular** — one human-written GCN Circular; several circulars typically
+  reference one event over hours to weeks.
+- **Alias** — an alternate name for an event mentioned across circulars
+  (e.g. an optical/IAU name for a GRB).
+- **Significance** — a qualitative confidence/importance level surfaced from the
+  notices and the AI summary.
+
+## Blog
+
+- Index: https://starithm.ai/blog
+- Roadmap: https://starithm.ai/blog/roadmap
+- Post pattern: `https://starithm.ai/blog/posts/{slug}`
+- RSS: https://starithm.ai/feed.xml
+
+Two kinds of posts are published: **event posts** — plain-language explainers of
+notable events as their notices and circulars accumulate — and **paper posts** —
+short summaries of recent astrophysics preprints relevant to transient and
+multi-messenger astronomy.
+
+## Discovery and feeds
+
+- Sitemap of all event and blog URLs: https://starithm.ai/sitemap.xml
+- Crawler policy (AI agents welcome): https://starithm.ai/robots.txt
+- Concise index for agents: https://starithm.ai/llms.txt
+
+## How to cite and attribute
+
+For research or educational use, cite the event page (each carries a BibTeX
+block) together with the underlying primary sources — the relevant GCN Notices
+and GCN Circulars, whose authors and instrument teams are the origin of the
+measurements. Starithm aggregates and summarizes; it does not replace the
+original circulars. The authoritative GCN archive is at https://gcn.nasa.gov.
+
+## Contact and origin
+
+Starithm is an independent astronomy platform. Alerts originate from NASA's GCN
+real-time streams and the GCN Circulars archive; refer to those sources for the
+canonical, unedited alert text.

@@ -28,6 +28,12 @@
 
   "headers": [
     {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Link", "value": "</llms.txt>; rel=\"llms-txt\"" }
+      ]
+    },
+    {
       "source": "/(home|novatrace)/index.html",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
