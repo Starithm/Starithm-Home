@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@novatrace/components/ui/toaster";
 import { TooltipProvider } from "@shared/components/ui/tooltip";
 import { Analytics } from '@vercel/analytics/react';
-import StatusDashboard from "@novatrace/pages/StatusDashboard";
+import InfraStatus from "@novatrace/pages/InfraStatus";
 import AlertsLevel from "@novatrace/pages/AlertLevelDashboard";
 import EventLevel from "@novatrace/pages/EventLevelDashboard";
 import NotFound from "@novatrace/pages/NotFound";
@@ -26,11 +26,14 @@ function Router() {
     <Switch>
       <Route path="/" component={AlertsLevel} />
       <Route path="/alerts" component={AlertsLevel} />
-      <Route path="/status" component={StatusDashboard} />
+      <Route path="/infra/status" component={InfraStatus} />
+      <Route path="/novatrace/infra/status" component={InfraStatus} />
+      {/* old /status page was unused — repointed to the new infra monitoring page */}
+      <Route path="/status" component={InfraStatus} />
       <Route path="/events" component={EventLevel} />
       <Route path="/novatrace" component={RedirectToEvents} />
       <Route path="/novatrace/alerts" component={AlertsLevel} />
-      <Route path="/novatrace/status" component={StatusDashboard} />
+      <Route path="/novatrace/status" component={InfraStatus} />
       <Route path="/novatrace/events" component={EventLevel} />
       <Route path="/novatrace/events/:canonicalId" component={PublicEventPage} />
       <Route path="/events/:canonicalId" component={PublicEventPage} />

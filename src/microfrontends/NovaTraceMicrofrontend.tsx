@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Status from '../../microfrontends/novatrace/src/pages/StatusDashboard';
+import InfraStatus from '../../microfrontends/novatrace/src/pages/InfraStatus';
 import AlertsLevel from '../../microfrontends/novatrace/src/pages/AlertLevelDashboard';
 import EventLevel from '../../microfrontends/novatrace/src/pages/EventLevelDashboard';
 import PublicEventPage from '../../microfrontends/novatrace/src/pages/PublicEventPage';
@@ -26,8 +26,9 @@ const NovaTraceMicrofrontend: React.FC = () => {
     if (circularsMatch) return <CircularEventPage eventName={decodeURIComponent(circularsMatch[1])} />;
 
     switch (location.pathname) {
-      case '/novatrace/status':
-        return <Status />;
+      case '/novatrace/infra/status':
+      case '/novatrace/status': // old status page was unused — repointed to infra monitoring
+        return <InfraStatus />;
       case '/novatrace/events':
         return <EventLevel />;
       case '/novatrace/alerts':
