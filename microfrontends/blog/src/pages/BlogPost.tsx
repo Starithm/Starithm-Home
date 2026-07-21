@@ -65,21 +65,27 @@ export default function BlogPost() {
   };
 
   useEffect(() => {
+    if (!slug) return;
     const statePost = (location.state as any)?.post as Post | undefined;
+
+    // Nav-state posts come from index.json, which carries only frontmatter
+    // (content: ''). Paint that immediately for a fast title/meta render, but
+    // ALWAYS fetch the full markdown body — otherwise the article body is empty.
     if (statePost) {
       setPost(statePost);
       applyPostMeta(statePost);
+      setLoading(false);
     } else {
-      if (!slug) return;
       setLoading(true);
-      fetchPost(slug)
-        .then(p => {
-          setPost(p);
-          if (p) applyPostMeta(p);
-        })
-        .catch(() => setError(true))
-        .finally(() => setLoading(false));
     }
+
+    fetchPost(slug)
+      .then(p => {
+        if (p) { setPost(p); applyPostMeta(p); }
+        else if (!statePost) setError(true);
+      })
+      .catch(() => { if (!statePost) setError(true); })
+      .finally(() => setLoading(false));
 
     return () => {
       // Restore defaults on unmount
