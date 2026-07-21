@@ -202,7 +202,7 @@ export default function BlogPost() {
             <div>
               {prevPost && (
                 <Link
-                  to={`/blog/${prevPost.slug}`}
+                  to={`/blog/posts/${prevPost.slug}`}
                   state={{ post: prevPost }}
                   style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', textDecoration: 'none', padding: '1rem', borderRadius: 8, border: '1px solid #1e1e1e', background: '#0f0f0f', transition: 'border-color 0.2s' }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = '#770ff5')}
@@ -218,7 +218,7 @@ export default function BlogPost() {
             <div>
               {nextPost && (
                 <Link
-                  to={`/blog/${nextPost.slug}`}
+                  to={`/blog/posts/${nextPost.slug}`}
                   state={{ post: nextPost }}
                   style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.375rem', textDecoration: 'none', padding: '1rem', borderRadius: 8, border: '1px solid #1e1e1e', background: '#0f0f0f', transition: 'border-color 0.2s' }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = '#770ff5')}
