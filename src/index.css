@@ -118,7 +118,7 @@ code {
 .nav-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #770ff5;
+  color: #8D0FF5;
 }
 
 .dark .nav-title {
@@ -143,11 +143,11 @@ code {
 }
 
 .nav-link:hover {
-  color: #770ff5;
+  color: #8D0FF5;
 }
 
 .dark .nav-link:hover {
-  color: #770ff5;
+  color: #8D0FF5;
 }
 
 .main-content {
@@ -205,7 +205,7 @@ code {
 .footer-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #770ff5;
+  color: #8D0FF5;
 }
 
 .dark .footer-title {
@@ -230,11 +230,11 @@ code {
 }
 
 .footer-link:hover {
-  color: #770ff5;
+  color: #8D0FF5;
 }
 
 .dark .footer-link:hover {
-  color: #770ff5;
+  color: #8D0FF5;
 }
 
 .footer-copyright {

@@ -59,7 +59,7 @@ export default function CircularEventPage({ eventName }: { eventName?: string })
     return (
       <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
         <span style={{ color: '#555', fontFamily: 'monospace', fontSize: '0.8rem' }}>No circulars found for "{eventName}".</span>
-        <button onClick={() => navigateTo('/novatrace/search')} style={{ background: 'none', border: 'none', color: '#770ff5', cursor: 'pointer', fontFamily: 'monospace', fontSize: '0.75rem' }}>← Back to search</button>
+        <button onClick={() => navigateTo('/novatrace/search')} style={{ background: 'none', border: 'none', color: '#8D0FF5', cursor: 'pointer', fontFamily: 'monospace', fontSize: '0.75rem' }}>← Back to search</button>
       </div>
     );
   }
@@ -74,7 +74,7 @@ export default function CircularEventPage({ eventName }: { eventName?: string })
           ← Search
         </button>
         <span style={{ color: '#333' }}>|</span>
-        <span style={{ color: '#770ff5', fontSize: '0.75rem', fontWeight: 600, fontFamily: 'monospace' }}>{data.event}</span>
+        <span style={{ color: '#8D0FF5', fontSize: '0.75rem', fontWeight: 600, fontFamily: 'monospace' }}>{data.event}</span>
       </div>
 
       <div style={{ maxWidth: 820, margin: '0 auto', padding: '2rem 1.5rem' }}>

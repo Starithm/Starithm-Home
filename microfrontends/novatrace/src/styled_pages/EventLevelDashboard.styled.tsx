@@ -48,8 +48,8 @@ export const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #770ff5 0%, #A239CA 100%);
-  box-shadow: 0 8px 32px rgba(119, 15, 245, 0.3);
+  background: linear-gradient(135deg, #8D0FF5 0%, #A239CA 100%);
+  box-shadow: 0 8px 32px rgba(141, 15, 245, 0.3);
 `;
 
 export const LogoText = styled.span`
@@ -183,7 +183,7 @@ export const SearchBarWrapper = styled.div`
 export const SearchBarInput = styled.input`
   width: 100%;
   background: ${({ theme }) => getThemeValue(theme, 'background', '#0e0b16')};
-  border: 1px solid #770ff5;
+  border: 1px solid #8D0FF5;
   border-radius: 0.875rem;
   padding: 0.6rem 3rem 0.6rem 1rem;
   font-size: 0.875rem;
@@ -191,14 +191,14 @@ export const SearchBarInput = styled.input`
   outline: none;
   transition: border-color 0.15s;
   &::placeholder { color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')}; }
-  &:focus { border-color: #a239ca; box-shadow: 0 0 0 2px rgba(119,15,245,0.2); }
+  &:focus { border-color: #a239ca; box-shadow: 0 0 0 2px rgba(141,15,245,0.2); }
 `;
 
 export const SearchBarSendButton = styled.button`
   position: absolute;
   right: 0.4rem;
   @keyframes spin { to { transform: rotate(360deg); } }
-  background: #770ff5;
+  background: #8D0FF5;
   border: none;
   border-radius: 0.5rem;
   width: 2rem;
@@ -242,7 +242,7 @@ export const FilterPill = styled.button<{ $active?: boolean }>`
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
   border: 1px solid ${({ $active }) => $active ? 'transparent' : 'var(--border)'};
-  background: ${({ $active }) => $active ? '#770ff5' : 'var(--card)'};
+  background: ${({ $active }) => $active ? '#8D0FF5' : 'var(--card)'};
   color: ${({ $active }) => $active ? 'white' : 'var(--foreground)'};
   font-size: 0.75rem;
   font-weight: 500;
@@ -250,7 +250,7 @@ export const FilterPill = styled.button<{ $active?: boolean }>`
   white-space: nowrap;
   transition: all 0.15s;
   line-height: 1.4;
-  &:hover { border-color: #770ff5; }
+  &:hover { border-color: #8D0FF5; }
 `;
 
 export const PillDropdown = styled.div`
@@ -274,8 +274,8 @@ export const PillDropdownItem = styled.button<{ $selected?: boolean }>`
   padding: 0.35rem 0.625rem;
   border-radius: 0.5rem;
   border: none;
-  background: ${({ $selected }) => $selected ? 'rgba(119, 15, 245, 0.15)' : 'transparent'};
-  color: ${({ $selected }) => $selected ? '#770ff5' : 'var(--foreground)'};
+  background: ${({ $selected }) => $selected ? 'rgba(141, 15, 245, 0.15)' : 'transparent'};
+  color: ${({ $selected }) => $selected ? '#8D0FF5' : 'var(--foreground)'};
   font-size: 0.75rem;
   cursor: pointer;
   text-align: left;
@@ -370,7 +370,7 @@ export const EventIconContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #770ff5 0%, #A239CA 100%);
+  background: linear-gradient(135deg, #8D0FF5 0%, #A239CA 100%);
 `;
 
 export const EventTitle = styled.h3`
@@ -498,7 +498,7 @@ export const StatusDot = styled.div<{ delay?: string }>`
   background-color: ${({ theme }) => getThemeValue(theme, 'accent', '#f3f4f6')};
 
   &:nth-child(2) {
-    background-color: ${({ theme }) => getThemeValue(theme, 'primary', '#770ff5')};
+    background-color: ${({ theme }) => getThemeValue(theme, 'primary', '#8D0FF5')};
   }
 
   &:nth-child(3) {

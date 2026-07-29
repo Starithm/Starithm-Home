@@ -58,7 +58,7 @@ export const AlertHeaderLeft = styled.div`
 `;
 
 export const AlertIcon = styled.div`
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
 `;
 
 export const AlertTitleSection = styled.div``;
@@ -161,7 +161,7 @@ export const EventInfoValue = styled.p`
 export const SummaryCard = styled.div`
   border: 1px solid #ffc332;
   background: linear-gradient(90deg, 
-    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}0D 0%, 
+    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}0D 0%, 
     ${({ theme }) => getThemeValue(theme, 'starithmVeronica', '#A239CA')}0D 50%, 
     #2f0240 100%
   );
@@ -237,7 +237,7 @@ export const TimelineDot = styled.div<{ isCurrent: boolean }>`
   border: 2px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
   background-color: ${({ isCurrent, theme }) => 
     isCurrent 
-      ? getThemeValue(theme, 'starithmElectricViolet', '#770ff5')
+      ? getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')
       : getThemeValue(theme, 'border', '#686868')
   };
 `;
@@ -280,7 +280,7 @@ export const TimelineStatusDot = styled.div<{ isCurrent: boolean }>`
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background-color: ${({ isCurrent, theme }) => isCurrent ? getThemeValue(theme, 'starithmElectricViolet', '#770ff5') : getThemeValue(theme, 'starithmVeronica', '#A239CA')};
+  background-color: ${({ isCurrent, theme }) => isCurrent ? getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5') : getThemeValue(theme, 'starithmVeronica', '#A239CA')};
 `;
 
 export const TimelineCardContent = styled.p`
@@ -499,7 +499,7 @@ export const FitsFileLeft = styled.div`
 `;
 
 export const FitsFileIcon = styled.div`
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
 `;
 
 export const FitsFileName = styled.span`
@@ -599,7 +599,7 @@ export const AlertParticipantsValue = styled.div`
 export const AlertSummarySection = styled(Card)`
   border: 1px solid #ffc332;
   background: linear-gradient(90deg, 
-    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}0D 0%, 
+    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}0D 0%, 
     ${({ theme }) => getThemeValue(theme, 'starithmVeronica', '#A239CA')}0D 50%, 
     #2f0240 100%
   );
@@ -665,7 +665,7 @@ export const AlertFitsFileLeft = styled.div`
 `;
 
 export const AlertFitsFileIcon = styled.div`
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
 `;
 
 export const AlertMeasurementLabel = styled.label`

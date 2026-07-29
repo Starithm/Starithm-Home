@@ -10,7 +10,7 @@ import styled, { keyframes, css } from 'styled-components';
  * on Google Sans Code, the product's face.
  */
 
-const VIOLET = 'var(--starithm-electric-violet, #770ff5)';
+const VIOLET = 'var(--starithm-electric-violet, #8D0FF5)';
 const VIOLET_D = 'var(--starithm-electric-violet-dark, #9A48FF)';
 const VERONICA_D = 'var(--starithm-veronica-dark, #C84BF7)';
 const GOLD = 'var(--starithm-golden-yellow, #ffc332)';
@@ -258,7 +258,7 @@ export const TimelineRow = styled.div<{ $highlight?: boolean }>`
   padding: 11px 20px;
   font-size: 11.5px;
   /* The extracted row is tinted to mark the moment a measurement is pulled out. */
-  background: ${p => (p.$highlight ? 'rgba(119, 15, 245, 0.1)' : 'transparent')};
+  background: ${p => (p.$highlight ? 'rgba(141, 15, 245, 0.1)' : 'transparent')};
   > span:first-child { color: ${line(0.4)}; }
   @media (max-width: 560px) {
     grid-template-columns: 1fr;
@@ -376,7 +376,7 @@ export const Step = styled.div<{ $accent?: boolean }>`
   border-radius: 12px;
   padding: 22px;
   background: ${p =>
-    p.$accent ? 'linear-gradient(150deg, rgba(119, 15, 245, 0.2), #120e1e)' : '#120e1e'};
+    p.$accent ? 'linear-gradient(150deg, rgba(141, 15, 245, 0.2), #120e1e)' : '#120e1e'};
 `;
 
 export const StepNo = styled.div<{ $accent?: boolean }>`

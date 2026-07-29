@@ -65,7 +65,7 @@ export default function SearchPage() {
           ← Events
         </button>
         <span style={{ color: '#333' }}>|</span>
-        <span style={{ color: '#770ff5', fontSize: '0.75rem', fontWeight: 600 }}>Event Search</span>
+        <span style={{ color: '#8D0FF5', fontSize: '0.75rem', fontWeight: 600 }}>Event Search</span>
       </div>
 
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '3rem 1.5rem' }}>
@@ -99,7 +99,7 @@ export default function SearchPage() {
             onClick={() => handleSearch(query)}
             disabled={loading || !query.trim()}
             style={{
-              background: '#770ff5', border: 'none', borderRadius: 6, color: '#fff',
+              background: '#8D0FF5', border: 'none', borderRadius: 6, color: '#fff',
               fontSize: '0.8rem', fontWeight: 600, padding: '0.6rem 1.25rem',
               cursor: loading || !query.trim() ? 'not-allowed' : 'pointer',
               opacity: loading || !query.trim() ? 0.5 : 1,
@@ -133,7 +133,7 @@ export default function SearchPage() {
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   transition: 'border-color 0.15s',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = '#770ff5')}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = '#8D0FF5')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e1e')}
               >
                 <div>

@@ -107,8 +107,8 @@ export const SingleAlertCard = styled(Card)<{ isSelected: boolean }>`
   
   ${({ isSelected, theme }) => isSelected && `
     box-shadow: ${({ theme }) => getThemeValue(theme, 'shadows.lg', '0 4px 6px -1px rgba(0, 0, 0, 0.1)')};
-    border: 2px solid ${getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}FF;
-    background-color: ${getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}0D;
+    border: 2px solid ${getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}FF;
+    background-color: ${getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}0D;
   `}
   
   ${({ isSelected, theme }) => !isSelected && `

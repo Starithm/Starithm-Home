@@ -31,7 +31,7 @@ export const Star = styled.div<{
 }>`
   position: absolute;
   border-radius: 50%;
-  background-color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}66;
+  background-color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}66;
   left: ${({ left }) => left}%;
   top: ${({ top }) => top}%;
   width: ${({ size }) => size}px;
@@ -45,7 +45,7 @@ export const GeometricCircle = styled.div`
   right: 5rem;
   width: 8rem;
   height: 8rem;
-  border: 2px solid ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}4D;
+  border: 2px solid ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}4D;
   border-radius: 50%;
 `;
 
@@ -76,7 +76,7 @@ export const GeometricDiamond = styled.div`
     content: '';
     position: absolute;
     inset: 0;
-    border: 1px solid ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}4D;
+    border: 1px solid ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}4D;
     transform: rotate(45deg);
   }
 `;
@@ -89,7 +89,7 @@ export const GeometricGradientCircle = styled.div`
   height: 5rem;
   background: linear-gradient(45deg, 
     ${({ theme }) => getThemeValue(theme, 'starithmVeronica', '#A239CA')}33,
-    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}33
+    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}33
   );
   border-radius: 50%;
 `;

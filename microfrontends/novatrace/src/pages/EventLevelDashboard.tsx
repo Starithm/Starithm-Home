@@ -847,7 +847,7 @@ export default function EventLevel() {
             </StatusDots>
             <span
               onClick={navigateToAlertLevel}
-              style={{ cursor: 'pointer', color: 'var(--starithm-electric-violet, #770ff5)', fontSize: '0.75rem', marginLeft: '0.75rem' }}
+              style={{ cursor: 'pointer', color: 'var(--starithm-electric-violet, #8D0FF5)', fontSize: '0.75rem', marginLeft: '0.75rem' }}
             >
               Search GCN Circulars →
             </span>
@@ -961,7 +961,7 @@ export default function EventLevel() {
                   }}
                   style={{
                     flex: 1,
-                    background: '#770ff5',
+                    background: '#8D0FF5',
                     color: 'white',
                     border: 'none',
                     borderRadius: '0.5rem',

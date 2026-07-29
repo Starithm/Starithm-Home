@@ -106,7 +106,7 @@ export const FooterLogo = styled.div`
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 9999px;
-  background-color: ${props => getThemeValue(props.theme, 'starithmElectricViolet', '#770ff5')};
+  background-color: ${props => getThemeValue(props.theme, 'starithmElectricViolet', '#8D0FF5')};
   color: white;
   display: flex;
   align-items: center;
@@ -118,7 +118,7 @@ export const FooterLogo = styled.div`
 export const FooterBrandName = styled.span`
   font-size: ${props => getThemeValue(props.theme, 'fontSize.sm', '0.875rem')};
   font-weight: ${props => getThemeValue(props.theme, 'fontWeight.medium', 500)};
-  color: ${props => getThemeValue(props.theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${props => getThemeValue(props.theme, 'starithmElectricViolet', '#8D0FF5')};
 `;
 
 export const FooterText = styled.p`

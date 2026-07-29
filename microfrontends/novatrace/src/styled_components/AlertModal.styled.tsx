@@ -142,7 +142,7 @@ export const TimelineDot = styled.div<{ isCurrent?: boolean }>`
   border: 2px solid #ffffff;
   background-color: ${({ isCurrent, theme }) =>
     isCurrent
-      ? getThemeValue(theme, 'primary', '#770ff5')
+      ? getThemeValue(theme, 'primary', '#8D0FF5')
       : getThemeValue(theme, 'muted', '#f3f4f6')};
 `;
 
@@ -154,11 +154,11 @@ export const TimelineEntry = styled.div<{ selected?: boolean }>`
   padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
   transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
   cursor: pointer;
-  border: ${({ selected, theme }) => (selected ? `1px solid ${getThemeValue(theme, 'primary', '#770ff5')}` : 'none')};
+  border: ${({ selected, theme }) => (selected ? `1px solid ${getThemeValue(theme, 'primary', '#8D0FF5')}` : 'none')};
   background-clip: padding-box;
   background-color: ${({ selected, theme }) =>
     selected
-      ? `${getThemeValue(theme, 'primary', '#770ff5')}0D`
+      ? `${getThemeValue(theme, 'primary', '#8D0FF5')}0D`
       : `${getThemeValue(theme, 'muted', '#f3f4f6')}80`};
 
   &:hover {

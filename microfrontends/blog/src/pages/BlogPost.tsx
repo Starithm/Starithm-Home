@@ -111,7 +111,7 @@ export default function BlogPost() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0a', color: '#fff' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: 32, height: 32, border: '2px solid #770ff5', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 1rem' }} />
+          <div style={{ width: 32, height: 32, border: '2px solid #8D0FF5', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 1rem' }} />
           <p style={{ color: '#888' }}>Loading post...</p>
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function BlogPost() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0a', color: '#fff' }}>
         <div style={{ textAlign: 'center' }}>
           <h2 style={{ marginBottom: '1rem' }}>Post not found</h2>
-          <Link to="/blog" style={{ color: '#770ff5' }}>← Back to blog</Link>
+          <Link to="/blog" style={{ color: '#8D0FF5' }}>← Back to blog</Link>
         </div>
       </div>
     );
@@ -147,7 +147,7 @@ export default function BlogPost() {
         <div style={{ marginBottom: '1rem' }}>
           <span style={{
             fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em',
-            color: '#770ff5', background: 'rgba(119,15,245,0.1)', padding: '0.25rem 0.625rem', borderRadius: 4,
+            color: '#8D0FF5', background: 'rgba(141,15,245,0.1)', padding: '0.25rem 0.625rem', borderRadius: 4,
           }}>
             {post.category}
           </span>
@@ -176,7 +176,7 @@ export default function BlogPost() {
           )}
           {post.arxiv_url && (
             <a href={post.arxiv_url} target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: '#770ff5', textDecoration: 'none' }}>
+              style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: '#8D0FF5', textDecoration: 'none' }}>
               <ExternalLink size={14} />
               arXiv:{post.arxiv_id}
             </a>
@@ -194,7 +194,7 @@ export default function BlogPost() {
               a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#f5c518', textDecoration: 'underline' }}>{children}</a>,
               strong: ({ children }) => <strong style={{ color: '#fff', fontWeight: 600 }}>{children}</strong>,
               code: ({ children }) => <code style={{ background: '#1a1a1a', padding: '0.125rem 0.375rem', borderRadius: 3, fontSize: '0.875rem', color: '#a78bfa' }}>{children}</code>,
-              blockquote: ({ children }) => <blockquote style={{ borderLeft: '3px solid #770ff5', paddingLeft: '1rem', margin: '1.5rem 0', color: '#888' }}>{children}</blockquote>,
+              blockquote: ({ children }) => <blockquote style={{ borderLeft: '3px solid #8D0FF5', paddingLeft: '1rem', margin: '1.5rem 0', color: '#888' }}>{children}</blockquote>,
               img: ({ src, alt }) => <img src={src} alt={alt} style={{ maxWidth: '100%', borderRadius: '0.5rem', margin: '1.5rem 0', background: '#fff', padding: '0.5rem', display: 'block' }} />,
             }}
           >
@@ -211,7 +211,7 @@ export default function BlogPost() {
                   to={`/blog/posts/${prevPost.slug}`}
                   state={{ post: prevPost }}
                   style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', textDecoration: 'none', padding: '1rem', borderRadius: 8, border: '1px solid #1e1e1e', background: '#0f0f0f', transition: 'border-color 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = '#770ff5')}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = '#8D0FF5')}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e1e')}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
@@ -227,7 +227,7 @@ export default function BlogPost() {
                   to={`/blog/posts/${nextPost.slug}`}
                   state={{ post: nextPost }}
                   style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.375rem', textDecoration: 'none', padding: '1rem', borderRadius: 8, border: '1px solid #1e1e1e', background: '#0f0f0f', transition: 'border-color 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = '#770ff5')}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = '#8D0FF5')}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e1e')}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em' }}>

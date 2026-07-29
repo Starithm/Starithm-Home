@@ -72,7 +72,7 @@ export const FeaturedPostSection = styled.div`
 
 export const FeaturedPostCard = styled.div`
   background: linear-gradient(135deg, 
-    ${({ theme }) => getThemeValue(theme, 'primary', '#770ff5')}0D,
+    ${({ theme }) => getThemeValue(theme, 'primary', '#8D0FF5')}0D,
     ${({ theme }) => getThemeValue(theme, 'secondary', '#C84BF7')}0D
   );
   border-radius: 1rem;
@@ -88,13 +88,13 @@ export const CategoryBadge = styled.div`
 `;
 
 export const CategoryIcon = styled.div`
-  color: ${({ theme }) => getThemeValue(theme, 'secondaryForeground', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'secondaryForeground', '#8D0FF5')};
 `;
 
 export const CategoryText = styled.span`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
-  color: ${({ theme }) => getThemeValue(theme, 'secondaryForeground', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'secondaryForeground', '#8D0FF5')};
 `;
 
 export const FeaturedPostTitle = styled.h3`
@@ -201,12 +201,12 @@ export const PostCardLink = styled(Link)`
   display: inline-flex;
   align-items: center;
   gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
   text-decoration: none;
   transition: color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
 
   &:hover {
-    color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}CC;
+    color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}CC;
   }
 `;

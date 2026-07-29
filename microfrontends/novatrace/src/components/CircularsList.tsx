@@ -81,13 +81,13 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                   style={{ flex: 1, background: 'none', border: 'none', cursor: hasExtra ? 'pointer' : 'default', padding: '0.875rem 1rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <span style={{ color: '#770ff5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
+                    <span style={{ color: '#8D0FF5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
                     <span style={{ color: '#444', fontSize: '0.7rem', fontFamily: 'monospace' }}>{c.alertKey}</span>
                     {redshift != null && (
                       <span style={{ fontSize: '0.7rem', color: '#f5c518', fontWeight: 600 }}>z = {typeof redshift === 'number' ? redshift.toFixed(4) : redshift}</span>
                     )}
                     {tags && tags.slice(0, 2).map(t => (
-                      <span key={t} style={{ fontSize: '0.62rem', color: '#770ff5', background: 'rgba(119,15,245,0.08)', padding: '0.1rem 0.4rem', borderRadius: 3 }}>{t}</span>
+                      <span key={t} style={{ fontSize: '0.62rem', color: '#8D0FF5', background: 'rgba(141,15,245,0.08)', padding: '0.1rem 0.4rem', borderRadius: 3 }}>{t}</span>
                     ))}
                     {hasExtra && <span style={{ color: '#444', fontSize: '0.7rem', marginLeft: 'auto' }}>{isExpanded ? '▲' : '▼'}</span>}
                     <span style={{ color: '#555', fontSize: '0.72rem', marginLeft: hasExtra ? '0' : 'auto' }}>{c.date ? formatDate(c.date) : ''}</span>
@@ -117,7 +117,7 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                   {tags && tags.length > 2 && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
                       {tags.map(t => (
-                        <span key={t} style={{ fontSize: '0.65rem', color: '#770ff5', background: 'rgba(119,15,245,0.08)', padding: '0.125rem 0.5rem', borderRadius: 3 }}>{t}</span>
+                        <span key={t} style={{ fontSize: '0.65rem', color: '#8D0FF5', background: 'rgba(141,15,245,0.08)', padding: '0.125rem 0.5rem', borderRadius: 3 }}>{t}</span>
                       ))}
                     </div>
                   )}

@@ -38,7 +38,7 @@ export function DashboardHeader({ onAlertClick }: DashboardHeaderProps) {
             <span>System Online</span>
           </StatusItem>
           <StatusItem>
-            <Dot color="#770ff5" />
+            <Dot color="#8D0FF5" />
             <span>Live Data</span>
           </StatusItem>
         </StatusRow>

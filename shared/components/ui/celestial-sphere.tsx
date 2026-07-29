@@ -224,8 +224,8 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
       centerX - radius * 0.3, centerY - radius * 0.3, 0,
       centerX, centerY, radius * 1.2
     );
-    sphereGradient.addColorStop(0, 'rgba(119, 15, 245, 0.15)');
-    sphereGradient.addColorStop(0.4, 'rgba(119, 15, 245, 0.08)');
+    sphereGradient.addColorStop(0, 'rgba(141, 15, 245, 0.15)');
+    sphereGradient.addColorStop(0.4, 'rgba(141, 15, 245, 0.08)');
     sphereGradient.addColorStop(0.7, 'rgba(19, 19, 24, 0.3)');
     sphereGradient.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
 
@@ -239,7 +239,7 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
       centerX, centerY, radius * 0.95,
       centerX, centerY, radius * 1.1
     );
-    glowGradient.addColorStop(0, 'rgba(119, 15, 245, 0.3)');
+    glowGradient.addColorStop(0, 'rgba(141, 15, 245, 0.3)');
     glowGradient.addColorStop(1, 'transparent');
 
     ctx.strokeStyle = glowGradient;
@@ -249,7 +249,7 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
     ctx.stroke();
 
     // Draw main sphere boundary
-    ctx.strokeStyle = 'rgba(119, 15, 245, 0.6)';
+    ctx.strokeStyle = 'rgba(141, 15, 245, 0.6)';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
@@ -412,12 +412,12 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
         if (!inPath) { ctx.moveTo(pt.x, pt.y); inPath = true; }
         else ctx.lineTo(pt.x, pt.y);
       }
-      ctx.fillStyle = 'rgba(119, 15, 245, 0.10)';
+      ctx.fillStyle = 'rgba(141, 15, 245, 0.10)';
       ctx.fill();
 
       // Dashed boundary — only visible segments
       ctx.lineWidth = 1.5;
-      ctx.strokeStyle = 'rgba(119, 15, 245, 0.75)';
+      ctx.strokeStyle = 'rgba(141, 15, 245, 0.75)';
       ctx.setLineDash([5, 3]);
       ctx.beginPath();
       inPath = false;
@@ -437,13 +437,13 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
         const dfc = Math.sqrt((cp.x - centerX) ** 2 + (cp.y - centerY) ** 2);
         if (dfc <= radius) {
           const ARM = 9;
-          ctx.strokeStyle = 'rgba(119, 15, 245, 0.9)';
+          ctx.strokeStyle = 'rgba(141, 15, 245, 0.9)';
           ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.moveTo(cp.x - ARM, cp.y); ctx.lineTo(cp.x + ARM, cp.y);
           ctx.moveTo(cp.x, cp.y - ARM); ctx.lineTo(cp.x, cp.y + ARM);
           ctx.stroke();
-          ctx.fillStyle = 'rgba(119, 15, 245, 1)';
+          ctx.fillStyle = 'rgba(141, 15, 245, 1)';
           ctx.beginPath();
           ctx.arc(cp.x, cp.y, 2.5, 0, 2 * Math.PI);
           ctx.fill();
@@ -477,7 +477,7 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
           break;
         case 'gw':
         case 'gravitational wave':
-          color = '#770ff5';
+          color = '#8D0FF5';
           break;
         case 'neutrino':
           color = '#4ECDC4';
@@ -489,7 +489,7 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
           color = '#FF9F43';
           break;
         default:
-          color = '#770ff5';
+          color = '#8D0FF5';
           break;
       }
 
@@ -543,7 +543,7 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
 
     // Draw drag feedback
     if (dragState.isDragging) {
-      ctx.strokeStyle = 'rgba(119, 15, 245, 0.5)';
+      ctx.strokeStyle = 'rgba(141, 15, 245, 0.5)';
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
@@ -557,7 +557,7 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
     const legendY = height - 140;
     
     ctx.fillStyle = 'rgba(19, 19, 24, 0.9)';
-    ctx.strokeStyle = 'rgba(119, 15, 245, 0.3)';
+    ctx.strokeStyle = 'rgba(141, 15, 245, 0.3)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.roundRect(legendX - 10, legendY - 10, 160, 120, 8);
@@ -571,7 +571,7 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
     const legendItems = [
       { color: '#FF6B6B', label: 'Gamma-Ray Burst' },
       { color: '#4ECDC4', label: 'Neutrino' },
-      { color: '#770ff5', label: 'Gravitational Wave' },
+      { color: '#8D0FF5', label: 'Gravitational Wave' },
       { color: '#FFB400', label: 'Supernova' },
       { color: '#FF9F43', label: 'Stellar Flare' }
     ];

@@ -37,7 +37,7 @@ export const NotFoundIconContainer = styled.div`
 
 // Icon
 export const NotFoundIcon = styled.div`
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}4D;
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}4D;
   margin: 0 auto ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
 `;
 

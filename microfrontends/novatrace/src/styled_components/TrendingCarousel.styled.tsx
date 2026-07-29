@@ -45,7 +45,7 @@ export const CarouselInner = styled.div`
 
   /* bg-gradient-to-r from-violet/10 via-veronica/10 to (light:white | dark:gray-800) */
   background-image: ${({ theme }) => {
-    const violet = getThemeValue(theme, 'starithmElectricViolet', '#770ff5');
+    const violet = getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5');
     const veronica = getThemeValue(theme, 'starithmVeronica', '#A239CA');
     const name = getThemeValue(theme, 'name', 'light');
     const toColor = name === 'dark' ? '#1f2937' : '#ffffff'; /* gray-800 or white */
@@ -87,7 +87,7 @@ export const RowLeft = styled.div`
 `;
 
 export const IconWrap = styled.div`
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
   display: flex;
   align-items: center;
 `;
@@ -121,7 +121,7 @@ export const CountLine = styled.div`
 `;
 
 export const CountNumber = styled.span`
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.2xl', '1.5rem')};
 `;
@@ -174,7 +174,7 @@ export const Dot = styled.div<{ active?: boolean }>`
   transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
   background-color: ${({ active, theme }) =>
     active
-      ? getThemeValue(theme, 'starithmElectricViolet', '#770ff5')
+      ? getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')
       : getThemeValue(theme, 'muted', '#f3f4f6')};
 `;
 

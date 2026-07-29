@@ -130,7 +130,7 @@ export const OverviewCardHeader = styled.div`
 `;
 
 export const OverviewCardIcon = styled.div`
-  color: ${({ theme }) => getThemeValue(theme, 'primary', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'primary', '#8D0FF5')};
 `;
 
 export const OverviewCardTitle = styled.h3`
@@ -142,7 +142,7 @@ export const OverviewCardTitle = styled.h3`
 export const OverviewCardValue = styled.div<{ color?: string }>`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.2xl', '1.5rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
-  color: ${({ theme, color }) => color || getThemeValue(theme, 'primary', '#770ff5')};
+  color: ${({ theme, color }) => color || getThemeValue(theme, 'primary', '#8D0FF5')};
   margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.1', '0.25rem')};
 `;
 
@@ -170,7 +170,7 @@ export const RoadmapSectionTitle = styled.h3`
 `;
 
 export const RoadmapSectionIcon = styled.div<{ color?: string }>`
-  color: ${({ color, theme }) => color || getThemeValue(theme, 'primary', '#770ff5')};
+  color: ${({ color, theme }) => color || getThemeValue(theme, 'primary', '#8D0FF5')};
 `;
 
 export const RoadmapItemsGrid = styled.div`
@@ -216,7 +216,7 @@ export const RoadmapItemLeft = styled.div`
 `;
 
 export const RoadmapItemStatusIcon = styled.div<{ color?: string }>`
-  color: ${({ color, theme }) => color || getThemeValue(theme, 'primary', '#770ff5')};
+  color: ${({ color, theme }) => color || getThemeValue(theme, 'primary', '#8D0FF5')};
 `;
 
 export const RoadmapItemTitle = styled.h4`
@@ -232,7 +232,7 @@ export const RoadmapItemRight = styled.div`
 `;
 
 export const RoadmapItemCategoryIcon = styled.div<{ color?: string }>`
-  color: ${({ color, theme }) => color || getThemeValue(theme, `${color}`, '#770ff5')};
+  color: ${({ color, theme }) => color || getThemeValue(theme, `${color}`, '#8D0FF5')};
 `;
 
 export const RoadmapItemDescription = styled.p`

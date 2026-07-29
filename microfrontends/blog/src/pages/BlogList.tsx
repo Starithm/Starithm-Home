@@ -41,13 +41,13 @@ const PageButton = styled.button<{ $active?: boolean }>`
   height: 2rem;
   padding: 0 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid ${({ $active }) => $active ? '#770ff5' : 'var(--border, #333)'};
-  background: ${({ $active }) => $active ? '#770ff5' : 'transparent'};
+  border: 1px solid ${({ $active }) => $active ? '#8D0FF5' : 'var(--border, #333)'};
+  background: ${({ $active }) => $active ? '#8D0FF5' : 'transparent'};
   color: ${({ $active }) => $active ? 'white' : 'var(--foreground)'};
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.15s;
-  &:hover:not(:disabled) { border-color: #770ff5; color: ${({ $active }) => $active ? 'white' : '#770ff5'}; }
+  &:hover:not(:disabled) { border-color: #8D0FF5; color: ${({ $active }) => $active ? 'white' : '#8D0FF5'}; }
   &:disabled { opacity: 0.3; cursor: default; }
 `;
 
@@ -214,7 +214,7 @@ function BlogPostCard({ post }: { post: Post }) {
         cursor: 'pointer',
         transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) ${hovered ? 'translateY(-4px)' : ''}`,
         transition: hovered ? 'transform 0.1s ease-out, box-shadow 0.2s ease' : 'transform 0.4s ease, box-shadow 0.4s ease',
-        boxShadow: hovered ? '0 20px 40px rgba(119, 15, 245, 0.15), 0 8px 16px rgba(0,0,0,0.2)' : undefined,
+        boxShadow: hovered ? '0 20px 40px rgba(141, 15, 245, 0.15), 0 8px 16px rgba(0,0,0,0.2)' : undefined,
       }}
     >
       {/* Shine overlay */}

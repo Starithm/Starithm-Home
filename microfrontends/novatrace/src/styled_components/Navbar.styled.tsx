@@ -82,7 +82,7 @@ export const HamburgerBtn = styled.button`
   border-radius: 6px;
   align-items: center;
   justify-content: center;
-  &:hover { background: rgba(119, 15, 245, 0.1); }
+  &:hover { background: rgba(141, 15, 245, 0.1); }
   @media (max-width: 768px) {
     display: flex;
   }

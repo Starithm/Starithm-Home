@@ -311,7 +311,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
         <AlertTriangle size={40} style={{ color: '#888', marginBottom: '1rem' }} />
         <h2 style={{ marginBottom: '0.5rem' }}>Event not found</h2>
         <p style={{ color: '#888', marginBottom: '1.5rem' }}>No data found for {canonicalId}</p>
-        <Link to="/novatrace/events" style={{ color: '#770ff5' }}>← Back to Events</Link>
+        <Link to="/novatrace/events" style={{ color: '#8D0FF5' }}>← Back to Events</Link>
       </div>
     </div>
   );
@@ -367,7 +367,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#770ff5', background: 'rgba(119,15,245,0.1)', padding: '0.25rem 0.625rem', borderRadius: 4 }}>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#8D0FF5', background: 'rgba(141,15,245,0.1)', padding: '0.25rem 0.625rem', borderRadius: 4 }}>
               {event.alertKind.toUpperCase()}
             </span>
             {event.aiSummary?.significance && (
@@ -458,7 +458,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                         style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '0.875rem 1rem', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                          <span style={{ color: '#770ff5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
+                          <span style={{ color: '#8D0FF5', fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 600 }}>#{i + 1}</span>
                           <span style={{ color: '#aaa', fontSize: '0.75rem', fontFamily: 'monospace' }}>{n.id || p.trigger_id || ''}</span>
                           {n.phase && <span style={{ color: '#666', fontSize: '0.72rem', textTransform: 'capitalize' }}>{n.phase.replace(/_/g, ' ')}</span>}
                           <span style={{ color: '#444', fontSize: '0.7rem', marginLeft: 'auto' }}>{isExpanded ? '▲' : '▼'}</span>
@@ -496,7 +496,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem', marginTop: '0.25rem' }}>
                             {payloadFitsUrls.map(({ label, url }) => (
                               <a key={url} href={url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', color: '#770ff5', background: 'rgba(119,15,245,0.08)', padding: '0.15rem 0.5rem', borderRadius: 4, textDecoration: 'none' }}>
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', color: '#8D0FF5', background: 'rgba(141,15,245,0.08)', padding: '0.15rem 0.5rem', borderRadius: 4, textDecoration: 'none' }}>
                                 <ExternalLink size={10} />
                                 <span style={{ textTransform: 'capitalize' }}>{label}</span>
                                 <span style={{ color: '#444' }}>.fits</span>
@@ -516,7 +516,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
                             </div>
                           )}
                           {n.links && Object.entries(n.links).filter(([, v]) => typeof v === 'string' && (v as string).startsWith('http')).map(([k, v]) => (
-                            <a key={k} href={v as string} target="_blank" rel="noopener noreferrer" style={{ color: '#770ff5', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.5rem', marginRight: '0.75rem' }}>
+                            <a key={k} href={v as string} target="_blank" rel="noopener noreferrer" style={{ color: '#8D0FF5', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.5rem', marginRight: '0.75rem' }}>
                               <ExternalLink size={11} /> {k}
                             </a>
                           ))}
@@ -591,7 +591,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
 
             <div style={{ background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: 8, padding: '1rem', fontSize: '0.8rem', color: '#666', lineHeight: 1.6 }}>
               Monitored in real-time by{' '}
-              <Link to="/novatrace/events" style={{ color: '#770ff5', textDecoration: 'none' }}>Starithm</Link>
+              <Link to="/novatrace/events" style={{ color: '#8D0FF5', textDecoration: 'none' }}>Starithm</Link>
               {' '}— multi-messenger astronomical event tracking.
               <p style={{ marginTop: '0.5rem', fontSize: '0.72rem', color: '#444', fontStyle: 'italic', marginBottom: 0 }}>
                 If you find any inaccuracy, please email{' '}
@@ -737,7 +737,7 @@ function CoordUnitToggle({ value, onChange }: { value: 'hms' | 'deg'; onChange: 
     <button
       onClick={() => onChange(v)}
       style={{
-        background: value === v ? 'rgba(119,15,245,0.15)' : 'transparent',
+        background: value === v ? 'rgba(141,15,245,0.15)' : 'transparent',
         color: value === v ? '#a78bfa' : '#666',
         border: 'none', cursor: 'pointer', padding: '0.1rem 0.4rem', borderRadius: 4,
         fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.03em',

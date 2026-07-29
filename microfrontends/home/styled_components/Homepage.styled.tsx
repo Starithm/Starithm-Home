@@ -88,7 +88,7 @@ export const TitleLine2 = styled.span`
   display: block;
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.5xl', '3rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
   text-transform: uppercase;
   letter-spacing: 0.05em;
 
@@ -150,7 +150,7 @@ export const GradientOrb = styled.div`
   width: 16rem;
   height: 16rem;
   background: linear-gradient(135deg, 
-    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}33,
+    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}33,
     ${({ theme }) => getThemeValue(theme, 'starithmVeronica', '#A239CA')}26
   );
   border-radius: 50%;
@@ -187,7 +187,7 @@ export const GeometricLine1 = styled.div`
   width: 12rem;
   height: 2px;
   background: linear-gradient(90deg, 
-    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}99,
+    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}99,
     transparent
   );
   transform: rotate(12deg);
@@ -229,7 +229,7 @@ export const SectionHeader = styled.div`
 export const SectionTitle = styled.h2`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.4xl', '2.25rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
-  color: ${({ theme }) => getThemeValue(theme, 'primaryForeground', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'primaryForeground', '#8D0FF5')};
   margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
 
   @media (min-width: ${({ theme }) => getThemeValue(theme, 'breakpoints.lg', '1024px')}) {
@@ -262,7 +262,7 @@ export const MetricItem = styled.div`
 export const MetricValue = styled.div<{ color?: string }>`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.4xl', '2.25rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
-  color: ${({ theme, color }) => getThemeValue(theme, `${color}`, '#770ff5')};
+  color: ${({ theme, color }) => getThemeValue(theme, `${color}`, '#8D0FF5')};
   margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
 `;
 
@@ -287,7 +287,7 @@ export const FeatureCard = styled.div<{ fromColor?: string; toColor?: string }>`
   padding: ${({ theme }) => getThemeValue(theme, 'spacing.8', '2rem')};
   border-radius: ${({ theme }) => getThemeValue(theme, 'radius', '0.5rem')};
   background: linear-gradient(135deg, 
-    ${({ theme, fromColor }) => getThemeValue(theme, `${fromColor}`, '#770ff5')}33,
+    ${({ theme, fromColor }) => getThemeValue(theme, `${fromColor}`, '#8D0FF5')}33,
     ${({ theme, toColor }) => getThemeValue(theme, `${toColor}`, '#A239CA')}1A
   );
 `;
@@ -295,7 +295,7 @@ export const FeatureCard = styled.div<{ fromColor?: string; toColor?: string }>`
 export const FeatureIcon = styled.div`
   width: 4rem;
   height: 4rem;
-  background: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}33;
+  background: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}33;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -307,7 +307,7 @@ export const FeatureIcon = styled.div`
 export const FeatureTitle = styled.h3`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.2xl', '1.5rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
   margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
 `;
 
@@ -334,7 +334,7 @@ export const NovaTraceContent = styled.div``;
 export const NovaTraceTitle = styled.h3`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.3xl', '1.875rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
-  color: ${({ theme }) => getThemeValue(theme, 'primaryForeground', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'primaryForeground', '#8D0FF5')};
   margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
 `;
 
@@ -351,12 +351,12 @@ export const VideoContainer = styled.div`
   width: 100%;
   height: 20rem;
   background: linear-gradient(135deg, 
-    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}1A,
+    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}1A,
     ${({ theme }) => getThemeValue(theme, 'starithmVeronica', '#A239CA')}1A
   );
   border-radius: ${({ theme }) => getThemeValue(theme, 'radius', '0.5rem')};
   overflow: hidden;
-  border: 2px solid ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}4D;
+  border: 2px solid ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}4D;
   box-shadow: ${({ theme }) => getThemeValue(theme, 'shadows.lg', '0 10px 15px -3px rgba(0, 0, 0, 0.1)')};
 `;
 
@@ -368,7 +368,7 @@ export const VideoIframe = styled.iframe`
 // Footer
 export const Footer = styled.div`
   background-color: ${({ theme }) => getThemeValue(theme, 'background', 'white')};
-  border-top: 1px solid ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}33;
+  border-top: 1px solid ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}33;
   padding: ${({ theme }) => getThemeValue(theme, 'spacing.16', '4rem')} 0;
 `;
 
@@ -402,7 +402,7 @@ export const FooterBrandContainer = styled.div`
 export const FooterTitle = styled.h3`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.2xl', '1.5rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
-  color: ${({ theme }) => getThemeValue(theme, 'primaryForeground', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'primaryForeground', '#8D0FF5')};
 `;
 
 export const FooterDescription = styled.p`
@@ -426,13 +426,13 @@ export const SocialLink = styled.a`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+  color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
   text-decoration: none;
   transition: all ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
 
   &:hover {
-    background: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}4D;
+    background: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}4D;
     transform: translateY(-2px);
   }
 `;
@@ -466,7 +466,7 @@ export const FooterLink = styled.li`
     transition: color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
 
     &:hover {
-      color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+      color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
     }
   }
 
@@ -480,7 +480,7 @@ export const FooterLink = styled.li`
     transition: color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
 
     &:hover {
-      color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
+      color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
     }
   }
 `;
@@ -489,7 +489,7 @@ export const FooterLink = styled.li`
 export const MetricsSection = styled(Section)`
   background: linear-gradient(180deg, 
     ${({ theme }) => getThemeValue(theme, 'background', 'white')} 0%,
-    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}0D 100%
+    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}0D 100%
   );
 `;
 
@@ -499,7 +499,7 @@ export const FeaturesSection = styled(Section)`
 
 export const NovaTraceSection = styled(Section)`
   background: linear-gradient(180deg, 
-    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')}0D 0%,
+    ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')}0D 0%,
     ${({ theme }) => getThemeValue(theme, 'background', 'white')} 100%
   );
 `;

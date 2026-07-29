@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#e0e0e0', fontFamily: 'system-ui, sans-serif' }}>
       {/* Nav */}
       <div style={{ borderBottom: '1px solid #1a1a1a', padding: '0.75rem 2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <Link to="/" style={{ color: '#770ff5', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600 }}>
+        <Link to="/" style={{ color: '#8D0FF5', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600 }}>
           ← Starithm
         </Link>
       </div>
