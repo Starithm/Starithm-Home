@@ -14,7 +14,7 @@ const CLERK_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ClerkProvider publishableKey={CLERK_KEY} appearance={{
+    <ClerkProvider publishableKey={CLERK_KEY} afterSignOutUrl="/" appearance={{
       variables: {
         colorBackground: '#0f0f0f',
         colorInputBackground: '#1a1a1a',

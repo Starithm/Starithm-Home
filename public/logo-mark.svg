@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 426 432" role="img" aria-label="Starithm">
+  <path class="st-arc st-arc--1" d="M 178.8 290.4 A 70 70 0 1 1 291.9 208.4" fill="none" stroke="#9D5CFF" stroke-width="21" stroke-linecap="round" opacity="1.0" />
+  <path class="st-arc st-arc--2" d="M 136.8 316.3 A 119 119 0 1 1 329.3 176.2" fill="none" stroke="#9D5CFF" stroke-width="21" stroke-linecap="round" opacity="0.7" />
+  <path class="st-arc st-arc--3" d="M 95.1 342.1 A 168 168 0 0 1 366.7 144.4" fill="none" stroke="#9D5CFF" stroke-width="20" stroke-linecap="round" opacity="0.42" />
+  <circle class="st-dot" cx="232.5" cy="245.5" r="30" fill="#FFB400" />
+</svg>

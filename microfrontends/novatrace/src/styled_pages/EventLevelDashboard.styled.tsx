@@ -58,6 +58,39 @@ export const LogoText = styled.span`
   font-size: 1.125rem;
 `;
 
+/* Starithm brand lock-up. The mark is used bare rather than inside LogoContainer's
+   violet gradient — the arcs are the same purple and would disappear against it. */
+export const BrandLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  flex-shrink: 0;
+`;
+
+export const BrandMark = styled.img`
+  width: 2.25rem;
+  height: 2.25rem;
+  display: block;
+`;
+
+export const BrandWordmark = styled.span`
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
+  @media (max-width: 640px) {
+    display: none;
+  }
+`;
+
+export const BrandDivider = styled.span`
+  color: ${({ theme }) => getThemeValue(theme, 'border', '#d8d4e0')};
+  @media (max-width: 640px) {
+    display: none;
+  }
+`;
+
 export const HeaderTitle = styled.h1`
   font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xl', '1.25rem')};
   font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};

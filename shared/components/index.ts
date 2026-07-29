@@ -13,6 +13,7 @@ export { ThemeDemo } from './ThemeDemo';
 
 // Shared Components
 export { NotFound } from './NotFound';
+export { StarithmLoader, StarithmLoaderBlock } from './StarithmLoader';
 
 // Theme Utilities
 export * from '../utils/themeUtils';

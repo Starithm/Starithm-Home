@@ -23,7 +23,9 @@
       { "source": "/blog", "destination": "/index.html" },
       { "source": "/blog/", "destination": "/index.html" },
       { "source": "/blog/posts/(.*)", "destination": "/index.html" },
-      { "source": "/blog/(.*)", "destination": "/index.html" }
+      { "source": "/blog/(.*)", "destination": "/index.html" },
+
+      { "source": "/sso-callback", "destination": "/index.html" }
     ],
 
   "headers": [

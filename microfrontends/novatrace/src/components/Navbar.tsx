@@ -11,6 +11,7 @@ import {
   LeftGroup,
   Brand,
   LogoBox,
+  BrandLink,
   BrandText,
   BrandTitle,
   BrandSubtitle,
@@ -76,7 +77,9 @@ export function Navbar() {
       <NavInner>
         <LeftGroup>
           <Brand>
-            <LogoBox>N</LogoBox>
+            <BrandLink href="/" title="Starithm">
+              <LogoBox src="/logo_without_name.png" alt="Starithm" width={32} height={32} />
+            </BrandLink>
             <BrandText>
               <BrandTitle>NovaTrace</BrandTitle>
               <BrandSubtitle>Powered by Starithm Tech</BrandSubtitle>

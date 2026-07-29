@@ -27,17 +27,20 @@ export const Brand = styled.div`
   gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
 `;
 
-export const LogoBox = styled.div`
-  width: 2rem; /* w-8 */
-  height: 2rem; /* h-8 */
-  background-color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#770ff5')};
-  border-radius: 0.5rem;
+/* Starithm mark, used bare — the violet box this replaced was the same purple as the
+   logo's arcs, which would have swallowed them. */
+export const BrandLink = styled.a`
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
-  font-size: 0.875rem;
+  gap: 0.5rem;
+  text-decoration: none;
+  flex-shrink: 0;
+`;
+
+export const LogoBox = styled.img`
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
+  display: block;
 `;
 
 export const BrandText = styled.div`

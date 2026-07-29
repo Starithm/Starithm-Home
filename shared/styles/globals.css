@@ -591,3 +591,78 @@ html {
     padding: 0 var(--spacing-8);
   }
 }
+
+/* ── Starithm loader ──────────────────────────────────────────────────────────
+   The mark's three arcs orbit at non-harmonic rates (1 : 1.55 : 2.35) so they never
+   visibly re-sync, which would read as a stuck loop. Middle ring is amber and
+   counter-rotates — the "scanning band". Base 900ms: brisk enough that a wait reads
+   as work in progress rather than the site labouring. */
+.st-loader {
+  --st-base: 900ms;
+  --st-arc: #8D0FF5;   /* deep purple — for light backgrounds */
+  --st-band: #FFB400;
+  display: block;
+}
+.dark .st-loader,
+.st-loader[data-tone='dark'] {
+  --st-arc: #9D5CFF;   /* lifted purple — for dark backgrounds */
+}
+.st-loader[data-tone='light'] {
+  --st-arc: #8D0FF5;
+}
+
+.st-loader circle {
+  transform-origin: 32px 32px;
+  transform-box: view-box;
+}
+
+@keyframes st-orbit {
+  from { transform: rotate(148deg); }
+  to   { transform: rotate(508deg); }
+}
+@keyframes st-orbit-rev {
+  from { transform: rotate(508deg); }
+  to   { transform: rotate(148deg); }
+}
+
+.st-loader .st-a1 { animation: st-orbit     calc(var(--st-base) * 1)    linear infinite; }
+.st-loader .st-a2 { animation: st-orbit-rev calc(var(--st-base) * 1.55) linear infinite; }
+.st-loader .st-a3 { animation: st-orbit     calc(var(--st-base) * 2.35) linear infinite; }
+
+/* Motion is decorative here — the arcs still render in their resting position. */
+@media (prefers-reduced-motion: reduce) {
+  .st-loader .st-a1,
+  .st-loader .st-a2,
+  .st-loader .st-a3 { animation: none; }
+}
+
+/* PublicEventPage is dark-only, so the OS default scrollbar renders as a thick light
+   bar on the code/citation blocks. Match the thin overlay style used elsewhere
+   (see EventDetailsPanel.styled.tsx). */
+.pep-root pre,
+.pep-root .pep-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+.pep-root pre::-webkit-scrollbar,
+.pep-root .pep-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.pep-root pre::-webkit-scrollbar-track,
+.pep-root .pep-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pep-root pre::-webkit-scrollbar-thumb,
+.pep-root .pep-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+}
+.pep-root pre:hover::-webkit-scrollbar-thumb,
+.pep-root .pep-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.32);
+}
+.pep-root pre::-webkit-scrollbar-button,
+.pep-root .pep-scroll::-webkit-scrollbar-button {
+  display: none;
+}

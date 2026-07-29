@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Dialog } from "@shared/components/ui/dialog";
 import { Button } from "@shared/components/ui/button";
+import { StarithmLoader } from "@shared/components/StarithmLoader";
 import { X, Download, RotateCw, ZoomIn, ZoomOut, ExternalLink, FileText } from "lucide-react";
 import {
   StyledDialogContent,
@@ -234,7 +235,7 @@ export function FitsViewerModal({ isOpen, onClose, fitsUrl, title = "FITS Viewer
           <div className="flex flex-col items-center">
             {fitsType === 'Loading' && (
               <CenteredSection>
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-starithm-electric-violet mx-auto mb-4"></div>
+                <StarithmLoader size={32} delay={0} className="mx-auto mb-4" />
                 <SubText>Analyzing FITS file...</SubText>
               </CenteredSection>
             )}
@@ -334,7 +335,7 @@ export function FitsViewerModal({ isOpen, onClose, fitsUrl, title = "FITS Viewer
                       {!js9Loaded && (
                         <div className="w-full h-full flex items-center justify-center text-white">
                           <div className="text-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+                            <StarithmLoader size={32} tone="dark" delay={0} className="mx-auto mb-2" />
                             <p>Loading JS9 FITS Viewer...</p>
                           </div>
                         </div>

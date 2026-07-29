@@ -3,6 +3,7 @@ import SystemStatus from "@novatrace/components/SystemStatus";
 import {AlertsList} from "@novatrace/components/AlertsList";
 import SystemHealth from "@novatrace/components/SystemHealth";
 import { Button } from "@shared/components/ui/button";
+import { StarithmLoader } from "@shared/components/StarithmLoader";
 import { Play, Pause, FileText } from "lucide-react";
 import { useState } from "react";
 import { apiRequest } from "@shared/lib/queryClient";
@@ -73,7 +74,7 @@ export default function StatusDashboard() {
         <Container>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', textAlign: 'center' }}>
             <div>
-              <div className="w-8 h-8 border-4 border-[var(--starithm-veronica)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <StarithmLoader size={32} delay={0} className="mx-auto mb-4" />
               <p style={{ opacity: 0.8 }}>Loading dashboard...</p>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@shared/components/ui/button';
+import { StarithmLoader } from "@shared/components/StarithmLoader";
 import { Badge } from '@shared/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@shared/components/ui/table';
 import {
@@ -713,7 +714,7 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
         <PanelContainer>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+              <StarithmLoader size={32} delay={0} className="mx-auto" />
               <p className="mt-4 text-muted-foreground">Loading event details...</p>
             </div>
           </div>

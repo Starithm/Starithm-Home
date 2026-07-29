@@ -36,8 +36,10 @@ import {
   HeaderContent,
   HeaderTop,
   HeaderLeft,
-  LogoContainer,
-  LogoText,
+  BrandLink,
+  BrandMark,
+  BrandWordmark,
+  BrandDivider,
   HeaderTitle,
   HeaderRight,
   EventCount,
@@ -478,9 +480,11 @@ export default function EventLevel() {
         <HeaderContent>
           <HeaderTop>
             <HeaderLeft>
-              <LogoContainer>
-                <LogoText>NT</LogoText>
-              </LogoContainer>
+              <BrandLink href="/" title="Starithm">
+                <BrandMark src="/logo_without_name.png" alt="Starithm" width={36} height={36} />
+                <BrandWordmark>STARITHM</BrandWordmark>
+              </BrandLink>
+              <BrandDivider>/</BrandDivider>
               <HeaderTitle>NovaTrace</HeaderTitle>
             </HeaderLeft>
             <HeaderRight>

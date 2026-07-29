@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, Clock, MapPin, Radio, FileText, ExternalLink, AlertTriangle, Copy, Check } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@shared/components/ui/tooltip';
 import { API_ENDPOINTS } from '@shared/lib/config';
+import { StarithmLoaderBlock } from "@shared/components/StarithmLoader";
 import { CommentThread } from '@shared/components/CommentThread';
 import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { saveReturnUrl } from '@shared/lib/auth';
@@ -300,7 +301,7 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
 
   if (loading) return (
     <div style={{ ...s, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center', color: '#888' }}>Loading event...</div>
+      <StarithmLoaderBlock tone="dark" message="Loading event…" delay={0} />
     </div>
   );
 
@@ -322,6 +323,13 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
       {/* Nav */}
       <div className="pep-nav" style={{ borderBottom: '1px solid #1a1a1a', padding: isMobile ? '0.6rem 1rem' : '0.75rem 1.5rem 0.75rem 2.5rem', display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'space-between' : 'flex-start', gap: isMobile ? '0.5rem' : '1rem', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, overflow: 'hidden' }}>
+          <a href="/" title="Starithm" style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', textDecoration: 'none', flexShrink: 0 }}>
+            <img src="/logo_without_name.png" alt="Starithm" width={24} height={24} style={{ display: 'block' }} />
+            {!isMobile && (
+              <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.14em', whiteSpace: 'nowrap' }}>STARITHM</span>
+            )}
+          </a>
+          <span style={{ color: '#333' }}>/</span>
           <Link to="/novatrace/events" style={{ color: '#888', textDecoration: 'none', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>
             ← All Events
           </Link>

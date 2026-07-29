@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, Coffee, Zap, 
-  Telescope, Rocket, Computer, DownloadCloud,Bot, 
+import { Coffee, Zap,
+  Telescope, Rocket, Computer, DownloadCloud,Bot,
   Drill, StarHalf, Sun, Puzzle, SunSnow } from 'lucide-react';
+import { StarithmLoader } from '../StarithmLoader';
 
 interface LoadingProps {
   title?: string;
@@ -99,13 +100,12 @@ export function Loading({ title = "Loading...", className = "" }: LoadingProps) 
     return () => clearInterval(interval);
   }, []);
 
-  const IconComponent = loadingMessages[currentMessageIndex].icon;
-
   return (
     <div className={`flex flex-col items-center justify-center p-8 ${className}`}>
-      {/* Spinning Icon */}
+      {/* Starithm mark — replaces the per-message lucide icon. The messages below still
+          rotate; only the visual anchor changed. */}
       <div className="mb-6">
-        <IconComponent className="h-12 w-12 text-starithm-electric-violet dark:text-starithm-electric-violet-dark animate-bounce" />
+        <StarithmLoader size={48} delay={0} label={title} />
       </div>
 
       {/* Title */}
@@ -143,7 +143,7 @@ export function LoadingCompact({ className = "" }: { className?: string }) {
 
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
-      <Loader2 className="h-5 w-5 text-starithm-electric-violet dark:text-starithm-electric-violet-dark animate-spin" />
+      <StarithmLoader size={20} delay={0} />
       <p className="text-sm text-starithm-rich-black/70 dark:text-starithm-platinum/70">
         {loadingMessages[currentMessageIndex].message}
       </p>
