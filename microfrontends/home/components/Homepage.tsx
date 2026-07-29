@@ -116,9 +116,17 @@ export function Homepage() {
     return () => io.disconnect();
   }, [demoVisible]);
 
-  /* Attaching <source> after mount doesn't restart the element on its own. */
+  /* Attaching <source> after mount doesn't restart the element on its own, and the
+     autoplay attribute is only honoured on the initial load in some browsers — so
+     kick playback off explicitly once the source is in. A rejected play() just means
+     the browser declined autoplay; the poster stays up, which is the intended
+     fallback. */
   useEffect(() => {
-    if (demoVisible) demoRef.current?.load();
+    if (!demoVisible) return;
+    const el = demoRef.current;
+    if (!el) return;
+    el.load();
+    el.play().catch(() => {});
   }, [demoVisible]);
 
   const openModal = () => {

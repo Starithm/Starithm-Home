@@ -88,7 +88,13 @@ export const NavLinks = styled.div`
   color: ${line(0.62)};
   a { color: inherit; text-decoration: none; }
   a:hover { color: ${PLATINUM}; }
-  @media (max-width: 480px) { width: 100%; justify-content: flex-start; }
+  /* Once the links wrap under the brand they own the full row, so spread them
+     edge to edge rather than leaving a gap on the right. */
+  @media (max-width: 620px) {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
 `;
 
 export const NavSignIn = styled.button`
@@ -189,7 +195,7 @@ export const CtaNote = styled.span`
 
 const drift = keyframes`
   0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-7px); }
+  50%      { transform: translateY(-16px); }
 `;
 
 export const EventCard = styled.div`
@@ -197,7 +203,7 @@ export const EventCard = styled.div`
   border-radius: 14px;
   overflow: hidden;
   background: linear-gradient(180deg, #151022, #0d0a15);
-  animation: ${drift} 9s ease-in-out infinite;
+  animation: ${drift} 6s ease-in-out infinite;
   @media (prefers-reduced-motion: reduce) { animation: none; }
 `;
 
