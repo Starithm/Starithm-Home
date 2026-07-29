@@ -102,4 +102,10 @@ temp/
 *.webm
 *.mp3
 *.wav
+
+# ...except optimised web assets in public/, which ship with the site.
+# Raw recordings stay ignored by the rules above; keep these small (<~2 MB).
+!public/*.mp4
+!public/*.webm
+
 *.flac
