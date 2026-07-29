@@ -5,7 +5,7 @@ import {
 } from "recharts";
 import {
   Page, Container, Header, Title, Subtitle,
-  RangeBar, RangeButton, Controls, DateField, ClearBtn,
+  RangeBar, RangeButton, Controls, DateField, ClearBtn, RefreshBtn,
   TilesRow, Tile, TileValue, TileLabel,
   FacetGrid, Facet, FacetHead, FacetTitle, FacetKind, FacetTotal, FacetAxis,
   TipBox, TipDate, TipCount, Centered, TableDetails, DataTable,
@@ -14,6 +14,7 @@ import {
 type Row = { date: string; topic: string; count: number };
 
 const RANGES = [
+  { label: "1d", days: 1 },
   { label: "1w", days: 7 },
   { label: "15d", days: 15 },
   { label: "30d", days: 30 },
@@ -46,25 +47,32 @@ export default function InfraStatus() {
   const [range, setRange] = useState(7);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const custom = !!(from || to);
+  // Only a COMPLETE custom range fires a query — picking `from` alone must not call the API
+  // (that was firing an open-ended query before you'd chosen `to`). `anyDate` = for Clear.
+  const rangeReady = !!(from && to);
+  const anyDate = !!(from || to);
 
-  // Custom from/to wins over the preset; otherwise the trailing-days window (0 = all).
-  const qs = custom
-    ? `?${[from && `from=${from}`, to && `to=${to}`].filter(Boolean).join("&")}`
+  // A complete custom range wins over the preset; otherwise the trailing-days window.
+  const qs = rangeReady
+    ? `?from=${from}&to=${to}`
     : range > 0 ? `?days=${range}` : "";
 
   const pickPreset = (days: number) => { setFrom(""); setTo(""); setRange(days); };
   const clearCustom = () => { setFrom(""); setTo(""); };
 
-  const { data, isLoading, isError } = useQuery<Row[]>({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery<Row[]>({
     queryKey: [`/api/topic-trends${qs}`],
   });
 
   // All-time trends — fetched once (cached) to fix a STABLE facet set + ordering, so a topic
   // never disappears when it has no notices in the selected window; it just renders flat.
-  const { data: allData } = useQuery<Row[]>({
+  const { data: allData, refetch: refetchAll } = useQuery<Row[]>({
     queryKey: [`/api/topic-trends`],
   });
+
+  // Re-fetch in place (keeps the selected range) — use this instead of a browser reload,
+  // which would reset the filters.
+  const refresh = () => { refetch(); refetchAll(); };
 
   const model = useMemo(() => {
     const rows = data ?? [];
@@ -109,22 +117,25 @@ export default function InfraStatus() {
           <Controls>
             <RangeBar role="group" aria-label="Quick range">
               {RANGES.map((r) => (
-                <RangeButton key={r.label} $active={!custom && range === r.days} onClick={() => pickPreset(r.days)}>
+                <RangeButton key={r.label} $active={!rangeReady && range === r.days} onClick={() => pickPreset(r.days)}>
                   {r.label}
                 </RangeButton>
               ))}
             </RangeBar>
-            <DateField $active={custom}>
+            <DateField $active={!!from}>
               From
               <input type="date" value={from} max={to || TODAY}
                 onChange={(e) => setFrom(e.target.value)} />
             </DateField>
-            <DateField $active={custom}>
+            <DateField $active={!!to}>
               To
               <input type="date" value={to} min={from || undefined} max={TODAY}
                 onChange={(e) => setTo(e.target.value)} />
             </DateField>
-            {custom && <ClearBtn onClick={clearCustom}>Clear</ClearBtn>}
+            <RefreshBtn onClick={refresh} disabled={isFetching} title="Reload data, keeping your selected range">
+              {isFetching ? "↻ …" : "↻ Refresh"}
+            </RefreshBtn>
+            {anyDate && <ClearBtn onClick={clearCustom}>Clear</ClearBtn>}
           </Controls>
         </Header>
 

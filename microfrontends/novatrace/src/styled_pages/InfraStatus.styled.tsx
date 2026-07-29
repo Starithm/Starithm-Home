@@ -93,6 +93,23 @@ export const ClearBtn = styled.button`
   &:hover { color: var(--foreground); }
 `;
 
+export const RefreshBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  font-size: 0.78rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 0.45rem;
+  color: var(--foreground);
+  white-space: nowrap;
+  transition: border-color 0.15s ease;
+  &:hover { border-color: var(--starithm-veronica); }
+  &:disabled { opacity: 0.55; cursor: default; }
+`;
+
 /* ── Stat tiles ───────────────────────────────────────────────────────────── */
 export const TilesRow = styled.div`
   display: grid;
