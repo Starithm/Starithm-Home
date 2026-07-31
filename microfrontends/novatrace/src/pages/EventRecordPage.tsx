@@ -574,7 +574,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                 const figs = imageUrls(c.data?.urls);
                 const urls = (c.data?.urls || []).filter(u => typeof u === 'string' && /^https?:\/\//i.test(u));
                 return (
-                  <CircCard key={c.alertKey}>
+                  <CircCard key={c.alertKey} $open={open}>
                     <CircHead onClick={() => toggle(openCirc, setOpenCirc)(c.alertKey)} aria-expanded={open}>
                       <CircGrid>
                         <CircId>{c.alertKey}</CircId>

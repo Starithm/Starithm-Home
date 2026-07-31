@@ -20,6 +20,11 @@ const VERONICA_D = 'var(--starithm-veronica-dark, #C84BF7)';
 const VIOLET_D = 'var(--starithm-veronica-dark, #C84BF7)'; // design uses veronica, not violet-dark
 /* Gold tints the design uses for active/accent surfaces. */
 const goldA = (a: number) => `rgba(255, 195, 50, ${a})`;
+
+/* Extracted values — electric violet. One token drives the text, the border and
+   the key label, so the three can no longer drift apart. */
+const EXTRACTED = 'var(--starithm-electric-violet, #8D0FF5)';
+const extractedA = (a: number) => `rgba(141, 15, 245, ${a})`;
 const PLATINUM = 'var(--starithm-platinum, #E7DFDD)';
 
 const line = (a: number) => `rgba(231, 223, 221, ${a})`;
@@ -300,18 +305,25 @@ export const RedshiftPill = styled.span`
   }
 `;
 
-/* Same value inside a circular's chip strip — outlined gold so it separates from
-   the veronica ValueChips around it. */
+/* Same value inside a circular's chip strip — same anatomy as ValueChip so the
+   strip stays one system, with a gold bar and gold text marking it out from the
+   values around it. */
 export const RedshiftChip = styled.span`
   font-size: ${fs(10)};
   letter-spacing: 0.04em;
-  padding: 3px 7px;
+  padding: 5px 10px;
   background: ${goldA(0.07)};
-  border: 1px solid ${goldA(0.4)};
+  border: 1px solid ${goldA(0.28)};
+  border-left: 3px solid ${GOLD};
   color: ${GOLD};
   white-space: nowrap;
 
-  b { color: ${goldA(0.75)}; font-weight: 400; font-style: italic; margin-right: 6px; }
+  b {
+    font-weight: 400;
+    font-style: italic;
+    color: inherit;
+    &::after { content: '='; margin: 0 6px; font-style: normal; color: ${goldA(0.6)}; }
+  }
 `;
 
 /* Disagreement between circulars is stated, never resolved away. */
@@ -558,7 +570,9 @@ export const Tab = styled.button<{ $active: boolean }>`
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 5px 11px;
-  border-radius: 999px;
+  /* Square, like every other edge on this page — the rest of the record has no
+     rounded corners. */
+  border-radius: 0;
   cursor: pointer;
   background: ${p => (p.$active ? goldA(0.05) : 'transparent')};
   border: 1px solid ${p => (p.$active ? goldA(0.5) : line(0.12))};
@@ -566,8 +580,17 @@ export const Tab = styled.button<{ $active: boolean }>`
   &:hover { color: ${PLATINUM}; }
 `;
 
-export const CircCard = styled.div`
+/* Rows sit flush inside Stack with no gaps, so the open row is marked with an
+   inset ring rather than a real border — a border would shift every row below it
+   by a pixel on each expand. Gold is already this page's "you are here" (rail
+   marker, active tabs). */
+export const CircCard = styled.div<{ $open?: boolean }>`
   overflow: hidden;
+  position: relative;
+  transition: box-shadow 0.15s;
+  ${p => p.$open && css`
+    box-shadow: inset 0 0 0 1px ${goldA(0.45)};
+  `}
 `;
 
 export const CircHead = styled.button`
@@ -622,19 +645,29 @@ export const CircBody = styled.div`
 export const ValueChips = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 8px;
   margin-bottom: 12px;
 `;
 
-/* Extracted values carry the veronica outline the design uses for parsed data. */
+/* Extracted values read as `key = value` in plain platinum, held in a neutral
+   box with a violet bar down the left edge. The accent carries the "parsed from
+   text" meaning; the value itself stays legible, which colouring the text never
+   managed at this size. */
 export const ValueChip = styled.span`
   font-size: ${fs(10)};
   letter-spacing: 0.04em;
-  padding: 3px 7px;
-  background: none;
-  border: 1px solid rgba(200, 75, 247, 0.35);
-  color: ${VERONICA_D};
-  b { color: rgba(200, 75, 247, 0.6); font-weight: 400; margin-right: 6px; }
+  padding: 5px 10px;
+  background: ${line(0.03)};
+  border: 1px solid ${line(0.14)};
+  border-left: 3px solid ${EXTRACTED};
+  color: ${PLATINUM};
+  white-space: nowrap;
+
+  b {
+    font-weight: 400;
+    color: inherit;
+    &::after { content: '='; margin: 0 6px; color: ${line(0.45)}; }
+  }
 `;
 
 export const TableWrap = styled.div`
