@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import InfraStatus from '../../microfrontends/novatrace/src/pages/InfraStatus';
 import AlertsLevel from '../../microfrontends/novatrace/src/pages/AlertLevelDashboard';
 import EventLevel from '../../microfrontends/novatrace/src/pages/EventLevelDashboard';
-import PublicEventPage from '../../microfrontends/novatrace/src/pages/PublicEventPage';
+import EventRecordPage from '../../microfrontends/novatrace/src/pages/EventRecordPage';
 import SearchPage from '../../microfrontends/novatrace/src/pages/SearchPage';
 import CircularEventPage from '../../microfrontends/novatrace/src/pages/CircularEventPage';
 import NotFound from '../../microfrontends/novatrace/src/pages/NotFound';
@@ -20,7 +20,7 @@ const NovaTraceMicrofrontend: React.FC = () => {
 
   const renderContent = () => {
     const eventsMatch = location.pathname.match(/^\/novatrace\/events\/(.+)$/);
-    if (eventsMatch) return <PublicEventPage canonicalId={eventsMatch[1]} />;
+    if (eventsMatch) return <EventRecordPage canonicalId={eventsMatch[1]} />;
 
     const circularsMatch = location.pathname.match(/^\/novatrace\/circulars\/(.+)$/);
     if (circularsMatch) return <CircularEventPage eventName={decodeURIComponent(circularsMatch[1])} />;

@@ -1,59 +1,151 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Calendar, Clock, FileText } from 'lucide-react';
-import { Button } from '@shared/components/ui/button';
-import styled from 'styled-components';
+import React, { useEffect, useMemo, useState } from 'react';
 import { fetchPostList, Post } from '../lib/posts';
+import { AREAS, ROADMAP_ITEMS } from '../data/roadmap';
 import {
   BlogContainer,
-  Header,
-  HeaderContainer,
-  HeaderTitle,
-  HeaderSubtitle,
-  Main,
-  FeaturedPostSection,
-  FeaturedPostCard,
-  CategoryBadge,
-  CategoryIcon,
-  CategoryText,
-  FeaturedPostTitle,
-  FeaturedPostExcerpt,
-  FeaturedPostFooter,
-  PostMeta as PostMetaStyled,
-  MetaItem,
-  MetaIcon,
-  BlogPostCardContainer,
-  PostCardCategory,
-  PostCardCategoryText,
-  PostCardTitle,
-  PostCardExcerpt,
-  PostCardFooter,
-  PostCardMeta,
-  PostCardMetaItem,
-  PostCardMetaIcon,
-  PostCardLink
+  Page,
+  Masthead,
+  MastheadText,
+  Eyebrow,
+  Title,
+  Standfirst,
+  FeedLink,
+  Featured,
+  FeaturedBody,
+  FeaturedKicker,
+  FeaturedTag,
+  FeaturedMeta,
+  FeaturedTitle,
+  FeaturedExcerpt,
+  FeaturedCta,
+  Filters,
+  FilterRow,
+  FilterLabel,
+  Chip,
+  ChipCount,
+  Rows,
+  Row,
+  RowDate,
+  RowSpine,
+  RowBody,
+  RowKicker,
+  RowKind,
+  RowCategory,
+  RowTitle,
+  RowExcerpt,
+  RowMeta,
+  RowMetaItem,
+  RowRead,
+  EmptyState,
+  Pager,
+  PagerRange,
+  PagerButtons,
+  PagerButton,
 } from '../styled_components/BlogList.styled';
 
-const POSTS_PER_PAGE = 12;
+const PER_PAGE = 8;
 
-const PageButton = styled.button<{ $active?: boolean }>`
-  min-width: 2rem;
-  height: 2rem;
-  padding: 0 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid ${({ $active }) => $active ? '#8D0FF5' : 'var(--border, #333)'};
-  background: ${({ $active }) => $active ? '#8D0FF5' : 'transparent'};
-  color: ${({ $active }) => $active ? 'white' : 'var(--foreground)'};
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.15s;
-  &:hover:not(:disabled) { border-color: #8D0FF5; color: ${({ $active }) => $active ? 'white' : '#8D0FF5'}; }
-  &:disabled { opacity: 0.3; cursor: default; }
-`;
+/* One hue per science category — the spine down the left of each row, and the
+ * category label in its kicker. */
+const CAT_HUE: Record<string, string> = {
+  'GRB': '#FF8A5C',
+  'Gravitational Waves': '#5CC8FF',
+  'Fast Radio Bursts': '#22D39A',
+  'Tidal Disruption Events': '#FFD166',
+  'Neutrinos': '#B678FF',
+  'Supernovae': '#FF6B9D',
+  'Magnetars': '#FFA94D',
+  'Astronomy Research': '#9A93AC',
+  'Space Exploration': '#8FA8FF',
+  'Platform': '#8D0FF5',
+};
+const CAT_FALLBACK = '#9A93AC';
+
+const SIG_HUE: Record<string, string> = { High: '#FF8A5C', Medium: '#FFD166', Low: '#6E6880' };
+
+type Kind = 'event' | 'paper' | 'post';
+
+const KIND_META: Record<Kind, { label: string; plural: string; hue: string; glyph: string }> = {
+  event: { label: 'Event report', plural: 'Event reports', hue: '#22D39A', glyph: '◈' },
+  paper: { label: 'Paper summary', plural: 'Paper summaries', hue: '#5CC8FF', glyph: '❖' },
+  post: { label: 'From the team', plural: 'Team posts', hue: '#8D0FF5', glyph: '✦' },
+};
+
+const KINDS: Kind[] = ['event', 'paper', 'post'];
+
+/* What a post is follows from what the record gave it: an event id means the
+ * pipeline wrote it from an event, an arXiv id means it summarises a preprint,
+ * neither means a human wrote it. */
+function kindOf(post: Post): Kind {
+  if (post.event_id) return 'event';
+  if (post.arxiv_id) return 'paper';
+  return 'post';
+}
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function formatDay(date: string) {
+  const dt = new Date(`${date}T00:00:00Z`);
+  if (Number.isNaN(dt.getTime())) return date;
+  return `${MONTHS[dt.getUTCMonth()]} ${dt.getUTCDate()}`;
+}
+
+function shortRead(readTime: string) {
+  return readTime.replace(/\s*read$/i, '');
+}
+
+/* Excerpts are lifted from the post body, so some still carry markdown
+ * emphasis. The index renders plain text — strip the markers. */
+function plain(text: string) {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/(^|\s)\*([^*]+)\*/g, '$1$2')
+    .replace(/\*+/g, '')   // unpaired markers left behind by the generator
+    .replace(/`/g, '');
+}
+
+interface MetaEntry {
+  key: string;
+  label: string;
+  hue: string;
+}
+
+/* The right-hand column carries whatever that kind of piece actually knows. */
+function metaFor(post: Post): MetaEntry[] {
+  const kind = kindOf(post);
+
+  if (kind === 'event') {
+    const circulars = Number(post.circular_count) || 0;
+    return [
+      {
+        key: 'sig',
+        label: post.significance ? `${post.significance} significance` : 'Event record',
+        hue: SIG_HUE[post.significance] || '#8B8499',
+      },
+      { key: 'notices', label: `${post.notice_count || 0} notices`, hue: '#7A7390' },
+      {
+        key: 'circulars',
+        label: `${circulars} ${circulars === 1 ? 'circular' : 'circulars'}`,
+        hue: circulars > 0 ? '#7A7390' : '#4E4863',
+      },
+    ];
+  }
+
+  if (kind === 'paper') {
+    const entries: MetaEntry[] = [];
+    if (post.authors) entries.push({ key: 'authors', label: post.authors, hue: '#7A7390' });
+    if (post.arxiv_id) entries.push({ key: 'arxiv', label: `arXiv:${post.arxiv_id}`, hue: '#5CC8FF' });
+    return entries;
+  }
+
+  return [{ key: 'authors', label: post.authors || 'Starithm Team', hue: '#7A7390' }];
+}
 
 export default function BlogList() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [kind, setKind] = useState<Kind | 'All'>('All');
+  const [category, setCategory] = useState('All');
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -63,197 +155,171 @@ export default function BlogList() {
       .finally(() => setLoading(false));
   }, []);
 
-  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
-  const pagePosts = posts.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
+  const categories = useMemo(
+    () => ['All', ...Array.from(new Set(posts.map(p => p.category)))],
+    [posts],
+  );
+
+  const kindCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: posts.length, event: 0, paper: 0, post: 0 };
+    posts.forEach(p => { counts[kindOf(p)] += 1; });
+    return counts;
+  }, [posts]);
+
+  const filtered = useMemo(
+    () => posts.filter(p =>
+      (category === 'All' || p.category === category) &&
+      (kind === 'All' || kindOf(p) === kind),
+    ),
+    [posts, category, kind],
+  );
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const current = Math.min(page, totalPages);
+  const shown = filtered.slice((current - 1) * PER_PAGE, current * PER_PAGE);
+
+  const goTo = (next: number) => {
+    setPage(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  /* Small tilt on the pinned card only — the rows stay still. */
+  const tilt = (e: React.MouseEvent<HTMLElement>) => {
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transition = 'transform 90ms ease-out, border-color 0.2s';
+    el.style.transform = `perspective(900px) rotateY(${(px * 3).toFixed(2)}deg) rotateX(${(-py * 3).toFixed(2)}deg) translateZ(0)`;
+  };
+
+  const untilt = (e: React.MouseEvent<HTMLElement>) => {
+    const el = e.currentTarget;
+    el.style.transition = 'transform 420ms cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s';
+    el.style.transform = 'perspective(900px) rotateY(0deg) rotateX(0deg)';
+  };
+
+  const range = filtered.length === 0
+    ? '0'
+    : `${(current - 1) * PER_PAGE + 1}–${Math.min(current * PER_PAGE, filtered.length)} of ${filtered.length}`;
 
   return (
     <BlogContainer>
-      <Header>
-        <HeaderContainer>
-          <HeaderTitle>Starithm Blog</HeaderTitle>
-          <HeaderSubtitle>
-            Updates, insights, and research for the astronomical community
-          </HeaderSubtitle>
-        </HeaderContainer>
-      </Header>
+      <Page>
+        <Masthead>
+          <MastheadText>
+            <Eyebrow>Starithm</Eyebrow>
+            <Title>Writing</Title>
+            <Standfirst>
+              Reports written from each event's own alerts and Circulars, summaries of new
+              preprints, and notes from the team.
+            </Standfirst>
+          </MastheadText>
+          <FeedLink href="/feed.xml">RSS ↗</FeedLink>
+        </Masthead>
 
-      <Main>
-        {/* Featured — Roadmap always pinned */}
-        <FeaturedPostSection>
-          <FeaturedPostCard>
-            <CategoryBadge>
-              <CategoryIcon><FileText size={20} /></CategoryIcon>
-              <CategoryText>Roadmap</CategoryText>
-            </CategoryBadge>
-            <FeaturedPostTitle>
-              Starithm Roadmap: Upcoming Features & Development Timeline
-            </FeaturedPostTitle>
-            <FeaturedPostExcerpt>
-              Explore our comprehensive roadmap featuring upcoming features, improvements, and infrastructure updates planned for the Starithm platform.
-            </FeaturedPostExcerpt>
-            <FeaturedPostFooter>
-              <PostMetaStyled>
-                <MetaItem>
-                  <MetaIcon><Calendar size={16} /></MetaIcon>
-                  <span>Mar, 2026</span>
-                </MetaItem>
-                <MetaItem>
-                  <MetaIcon><Clock size={16} /></MetaIcon>
-                  <span>2 min read</span>
-                </MetaItem>
-              </PostMetaStyled>
-              <Button asChild size="lg">
-                <Link to="/blog/roadmap">
-                  <span>Read Roadmap</span>
-                  <ArrowRight size={16} />
-                </Link>
-              </Button>
-            </FeaturedPostFooter>
-          </FeaturedPostCard>
-        </FeaturedPostSection>
+        {/* The roadmap stays pinned above the index. */}
+        <Featured to="/blog/roadmap" onMouseMove={tilt} onMouseLeave={untilt}>
+          <FeaturedBody>
+            <FeaturedKicker>
+              <FeaturedTag>Roadmap</FeaturedTag>
+              <FeaturedMeta>Mar 2026 · 2 min</FeaturedMeta>
+            </FeaturedKicker>
+            <FeaturedTitle>Where the work stands</FeaturedTitle>
+            <FeaturedExcerpt>
+              {ROADMAP_ITEMS.length} steps across {AREAS.length} layers of the platform — what runs
+              today, what we are crossing into now, and the order the rest is built in.
+            </FeaturedExcerpt>
+          </FeaturedBody>
+          <FeaturedCta>Read →</FeaturedCta>
+        </Featured>
 
-        {/* Research posts */}
-        {loading && (
-          <p style={{ color: '#888', textAlign: 'center', padding: '2rem' }}>Loading posts...</p>
+        <Filters>
+          <FilterRow>
+            <FilterLabel>Type</FilterLabel>
+            <Chip $on={kind === 'All'} onClick={() => { setKind('All'); setPage(1); }}>
+              Everything <ChipCount>{kindCounts.All}</ChipCount>
+            </Chip>
+            {KINDS.map(k => (
+              <Chip
+                key={k}
+                $on={kind === k}
+                $hue={KIND_META[k].hue}
+                onClick={() => { setKind(k); setPage(1); }}
+              >
+                {KIND_META[k].plural} <ChipCount>{kindCounts[k]}</ChipCount>
+              </Chip>
+            ))}
+          </FilterRow>
+
+          <FilterRow>
+            <FilterLabel>Category</FilterLabel>
+            {categories.map(c => (
+              <Chip
+                key={c}
+                $on={category === c}
+                $hue={c === 'All' ? undefined : CAT_HUE[c] || CAT_FALLBACK}
+                onClick={() => { setCategory(c); setPage(1); }}
+              >
+                {c}
+              </Chip>
+            ))}
+          </FilterRow>
+        </Filters>
+
+        {loading && <EmptyState>Loading…</EmptyState>}
+
+        {!loading && shown.length === 0 && (
+          <EmptyState>Nothing written under that filter yet.</EmptyState>
         )}
-        {!loading && posts.length > 0 && (
-          <>
-            <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', padding: '0 0 1.5rem' }}>
-              {pagePosts.map(post => (
-                <BlogPostCard key={post.slug} post={post} />
+
+        {!loading && shown.length > 0 && (
+          <Rows>
+            {shown.map(post => {
+              const k = kindOf(post);
+              const catHue = CAT_HUE[post.category] || CAT_FALLBACK;
+              return (
+                <Row key={post.slug} to={`/blog/posts/${post.slug}`} state={{ post }}>
+                  <RowDate>
+                    {formatDay(post.date)}
+                    <small>{post.date.slice(0, 4)}</small>
+                  </RowDate>
+                  <RowSpine $hue={catHue} />
+                  <RowBody>
+                    <RowKicker>
+                      <RowKind $hue={KIND_META[k].hue}>
+                        {KIND_META[k].glyph} {KIND_META[k].label}
+                      </RowKind>
+                      <RowCategory $hue={catHue}>{post.category}</RowCategory>
+                    </RowKicker>
+                    <RowTitle>{post.title}</RowTitle>
+                    <RowExcerpt>{plain(post.excerpt)}</RowExcerpt>
+                  </RowBody>
+                  <RowMeta>
+                    {metaFor(post).map(m => (
+                      <RowMetaItem key={m.key} $hue={m.hue}>{m.label}</RowMetaItem>
+                    ))}
+                    <RowRead>{shortRead(post.read_time)}</RowRead>
+                  </RowMeta>
+                </Row>
+              );
+            })}
+          </Rows>
+        )}
+
+        {!loading && filtered.length > 0 && (
+          <Pager>
+            <PagerRange>{range}</PagerRange>
+            <PagerButtons>
+              <PagerButton disabled={current === 1} onClick={() => goTo(current - 1)}>←</PagerButton>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                <PagerButton key={n} $on={n === current} onClick={() => goTo(n)}>{n}</PagerButton>
               ))}
-            </div>
-
-            {totalPages > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 0 2.5rem' }}>
-                <PageButton disabled={page === 1} onClick={() => { setPage(p => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-                  ←
-                </PageButton>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                  <PageButton
-                    key={p}
-                    $active={p === page}
-                    onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  >
-                    {p}
-                  </PageButton>
-                ))}
-                <PageButton disabled={page === totalPages} onClick={() => { setPage(p => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-                  →
-                </PageButton>
-              </div>
-            )}
-          </>
+              <PagerButton disabled={current === totalPages} onClick={() => goTo(current + 1)}>→</PagerButton>
+            </PagerButtons>
+          </Pager>
         )}
-      </Main>
+      </Page>
     </BlogContainer>
-  );
-}
-
-function BlogPostCard({ post }: { post: Post }) {
-  const cardRef = useRef<HTMLElement>(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [shine, setShine] = useState({ x: 50, y: 50 });
-  const [hovered, setHovered] = useState(false);
-  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const applyTilt = (clientX: number, clientY: number) => {
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = (clientX - cx) / (rect.width / 2);
-    const dy = (clientY - cy) / (rect.height / 2);
-    setTilt({ x: -dy * 8, y: dx * 8 });
-    setShine({
-      x: ((clientX - rect.left) / rect.width) * 100,
-      y: ((clientY - rect.top) / rect.height) * 100,
-    });
-  };
-
-  const resetTilt = () => {
-    setTilt({ x: 0, y: 0 });
-    setShine({ x: 50, y: 50 });
-    setHovered(false);
-  };
-
-  // Mouse handlers (desktop)
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => applyTilt(e.clientX, e.clientY);
-  const handleMouseLeave = () => resetTilt();
-
-  // Touch handlers (mobile)
-  const handleTouchStart = (e: React.TouchEvent<HTMLElement>) => {
-    if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
-    const touch = e.touches[0];
-    setHovered(true);
-    applyTilt(touch.clientX, touch.clientY);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLElement>) => {
-    const touch = e.touches[0];
-    applyTilt(touch.clientX, touch.clientY);
-  };
-
-  const handleTouchEnd = () => {
-    // Brief delay so the animation is visible before resetting
-    resetTimeoutRef.current = setTimeout(resetTilt, 350);
-  };
-
-  return (
-    <BlogPostCardContainer
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onClick={() => window.location.href = `/blog/posts/${post.slug}`}
-      style={{
-        cursor: 'pointer',
-        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) ${hovered ? 'translateY(-4px)' : ''}`,
-        transition: hovered ? 'transform 0.1s ease-out, box-shadow 0.2s ease' : 'transform 0.4s ease, box-shadow 0.4s ease',
-        boxShadow: hovered ? '0 20px 40px rgba(141, 15, 245, 0.15), 0 8px 16px rgba(0,0,0,0.2)' : undefined,
-      }}
-    >
-      {/* Shine overlay */}
-      {hovered && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: 'inherit',
-          pointerEvents: 'none',
-          background: `radial-gradient(circle at ${shine.x}% ${shine.y}%, rgba(255,255,255,0.06) 0%, transparent 60%)`,
-        }} />
-      )}
-
-      <PostCardCategory>
-        <FileText size={16} />
-        <PostCardCategoryText>{post.category}</PostCardCategoryText>
-      </PostCardCategory>
-
-      <PostCardTitle>{post.title}</PostCardTitle>
-
-      <PostCardExcerpt>{post.excerpt}</PostCardExcerpt>
-
-      <PostCardFooter>
-        <PostCardMeta>
-          <PostCardMetaItem>
-            <PostCardMetaIcon><Calendar size={16} /></PostCardMetaIcon>
-            <span>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-          </PostCardMetaItem>
-          <PostCardMetaItem>
-            <PostCardMetaIcon><Clock size={16} /></PostCardMetaIcon>
-            <span>{post.read_time}</span>
-          </PostCardMetaItem>
-        </PostCardMeta>
-
-        <PostCardLink to={`/blog/posts/${post.slug}`} state={{ post }}>
-          <span>Read more</span>
-          <ArrowRight size={16} />
-        </PostCardLink>
-      </PostCardFooter>
-    </BlogPostCardContainer>
   );
 }

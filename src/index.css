@@ -12,8 +12,12 @@ body {
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* background-color: #ffffff;
-  color: #1a1a1a; */
+  /* The site background. --background is #0E0B16 (the design's page colour) under
+     :root/.dark and white under .light, so this follows the theme. It was previously
+     commented out, which left pages to paint their own background and made surfaces
+     disagree between routes. */
+  background-color: var(--background, #0E0B16);
+  color: var(--foreground, #E7DFDD);
 }
 
 /* Ensure Google Sans Code is used everywhere */
@@ -55,8 +59,7 @@ code {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  /* background-color: white;
-  color: #1a1a1a; */
+  background-color: inherit;
 }
 
 /* .dark .app {
@@ -134,6 +137,9 @@ code {
 .nav-link {
   color: #374151;
   text-decoration: none;
+  /* Stated rather than inherited — the homepage ships its own nav (see
+     HomepageV2.styled.tsx Brand/NavLinks) and is matched to these values. */
+  font-size: 1rem;
   font-weight: 500;
   transition: color 0.2s;
 }

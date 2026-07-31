@@ -13,6 +13,11 @@ export interface PostMeta {
   arxiv_url: string;
   authors: string;
   read_time: string;
+  // Present only on event reports — written by the pipeline from the event record.
+  event_id: string;
+  significance: string;
+  notice_count: string;
+  circular_count: string;
 }
 
 export interface Post extends PostMeta {
@@ -54,6 +59,10 @@ export async function fetchPostList(): Promise<Post[]> {
     arxiv_url: meta.arxiv_url || '',
     authors: meta.authors || '',
     read_time: meta.read_time || '5 min read',
+    event_id: meta.event_id || '',
+    significance: meta.significance || '',
+    notice_count: meta.notice_count || '',
+    circular_count: meta.circular_count || '',
     content: '',
   }));
 }
@@ -75,6 +84,10 @@ export async function fetchPost(slug: string): Promise<Post | null> {
     arxiv_url: meta.arxiv_url || '',
     authors: meta.authors || '',
     read_time: meta.read_time || '5 min read',
+    event_id: meta.event_id || '',
+    significance: meta.significance || '',
+    notice_count: meta.notice_count || '',
+    circular_count: meta.circular_count || '',
     content,
   };
 }

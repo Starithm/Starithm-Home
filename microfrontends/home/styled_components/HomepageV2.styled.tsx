@@ -68,6 +68,10 @@ export const Nav = styled.nav`
   @media (max-width: 480px) { gap: 12px; }
 `;
 
+/* Sized to match the shell's global nav (.nav-title / .nav-link in src/index.css),
+   which is what every page other than the homepage renders — the two navs sit on
+   the same wordmark and should not change size as you move between them. The
+   uppercase wordmark keeps a little tracking, but less than it carried at 14px. */
 export const Brand = styled.a`
   display: flex;
   align-items: center;
@@ -75,8 +79,8 @@ export const Brand = styled.a`
   color: inherit;
   text-decoration: none;
   flex-shrink: 0;
-  img { width: 34px; height: 34px; display: block; }
-  span { font-weight: 700; font-size: 14px; letter-spacing: 0.16em; }
+  img { width: 32px; height: 32px; display: block; }
+  span { font-weight: 700; font-size: 24px; letter-spacing: 0.06em; }
 `;
 
 export const NavLinks = styled.div`
@@ -84,7 +88,8 @@ export const NavLinks = styled.div`
   align-items: center;
   gap: clamp(14px, 2vw, 26px);
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 500;
   color: ${line(0.62)};
   a { color: inherit; text-decoration: none; }
   a:hover { color: ${PLATINUM}; }
@@ -104,7 +109,8 @@ export const NavSignIn = styled.button`
   background: ${line(0.08)};
   color: ${PLATINUM};
   font: inherit;
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
   &:hover { background: ${line(0.14)}; }
 `;

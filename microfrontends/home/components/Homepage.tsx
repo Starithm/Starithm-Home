@@ -169,7 +169,7 @@ export function Homepage() {
       <Shell>
         <Nav>
           <Brand href="/">
-            <img src="/logo_without_name.png" alt="Starithm" width={34} height={34} />
+            <img src="/logo_without_name.png" alt="Starithm" width={32} height={32} />
             <span>STARITHM</span>
           </Brand>
           <NavLinks>
