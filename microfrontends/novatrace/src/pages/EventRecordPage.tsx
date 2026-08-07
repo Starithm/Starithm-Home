@@ -14,7 +14,7 @@ import {
   Section, SectionHead, SectionTitle, SectionNote, Card, Prose,
   FieldGrid, Field, FieldLabel, FieldValue, FieldHint,
   NarrowRow, NarrowBar, Muted, PositionSplit, Panel, PanelFoot,
-  Row, Stack, Topic, Phase, PayloadGrid, KV,
+  Row, Stack, Topic, Phase, PayloadWrap, PayloadTable,
   Tabs, Tab, CircCard, CircHead, CircTop, CircSummary, Chip, CircBody,
   ValueChips, ValueChip, TableWrap, Table, RawText, InlineActions,
   Cite, Empty, Figures, Figure,
@@ -122,6 +122,36 @@ function scalarValues(m: Record<string, any> | undefined): Array<[string, string
     }
     if (typeof v === 'object') continue;
     out.push([k.replace(/_/g, ' '), String(v)]);
+  }
+  return out;
+}
+
+/**
+ * Every field a notice carries, flattened for display.
+ *
+ * The previous version dropped anything non-scalar and then took `.slice(0, 12)`,
+ * so a Fermi GBM notice showed 12 of its 67 fields with no indication the rest
+ * existed. Nested objects are flattened one level (`obs_support_info.moon_distance`)
+ * and arrays joined, so instrument sub-structures are visible too. Nulls stay
+ * hidden — "not reported" is the common case and listing them would bury the
+ * fields that do carry a value.
+ */
+function payloadFields(payload: Record<string, any> | null | undefined): Array<[string, string]> {
+  const out: Array<[string, string]> = [];
+  for (const [k, v] of Object.entries(payload || {})) {
+    if (v == null || v === '') continue;
+    if (Array.isArray(v)) {
+      if (v.length) out.push([k, v.map(x => (typeof x === 'object' ? JSON.stringify(x) : String(x))).join(', ')]);
+      continue;
+    }
+    if (typeof v === 'object') {
+      for (const [ik, iv] of Object.entries(v as Record<string, any>)) {
+        if (iv == null || iv === '' || typeof iv === 'object') continue;
+        out.push([`${k}.${ik}`, String(iv)]);
+      }
+      continue;
+    }
+    out.push([k, String(v)]);
   }
   return out;
 }
@@ -498,9 +528,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
               {event.notices.map(n => {
                 const open = openNotice.has(n.id);
                 const assets = noticeAssets(n);
-                const metrics = Object.entries(n.payload || {})
-                  .filter(([, v]) => v != null && typeof v !== 'object')
-                  .slice(0, 12);
+                const metrics = payloadFields(n.payload);
                 return (
                   <div key={n.id}>
                     <Row onClick={() => toggle(openNotice, setOpenNotice)(n.id)} aria-expanded={open}>
@@ -512,7 +540,10 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                         <Phase $final={(n.phase || '').toLowerCase() === 'final'}>{n.phase || 'notice'}</Phase>
                       </span>
                     </Row>
-                    {open && assets.images.length > 0 && (
+                    {/* Figures show without expanding — the light curve is the fastest
+                        read on a notice, and hiding it behind a click meant most
+                        visitors never saw it. */}
+                    {assets.images.length > 0 && (
                       <Figures>
                         {assets.images.map(([label, u]) => (
                           <Figure key={u} href={u} target="_blank" rel="noopener noreferrer">
@@ -532,13 +563,26 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                       </InlineActions>
                     )}
                     {open && (
-                      metrics.length > 0
-                        ? <PayloadGrid>
-                            {metrics.map(([k, v]) => (
-                              <KV key={k}><span>{k.replace(/_/g, ' ')}</span><span>{String(v)}</span></KV>
-                            ))}
-                          </PayloadGrid>
-                        : <PayloadGrid><Empty>No payload fields.</Empty></PayloadGrid>
+                      metrics.length > 0 ? (
+                        <PayloadWrap>
+                          <PayloadTable>
+                            <tbody>
+                              {metrics.map(([k, v]) => (
+                                <tr key={k}>
+                                  <td>{k.replace(/_/g, ' ')}</td>
+                                  <td>
+                                    {/^https?:\/\//i.test(v)
+                                      ? <a href={v} target="_blank" rel="noopener noreferrer">{v}</a>
+                                      : v}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </PayloadTable>
+                        </PayloadWrap>
+                      ) : (
+                        <PayloadWrap><Empty>No payload fields.</Empty></PayloadWrap>
+                      )
                     )}
                   </div>
                 );

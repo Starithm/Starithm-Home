@@ -539,24 +539,58 @@ export const Phase = styled.span<{ $final?: boolean }>`
 
 /* Hairline grid: the container tint shows through 1px gaps, and each cell repaints
    with the page colour. Without the cell background the tint washes the whole block. */
-export const PayloadGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  background: ${line(0.07)};
+/* Notice payload as a plain two-column table: field, value.
+   A grid forced every cell to one column width, so a long value (the LightCurve
+   URL is ~120 chars) wrapped to nine lines and stretched its whole row. In a
+   table the value column takes what it needs and only that row is tall. */
+export const PayloadWrap = styled.div`
+  max-height: 320px;
+  overflow-y: auto;
   border-top: 1px solid ${line(0.06)};
-  font-size: ${fs(11.5)};
-  @media (max-width: 900px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (max-width: 560px) { grid-template-columns: 1fr; }
+  scrollbar-width: thin;
+  scrollbar-color: ${line(0.18)} transparent;
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-thumb { background: ${line(0.18)}; border-radius: 999px; }
 `;
+
+export const PayloadTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  font-size: ${fs(10.5)};
+
+  td {
+    padding: 4px 11px;
+    vertical-align: top;
+    border-bottom: 1px solid ${line(0.05)};
+  }
+
+  /* Field name: fixed, quiet, never wraps. */
+  td:first-child {
+    width: 34%;
+    color: ${line(0.38)};
+    white-space: nowrap;
+  }
+
+  /* Value: takes the rest and wraps only when it genuinely must. */
+  td:last-child {
+    color: ${PLATINUM};
+    overflow-wrap: anywhere;
+  }
+
+  tr:last-child td { border-bottom: 0; }
+  tr:hover td { background: ${line(0.025)}; }
+
+  a { color: ${VERONICA_D}; }
+`;
+
 
 export const KV = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   align-items: baseline;
   background: ${BG};
-  padding: 9px 13px;
+  padding: 5px 11px;
   span:first-child { color: ${line(0.38)}; }
   span:last-child { color: ${PLATINUM}; text-align: right; overflow-wrap: anywhere; }
 `;
