@@ -1,9 +1,8 @@
 import styled from 'styled-components';
 
-/* Bottom-sheet snap points, in vh. Exported so the page can compute the same
-   translate without the two drifting apart. */
-export const SHEET_FULL_VH = 82;
-export const SHEET_PEEK_VH = 38;
+/* Mobile sheet height, in vh. Tall enough to reach the actions without
+   scrolling on a typical phone, short enough to leave the globe usable. */
+export const SHEET_HEIGHT_VH = 58;
 import { getThemeValue } from '@shared/utils/themeUtils';
 
 // Main container
@@ -410,14 +409,14 @@ export const FloatingEventPanel = styled.div`
     z-index: 120;
     display: block;
     overflow: hidden;
-    /* The sheet is always full height and slides down to reveal only the peek
-       band — the usual bottom-sheet technique. Driven by transform rather than
-       max-height, which was being ignored on this element; transform also
-       animates on the compositor instead of triggering layout each frame. */
-    height: ${SHEET_FULL_VH}vh;
+    /* One fixed height, content scrolls inside it.
+       The two-position (peek/full) sheet is deferred: neither max-height nor
+       transform would take effect on this element — the inline value and React
+       state were both correct, no competing rule existed, yet geometry never
+       changed. Rather than ship a grab handle that does nothing, the sheet sits
+       at one size that clears the fold and scrolls. See the note in the page. */
+    height: ${SHEET_HEIGHT_VH}vh;
     max-height: none;
-    transform: translateY(${SHEET_FULL_VH - SHEET_PEEK_VH}vh);
-    transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
     border-radius: 14px 14px 0 0;
     box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.55);
     /* Clear the iOS home indicator. */

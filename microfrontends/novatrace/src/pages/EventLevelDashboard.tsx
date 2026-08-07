@@ -82,8 +82,6 @@ import {
   SignInAction,
   KindChip,
   SigTag,
-  SHEET_FULL_VH,
-  SHEET_PEEK_VH,
   CelestialSphereContainer,
   FloatingEventPanel,
   SheetHandle,
@@ -196,9 +194,6 @@ export default function EventLevel() {
     end: formatDateToUTCString(new Date())
   });
   const [view, setView] = useState<ViewMode>('globe');
-  /* Mobile bottom sheet: 'peek' shows the header and position, 'full' the rest.
-     Ignored above 640px, where the panel is a desktop overlay. */
-  const [sheetSnap, setSheetSnap] = useState<'peek' | 'full'>('peek');
   const isSheetWidth = useIsSheetWidth();
 
 
@@ -421,11 +416,6 @@ export default function EventLevel() {
     url.searchParams.set('id', event.canonicalId || event.id);
     window.history.replaceState(null, '', url.toString());
   };
-
-  /* Tap the grab bar to switch between peek and full. A drag-to-snap version is
-     the richer interaction, but a tap is what the affordance most obviously
-     promises and it works identically under touch, mouse and keyboard. */
-  const toggleSheet = () => setSheetSnap(s => (s === 'peek' ? 'full' : 'peek'));
 
   const handleClosePanel = () => {
     setSelectedEvent(null);
@@ -754,15 +744,11 @@ export default function EventLevel() {
         {/* Floating Event Panel */}
         {view === 'globe' && selectedEvent && (
           <FloatingEventPanel
-            style={isSheetWidth
-              ? { transform: `translateY(${sheetSnap === 'full' ? 0 : SHEET_FULL_VH - SHEET_PEEK_VH}vh)` }
-              : undefined}
+
           >
-            <SheetHandle
-              onClick={toggleSheet}
-              aria-expanded={sheetSnap === 'full'}
-              aria-label={sheetSnap === 'peek' ? 'Expand event details' : 'Collapse event details'}
-            />
+            {/* Visual grip only — the expand/collapse behaviour is deferred, so it
+                is not a button that does nothing. */}
+            <SheetHandle as="div" aria-hidden="true" />
             <EventPanel>
               {/* Header */}
               <EventPanelContent>
