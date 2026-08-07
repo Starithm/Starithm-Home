@@ -29,7 +29,11 @@ import { ErrorComponent, Navigation as NavComponent, CelestialSphere } from '@sh
 import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { saveReturnUrl } from '@shared/lib/auth';
 import { getTimeAgo } from '../utils/duration';
-import { EventDetailsPanel } from '../components/EventDetailsPanel';
+import { EventsTable } from '../components/EventsTable';
+import { NearbyPanel } from '../components/NearbyPanel';
+import { ActivityRibbon } from '../components/ActivityRibbon';
+import { posErrorRadius, hasPosition } from '../utils/sky';
+import { kindColor, sigColor } from '@shared/utils/eventColors';
 import {
   EventLevelContainer,
   Header,
@@ -42,6 +46,8 @@ import {
   BrandDivider,
   HeaderTitle,
   HeaderRight,
+  ViewToggle,
+  ViewToggleOption,
   EventCount,
   EventCountNumber,
   EventCountDate,
@@ -60,8 +66,27 @@ import {
   PillDropdownItem,
   DateRangeContainer,
   DateRangeSeparator,
+  CardMetaLine,
+  CardGrid,
+  CardField,
+  CardFieldLabel,
+  CardFieldValue,
+  AiBlock,
+  AiLabel,
+  AiText,
+  CardActions,
+  PrimaryAction,
+  Pager,
+  RecordHint,
+  SignInPrompt,
+  SignInAction,
+  KindChip,
+  SigTag,
+  SHEET_FULL_VH,
+  SHEET_PEEK_VH,
   CelestialSphereContainer,
   FloatingEventPanel,
+  SheetHandle,
   EventPanel,
   EventPanelHeader,
   EventPanelContent,
@@ -106,6 +131,32 @@ interface DateRange {
   end: string;
 }
 
+type ViewMode = 'globe' | 'list';
+
+/* Matches the 640px breakpoint the panel's CSS uses. use-mobile.tsx exists but is
+   pinned to 768px, and the sheet has to agree with its own stylesheet. */
+function useIsSheetWidth() {
+  const [isSheet, setIsSheet] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 640px)');
+    const onChange = () => setIsSheet(mql.matches);
+    onChange();
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+  return isSheet;
+}
+
+/* The record page is the canonical destination for a single event — the old
+   in-page modal duplicated it badly. It opens in a new tab so the dashboard keeps
+   its filters, scroll position and selection; comparing several events against
+   one filtered window is the normal way this page gets used. */
+const recordHref = (canonicalId: string) => `/novatrace/events/${canonicalId}`;
+
+function openRecord(canonicalId: string) {
+  window.open(recordHref(canonicalId), '_blank', 'noopener,noreferrer');
+}
+
 export default function EventLevel() {
   const { isSignedIn } = useAuth();
   const getDeepLinkId = () => new URLSearchParams(window.location.search).get('id') || null;
@@ -144,7 +195,11 @@ export default function EventLevel() {
     start: formatDateToUTCString(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)),
     end: formatDateToUTCString(new Date())
   });
-  const [showEventDetailsModal, setShowEventDetailsModal] = useState(false);
+  const [view, setView] = useState<ViewMode>('globe');
+  /* Mobile bottom sheet: 'peek' shows the header and position, 'full' the rest.
+     Ignored above 640px, where the panel is a desktop overlay. */
+  const [sheetSnap, setSheetSnap] = useState<'peek' | 'full'>('peek');
+  const isSheetWidth = useIsSheetWidth();
 
 
   // State for search trigger
@@ -229,8 +284,9 @@ export default function EventLevel() {
     if (deepLinkId && deepLinkId !== selectedEvent?.canonicalId && deepLinkId !== selectedEvent?.id) {
       const match = filteredEvents.find(e => e.canonicalId === deepLinkId || e.id === deepLinkId);
       if (match) {
+        // A deep link selects the event; it no longer force-opens a modal on top
+        // of the page — the full record has its own URL.
         setSelectedEvent(match);
-        setShowEventDetailsModal(true);
         return;
       }
     }
@@ -366,6 +422,11 @@ export default function EventLevel() {
     window.history.replaceState(null, '', url.toString());
   };
 
+  /* Tap the grab bar to switch between peek and full. A drag-to-snap version is
+     the richer interaction, but a tap is what the affordance most obviously
+     promises and it works identically under touch, mouse and keyboard. */
+  const toggleSheet = () => setSheetSnap(s => (s === 'peek' ? 'full' : 'peek'));
+
   const handleClosePanel = () => {
     setSelectedEvent(null);
     const url = new URL(window.location.href);
@@ -473,6 +534,110 @@ export default function EventLevel() {
   const displayAlertKinds = filterOptions?.alertKinds?.length ? filterOptions.alertKinds : ['grb', 'gw', 'neutrino', 'frb', 'xray'];
   const displaySourceNames = filterOptions?.sourceNames?.length ? filterOptions.sourceNames : ['Fermi GBM', 'Swift BAT', 'IceCube', 'LVK', 'SVOM', 'Einstein Probe WXT', 'CHIME', 'DSA-110'];
 
+  /* One filter bar, two homes: overlaid on the sphere in globe view, in normal
+     flow above the table in list view. MainContent is a centred flex row for
+     the globe, so a static child there would sit beside the table. */
+  const filterBar = (
+          <SearchSection ref={pillsRef} $overlay={view === 'globe' && !isSheetWidth}>
+            {/* NL search bar */}
+
+            {/* Filter pills */}
+            <FilterPillsRow>
+              {/* Date range pill */}
+              <FilterPillWrapper ref={dateRef}>
+                <FilterPill $active onClick={() => { const r = dateRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'date' ? null : 'date'); }}>
+                  <Calendar size={13} />
+                  {formatDatePillLabel()}
+                  <ChevronDown size={11} />
+                </FilterPill>
+              </FilterPillWrapper>
+
+              {/* Types pill */}
+              <FilterPillWrapper ref={typesRef}>
+                <FilterPill
+                  $active={selectedAlertTypes.length > 0}
+                  onClick={() => { const r = typesRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'types' ? null : 'types'); }}
+                >
+                  <Layers size={13} />
+                  {selectedAlertTypes.length > 0 ? selectedAlertTypes.join(', ') : 'All types'}
+                  <ChevronDown size={11} />
+                </FilterPill>
+              </FilterPillWrapper>
+
+              {/* Instruments pill */}
+              <FilterPillWrapper ref={instrumentsRef}>
+                <FilterPill
+                  $active={selectedSources.length > 0}
+                  onClick={() => { const r = instrumentsRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'instruments' ? null : 'instruments'); }}
+                >
+                  <Radio size={13} />
+                  {selectedSources.length > 0 ? selectedSources.join(', ') : 'All instruments'}
+                  <ChevronDown size={11} />
+                </FilterPill>
+              </FilterPillWrapper>
+
+              {/* Sky region (cone search) pill */}
+              <FilterPillWrapper ref={skyRef}>
+                <FilterPill
+                  $active={coneSearch !== null}
+                  onClick={() => { const r = skyRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'sky' ? null : 'sky'); }}
+                >
+                  <Crosshair size={13} />
+                  {coneSearch
+                    ? `RA ${coneSearch.raDeg}° Dec ${coneSearch.decDeg > 0 ? '+' : ''}${coneSearch.decDeg}° r=${coneSearch.radiusDeg}°`
+                    : 'Sky region'}
+                  <ChevronDown size={11} />
+                </FilterPill>
+              </FilterPillWrapper>
+
+              <ActivityRibbon
+                events={filteredEvents}
+                start={dateRange.start}
+                end={dateRange.end}
+                onNarrow={(st, en) => { handleDateRangeChange(st, en); setSearchTrigger(pv => pv + 1); }}
+              />
+
+              {/* Info — GCN circulars search coming soon */}
+              <div
+                style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
+                onMouseEnter={e => { const t = e.currentTarget.lastElementChild as HTMLElement; if (t) t.style.display = 'block'; }}
+                onMouseLeave={e => { const t = e.currentTarget.lastElementChild as HTMLElement; if (t) t.style.display = 'none'; }}
+              >
+                <button style={{ background: 'none', border: 'none', cursor: 'default', color: 'var(--muted-foreground)', padding: '0.2rem 0.15rem', display: 'flex', alignItems: 'center', opacity: 0.45 }}>
+                  <Info size={13} />
+                </button>
+                <div style={{
+                  display: 'none',
+                  position: 'absolute',
+                  bottom: 'calc(100% + 6px)',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: 'var(--card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '0.5rem',
+                  padding: '0.35rem 0.7rem',
+                  fontSize: '0.7rem',
+                  color: 'var(--muted-foreground)',
+                  whiteSpace: 'nowrap',
+                  zIndex: 999999,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
+                  pointerEvents: 'none',
+                }}>
+                  Searching across GCN circulars is coming soon
+                </div>
+              </div>
+
+              {/* Clear button — only when filters active */}
+              {(selectedSources.length > 0 || selectedAlertTypes.length > 0 || nlQuery || coneSearch) && (
+                <FilterPill onClick={handleClearFilters} style={{ opacity: 0.6 }}>
+                  <RotateCcw size={11} />
+                  Clear
+                </FilterPill>
+              )}
+            </FilterPillsRow>
+          </SearchSection>
+  );
+
   return (
     <EventLevelContainer>
       {/* Header */}
@@ -487,7 +652,33 @@ export default function EventLevel() {
               <BrandDivider>/</BrandDivider>
               <HeaderTitle>NovaTrace</HeaderTitle>
             </HeaderLeft>
+          <SearchBarWrapper>
+            <SearchBarInput
+              placeholder="Search in natural language — e.g. Fermi GRBs last week with position"
+              value={nlQuery}
+              onChange={e => { setNlQuery(e.target.value); setNlError(null); }}
+              onKeyDown={e => e.key === 'Enter' && handleNLSearch()}
+            />
+            <SearchBarSendButton
+              onClick={handleNLSearch}
+              disabled={nlLoading || !nlQuery.trim()}
+              title="Search"
+            >
+              {nlLoading
+                ? <RotateCcw size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                : <ArrowRight size={14} />
+              }
+            </SearchBarSendButton>
+          </SearchBarWrapper>
+          {nlError && <SearchErrorText>{nlError}</SearchErrorText>}
             <HeaderRight>
+              <ViewToggle>
+                {(['globe', 'list'] as const).map(v => (
+                  <ViewToggleOption key={v} $active={view === v} onClick={() => setView(v)}>
+                    {v === 'globe' ? 'Globe' : 'List'}
+                  </ViewToggleOption>
+                ))}
+              </ViewToggle>
               <EventCount>
                 <EventCountNumber>{filteredEvents.length} Events</EventCountNumber>
                 <EventCountDate>
@@ -523,301 +714,173 @@ export default function EventLevel() {
           </HeaderTop>
         </HeaderContent>
         
+
         {/* Search + filter pills */}
-        <SearchSection ref={pillsRef}>
-          {/* NL search bar */}
-          <SearchBarWrapper>
-            <SearchBarInput
-              placeholder="Search in natural language — e.g. Fermi GRBs last week with position"
-              value={nlQuery}
-              onChange={e => { setNlQuery(e.target.value); setNlError(null); }}
-              onKeyDown={e => e.key === 'Enter' && handleNLSearch()}
-            />
-            <SearchBarSendButton
-              onClick={handleNLSearch}
-              disabled={nlLoading || !nlQuery.trim()}
-              title="Search"
-            >
-              {nlLoading
-                ? <RotateCcw size={14} style={{ animation: 'spin 1s linear infinite' }} />
-                : <ArrowRight size={14} />
-              }
-            </SearchBarSendButton>
-          </SearchBarWrapper>
-          {nlError && <SearchErrorText>{nlError}</SearchErrorText>}
-
-          {/* Filter pills */}
-          <FilterPillsRow>
-            {/* Date range pill */}
-            <FilterPillWrapper ref={dateRef}>
-              <FilterPill $active onClick={() => { const r = dateRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'date' ? null : 'date'); }}>
-                <Calendar size={13} />
-                {formatDatePillLabel()}
-                <ChevronDown size={11} />
-              </FilterPill>
-            </FilterPillWrapper>
-
-            {/* Types pill */}
-            <FilterPillWrapper ref={typesRef}>
-              <FilterPill
-                $active={selectedAlertTypes.length > 0}
-                onClick={() => { const r = typesRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'types' ? null : 'types'); }}
-              >
-                <Layers size={13} />
-                {selectedAlertTypes.length > 0 ? selectedAlertTypes.join(', ') : 'All types'}
-                <ChevronDown size={11} />
-              </FilterPill>
-            </FilterPillWrapper>
-
-            {/* Instruments pill */}
-            <FilterPillWrapper ref={instrumentsRef}>
-              <FilterPill
-                $active={selectedSources.length > 0}
-                onClick={() => { const r = instrumentsRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'instruments' ? null : 'instruments'); }}
-              >
-                <Radio size={13} />
-                {selectedSources.length > 0 ? selectedSources.join(', ') : 'All instruments'}
-                <ChevronDown size={11} />
-              </FilterPill>
-            </FilterPillWrapper>
-
-            {/* Sky region (cone search) pill */}
-            <FilterPillWrapper ref={skyRef}>
-              <FilterPill
-                $active={coneSearch !== null}
-                onClick={() => { const r = skyRef.current?.getBoundingClientRect(); if (r) setDropdownPos({ top: r.bottom + 6, left: r.left }); setOpenPill(p => p === 'sky' ? null : 'sky'); }}
-              >
-                <Crosshair size={13} />
-                {coneSearch
-                  ? `RA ${coneSearch.raDeg}° Dec ${coneSearch.decDeg > 0 ? '+' : ''}${coneSearch.decDeg}° r=${coneSearch.radiusDeg}°`
-                  : 'Sky region'}
-                <ChevronDown size={11} />
-              </FilterPill>
-            </FilterPillWrapper>
-
-            {/* Info — GCN circulars search coming soon */}
-            <div
-              style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
-              onMouseEnter={e => { const t = e.currentTarget.lastElementChild as HTMLElement; if (t) t.style.display = 'block'; }}
-              onMouseLeave={e => { const t = e.currentTarget.lastElementChild as HTMLElement; if (t) t.style.display = 'none'; }}
-            >
-              <button style={{ background: 'none', border: 'none', cursor: 'default', color: 'var(--muted-foreground)', padding: '0.2rem 0.15rem', display: 'flex', alignItems: 'center', opacity: 0.45 }}>
-                <Info size={13} />
-              </button>
-              <div style={{
-                display: 'none',
-                position: 'absolute',
-                bottom: 'calc(100% + 6px)',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
-                borderRadius: '0.5rem',
-                padding: '0.35rem 0.7rem',
-                fontSize: '0.7rem',
-                color: 'var(--muted-foreground)',
-                whiteSpace: 'nowrap',
-                zIndex: 999999,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
-                pointerEvents: 'none',
-              }}>
-                Searching across GCN circulars is coming soon
-              </div>
-            </div>
-
-            {/* Clear button — only when filters active */}
-            {(selectedSources.length > 0 || selectedAlertTypes.length > 0 || nlQuery || coneSearch) && (
-              <FilterPill onClick={handleClearFilters} style={{ opacity: 0.6 }}>
-                <RotateCcw size={11} />
-                Clear
-              </FilterPill>
-            )}
-          </FilterPillsRow>
-        </SearchSection>
+        {(view === 'list' || isSheetWidth) && filterBar}
       </Header>
 
       {/* Main Content */}
       <MainContent>
-        <CelestialSphereContainer>
-          <CelestialSphere
+        {view === 'list' ? (
+          <EventsTable
             events={filteredEvents}
-            onEventClick={handleEventClick}
             selectedEvent={selectedEvent}
-            coneSearch={coneSearch}
-            className="w-full h-full"
+            onSelect={handleEventClick}
+            onOpen={e => openRecord(e.canonicalId || e.id)}
           />
-        </CelestialSphereContainer>
+        ) : (
+          <>
+            <CelestialSphereContainer>
+              <CelestialSphere
+                events={filteredEvents}
+                onEventClick={handleEventClick}
+                selectedEvent={selectedEvent}
+                coneSearch={coneSearch}
+                className="w-full h-full"
+              />
+            </CelestialSphereContainer>
+            <NearbyPanel
+              events={filteredEvents}
+              selectedEvent={selectedEvent}
+              onSelect={handleEventClick}
+            />
+          </>
+        )}
+
+        {/* After the sphere in DOM order: later siblings paint on top, so the bar
+            sits above the canvas without depending on z-index. */}
+        {view === 'globe' && !isSheetWidth && filterBar}
 
         {/* Floating Event Panel */}
-        {selectedEvent && (
-          <FloatingEventPanel>
+        {view === 'globe' && selectedEvent && (
+          <FloatingEventPanel
+            style={isSheetWidth
+              ? { transform: `translateY(${sheetSnap === 'full' ? 0 : SHEET_FULL_VH - SHEET_PEEK_VH}vh)` }
+              : undefined}
+          >
+            <SheetHandle
+              onClick={toggleSheet}
+              aria-expanded={sheetSnap === 'full'}
+              aria-label={sheetSnap === 'peek' ? 'Expand event details' : 'Collapse event details'}
+            />
             <EventPanel>
               {/* Header */}
-              <EventPanelHeader>
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  disabled={filteredEvents.indexOf(selectedEvent) === 0}
-                  onClick={() => {
-                    const currentIndex = filteredEvents.indexOf(selectedEvent);
-                    if (currentIndex > 0) {
-                      handleEventChange(filteredEvents[currentIndex - 1]);
-                    }
-                  }}
-                >
-                  <ChevronLeft size={16} />
-                </Button>
-                <span className="text-xs text-muted-foreground">
-                  {filteredEvents.indexOf(selectedEvent) + 1} of {filteredEvents.length}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  disabled={filteredEvents.indexOf(selectedEvent) === filteredEvents.length - 1}
-                  onClick={() => {
-                    const currentIndex = filteredEvents.indexOf(selectedEvent);
-                    if (currentIndex < filteredEvents.length - 1) {
-                      handleEventChange(filteredEvents[currentIndex + 1]);
-                    }
-                  }}
-                >
-                  <ChevronRight size={16} />
-                </Button>
-              </EventPanelHeader>
               <EventPanelContent>
                 <EventPanelTop>
                   <EventPanelLeft>
-                    <EventIconContainer>
-                      {getEventIcon(selectedEvent.alertKind)}
-                    </EventIconContainer>
-                    <div>
-                      <EventTitle>
-                        {selectedEvent.canonicalId || selectedEvent.id}
-                      </EventTitle>
-                      <EventSubtitle>
-                        <span style={{ color: 'var(--starithm-veronica)' }}>{selectedEvent.sourceName}</span> • {selectedEvent.alertKind}
-                      </EventSubtitle>
-                    </div>
+                    <EventTitle>{selectedEvent.canonicalId || selectedEvent.id}</EventTitle>
+                    <KindChip $color={kindColor(selectedEvent.alertKind)}>
+                      {selectedEvent.alertKind}
+                    </KindChip>
                   </EventPanelLeft>
                   {selectedEventDetail?.aiSummary?.significance && (
-                    <span style={{
-                      fontSize: '0.65rem',
-                      fontWeight: 600,
-                      color: 'var(--starithm-selective-yellow)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                    }}>
+                    <SigTag $color={sigColor(selectedEventDetail.aiSummary.significance)}>
                       {selectedEventDetail.aiSummary.significance}
-                    </span>
+                    </SigTag>
                   )}
                 </EventPanelTop>
               </EventPanelContent>
 
               {/* Content */}
               <EventPanelBody>
-                {/* Event Type Badge */}
-                <BadgeContainer>
-                  <Badge variant={'default'}>
-                    {selectedEvent.alertKind}
-                  </Badge>
-                  {
-                    selectedEvent.phase && (
-                      <Badge
-                        variant="outline"
-                        className={`${getPhaseColor(selectedEvent.phase)} text-white`}
-                      >
-                        {selectedEvent.phase}
+                {(selectedEventDetail?.cross_match?.candidates?.some((c: any) => c.verified)
+                  || (selectedEventDetail?.optical_counterparts?.length ?? 0) > 0) && (
+                  <BadgeContainer>
+                    {selectedEventDetail?.cross_match?.candidates?.some((c: any) => c.verified) && (
+                      <Badge variant="outline" style={{ color: '#a855f7', borderColor: '#a855f7' }}>
+                        Multi-Messenger
                       </Badge>
-                    )
-                  }
-                  {selectedEventDetail?.cross_match?.candidates?.some((c: any) => c.verified) && (
-                    <Badge variant="outline" style={{ color: '#a855f7', borderColor: '#a855f7' }}>
-                      Multi-Messenger
-                    </Badge>
-                  )}
-                  {(selectedEventDetail?.optical_counterparts?.length ?? 0) > 0 && (
-                    <Badge variant="outline" style={{ color: '#38bdf8', borderColor: '#38bdf8' }}>
-                      {selectedEventDetail.optical_counterparts.length} Optical
-                    </Badge>
-                  )}
-                </BadgeContainer>
-
-                {selectedEventDetail && (
-                  <span style={{ fontSize: '0.65rem', color: 'var(--muted-foreground)' }}>
-                    {selectedEventDetail.stream?.length ?? 0} notices • {selectedEventDetail.textual?.length ?? 0} circulars
-                  </span>
-                )}
-
-                {/* Timing */}
-                <SectionContainer>
-                  <SectionHeader>
-                    <SectionIcon>
-                      <Clock size={16} />
-                    </SectionIcon>
-                    <SectionTitle>Timing</SectionTitle>
-                  </SectionHeader>
-                  <SectionContent>
-                    <SectionRow>
-                      <SectionLabel>T0:</SectionLabel>
-                      <SectionValue>{new Date(selectedEvent.t0).toLocaleString('en-US', { timeZone: 'UTC', timeZoneName: 'short' })}</SectionValue>
-                    </SectionRow>
-                    <SectionRow>
-                      <SectionLabel>Time Ago:</SectionLabel>
-                      <SectionValue>{getTimeAgo(new Date(selectedEvent.t0))}</SectionValue>
-                    </SectionRow>
-                  </SectionContent>
-                </SectionContainer>
-
-                {/* Position */}
-                {selectedEvent.raDeg != null && selectedEvent.decDeg != null && (
-                  <SectionContainer>
-                    <SectionHeader>
-                      <SectionIcon>
-                        <MapPin size={16} />
-                      </SectionIcon>
-                      <SectionTitle>Position</SectionTitle>
-                    </SectionHeader>
-                    {selectedEvent.raDeg === 0 && selectedEvent.decDeg === 0 ? (
-                      <span style={{ fontSize: '0.7rem', color: 'var(--muted-foreground)' }}>No position available</span>
-                    ) : (
-                      <SectionContent>
-                        <SectionRow>
-                          <SectionLabel>RA:</SectionLabel>
-                          <SectionValue>{formatCoordinate(selectedEvent.raDeg, 'ra')}</SectionValue>
-                        </SectionRow>
-                        <SectionRow>
-                          <SectionLabel>Dec:</SectionLabel>
-                          <SectionValue>{formatCoordinate(selectedEvent.decDeg, 'dec')}</SectionValue>
-                        </SectionRow>
-                      </SectionContent>
                     )}
-                  </SectionContainer>
+                    {(selectedEventDetail?.optical_counterparts?.length ?? 0) > 0 && (
+                      <Badge variant="outline" style={{ color: '#38bdf8', borderColor: '#38bdf8' }}>
+                        {selectedEventDetail.optical_counterparts.length} Optical
+                      </Badge>
+                    )}
+                  </BadgeContainer>
                 )}
 
-                {/* AI Summary / Additional Info */}
+                <CardMetaLine>
+                  {[
+                    selectedEvent.sourceName,
+                    selectedEventDetail && `${selectedEventDetail.stream?.length ?? 0} notice${(selectedEventDetail.stream?.length ?? 0) === 1 ? '' : 's'}`,
+                    selectedEventDetail && `${selectedEventDetail.textual?.length ?? 0} circular${(selectedEventDetail.textual?.length ?? 0) === 1 ? '' : 's'}`,
+                    selectedEvent.t0 && getTimeAgo(new Date(selectedEvent.t0)),
+                  ].filter(Boolean).join(' · ')}
+                </CardMetaLine>
+
+                <CardGrid>
+                  <CardField>
+                    <CardFieldLabel>T0 (UTC)</CardFieldLabel>
+                    <CardFieldValue>
+                      {selectedEvent.t0 ? new Date(selectedEvent.t0).toLocaleString('en-US', { timeZone: 'UTC' }) : '—'}
+                    </CardFieldValue>
+                  </CardField>
+                  {/* "drawn" — this number is the circle rendered on the sphere. */}
+                  <CardField>
+                    <CardFieldLabel>Error{posErrorRadius(selectedEvent.posErrorDeg) != null ? ' (drawn)' : ''}</CardFieldLabel>
+                    <CardFieldValue>
+                      {posErrorRadius(selectedEvent.posErrorDeg) != null
+                        ? `± ${posErrorRadius(selectedEvent.posErrorDeg)!.toFixed(3)}°`
+                        : 'not reported'}
+                    </CardFieldValue>
+                  </CardField>
+                  <CardField>
+                    <CardFieldLabel>RA</CardFieldLabel>
+                    <CardFieldValue>{hasPosition(selectedEvent) ? formatCoordinate(selectedEvent.raDeg!, 'ra') : '—'}</CardFieldValue>
+                  </CardField>
+                  <CardField>
+                    <CardFieldLabel>Dec</CardFieldLabel>
+                    <CardFieldValue>{hasPosition(selectedEvent) ? formatCoordinate(selectedEvent.decDeg!, 'dec') : '—'}</CardFieldValue>
+                  </CardField>
+                </CardGrid>
+
+                {!hasPosition(selectedEvent) && (
+                  <CardMetaLine>No position reported — this event is absent from the sphere.</CardMetaLine>
+                )}
+
                 {(selectedEventDetail?.aiSummary || selectedEvent.additionalInfo) && (
-                  <div style={{ fontSize: '0.7rem', color: 'var(--starithm-selective-yellow)', padding: '0.5rem 0', lineHeight: '1.4' }}>
-                    {selectedEventDetail?.aiSummary ? (
-                      <span style={{ fontWeight: 600 }}>
-                        {selectedEventDetail.aiSummary.headline}
-                      </span>
-                    ) : (
-                      <span>{selectedEvent.additionalInfo}</span>
-                    )}
-                  </div>
+                  <AiBlock>
+                    <AiLabel>{selectedEventDetail?.aiSummary ? 'AI summary · model-generated' : 'From the notice'}</AiLabel>
+                    <AiText>
+                      {selectedEventDetail?.aiSummary ? selectedEventDetail.aiSummary.headline : selectedEvent.additionalInfo}
+                    </AiText>
+                  </AiBlock>
                 )}
 
-                {/* Actions */}
-                <ActionsContainer>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => setShowEventDetailsModal(true)}
+                <CardActions>
+                  <PrimaryAction
+                    as="a"
+                    href={recordHref(selectedEvent.canonicalId || selectedEvent.id)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    Details
-                  </Button>
-                </ActionsContainer>
+                    Open full record ↗
+                  </PrimaryAction>
+                  <Pager>
+                    <button
+                      disabled={filteredEvents.indexOf(selectedEvent) === 0}
+                      onClick={() => { const i = filteredEvents.indexOf(selectedEvent); if (i > 0) handleEventChange(filteredEvents[i - 1]); }}
+                      aria-label="Previous event"
+                    >‹</button>
+                    {filteredEvents.indexOf(selectedEvent) + 1} of {filteredEvents.length}
+                    <button
+                      disabled={filteredEvents.indexOf(selectedEvent) === filteredEvents.length - 1}
+                      onClick={() => { const i = filteredEvents.indexOf(selectedEvent); if (i < filteredEvents.length - 1) handleEventChange(filteredEvents[i + 1]); }}
+                      aria-label="Next event"
+                    >›</button>
+                  </Pager>
+                </CardActions>
+
+                <RecordHint>→ /novatrace/events/{selectedEvent.canonicalId || selectedEvent.id}</RecordHint>
+
+                {!isSignedIn && (
+                  <SignInPrompt>
+                    <p>Observed this? Sign in to leave a comment or share photometry data.</p>
+                    <SignInButton mode="modal" forceRedirectUrl={typeof window !== 'undefined' ? window.location.href : '/'}>
+                      <SignInAction onClick={saveReturnUrl}>Sign in</SignInAction>
+                    </SignInButton>
+                  </SignInPrompt>
+                )}
               </EventPanelBody>
             </EventPanel>
           </FloatingEventPanel>
@@ -857,13 +920,6 @@ export default function EventLevel() {
           </StatusRight>
         </StatusContent>
       </StatusBar>
-
-      {/* Event Details Panel */}
-      <EventDetailsPanel
-        eventId={selectedEvent?.canonicalId || selectedEvent?.id || ''}
-        isOpen={showEventDetailsModal}
-        onClose={() => setShowEventDetailsModal(false)}
-      />
 
       {/* Pill dropdowns rendered via portal to escape backdrop-filter / WebGL compositing */}
       {openPill && createPortal(

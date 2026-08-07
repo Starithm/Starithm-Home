@@ -12,14 +12,14 @@ export const ErrorContainer = styled.div`
 export const MainContent = styled.div`
   position: relative;
   display: flex;
-  height: calc(100vh - 210px);
+  height: calc(100vh - 150px);
   overflow: hidden;
   align-items: center;
   justify-content: center;
   @media (max-width: 640px) {
     flex-direction: column;
     height: auto;
-    min-height: calc(100vh - 210px);
+    min-height: calc(100vh - 150px);
     overflow: visible;
     align-items: stretch;
   }

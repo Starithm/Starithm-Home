@@ -16,15 +16,21 @@ const BG = '#0E0B16';
 const SURFACE = 'rgba(231, 223, 221, 0.03)';
 const SUNKEN = 'rgba(231, 223, 221, 0.05)';
 const GOLD = 'var(--starithm-golden-yellow, #ffc332)';
-const VERONICA_D = 'var(--starithm-veronica-dark, #C84BF7)';
-const VIOLET_D = 'var(--starithm-veronica-dark, #C84BF7)'; // design uses veronica, not violet-dark
+/* Veronica, muted for this page: same hue as --starithm-veronica-dark (283.6°),
+   saturation dropped 91% → 62%, lightness held at 63% so contrast on the near-black
+   background doesn't fall with it. Local to the record page — the palette token
+   itself is unchanged. */
+const VERONICA_D = '#BB66DB';
+const VIOLET_D = '#BB66DB'; // design uses veronica, not violet-dark
 /* Gold tints the design uses for active/accent surfaces. */
 const goldA = (a: number) => `rgba(255, 195, 50, ${a})`;
 
-/* Extracted values — electric violet. One token drives the text, the border and
-   the key label, so the three can no longer drift apart. */
-const EXTRACTED = 'var(--starithm-electric-violet, #8D0FF5)';
-const extractedA = (a: number) => `rgba(141, 15, 245, ${a})`;
+/* Extracted values. The ribbon down the left of each chip is the logo's outer arc:
+   #9D5CFF at 0.42 — the same colour and opacity as the outermost ring in
+   public/logo-mark.svg. Kept as rgba rather than a flat hex so it composites over
+   whatever surface the chip sits on, exactly as the mark does. */
+const ARC = (a: number) => `rgba(157, 92, 255, ${a})`;
+const ARC_OUTER = ARC(0.42);
 const PLATINUM = 'var(--starithm-platinum, #E7DFDD)';
 
 const line = (a: number) => `rgba(231, 223, 221, ${a})`;
@@ -650,16 +656,16 @@ export const ValueChips = styled.div`
 `;
 
 /* Extracted values read as `key = value` in plain platinum, held in a neutral
-   box with a violet bar down the left edge. The accent carries the "parsed from
-   text" meaning; the value itself stays legible, which colouring the text never
-   managed at this size. */
+   box with the logo's outer-arc violet as a ribbon down the left edge. The ribbon
+   carries the "parsed from text" meaning; the value itself stays legible, which
+   colouring the text never managed at this size. */
 export const ValueChip = styled.span`
   font-size: ${fs(10)};
   letter-spacing: 0.04em;
   padding: 5px 10px;
   background: ${line(0.03)};
   border: 1px solid ${line(0.14)};
-  border-left: 3px solid ${EXTRACTED};
+  border-left: 3px solid ${ARC_OUTER};
   color: ${PLATINUM};
   white-space: nowrap;
 

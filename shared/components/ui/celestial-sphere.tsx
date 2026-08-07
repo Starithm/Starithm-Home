@@ -1,5 +1,6 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useMemo, useState, useCallback } from 'react';
 import { Event } from '@shared/types';
+import { kindColor, LEGEND } from '@shared/utils/eventColors';
 // Use a generic Event interface that matches the expected structure
 
 
@@ -22,6 +23,23 @@ interface ViewState {
   altitude: number;   // Vertical rotation (-90 to 90)
 }
 
+const MIN_ZOOM = 0.6;
+const MAX_ZOOM = 6;
+/* ~0.1°/tick at 20fps → a full turn in about 3 minutes: visible, not distracting. */
+const SPIN_DEG_PER_TICK = 0.1;
+const DOT_BASE = 4.6;
+const STAR_COUNT = 220;
+
+/* posErrorDeg is jsonb ({radius,type}); older rows are plain numbers, and SVOM
+   sends -1 to mean "not reported". Kept local so the shared sphere doesn't take a
+   dependency on a NovaTrace util. */
+function errorRadius(v: unknown): number | null {
+  if (v == null) return null;
+  const raw = typeof v === 'object' ? (v as any).radius : v;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+
 interface DragState {
   isDragging: boolean;
   lastX: number;
@@ -34,8 +52,11 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
   const animationFrameRef = useRef<number>();
   
   const [viewState, setViewState] = useState<ViewState>({
-    azimuth: 0,    // Start facing north
-    altitude: 0    // Start at horizon
+    /* Tilted, matching the reference (az ≈ 23°, alt ≈ 24°). At altitude 0 the
+       declination parallels collapse to straight horizontal chords and the whole
+       thing reads as a 2D dial; a little tilt is what makes it a globe. */
+    azimuth: 23,
+    altitude: 24,
   });
   
   const [dragState, setDragState] = useState<DragState>({
@@ -45,11 +66,52 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
     momentum: { x: 0, y: 0 }
   });
 
+  /* Sunflower (phyllotaxis) spread over a disc: golden-angle steps with a sqrt
+     radius give an even scatter with no visible rows or clumping. Base alpha runs
+     0.12–0.38 so the field stays well under the event dots. */
+  const starfield = useMemo(
+    () => Array.from({ length: STAR_COUNT }, (_, i) => {
+      const g = i * 2.399963;
+      const r = Math.sqrt(i / STAR_COUNT);
+      return {
+        x: Math.cos(g) * r,
+        y: Math.sin(g) * r,
+        a: 0.12 + ((i * 37) % 100) / 380,
+        phase: (i % 29) * 0.41,
+      };
+    }),
+    [],
+  );
+
+  /* Scales the projected disc. The sphere previously had no zoom at all, which
+     made a busy week unreadable — overlapping dots were simply unclickable. */
+  const [zoom, setZoom] = useState(1);
+  const zoomBy = (f: number) => setZoom(z => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z * f)));
+
+  /* The sphere drifts on its own so the page reads as live. Any interaction
+     stops it — it resumes a few seconds after the user lets go, and never fights
+     a drag in progress. */
+  const [spin, setSpin] = useState(true);
+  const resumeRef = useRef<ReturnType<typeof setTimeout>>();
+  const pauseSpin = useCallback(() => {
+    setSpin(false);
+    if (resumeRef.current) clearTimeout(resumeRef.current);
+    resumeRef.current = setTimeout(() => setSpin(true), 6000);
+  }, []);
+
+  useEffect(() => {
+    if (!spin || dragState.isDragging) return;
+    const id = setInterval(() => {
+      setViewState(prev => ({ ...prev, azimuth: (prev.azimuth + SPIN_DEG_PER_TICK) % 360 }));
+    }, 50);
+    return () => clearInterval(id);
+  }, [spin, dragState.isDragging]);
+
   // Convert RA/DEC to screen coordinates with current view rotation
   const celestialToScreen = useCallback((ra: number, dec: number, width: number, height: number) => {
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = Math.min(width, height) * 0.4;
+    const radius = Math.min(width, height) * 0.46 * zoom;
 
     // Convert degrees to radians
     const raRad = (ra * Math.PI) / 180;
@@ -89,13 +151,14 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
     const isVisible = z > -0.1; // Small tolerance for edge cases
     
     return { x: screenX, y: screenY, depth, isVisible };
-  }, [viewState]);
+  }, [viewState, zoom]);
 
   // Handle mouse/touch events for dragging
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
 
+    pauseSpin();
     setDragState({
       isDragging: true,
       lastX: e.clientX,
@@ -194,70 +257,65 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
     const height = rect.height;
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = Math.min(width, height) * 0.4;
+    const radius = Math.min(width, height) * 0.46 * zoom;
 
     // Clear canvas with deep space background
     ctx.fillStyle = '#0a0a0f';
     ctx.fillRect(0, 0, width, height);
 
-    // Create dynamic starfield that rotates with view
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    for (let i = 0; i < 300; i++) {
-      // Generate consistent star positions based on seed
-      const starRA = (i * 137.5) % 360; // Golden angle distribution
-      const starDec = Math.asin((i / 150) - 1) * (180 / Math.PI); // Even distribution
-      
-      const starPos = celestialToScreen(starRA, starDec, width, height);
-      if (starPos.isVisible && 
-          Math.sqrt((starPos.x - centerX) ** 2 + (starPos.y - centerY) ** 2) < radius) {
-        const brightness = Math.random();
-        ctx.globalAlpha = brightness * starPos.depth * 0.6;
-        ctx.beginPath();
-        ctx.arc(starPos.x, starPos.y, brightness * 1.5, 0, 2 * Math.PI);
-        ctx.fill();
-      }
+    /* Background starfield. Fixed in screen space rather than pinned to the
+       sphere — it reads as depth behind the globe, and positions are computed
+       once instead of 300 projections a frame. Each star twinkles on its own slow
+       sine, phase-offset by position, so the field breathes instead of flickering
+       (the old version rolled Math.random() every frame, which strobed). */
+    const tw = Date.now() / 1000;
+    ctx.fillStyle = '#E7DFDD';
+    for (const st of starfield) {
+      ctx.globalAlpha = st.a * (0.6 + 0.4 * Math.sin(tw * 0.7 + st.phase));
+      ctx.fillRect(centerX + st.x * width * 0.62, centerY + st.y * height * 0.62, 1.2, 1.2);
     }
     ctx.globalAlpha = 1;
 
     // Create 3D sphere background with gradient
+    /* Off-centre light source — the single strongest 3D cue on a flat disc. */
     const sphereGradient = ctx.createRadialGradient(
-      centerX - radius * 0.3, centerY - radius * 0.3, 0,
-      centerX, centerY, radius * 1.2
+      centerX - radius * 0.3, centerY - radius * 0.35, radius * 0.05,
+      centerX, centerY, radius
     );
-    sphereGradient.addColorStop(0, 'rgba(141, 15, 245, 0.15)');
-    sphereGradient.addColorStop(0.4, 'rgba(141, 15, 245, 0.08)');
-    sphereGradient.addColorStop(0.7, 'rgba(19, 19, 24, 0.3)');
-    sphereGradient.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+    sphereGradient.addColorStop(0, 'rgba(28, 18, 44, 0.90)');
+    sphereGradient.addColorStop(1, 'rgba(10, 9, 15, 0.96)');
 
     ctx.fillStyle = sphereGradient;
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.fill();
 
-    // Add outer glow
+    // Halo, drawn behind the body as a filled disc that fades out.
     const glowGradient = ctx.createRadialGradient(
-      centerX, centerY, radius * 0.95,
-      centerX, centerY, radius * 1.1
+      centerX, centerY, radius * 0.1,
+      centerX, centerY, radius * 1.35
     );
-    glowGradient.addColorStop(0, 'rgba(141, 15, 245, 0.3)');
-    glowGradient.addColorStop(1, 'transparent');
+    glowGradient.addColorStop(0, 'rgba(141, 15, 245, 0.10)');
+    glowGradient.addColorStop(0.62, 'rgba(141, 15, 245, 0.045)');
+    glowGradient.addColorStop(1, 'rgba(10, 10, 15, 0)');
+    ctx.fillStyle = glowGradient;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius * 1.35, 0, 2 * Math.PI);
+    ctx.fill();
 
-    ctx.strokeStyle = glowGradient;
-    ctx.lineWidth = 8;
+    // Glowing limb — reads as the sphere's edge catching light.
+    ctx.strokeStyle = 'rgba(141, 15, 245, 0.75)';
+    ctx.lineWidth = 1.5;
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = 'rgba(141, 15, 245, 0.7)';
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.stroke();
-
-    // Draw main sphere boundary
-    ctx.strokeStyle = 'rgba(141, 15, 245, 0.6)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.stroke();
+    ctx.shadowBlur = 0;
 
     // Draw RA lines (meridians)
     for (let ra = 0; ra < 360; ra += 30) {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.strokeStyle = 'rgba(231, 223, 221, 0.055)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       
@@ -285,7 +343,7 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
 
     // Draw DEC lines (parallels)
     for (let dec = -60; dec <= 60; dec += 30) {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.strokeStyle = 'rgba(231, 223, 221, 0.05)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       
@@ -310,41 +368,32 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
       ctx.stroke();
     }
 
-    // Draw cardinal direction indicators
-    ctx.fillStyle = '#8b8b94';
-    ctx.font = '12px system-ui';
+    /* Cardinals sit just outside the limb as bare text — the old version painted
+       a grey plate behind each one, which read as a UI chip stuck to the sphere. */
+    ctx.font = "500 10px 'Google Sans Code', ui-monospace, monospace";
     ctx.textAlign = 'center';
-
-    // North, South, East, West
-    const directions = [
-      { ra: 0, dec: 0, label: 'N', offset: 25 },
-      { ra: 180, dec: 0, label: 'S', offset: 25 },
-      { ra: 90, dec: 0, label: 'E', offset: 25 },
-      { ra: 270, dec: 0, label: 'W', offset: 25 }
-    ];
-
-    directions.forEach(dir => {
-      const pos = celestialToScreen(dir.ra, dir.dec, width, height);
-      if (pos.isVisible) {
-        const distFromCenter = Math.sqrt((pos.x - centerX) ** 2 + (pos.y - centerY) ** 2);
-        if (distFromCenter <= radius) {
-          // Calculate direction for label offset
-          const angle = Math.atan2(pos.y - centerY, pos.x - centerX);
-          const labelX = pos.x + Math.cos(angle) * dir.offset;
-          const labelY = pos.y + Math.sin(angle) * dir.offset;
-          
-          ctx.fillStyle = 'rgba(139, 139, 148, 0.8)';
-          ctx.fillRect(labelX - 10, labelY - 8, 20, 16);
-          ctx.fillStyle = '#8b8b94';
-          ctx.fillText(dir.label, labelX, labelY + 4);
-        }
-      }
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(231, 223, 221, 0.42)';
+    ([['N', 0], ['E', 90], ['S', 180], ['W', 270]] as Array<[string, number]>).forEach(([label, ra]) => {
+      const raRad = (ra * Math.PI) / 180;
+      const azRad = (viewState.azimuth * Math.PI) / 180;
+      const altRad = (viewState.altitude * Math.PI) / 180;
+      let x = Math.cos(raRad), y = Math.sin(raRad), z = 0;
+      const nx = x * Math.cos(azRad) - y * Math.sin(azRad);
+      const ny = x * Math.sin(azRad) + y * Math.cos(azRad);
+      x = nx; y = ny;
+      const nz = z * Math.cos(altRad) - y * Math.sin(altRad);
+      y = z * Math.sin(altRad) + y * Math.cos(altRad);
+      z = nz;
+      if (z < -0.15) return;                       // behind the sphere
+      const rr = radius * 1.09;                    // just off the limb
+      ctx.fillText(label, centerX + x * rr, centerY - y * rr);
     });
 
     // Draw galactic plane
-    ctx.strokeStyle = 'rgba(162, 57, 202, 0.6)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([8, 4]);
+    ctx.strokeStyle = 'rgba(200, 75, 247, 0.22)';
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([6, 7]);
     ctx.beginPath();
     
     let gpFirstPoint = true;
@@ -451,90 +500,63 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
       }
     }
 
-    // Sort events by depth for proper 3D rendering
+    /* Every positioned event is projected — including the far hemisphere. The
+       sphere is translucent, so events behind it render as faint ghosts rather
+       than disappearing. Sorted far-to-near so near dots paint over them. */
     const eventPositions = events
-      .filter(event => event.raDeg !== undefined && event.decDeg !== undefined)
-      .map(event => ({
-        event,
-        position: celestialToScreen(event.raDeg!, event.decDeg!, width, height)
-      }))
-      .filter(({ position }) => {
-        const distFromCenter = Math.sqrt((position.x - centerX) ** 2 + (position.y - centerY) ** 2);
-        return position.isVisible && distFromCenter <= radius;
-      })
-      .sort((a, b) => a.position.depth - b.position.depth); // Draw farthest first
+      .filter(e => e.raDeg != null && e.decDeg != null)
+      .map(event => ({ event, position: celestialToScreen(event.raDeg!, event.decDeg!, width, height) }))
+      .sort((a, b) => a.position.depth - b.position.depth);
 
-    // Draw events with enhanced 3D appearance
     eventPositions.forEach(({ event, position }) => {
-      const { x, y, depth } = position;
+      const { x, y, depth, isVisible: front } = position;
+      const color = kindColor(event.alertKind);
+      const isSelected = selectedEvent?.id === event.id
+        || (!!selectedEvent?.canonicalId && selectedEvent.canonicalId === event.canonicalId);
 
-      // Event color based on alert kind
-      let color = '#FFB400';
-      switch (event.alertKind?.toLowerCase()) {
-        case 'grb':
-        case 'gamma-ray burst':
-          color = '#FF6B6B';
-          break;
-        case 'gw':
-        case 'gravitational wave':
-          color = '#8D0FF5';
-          break;
-        case 'neutrino':
-          color = '#4ECDC4';
-          break;
-        case 'supernova':
-          color = '#FFB400';
-          break;
-        case 'flare':
-          color = '#FF9F43';
-          break;
-        default:
-          color = '#8D0FF5';
-          break;
+      // Behind the sphere: small, dim, no glow. In front: scales with depth.
+      const dotSize = DOT_BASE * (front ? 0.72 + depth * 0.55 : 0.55);
+      const alpha = front ? 0.62 + depth * 0.38 : 0.16;
+
+      // Localisation error, to scale — selected event only, front side only.
+      if (front && isSelected) {
+        const errDeg = errorRadius((event as any).posErrorDeg);
+        const errPx = errDeg == null ? 0 : (errDeg / 90) * radius;
+        if (errPx > dotSize + 3) {
+          ctx.globalAlpha = 0.42;
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1;
+          ctx.setLineDash([3, 4]);
+          ctx.beginPath();
+          ctx.arc(x, y, errPx, 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.globalAlpha = 0.12;
+          ctx.fillStyle = color;
+          ctx.fill();
+        }
       }
 
-      // Apply depth-based effects
-      const scale = 0.6 + depth * 0.4;
-      const alpha = 0.7 + depth * 0.3;
-      
-      // Draw glow effect for selected event
-      if (selectedEvent?.id === event.id) {
-        ctx.shadowColor = color;
-        ctx.shadowBlur = 20;
-        ctx.globalAlpha = 0.8;
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(x, y, 15 * scale, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-
-      // Draw event dot with 3D appearance
       ctx.globalAlpha = alpha;
-      
-      const dotGradient = ctx.createRadialGradient(
-        x - 2, y - 2, 0,
-        x, y, (selectedEvent?.id === event.id ? 8 : 5) * scale
-      );
-      dotGradient.addColorStop(0, color);
-      dotGradient.addColorStop(0.7, color);
-      dotGradient.addColorStop(1, `${color}80`);
-
-      ctx.fillStyle = dotGradient;
+      if (front) { ctx.shadowBlur = 10; ctx.shadowColor = color; }
+      ctx.fillStyle = color;
       ctx.beginPath();
-      const dotSize = selectedEvent?.id === event.id ? 8 * scale : 5 * scale;
       ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
       ctx.fill();
+      ctx.shadowBlur = 0;
 
-      // Draw selection ring with pulsing effect
-      if (selectedEvent?.id === event.id) {
-        const time = Date.now() / 1000;
-        const pulse = Math.sin(time * 3) * 0.5 + 0.5;
-        ctx.globalAlpha = (0.6 + pulse * 0.4) * alpha;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
+      // Selection is gold so it never collides with a messenger colour.
+      if (isSelected && front) {
+        const pulse = 1 + Math.sin(Date.now() / 1000 * 2.2) * 0.18;
+        ctx.strokeStyle = '#FFB400';
+        ctx.lineWidth = 1.6;
+        ctx.globalAlpha = 0.9;
         ctx.beginPath();
-        ctx.arc(x, y, (12 + pulse * 3) * scale, 0, 2 * Math.PI);
+        ctx.arc(x, y, (dotSize + 7) * pulse, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.globalAlpha = 0.35;
+        ctx.beginPath();
+        ctx.arc(x, y, (dotSize + 13) * pulse, 0, 2 * Math.PI);
         ctx.stroke();
       }
 
@@ -552,57 +574,11 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
       ctx.setLineDash([]);
     }
 
-    // Enhanced legend
-    const legendX = width - 170;
-    const legendY = height - 140;
-    
-    ctx.fillStyle = 'rgba(19, 19, 24, 0.9)';
-    ctx.strokeStyle = 'rgba(141, 15, 245, 0.3)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(legendX - 10, legendY - 10, 160, 120, 8);
-    ctx.fill();
-    ctx.stroke();
+    /* Legend and view read-out moved out of the canvas into DOM below — the
+       reference draws them as bare labels with no box, and DOM text stays crisp
+       and selectable instead of being repainted every frame. */
 
-    ctx.fillStyle = '#e5e5e9';
-    ctx.font = '11px system-ui';
-    ctx.textAlign = 'left';
-    
-    const legendItems = [
-      { color: '#FF6B6B', label: 'Gamma-Ray Burst' },
-      { color: '#4ECDC4', label: 'Neutrino' },
-      { color: '#8D0FF5', label: 'Gravitational Wave' },
-      { color: '#FFB400', label: 'Supernova' },
-      { color: '#FF9F43', label: 'Stellar Flare' }
-    ];
-
-    legendItems.forEach((item, index) => {
-      const x = legendX;
-      const y = legendY + index * 16;
-      
-      const legendGradient = ctx.createRadialGradient(x - 1, y - 1, 0, x, y, 4);
-      legendGradient.addColorStop(0, item.color);
-      legendGradient.addColorStop(1, `${item.color}CC`);
-      
-      ctx.fillStyle = legendGradient;
-      ctx.beginPath();
-      ctx.arc(x + 5, y, 4, 0, 2 * Math.PI);
-      ctx.fill();
-      
-      ctx.fillStyle = '#e5e5e9';
-      ctx.fillText(item.label, x + 15, y + 4);
-    });
-
-    // Draw view coordinates
-    ctx.fillStyle = '#8b8b94';
-    ctx.font = '10px system-ui';
-    ctx.textAlign = 'right';
-    const azText = `Az: ${viewState.azimuth.toFixed(1)}°`;
-    const altText = `Alt: ${viewState.altitude.toFixed(1)}°`;
-    ctx.fillText(azText, width - 20, height - 30);
-    ctx.fillText(altText, width - 20, height - 15);
-
-  }, [events, selectedEvent, coneSearch, viewState, dragState, celestialToScreen]);
+  }, [events, selectedEvent, coneSearch, viewState, dragState, celestialToScreen, starfield, zoom]);
 
   // Handle click events
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -670,15 +646,81 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
         onClick={handleCanvasClick}
+        onWheel={e => { pauseSpin(); zoomBy(e.deltaY < 0 ? 1.12 : 1 / 1.12); }}
         className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
         style={{ width: '100%', height: '100%' }}
       />
       
+      {/* Zoom controls — right edge, mid-height: the only band not claimed by the
+          event card (bottom-left), the nearby panel (top-right) or the legend. */}
+      <div
+        className="flex flex-col gap-1.5"
+        style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)' }}
+      >
+        {([
+          { label: '+', title: 'Zoom in', onClick: () => { pauseSpin(); zoomBy(1.35); } },
+          { label: '−', title: 'Zoom out', onClick: () => { pauseSpin(); zoomBy(1 / 1.35); } },
+          { label: '⌂', title: 'Reset view', onClick: () => { pauseSpin(); setZoom(1); setViewState({ azimuth: 0, altitude: 0 }); } },
+        ]).map(b => (
+          <button
+            key={b.label}
+            onClick={b.onClick}
+            title={b.title}
+            style={{
+              width: 30, height: 30,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: "'Google Sans Code', ui-monospace, monospace",
+              fontSize: 14, lineHeight: 1,
+              color: 'rgba(231, 223, 221, 0.7)',
+              background: 'rgba(14, 11, 22, 0.72)',
+              border: '1px solid rgba(231, 223, 221, 0.14)',
+              borderRadius: 8,
+              cursor: 'pointer',
+              backdropFilter: 'blur(6px)',
+            }}
+          >
+            {b.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Legend — bare labels, right-aligned, no container. The reference has no
+          box here, and a bordered card competed with the nearby panel above it. */}
+      <div
+        style={{
+          position: 'absolute', right: 8, bottom: 16,
+          display: 'flex', flexDirection: 'column', gap: 7, alignItems: 'flex-end',
+          pointerEvents: 'none',
+        }}
+      >
+        {LEGEND.map(l => (
+          <div key={l.key} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <span style={{
+              fontFamily: "'Google Sans Code', ui-monospace, monospace",
+              fontSize: 11,
+              color: 'rgba(231, 223, 221, 0.55)',
+            }}>{l.label}</span>
+            <span style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: l.color, boxShadow: `0 0 7px ${l.color}`,
+            }} />
+          </div>
+        ))}
+      </div>
+
       {/* Interaction hint */}
-      <div className="absolute top-4 right-4 bg-card/80 backdrop-blur-sm rounded-lg px-3 py-2">
-        <p className="text-xs text-muted-foreground">
-          {dragState.isDragging ? 'Dragging...' : 'Drag to rotate • Click events for details'}
-        </p>
+      <div
+        style={{
+          position: 'absolute', top: 14, right: 20,
+          fontFamily: "'Google Sans Code', ui-monospace, monospace",
+          fontSize: 11,
+          color: 'rgba(231, 223, 221, 0.38)',
+          pointerEvents: 'none',
+        }}
+      >
+        {dragState.isDragging
+          ? 'Rotating…'
+          : `Drag to rotate · scroll to zoom${zoom !== 1 ? ` · ${zoom.toFixed(1)}×` : ''}`}
       </div>
     </div>
   );
