@@ -13,6 +13,7 @@ import PublicEventPage from "@novatrace/pages/PublicEventPage";
 import EventRecordPage from "@novatrace/pages/EventRecordPage";
 import SearchPage from "@novatrace/pages/SearchPage";
 import CircularEventPage from "@novatrace/pages/CircularEventPage";
+import CircularArchive from "@novatrace/pages/CircularArchive";
 import '@shared/styles/globals.css';
 
 
@@ -22,18 +23,31 @@ function RedirectToEvents() {
   return null;
 }
 
+/** /alerts was never an alerts page — it is an archive of GCN circulars. Old paths
+ *  redirect so existing links and any indexed URLs keep working. */
+function RedirectToCircularArchive() {
+  const [, navigate] = useLocation();
+  useEffect(() => { navigate("/novatrace/circular-archive", { replace: true }); }, []);
+  return null;
+}
+
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={AlertsLevel} />
-      <Route path="/alerts" component={AlertsLevel} />
+      <Route path="/" component={CircularArchive} />
+      <Route path="/circular-archive" component={CircularArchive} />
+      <Route path="/novatrace/circular-archive" component={CircularArchive} />
+      <Route path="/alerts" component={RedirectToCircularArchive} />
       <Route path="/infra/status" component={InfraStatus} />
       <Route path="/novatrace/infra/status" component={InfraStatus} />
       {/* old /status page was unused — repointed to the new infra monitoring page */}
       <Route path="/status" component={InfraStatus} />
       <Route path="/events" component={EventLevel} />
       <Route path="/novatrace" component={RedirectToEvents} />
-      <Route path="/novatrace/alerts" component={AlertsLevel} />
+      <Route path="/novatrace/alerts" component={RedirectToCircularArchive} />
+      {/* Legacy dashboard kept reachable while the archive popup is being built —
+          it is currently the only surface exposing FITS/JS9, images and participants. */}
+      <Route path="/novatrace/alerts-legacy" component={AlertsLevel} />
       <Route path="/novatrace/status" component={InfraStatus} />
       <Route path="/novatrace/events" component={EventLevel} />
       <Route path="/novatrace/events/:canonicalId" component={EventRecordPage} />

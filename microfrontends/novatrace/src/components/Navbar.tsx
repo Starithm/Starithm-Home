@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Button } from "@shared/components/ui/button";
 import { Activity, Home, Search, Menu } from "lucide-react";
 import { useLocation } from "wouter";
 import { SignInButton, UserButton, useAuth } from "@clerk/react";
@@ -20,6 +19,7 @@ import {
   DrawerNav,
   DrawerDivider,
   DrawerSignInRow,
+  NavTextLink,
 } from "../styled_components/Navbar.styled";
 
 export function Navbar() {
@@ -88,36 +88,9 @@ export function Navbar() {
         </LeftGroup>
 
         <RightActions>
-          <Button
-            variant="outline"
-            size="lg"
-            hasIcon={true}
-            onClick={navigateToEvents}
-            className="flex items-center space-x-2"
-          >
-            <Activity className="h-4 w-4" />
-            <span>Event Level Dashboard</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            hasIcon={true}
-            onClick={navigateToSearch}
-            className="flex items-center space-x-2"
-          >
-            <Search className="h-4 w-4" />
-            <span>Search</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            hasIcon={true}
-            onClick={navigateToHome}
-            className="flex items-center space-x-2"
-          >
-            <Home className="h-4 w-4" />
-            <span>Home</span>
-          </Button>
+          <NavTextLink onClick={navigateToEvents}>View events</NavTextLink>
+          <NavTextLink onClick={navigateToSearch}>Search</NavTextLink>
+          <NavTextLink onClick={navigateToHome}>Home</NavTextLink>
           {!isSignedIn ? (
             <SignInButton mode="modal" forceRedirectUrl={typeof window !== 'undefined' ? window.location.href : '/'}>
               <button onClick={saveReturnUrl} style={{ padding: '0.4rem 1rem', borderRadius: 6, border: '1px solid rgba(139,92,246,0.4)', background: 'rgba(139,92,246,0.1)', color: 'rgba(167,139,250,0.9)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 500 }}>
@@ -143,7 +116,7 @@ export function Navbar() {
                 style={drawerBtnStyle}
               >
                 <Activity size={16} style={{ flexShrink: 0 }} />
-                Event Level Dashboard
+                View events
               </button>
               <button
                 onClick={() => { setDrawerOpen(false); navigateToSearch(); }}

@@ -7,6 +7,9 @@ export interface Circular {
   event: string;
   summary: string | null;
   date: string;
+  /** Published before this event's first notice — names the same object but describes an
+   *  earlier, separate observation. Set by the API, not inferred in the UI. */
+  priorMention?: boolean;
   data?: {
     authors?: { authors?: string[]; affiliations?: string[]; institutions?: string[] };
     measurements?: Record<string, any>;

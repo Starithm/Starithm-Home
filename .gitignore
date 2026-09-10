@@ -109,3 +109,7 @@ temp/
 !public/*.webm
 
 *.flac
+
+# Claude Code — local agent config, tickets and session state
+.claude/
+CLAUDE.local.md

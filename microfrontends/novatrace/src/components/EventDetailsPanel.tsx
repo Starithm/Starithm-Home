@@ -840,6 +840,13 @@ export function EventDetailsPanel({ eventId, isOpen, onClose }: EventDetailsPane
                                 {isTextualCircular && (
                                   <Badge variant="outline">{(item.data as Alert).alertKey}</Badge>
                                 )}
+                                {/* Predates the event's first notice: same object, earlier
+                                    and separate observation — not a follow-up to this event. */}
+                                {isTextualCircular && (item.data as Alert).priorMention && (
+                                  <Badge variant="outline" title="Published before this event began — an earlier, separate observation of the same object, not a follow-up.">
+                                    Prior mention
+                                  </Badge>
+                                )}
                               </ItemHeaderLeft>
                               <ItemTimestamp>{date} {time}</ItemTimestamp>
                             </ItemHeader>

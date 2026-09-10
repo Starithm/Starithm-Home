@@ -548,12 +548,30 @@ export default function PublicEventPage({ canonicalId }: { canonicalId?: string 
               </div>
             </Section>
 
-            {/* Circulars */}
-            {event.circulars.length > 0 && (
-              <Section title={`Community Circulars (${event.circulars.length})`}>
-                <CircularsList circulars={event.circulars} allExpandedByDefault />
-              </Section>
-            )}
+            {/* Circulars. Split by priorMention: circulars published before this event's
+                first notice mention the same object but are NOT follow-ups to it, so they
+                are shown under their own heading rather than implied to be related. */}
+            {(() => {
+              const followUps = event.circulars.filter((c: any) => !c.priorMention);
+              const priorMentions = event.circulars.filter((c: any) => c.priorMention);
+              return (
+                <>
+                  {followUps.length > 0 && (
+                    <Section title={`Community Circulars (${followUps.length})`}>
+                      <CircularsList circulars={followUps} allExpandedByDefault />
+                    </Section>
+                  )}
+                  {priorMentions.length > 0 && (
+                    <Section
+                      title={`Circulars Previously Mentioning ${event.canonicalId} (${priorMentions.length})`}
+                      subtitle="Published before this event began. These describe earlier, separate observations of the same object and are not follow-ups to this event."
+                    >
+                      <CircularsList circulars={priorMentions} />
+                    </Section>
+                  )}
+                </>
+              );
+            })()}
 
             {/* Cite block */}
             <Section title="Cite This Event" subtitle="Citation (for website reference only, not primary source)">

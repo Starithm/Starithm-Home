@@ -26,6 +26,10 @@ export interface Event {
     createdAt: Date;
     updatedAt: Date;
     timeline: TimelineItem[];
+    /** Set per-event by the API: this circular predates the event's first notice, so it
+     *  names the same object but describes an earlier, separate observation. Not a
+     *  property of the circular itself — it only has meaning in an event's context. */
+    priorMention?: boolean;
   };
   
   export type MeasurementData = {

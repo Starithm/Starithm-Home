@@ -105,3 +105,22 @@ export const DrawerSignInRow = styled.div`
   padding: 0 1rem;
 `;
 
+
+/**
+ * Text-only nav action. Replaces the outline <Button variant="outline" size="lg"> trio,
+ * which rendered as three large boxed buttons and dominated the header on low-chrome
+ * pages like the circulars archive. Matches the quiet inline-link treatment used for
+ * circular links on the events page.
+ */
+export const NavTextLink = styled.button`
+  background: none;
+  border: none;
+  padding: 0.3rem 0.1rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: rgba(232, 232, 238, 0.62);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.12s ease;
+  &:hover { color: rgba(232, 232, 238, 0.95); }
+`;
