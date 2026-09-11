@@ -49,6 +49,36 @@
 
   /* React Day Picker Theme Variables - Light Mode */
   
+
+  /* ── Surface / line / text ramps ─────────────────────────────────────────────
+     Added 2026-09-11 (design-library step 2). These replace the 25 page-local
+     constants that lived in novatrace/src/lib/circularArchive.ts, which had drifted
+     off-brand (#08080b ground, #a855f7 accent). Values are solved to preserve the
+     archive's original contrast STEPS while re-anchoring hue on the brand ground
+     (#0E0B16) and violet (#8D0FF5); --text-muted is floored at AA 4.5:1 because it
+     is the single most-used token. Reuse these instead of inventing page-local hex. */
+  --surface-sunken: #09070E;
+  --surface: #13101B;
+  --surface-raised: #16121E;
+  --line-hairline: #1C1725;
+  --line-subtle: #211C2B;
+  --line-control: #272233;
+  --line-dialog: #302B3C;
+  --dot: #403A4E;
+  --line-hover: #514962;
+  --text-body: #E5DEDC;
+  --text-secondary: #CEC6C6;
+  --text-raw: #BDB6B6;
+  --text-muted: #928C8F;
+  --text-faint: #817C80;
+  --text-placeholder: #504C53;
+  --text-disabled: #332F38;
+  --accent-text: #CA90FA;
+  --accent-surface: #200C35;
+  --accent-border: #3E0D6B;
+  --row-hover: #13101B;
+  --timeline-active: #170B26;
+
 }
 .rdp-root {
   --rdp-accent-color: var(--starithm-veronica);
@@ -110,6 +140,36 @@
   --switch-background: hsl(20, 5.9%, 90%);
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
+
+  /* ── Surface / line / text ramps ─────────────────────────────────────────────
+     Added 2026-09-11 (design-library step 2). These replace the 25 page-local
+     constants that lived in novatrace/src/lib/circularArchive.ts, which had drifted
+     off-brand (#08080b ground, #a855f7 accent). Values are solved to preserve the
+     archive's original contrast STEPS while re-anchoring hue on the brand ground
+     (#0E0B16) and violet (#8D0FF5); --text-muted is floored at AA 4.5:1 because it
+     is the single most-used token. Reuse these instead of inventing page-local hex. */
+  --surface-sunken: #F5F5F5;
+  --surface: #FBFBFC;
+  --surface-raised: #F9F8F9;
+  --line-hairline: #F3F2F4;
+  --line-subtle: #EDEBEE;
+  --line-control: #E5E3E8;
+  --line-dialog: #DBD8DE;
+  --dot: #C4C0C9;
+  --line-hover: #AEA9B5;
+  --text-body: #2A2731;
+  --text-secondary: #3A3740;
+  --text-raw: #45424B;
+  --text-muted: #65646B;
+  --text-faint: #747279;
+  --text-placeholder: #ACAAAE;
+  --text-disabled: #D4D3D5;
+  --accent-text: #8D0FF5;
+  --accent-surface: #F7EEFE;
+  --accent-border: #DDB7FC;
+  --row-hover: #FBFBFC;
+  --timeline-active: #F9F3FF;
+
 }
 
 .dark .rdp-root,

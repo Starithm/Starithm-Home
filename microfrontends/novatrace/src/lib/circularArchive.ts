@@ -5,38 +5,9 @@
  * design tokens live in one place (the handoff exposes `accent` as a themeable prop).
  */
 
-// ── Design tokens (from design_handoff_gcn_archive/README.md) ─────────────────
-export const T = {
-  bg: '#08080b',
-  surface: '#0d0d13',
-  raised: '#101017',
-  sunken: '#0a0a10',
-
-  hairline: '#16161e',
-  subtle: '#1c1c24',
-  control: '#22222c',
-  dialog: '#2a2a36',
-  hover: '#4a4a5a',
-  dashed: '#26262f',
-
-  text: '#e8e8ee',
-  body: '#dcdce6',
-  secondary: '#c4c4d2',
-  raw: '#b4b4c2',
-  muted: '#8a8a99',
-  faint: '#7a7a88',
-  disabled: '#2e2e38',
-  placeholder: '#4a4a58',
-
-  accent: '#a855f7',
-  accentText: '#c98bff',
-  accentSurface: '#1b1226',
-  accentBorder: '#4c2a6e',
-
-  rowHover: '#101017',
-  timelineActive: '#141019',
-  dot: '#3a3a48',
-} as const;
+// Design tokens now live in shared/styles/globals.css (`--surface-*`, `--line-*`,
+// `--text-*`, `--accent-*`). Use var(--token) in styled-components — do NOT reintroduce
+// a page-local palette here; that is exactly how this page drifted off-brand.
 
 // Wider than the handoff's 900/860: those were specified before the real subject lines
 // (which are long) and the measurement key/value rows were in place.
@@ -105,7 +76,7 @@ export const INSTRUMENTS: { label: string; match: RegExp }[] = [
 ];
 
 export const TYPE_COLORS: Record<string, string> = {
-  GRB: '#a855f7',
+  GRB: '#8D0FF5',
   EP: '#38bdf8',
   GW: '#fbbf24',
   NU: '#34d399',

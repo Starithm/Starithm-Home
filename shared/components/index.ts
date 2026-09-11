@@ -23,3 +23,6 @@ export * from './ui/label';
 export * from './ui/select';
 export * from './ui/tooltip';
 export * from './ui/celestial-sphere';
+
+// Layout primitives (design-library step 3)
+export * from './ui/primitives';

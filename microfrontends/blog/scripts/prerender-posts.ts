@@ -13,7 +13,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const GITHUB_REPO = 'Starithm/starithm-blog-posts';
 const GITHUB_BRANCH = 'main';
 const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}`;
-const API_BASE = `https://api.github.com/repos/${GITHUB_REPO}/contents/posts`;
+// Post list comes from the CDN index.json, NOT api.github.com.
+// api.github.com is 60 req/hr per IP when unauthenticated, and Vercel build machines share
+// hot IPs — that budget is routinely already spent by other builds, which failed this script
+// with `GitHub API error: 403` and took the whole deploy down (2026-09-11).
+// raw.githubusercontent.com is CDN-backed and not rate limited; generate-sitemap.ts has
+// always used it, which is exactly why that step succeeded in the same failing build.
+const INDEX_URL = `${RAW_BASE}/posts/index.json`;
 const SITE_BASE = 'https://starithm.ai';
 
 interface PostMeta {
@@ -126,11 +132,14 @@ async function main() {
   const distDir = path.resolve(__dirname, '../dist');
   const template = buildTemplate(distDir);
 
-  console.log('Fetching post list from GitHub...');
-  const res = await fetch(API_BASE);
-  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
-  const files: Array<{ name: string }> = await res.json();
-  const mdFiles = files.filter(f => f.name.endsWith('.md'));
+  console.log('Fetching post list from CDN index.json...');
+  const res = await fetch(INDEX_URL);
+  if (!res.ok) throw new Error(`post index fetch failed: ${res.status} ${INDEX_URL}`);
+  const index: any = await res.json();
+  const entries: Array<{ slug: string }> = Array.isArray(index) ? index : (index?.posts ?? []);
+  if (!entries.length) throw new Error(`post index is empty at ${INDEX_URL}`);
+  // Every entry's markdown lives at posts/<slug>.md (verified 100/100, 2026-09-11).
+  const mdFiles = entries.map(e => ({ name: `${e.slug}.md` }));
 
   const posts = await Promise.all(
     mdFiles.map(async (file) => {

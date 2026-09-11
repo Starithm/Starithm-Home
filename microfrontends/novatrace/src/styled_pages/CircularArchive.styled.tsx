@@ -1,48 +1,27 @@
 import styled from 'styled-components';
-import { T, PAGE_MAX_WIDTH } from '@novatrace/lib/circularArchive';
+import { PAGE_MAX_WIDTH } from '@novatrace/lib/circularArchive';
+import {
+  Page as BasePage, Column as BaseColumn, HeaderRow as SharedHeaderRow,
+  Title as BaseTitle, Subtitle as SharedResultCount, EmptyState as SharedEmptyState,
+  Row as SharedRow, TabRow as SharedTabRow, Tab as SharedTab, Rule as SharedRule,
+} from '@shared/components/ui/primitives';
 
 /**
  * Circulars Archive — styling per design_handoff_gcn_archive.
  * Tokens come from lib/circularArchive.ts so `accent` stays themeable in one place.
  */
 
-export const Page = styled.div`
-  min-height: 100vh;
-  background: ${T.bg};
-  color: ${T.text};
+export const Page = styled(BasePage)`
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 `;
 
-export const Column = styled.div`
-  max-width: ${PAGE_MAX_WIDTH}px;
-  margin: 0 auto;
-  padding: 48px 24px 96px;
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
-`;
+export const Column = styled(BaseColumn).attrs({ $maxWidth: PAGE_MAX_WIDTH })``;
 
-export const HeaderRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 8px;
-`;
+export const HeaderRow = SharedHeaderRow;
 
-export const PageTitle = styled.h1`
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${T.muted};
-  margin: 0;
-`;
+export const PageTitle = BaseTitle;
 
-export const ResultCount = styled.span`
-  font-size: 12px;
-  color: ${T.faint};
-`;
+export const ResultCount = SharedResultCount;
 
 // ── Filters ───────────────────────────────────────────────────────────────────
 export const FilterBlock = styled.div`
@@ -59,27 +38,27 @@ export const FilterRow = styled.div`
 `;
 
 const controlBase = `
-  background: ${T.raised};
-  border: 1px solid ${T.subtle};
+  background: var(--surface-raised);
+  border: 1px solid var(--line-subtle);
   border-radius: 4px;
   font-size: 12.5px;
   font-family: inherit;
   padding: 7px 10px;
   outline: none;
-  &:focus { border-color: ${T.accent}; }
+  &:focus { border-color: var(--primary); }
 `;
 
 export const TextInput = styled.input<{ $w?: number }>`
   ${controlBase}
   width: ${p => p.$w ?? 120}px;
-  color: ${T.body};
-  &::placeholder { color: ${T.placeholder}; }
+  color: var(--text-body);
+  &::placeholder { color: var(--text-placeholder); }
 `;
 
 export const Select = styled.select`
   ${controlBase}
   padding: 7px 8px;
-  color: ${T.secondary};
+  color: var(--text-secondary);
   cursor: pointer;
 `;
 
@@ -92,29 +71,15 @@ export const ClearButton = styled.button`
   border: none;
   font-family: inherit;
   font-size: 12px;
-  color: ${T.faint};
+  color: var(--text-faint);
   cursor: pointer;
   padding: 0;
-  &:hover { color: ${T.text}; }
+  &:hover { color: var(--foreground); }
 `;
 
-export const TabRow = styled.div`
-  display: flex;
-  border-bottom: 1px solid ${T.hairline};
-`;
+export const TabRow = SharedTabRow;
 
-export const Tab = styled.button<{ $active: boolean }>`
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid ${p => (p.$active ? T.accent : 'transparent')};
-  margin-bottom: -1px;
-  font-family: inherit;
-  font-size: 12px;
-  padding: 7px 10px;
-  cursor: pointer;
-  color: ${p => (p.$active ? T.text : T.muted)};
-  &:hover { color: ${T.text}; }
-`;
+export const Tab = SharedTab;
 
 // ── List ──────────────────────────────────────────────────────────────────────
 export const List = styled.div`
@@ -140,37 +105,25 @@ export const GroupDate = styled.span`
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${T.muted};
+  color: var(--text-muted);
   white-space: nowrap;
 `;
 
-export const GroupRule = styled.div`
-  flex: 1;
-  height: 1px;
-  background: ${T.hairline};
-`;
+export const GroupRule = SharedRule;
 
 export const GroupCount = styled.span`
   font-size: 11px;
-  color: ${T.faint};
+  color: var(--text-faint);
   white-space: nowrap;
 `;
 
-export const Row = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  padding: 9px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  &:hover { background: ${T.rowHover}; }
-`;
+export const Row = SharedRow;
 
 export const RowTime = styled.span`
   width: 44px;
   flex: 0 0 44px;
   font-size: 12px;
-  color: ${T.muted};
+  color: var(--text-muted);
 `;
 
 export const RowType = styled.span<{ $color: string }>`
@@ -185,7 +138,7 @@ export const RowSubject = styled.span`
   flex: 1;
   min-width: 0;
   font-size: 13px;
-  color: ${T.body};
+  color: var(--text-body);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -193,27 +146,22 @@ export const RowSubject = styled.span`
 
 export const RowGcn = styled.span`
   font-size: 11.5px;
-  color: ${T.faint};
+  color: var(--text-faint);
   white-space: nowrap;
 `;
 
-export const EmptyState = styled.div`
-  text-align: center;
-  color: ${T.muted};
-  padding: 56px 0;
-  font-size: 12.5px;
-`;
+export const EmptyState = SharedEmptyState;
 
 export const SkeletonRow = styled.div`
   height: 34px;
   border-radius: 5px;
-  background: ${T.raised};
+  background: var(--surface-raised);
   opacity: 0.5;
 `;
 
 // ── Pagination ────────────────────────────────────────────────────────────────
 export const Pagination = styled.div`
-  border-top: 1px solid ${T.hairline};
+  border-top: 1px solid var(--line-hairline);
   padding-top: 14px;
   display: flex;
   justify-content: space-between;
@@ -224,7 +172,7 @@ export const Pagination = styled.div`
 
 export const PageInfo = styled.span`
   font-size: 11.5px;
-  color: ${T.faint};
+  color: var(--text-faint);
 `;
 
 export const PageButtons = styled.div`
@@ -234,13 +182,13 @@ export const PageButtons = styled.div`
 `;
 
 export const PageButton = styled.button<{ $active?: boolean; $disabled?: boolean }>`
-  background: ${p => (p.$active ? T.accentSurface : 'transparent')};
-  border: 1px solid ${p => (p.$active ? T.accentBorder : T.subtle)};
+  background: ${p => (p.$active ? 'var(--accent-surface)' : 'transparent')};
+  border: 1px solid ${p => (p.$active ? 'var(--accent-border)' : 'var(--line-subtle)')};
   border-radius: 4px;
   font-family: inherit;
   font-size: 11.5px;
   padding: 4px 9px;
-  color: ${p => (p.$disabled ? T.disabled : p.$active ? T.accentText : T.muted)};
+  color: ${p => (p.$disabled ? 'var(--text-disabled)' : p.$active ? 'var(--accent-text)' : 'var(--text-muted)')};
   cursor: ${p => (p.$disabled ? 'default' : 'pointer')};
-  &:hover { color: ${p => (p.$disabled ? T.disabled : T.text)}; }
+  &:hover { color: ${p => (p.$disabled ? 'var(--text-disabled)' : 'var(--foreground)')}; }
 `;

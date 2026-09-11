@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "check:tokens": "node shared/theme/check-token-sync.mjs",
+    "check:no-raw-hex": "node shared/theme/check-no-raw-hex.mjs",
+    "check:design": "npm run check:tokens && npm run check:no-raw-hex",
     "build": "vite build",
     "preview": "vite preview",
     "dev:shell": "vite --port 3000 --open",
