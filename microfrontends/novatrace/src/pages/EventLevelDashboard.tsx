@@ -25,7 +25,7 @@ import {
   Info,
 } from 'lucide-react';
 import { API_ENDPOINTS } from '@shared/lib/config';
-import { ErrorComponent, Navigation as NavComponent, CelestialSphere } from '@shared/components';
+import { ErrorComponent, CelestialSphere } from '@shared/components';
 import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { saveReturnUrl } from '@shared/lib/auth';
 import { getTimeAgo } from '../utils/duration';

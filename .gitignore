@@ -113,3 +113,6 @@ temp/
 # Claude Code — local agent config, tickets and session state
 .claude/
 CLAUDE.local.md
+
+# Database export dumps — these are backend artefacts, not frontend source
+archive_batches/

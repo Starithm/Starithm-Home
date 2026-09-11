@@ -254,5 +254,5 @@ export const darkTheme: Theme = {
   input: 'hsl(240, 3.7%, 15.9%)',
   inputBackground: '#0E0B16',
   switchBackground: 'hsl(240, 3.7%, 15.9%)',
-  ring: '#E7DFDD',
+  ring: 'hsl(240, 4.9%, 83.9%)',
 };
