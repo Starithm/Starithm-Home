@@ -5,7 +5,12 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Light Mode Theme Variables */
+  /* ── Themed tokens · DARK is the default ────────────────────────────────────
+     The app boots dark (src/main.tsx defaultTheme="dark"). `.light` below is the
+     only override; there is deliberately no `.dark` block — it would duplicate
+     these exact values. themeUtils swaps the class on <html>, so with class
+     "dark" these :root values apply and with "light" the .light block wins.
+     One definition per token: edit it here, not in two places. */
   --background: #0E0B16;
   --foreground: #E7DFDD;
   --card: #0E0B16;
@@ -82,32 +87,6 @@
   --rdp-weekday-text-align: center;
 }
 
-.dark {
-  --background: #0E0B16;
-  --foreground: #E7DFDD;
-  --card: #0E0B16;
-  --card-foreground: #E7DFDD;
-  --popover: #0E0B16;
-  --popover-foreground: #E7DFDD;
-  --primary: #8D0FF5;
-  --primary-foreground: #E7DFDD;
-  --secondary: #E7DFDD;
-  --secondary-foreground: #A239CA;
-  /* --secondary-foreground: #2f0240; */
-  --muted: hsl(240, 3.7%, 15.9%);
-  --muted-foreground: hsl(240, 5%, 64.9%);
-  --accent: hsl(240, 3.7%, 15.9%);
-  --accent-foreground: #E7DFDD;
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: #E7DFDD;
-  --border: #686868;
-  --input: hsl(240, 3.7%, 15.9%);
-  --input-background: #0E0B16;
-  --switch-background: hsl(240, 3.7%, 15.9%);
-  --ring: hsl(240, 4.9%, 83.9%);
-  --radius: 0.5rem;
-
-}
 .light {
   --background: white;
   --foreground: #0E0B16;
