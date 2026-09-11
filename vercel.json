@@ -4,9 +4,6 @@
 
       "rewrites": [
       { "source": "/assets/(.*)", "destination": "/assets/$1" },
-      { "source": "/home-assets/(.*)", "destination": "/home/home-assets/$1" },
-      { "source": "/novatrace-assets/(.*)", "destination": "/novatrace/novatrace-assets/$1" },
-      { "source": "/blog-assets/(.*)", "destination": "/blog/blog-assets/$1" },
 
       { "source": "/feed.xml", "destination": "/api/feed" },
       { "source": "/novatrace/events/:id", "destination": "/api/event-page" },

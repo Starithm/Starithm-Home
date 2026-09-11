@@ -116,3 +116,6 @@ CLAUDE.local.md
 
 # Database export dumps — these are backend artefacts, not frontend source
 archive_batches/
+
+# Working docs — plans, design context, analysis notes. Local only for now.
+docs/
