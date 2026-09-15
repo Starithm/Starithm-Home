@@ -22,6 +22,10 @@
       { "source": "/blog/posts/(.*)", "destination": "/index.html" },
       { "source": "/blog/(.*)", "destination": "/index.html" },
 
+      { "source": "/ears-to-the-universe", "destination": "/index.html" },
+      { "source": "/ears-to-the-universe/", "destination": "/index.html" },
+      { "source": "/ears-to-the-universe/(.*)", "destination": "/index.html" },
+
       { "source": "/sso-callback", "destination": "/index.html" },
       { "source": "/privacy", "destination": "/index.html" }
     ],

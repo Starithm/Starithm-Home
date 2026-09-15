@@ -12,6 +12,7 @@ import { StarithmLoader } from '@shared/components/StarithmLoader';
 const HomeMicrofrontend = lazy(() => import('./microfrontends/HomeMicrofrontend'));
 const NovaTraceMicrofrontend = lazy(() => import('./microfrontends/NovaTraceMicrofrontend'));
 const BlogMicrofrontend = lazy(() => import('./microfrontends/BlogMicrofrontend'));
+const EarsMicrofrontend = lazy(() => import('./microfrontends/EarsMicrofrontend'));
 
 function App() {
   const location = useLocation();
@@ -19,7 +20,9 @@ function App() {
   // The homepage ships its own nav + footer (see microfrontends/home), so the
   // shell chrome is suppressed there the same way it is on NovaTrace.
   const isHome = location.pathname === '/';
-  const hideShellChrome = isNovaTrace || isHome;
+  // The player is a full-screen instrument with its own header.
+  const isEars = location.pathname.startsWith('/ears-to-the-universe');
+  const hideShellChrome = isNovaTrace || isHome || isEars;
   const { isSignedIn } = useAuth();
   const prevSignedIn = useRef<boolean | undefined>(undefined);
 
@@ -71,6 +74,7 @@ function App() {
               <Route path="/" element={<HomeMicrofrontend />} />
               <Route path="/novatrace/*" element={<NovaTraceMicrofrontend />} />
               <Route path="/blog/*" element={<BlogMicrofrontend />} />
+              <Route path="/ears-to-the-universe/*" element={<EarsMicrofrontend />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               {/* Clerk lands here after a provider redirect (homepage OAuth buttons).
                   Without this route the handshake cannot complete. */}
