@@ -358,6 +358,7 @@ export function Homepage() {
             <FooterCol>
               <span>Product</span>
               <a href="/novatrace/events">NovaTrace</a>
+              <a href="/ears-to-the-universe">Ears to the Universe</a>
               <a href="/novatrace/status">Status</a>
             </FooterCol>
             <FooterCol>
