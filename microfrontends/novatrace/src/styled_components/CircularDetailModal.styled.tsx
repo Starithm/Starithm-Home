@@ -24,7 +24,7 @@ export const Dialog = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
 `;
 
 export const TitleBar = styled.div`
@@ -159,7 +159,10 @@ export const SummaryConfidence = styled.span`
 `;
 
 export const SummaryBody = styled.p`
-  font-size: 12.5px;
+  /* Prose face + capped measure — same reasoning as the event record page. */
+  font-family: var(--font-prose);
+  max-width: var(--measure);
+  font-size: 13.5px;
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;

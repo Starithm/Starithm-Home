@@ -12,7 +12,7 @@ import {
  */
 
 export const Page = styled(BasePage)`
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
 `;
 
 export const Column = styled(BaseColumn).attrs({ $maxWidth: PAGE_MAX_WIDTH })``;

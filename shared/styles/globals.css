@@ -79,6 +79,24 @@
   --row-hover: #13101B;
   --timeline-active: #170B26;
 
+
+  /* ── Type roles ──────────────────────────────────────────────────────────────
+     --font-mono  identifiers, measurements, tables, anything that must align.
+     --font-prose multi-sentence text: AI summaries, circular body copy.
+     Andika is a literacy-teaching face — unambiguous I/l/1 and 0/O, which matters
+     when prose sits beside identifiers like EP260806a. Do NOT set --font-prose on
+     numeric columns: it has no tabular figures. */
+  --font-mono: 'Google Sans Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-prose: 'Andika', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Newsreader', Georgia, serif;
+  /* Comfortable line length for prose: 45–75 characters, ~66 ideal.
+     NOTE the unit trap — `ch` is the advance of "0", not the average character.
+     In a monospace face those are identical, so 68ch = 68 characters. In Andika
+     "0" is 0.586em but average text is 0.492em, so 68ch rendered ~81 characters —
+     past the readable range. 60ch lands at ~71 for Andika. If a mono block ever
+     needs a measure, it needs its own value; one `ch` number cannot serve both. */
+  --measure: 60ch;
+
 }
 .rdp-root {
   --rdp-accent-color: var(--starithm-veronica);
