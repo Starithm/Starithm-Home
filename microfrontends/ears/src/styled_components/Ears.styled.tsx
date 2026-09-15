@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 /* Ears to the Universe: a full-screen instrument.
@@ -203,12 +203,13 @@ export const TrackTab = styled.button<{ $active: boolean }>`
 
 /* ---- layout ---- */
 
-export const Grid = styled.div`
+export const Grid = styled.div<{ $ladder: boolean }>`
   display: grid;
   gap: 28px;
   padding: 20px 28px 32px;
-  grid-template-columns: 150px minmax(0, 1fr) minmax(280px, 340px);
-  grid-template-areas: 'ladder main aside';
+  /* without player data there is no ladder: don't leave an empty column */
+  grid-template-columns: ${p => (p.$ladder ? '150px minmax(0, 1fr) minmax(280px, 340px)' : 'minmax(0, 1fr) minmax(280px, 340px)')};
+  grid-template-areas: ${p => (p.$ladder ? "'ladder main aside'" : "'main aside'")};
   align-items: start;
 
   ${NARROW} {
@@ -359,6 +360,19 @@ export const MapCanvas = styled.canvas`
   display: block;
 `;
 
+export const AmbientNote = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  text-align: center;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  pointer-events: none;
+`;
+
 /* ---- spectrogram ---- */
 
 export const Strip = styled.div`
@@ -382,6 +396,31 @@ export const StripImage = styled.img`
   height: 100%;
   object-fit: fill;
   opacity: 0.7;
+`;
+
+const drift = keyframes`
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 63px 0, -140px 0; }
+`;
+
+/* Stand-in when the spectrogram image is missing: soft moving bands, running only while playing. */
+export const StripShimmer = styled.div<{ $playing: boolean }>`
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent-border) 80%, transparent) 0 2px, transparent 2px 9px),
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--starithm-electric-violet) 22%, transparent) 50%, transparent 100%);
+  background-size: auto, 140px 100%;
+  -webkit-mask-image: linear-gradient(0deg, black 10%, transparent 90%);
+  mask-image: linear-gradient(0deg, black 10%, transparent 90%);
+  opacity: ${p => (p.$playing ? 0.9 : 0.4)};
+  transition: opacity 600ms ease;
+  animation: ${drift} 3s linear infinite;
+  animation-play-state: ${p => (p.$playing ? 'running' : 'paused')};
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
 export const Playhead = styled.div`
@@ -666,6 +705,18 @@ export const Stanzas = styled.div`
   flex-direction: column;
   gap: 4px;
   scrollbar-width: thin;
+  scrollbar-color: var(--line-control) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--line-control);
+    border-radius: 3px;
+  }
 
   ${NARROW} {
     overflow: visible;

@@ -7,6 +7,7 @@ import {
 } from '../lib/melodies';
 import { levelsAt, formatClock } from '../lib/playerMath';
 import { usePlayback } from '../lib/usePlayback';
+import { AmbientSky } from '../components/AmbientSky';
 import { NoteLadder } from '../components/NoteLadder';
 import { SkyMap } from '../components/SkyMap';
 import { SpectrogramStrip } from '../components/SpectrogramStrip';
@@ -43,6 +44,8 @@ export default function EarsPage() {
     queryFn: () => fetchPlayer(track as Track),
     enabled: !!track,
     staleTime: Infinity,
+    // a missing player.json is a 404: show the ambient fallback now instead of after ~7 s of retries
+    retry: (count, err) => !String(err).includes('404') && count < 2,
   });
   const player = playerQuery.data;
 
@@ -183,8 +186,10 @@ export default function EarsPage() {
     <Page>
       {header}
       {picker}
-      <Grid>
-        <LadderArea>{player && <NoteLadder player={player} time={time} active={started} />}</LadderArea>
+      <Grid $ladder={!playerQuery.isError}>
+        {!playerQuery.isError && (
+          <LadderArea>{player && <NoteLadder player={player} time={time} active={started} />}</LadderArea>
+        )}
 
         <MainArea>
           <div>
@@ -214,8 +219,12 @@ export default function EarsPage() {
               time={time}
               alt={`Brightness map of ${track.target.name}; the dot follows the music across it`}
             />
+          ) : playerQuery.isError ? (
+            <AmbientSky seed={track.id} playing={playback.playing} note="The map for this track isn't published yet" />
           ) : (
-            <Centered>{playerQuery.isError ? 'Map unavailable' : <StarithmLoader size={32} delay={0} />}</Centered>
+            <Centered>
+              <StarithmLoader size={32} delay={0} />
+            </Centered>
           )}
 
           <LabelRow>
@@ -225,7 +234,13 @@ export default function EarsPage() {
               {ringing.length ? ` · ${ringing.join(', ')}` : ''}
             </span>
           </LabelRow>
-          <SpectrogramStrip url={assetUrl(track, 'spectrogram.png')} time={time} duration={duration} onSeek={seek} />
+          <SpectrogramStrip
+            url={assetUrl(track, 'spectrogram.png')}
+            time={time}
+            duration={duration}
+            playing={playback.playing}
+            onSeek={seek}
+          />
 
           <TransportBar playback={playback} duration={duration} />
         </MainArea>

@@ -16,6 +16,9 @@ export function SkyMap({ mapUrl, player, time, alt }: Props) {
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [size, setSize] = useState({ w: 0, h: 0 });
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => setImageFailed(false), [mapUrl]);
 
   useEffect(() => {
     const box = boxRef.current;
@@ -101,7 +104,8 @@ export function SkyMap({ mapUrl, player, time, alt }: Props) {
   return (
     <MapFrame>
       <MapBox ref={boxRef} $ratio={ratio}>
-        <MapImage src={mapUrl} alt={alt} />
+        {/* if the image is missing, the real scan path still draws on the dark ground */}
+        {!imageFailed && <MapImage src={mapUrl} alt={alt} onError={() => setImageFailed(true)} />}
         <MapCanvas ref={canvasRef} aria-hidden="true" />
       </MapBox>
     </MapFrame>

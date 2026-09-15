@@ -68,7 +68,7 @@ export function StoryPanel({ track, player, time, onSeek }: Props) {
           {track.ai && (
             <>
               <br />
-              Poem written by an AI model ({track.ai.model.split('/').pop()}) from the measured data.
+              Poem written by an AI model from the measured data.
             </>
           )}
         </Credits>
