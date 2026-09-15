@@ -64,21 +64,11 @@ export const Brand = styled(Link)`
   }
 `;
 
-export const BrandMark = styled.span`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 1.5px solid var(--starithm-electric-violet);
-  display: grid;
-  place-items: center;
-
-  &::after {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--starithm-selective-yellow);
-  }
+/* the site's mark, same asset as the shell nav and homepage */
+export const BrandLogo = styled.img`
+  width: 24px;
+  height: 24px;
+  flex: none;
 `;
 
 export const BrandName = styled.span`
@@ -445,10 +435,11 @@ export const Transport = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 20;
+    /* !important: globals.css resets every element with "* { z-index: auto !important }", which let the
+       poem (painted later) cover the dock. A class selector wins over * at equal importance. */
+    z-index: 20 !important;
     padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
-    background: color-mix(in srgb, var(--surface-sunken) 94%, transparent);
-    backdrop-filter: blur(8px);
+    background: var(--surface-sunken); /* solid: text scrolling underneath must not show through */
     border-top: 1px solid var(--line-hairline);
     gap: 10px;
   }
@@ -600,7 +591,8 @@ export const VersionButton = styled.button<{ $active: boolean }>`
 `;
 
 export const PlaybackError = styled.div`
-  font-size: 11px;
+  font-family: var(--font-prose);
+  font-size: 12px;
   color: var(--starithm-selective-yellow);
 `;
 
@@ -688,10 +680,39 @@ export const LadderTag = styled.span`
   }
 `;
 
+/* absorption: the brand's blue, growing from the opposite end to the emission bar
+   (right on desktop, top on phones) so the two never hide each other */
+export const LadderAbsorb = styled.span`
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: calc(var(--absorb, 0) * 100%);
+  background: var(--starithm-link);
+  opacity: 0.85;
+  transition: width 220ms ease, height 220ms ease;
+
+  ${NARROW} {
+    top: 0;
+    bottom: auto;
+    width: 100%;
+    height: calc(var(--absorb, 0) * 100%);
+  }
+`;
+
+export const LadderTagAbsorb = styled.span`
+  color: var(--starithm-link);
+
+  &:not(:first-child) {
+    margin-left: 3px;
+  }
+`;
+
 export const LadderCaption = styled.p`
   margin: 12px 0 0;
-  font-size: 9.5px;
-  line-height: 1.7;
+  font-family: var(--font-prose); /* sentences: prose face per the type roles in globals.css */
+  font-size: 11px;
+  line-height: 1.6;
   color: var(--text-faint);
 `;
 
@@ -805,6 +826,16 @@ export const SpectrumAxis = styled.figcaption`
   font-size: 9px;
   color: var(--text-faint);
   font-variant-numeric: tabular-nums;
+
+  span {
+    white-space: nowrap;
+  }
+
+  span:nth-child(2) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 
 export const Credits = styled.div`
@@ -842,7 +873,8 @@ export const Notice = styled.div`
 
   p {
     margin: 0 0 18px;
-    font-size: 12.5px;
+    font-family: var(--font-prose);
+    font-size: 14px;
     line-height: 1.7;
     color: var(--text-muted);
   }

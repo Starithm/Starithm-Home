@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import type { PlayerData } from '../lib/melodies';
 import { friendlyLineName, lineSymbol } from '../lib/melodies';
-import { levelsAt } from '../lib/playerMath';
+import { absorptionAt, levelsAt } from '../lib/playerMath';
 import {
-  Ladder, LadderCaption, LadderFill, LadderHz, LadderRow, LadderTag, LadderTrack, Label,
+  Ladder, LadderAbsorb, LadderCaption, LadderFill, LadderHz, LadderRow, LadderTag, LadderTagAbsorb, LadderTrack, Label,
 } from '../styled_components/Ears.styled';
 
 interface Props {
@@ -14,37 +14,54 @@ interface Props {
 
 const LIT = 0.25;
 
-/* Every note of the scale, highest at the top, with how loud it is right now.
- * Notes tied to a detected spectral line carry its element symbol. */
+function averageLevels(rows: number[][] | undefined, voices: number): number[] {
+  if (!rows?.length) return Array(voices).fill(0);
+  return Array.from({ length: voices }, (_, k) => rows.reduce((sum, row) => sum + row[k], 0) / rows.length / 100);
+}
+
+/* Every note of the scale, highest at the top, with how loud it is right now. Violet bars are
+ * emission (tones); blue bars from the other end are absorption (breath). Notes tied to a detected
+ * spectral line carry its element symbol. */
 export function NoteLadder({ player, time, active }: Props) {
   // before playing, show each note's average over the whole song, faintly, so the ladder isn't blank
-  const idle = useMemo(
-    () => player.notes.map((_, k) => player.levels.reduce((sum, row) => sum + row[k], 0) / Math.max(1, player.levels.length) / 100),
-    [player],
-  );
+  const idle = useMemo(() => averageLevels(player.levels, player.notes.length), [player]);
+  const idleAbsorb = useMemo(() => averageLevels(player.absorption_levels, player.notes.length), [player]);
   const levels = active ? levelsAt(player, time) : idle;
-  const rows = player.notes.map((note, k) => ({ ...note, level: levels[k] })).reverse();
+  const absorb = active ? absorptionAt(player, time) : idleAbsorb;
+  const hasAbsorption = player.notes.some(n => n.absorption_lines?.length);
+  const rows = player.notes.map((note, k) => ({ ...note, level: levels[k], absorb: absorb[k] })).reverse();
 
   return (
     <>
       <Label>Note ladder · D minor pent.</Label>
       <Ladder aria-label="Notes of the scale and their current loudness">
         {rows.map(row => {
-          const lit = active && row.level >= LIT;
-          const style = { '--level': row.level.toFixed(3) } as React.CSSProperties;
-          const lineNames = row.lines.map(friendlyLineName).join(', ');
+          const lit = active && (row.level >= LIT || row.absorb >= LIT);
+          const style = { '--level': row.level.toFixed(3), '--absorb': row.absorb.toFixed(3) } as React.CSSProperties;
+          const absorbing = row.absorption_lines ?? [];
+          const names = [
+            ...row.lines.map(friendlyLineName),
+            ...absorbing.map(l => `${friendlyLineName(l)} (absorbing)`),
+          ].join(', ');
           return (
-            <LadderRow key={row.hz} $lit={lit} title={lineNames ? `${row.hz} Hz · ${lineNames}` : `${row.hz} Hz`}>
+            <LadderRow key={row.hz} $lit={lit} title={names ? `${row.hz} Hz · ${names}` : `${row.hz} Hz`}>
               <LadderHz>{row.hz.toFixed(1)}</LadderHz>
               <LadderTrack>
-                <LadderFill $lit={lit} style={style} />
+                <LadderFill $lit={active && row.level >= LIT} style={style} />
+                {absorbing.length > 0 && <LadderAbsorb style={style} />}
               </LadderTrack>
-              <LadderTag>{row.lines.length ? lineSymbol(row.lines) : ''}</LadderTag>
+              <LadderTag>
+                {row.lines.length ? lineSymbol(row.lines) : ''}
+                {absorbing.length > 0 && <LadderTagAbsorb>{lineSymbol(absorbing)}</LadderTagAbsorb>}
+              </LadderTag>
             </LadderRow>
           );
         })}
       </Ladder>
-      <LadderCaption>Shorter wavelength, higher note. Bars show how loud each note is right now.</LadderCaption>
+      <LadderCaption>
+        Shorter wavelength, higher note. Bars show how loud each note is right now
+        {hasAbsorption ? '; blue bars are light absorbed by cooler gas, heard as breath.' : '.'}
+      </LadderCaption>
     </>
   );
 }

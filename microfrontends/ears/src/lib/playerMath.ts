@@ -19,6 +19,16 @@ export function levelsAt(player: PlayerData, t: number): number[] {
   return a.map((v, k) => (v + (b[k] - v) * frac) / 100);
 }
 
+/** Absorption levels at time t, 0..1, in ascending pitch order (zeros for tracks published without them). */
+export function absorptionAt(player: PlayerData, t: number): number[] {
+  const rows = player.absorption_levels;
+  if (!rows?.length) return player.notes.map(() => 0);
+  const { i, j, frac } = around(player, t);
+  const a = rows[i];
+  const b = rows[j];
+  return a.map((v, k) => (v + (b[k] - v) * frac) / 100);
+}
+
 export function brightnessAt(player: PlayerData, t: number): number {
   if (!player.brightness.length) return 0;
   const { i, j, frac } = around(player, t);

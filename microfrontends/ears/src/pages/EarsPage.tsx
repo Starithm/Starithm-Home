@@ -5,7 +5,7 @@ import { StarithmLoader } from '@shared/components/StarithmLoader';
 import {
   MELODIES_BASE_URL, assetUrl, fetchDay, fetchIndex, fetchPlayer, friendlyLineName, targetKind, type Track,
 } from '../lib/melodies';
-import { levelsAt, formatClock } from '../lib/playerMath';
+import { absorptionAt, levelsAt, formatClock } from '../lib/playerMath';
 import { usePlayback } from '../lib/usePlayback';
 import { AmbientSky } from '../components/AmbientSky';
 import { NoteLadder } from '../components/NoteLadder';
@@ -15,7 +15,7 @@ import { StoryPanel } from '../components/StoryPanel';
 import { TrackPicker } from '../components/TrackPicker';
 import { TransportBar } from '../components/TransportBar';
 import {
-  AsideArea, Brand, BrandMark, BrandName, Centered, Crumb, Eyebrow, Grid, Header, HeaderMeta, KindTag,
+  AsideArea, Brand, BrandLogo, BrandName, Centered, Crumb, Eyebrow, Grid, Header, HeaderMeta, KindTag,
   LabelRow, LadderArea, Logline, MainArea, MetaLine, Notice, Page, TextButton, Title,
 } from '../styled_components/Ears.styled';
 
@@ -78,7 +78,7 @@ export default function EarsPage() {
   const header = (
     <Header>
       <Brand to="/">
-        <BrandMark aria-hidden="true" />
+        <BrandLogo src="/logo_without_name.png" alt="" aria-hidden="true" />
         <BrandName>STARITHM</BrandName>
         <Crumb>/</Crumb>
         <span>Ears to the Universe</span>
@@ -177,9 +177,11 @@ export default function EarsPage() {
   const son = track.sonification;
   const started = time > 0 || playback.playing;
   const ringing = player && started
-    ? Array.from(new Set(
-        levelsAt(player, time).flatMap((level, k) => (level >= 0.25 ? player.notes[k].lines.map(friendlyLineName) : [])),
-      ))
+    ? Array.from(new Set([
+        ...levelsAt(player, time).flatMap((level, k) => (level >= 0.25 ? player.notes[k].lines.map(friendlyLineName) : [])),
+        ...absorptionAt(player, time).flatMap((level, k) =>
+          level >= 0.25 ? (player.notes[k].absorption_lines ?? []).map(l => `${friendlyLineName(l)} (absorbing)`) : []),
+      ]))
     : [];
 
   return (

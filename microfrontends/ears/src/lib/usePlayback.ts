@@ -67,7 +67,11 @@ export function usePlayback(sources: Record<Version, string> | null, duration: n
     const sameTrack = lastSources.current === sources; // only the version changed
     lastSources.current = sources;
     const resumeAt = sameTrack ? audio.currentTime : Math.max(0, Math.min(startAtRef.current, duration));
-    const resumePlaying = sameTrack && !audio.paused;
+    // Keep listening across a track or version switch. Browsers pause silently inside load() without
+    // firing 'pause', which left the button showing "playing" over silence; pausing explicitly first
+    // keeps the button honest, and the new source starts once it has loaded.
+    const resumePlaying = !audio.paused;
+    audio.pause();
     setReady(false);
     setError(null);
     if (!sameTrack) setTime(resumeAt);

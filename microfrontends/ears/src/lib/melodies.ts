@@ -79,15 +79,19 @@ export interface PlayerData {
   version: 1;
   duration_s: number;
   grid: { width: number; height: number };
+  /** How the song walks the target (absent on early tracks, which were serpentine). */
+  scan?: 'spiral' | 'serpentine';
   /** [song time s, x, y] per region; x, y in 0..1 of the map image, origin top-left. */
   path: [number, number, number][];
-  notes: { hz: number; lines: string[] }[];
-  /** Per region, per note, 0..100. */
+  notes: { hz: number; lines: string[]; absorption_lines?: string[] }[];
+  /** Per region, per note, 0..100: emission, which rings. */
   levels: number[][];
+  /** Per region, per note, 0..100: absorption, which breathes (absent on early tracks). */
+  absorption_levels?: number[][];
   /** Per region, 0..100. */
   brightness: number[];
   spectrum: { wave_um: number[]; flux: number[] };
-  lines: { line: string; observed_um: number; kind: 'emission' | 'absorption' }[];
+  lines: { line: string; observed_um: number; kind: 'emission' | 'absorption'; velocity_kms?: number }[];
   spectrogram: { f_min_hz: number; f_max_hz: number; scale: 'log'; columns_per_second: number };
 }
 
