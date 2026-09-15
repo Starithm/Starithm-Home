@@ -5,7 +5,7 @@ import { API_ENDPOINTS } from '@shared/lib/config';
 import {
   applyFilters, groupByDate, circularType, primaryInstrument, gcnNumber,
   isFiltered, EMPTY_FILTERS, TYPE_TABS, DATE_RANGES, INSTRUMENTS, TYPE_COLORS, circularSubject,
-  PER_PAGE_DEFAULT, T,
+  PER_PAGE_DEFAULT,
   type ArchiveFilters, type TypeTab, type DateRange,
 } from '@novatrace/lib/circularArchive';
 import {
@@ -250,7 +250,7 @@ export default function CircularArchive() {
                       <Row key={a.alertKey ?? a.id} onClick={() => setOpenId(gcnNumber(a))}
                         title={`${circularSubject(a)} · ${primaryInstrument(a)}`}>
                         <RowTime>{timeOf(a)}</RowTime>
-                        <RowType $color={TYPE_COLORS[type] ?? T.muted}>{type}</RowType>
+                        <RowType $color={TYPE_COLORS[type] ?? 'var(--text-muted)'}>{type}</RowType>
                         <RowSubject>{circularSubject(a)}</RowSubject>
                         <RowGcn>{a.alertKey ?? ''}</RowGcn>
                       </Row>

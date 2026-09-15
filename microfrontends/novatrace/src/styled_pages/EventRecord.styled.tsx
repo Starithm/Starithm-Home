@@ -392,8 +392,14 @@ export const Card = styled.div`
 
 export const Prose = styled.p`
   margin: 0;
+  /* Prose face, not the page's mono: monospace flattens word-shapes and costs
+     real reading speed over multi-sentence text. Measurements keep the mono. */
+  font-family: var(--font-prose);
   font-size: ${fs(13)};
-  line-height: 1.85;
+  line-height: 1.7;
+  /* Was uncapped against a ~1100px column — about 120 characters per line, well
+     past the 45–75 readable range. */
+  max-width: var(--measure);
   color: ${line(0.72)};
   /* Italic marks the summary as model-written rather than reported text. */
   font-style: italic;
@@ -660,8 +666,10 @@ export const CircTop = styled.div`
 `;
 
 export const CircSummary = styled.div`
+  font-family: var(--font-prose);
   font-size: ${fs(12.5)};
-  line-height: 1.6;
+  line-height: 1.65;
+  max-width: var(--measure);
   color: ${line(0.75)};
 `;
 
@@ -708,6 +716,89 @@ export const ValueChip = styled.span`
     color: inherit;
     &::after { content: '='; margin: 0 6px; color: ${line(0.45)}; }
   }
+`;
+
+/* Extracted key/value measurements. Replaced a wrapping pill cloud: pills are
+   `white-space: nowrap`, so a single over-precise value (the pipeline emits things
+   like dec = 24.192480555555555) blew out the row, and values never lined up so
+   magnitude and its upper limit could not be compared at a glance. */
+/* Compact "Show N more" for the collapsed card preview. Deliberately lighter than
+   GhostButton — it sits inside a dense list, so it reads as a table affordance
+   rather than a second action competing with the card's own controls. */
+export const ShowMore = styled.button`
+  ${mono};
+  background: none;
+  border: none;
+  padding: 5px 10px;
+  font-size: ${fs(10)};
+  letter-spacing: 0.04em;
+  color: ${line(0.55)};
+  cursor: pointer;
+  &:hover { color: ${PLATINUM}; }
+  &:focus-visible { outline: 1px solid ${ARC_OUTER}; outline-offset: 2px; }
+`;
+
+/* Footnote under a preview table: signals tabular payload without rendering it. */
+export const MeasureNote = styled.div`
+  ${mono};
+  font-size: ${fs(9.5)};
+  letter-spacing: 0.04em;
+  color: ${line(0.42)};
+  padding: 2px 10px 0;
+`;
+
+export const CircMeasures = styled.div`
+  align-self: start;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  ${'$'}{'' /* the table is already capped; let it fill this narrower column */}
+  table { max-width: 100%; margin-bottom: 0; }
+`;
+
+export const MeasureTable = styled.table`
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 0 14px;
+
+  td {
+    padding: 6px 10px;
+    border-bottom: 1px solid ${line(0.08)};
+    vertical-align: baseline;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* The VALUE column is the one that shrink-wraps (width:1% + nowrap); the key
+     column takes the remainder and is allowed to wrap. Doing it the other way
+     round let a long key like "flux 4 20 kev erg cm2 s first window" consume the
+     whole 300px cell and squeezed values down to one character per line. */
+  td.k {
+    color: ${line(0.6)};
+    font-size: ${fs(10.5)};
+    letter-spacing: 0.03em;
+    line-height: 1.45;
+    /* Wrap at spaces — keys read as words ("flux 4 20 kev erg cm2 s first window").
+       break-word (not anywhere) so only a single token too long for the cell is
+       ever split mid-word. */
+    overflow-wrap: break-word;
+    word-break: normal;
+    padding-right: 14px;
+  }
+  td.v {
+    color: ${PLATINUM};
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-size: ${fs(11)};
+    width: 1%;
+    white-space: nowrap;
+  }
+  /* The redshift row keeps the violet ribbon the pill carried, so the one value
+     readers look for first stays findable in a uniform grid. */
+  tr.z td.k { border-left: 3px solid ${ARC_OUTER}; padding-left: 8px; }
+  tr.z td.v { color: ${PLATINUM}; }
 `;
 
 export const TableWrap = styled.div`
@@ -844,7 +935,9 @@ export const MiniLabel = styled.div`
 /* Collapsed circular row: id · facility · summary · tags · date */
 export const CircGrid = styled.div`
   display: grid;
-  grid-template-columns: 92px 128px minmax(0, 1fr) auto auto;
+  /* summary | measurements | chips | date — the measures column reuses the
+     space the capped prose leaves rather than stacking below the card. */
+  grid-template-columns: 92px 128px minmax(0, 1fr) minmax(0, 340px) auto auto;
   gap: 14px;
   align-items: baseline;
   width: 100%;
@@ -909,7 +1002,8 @@ export const TableHead = styled.div`
 export const Disclaimer = styled.div`
   margin-top: 12px;
   font-size: ${fs(11)};
-  color: ${line(0.3)};
+  /* Was line(0.3) = 2.27:1, below the 4.5:1 AA floor and effectively invisible. */
+  color: ${line(0.55)};
 `;
 
 

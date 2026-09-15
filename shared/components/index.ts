@@ -2,9 +2,6 @@
 export { Loading, LoadingCompact } from './ui/loading';
 export { ErrorComponent, ErrorComponentCompact } from './ui/error';
 
-// Toast Components
-export { Toaster } from './ui/toaster';
-export * from './ui/toast';
 
 // Theme Components
 export { UnifiedThemeProvider, useTheme } from './UnifiedThemeProvider';
@@ -26,3 +23,6 @@ export * from './ui/label';
 export * from './ui/select';
 export * from './ui/tooltip';
 export * from './ui/celestial-sphere';
+
+// Layout primitives (design-library step 3)
+export * from './ui/primitives';

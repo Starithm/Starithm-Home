@@ -16,11 +16,11 @@ import {
   NarrowRow, NarrowBar, Muted, PositionSplit, Panel, PanelFoot,
   Row, Stack, Topic, Phase, PayloadWrap, PayloadTable,
   Tabs, Tab, CircCard, CircHead, CircTop, CircSummary, Chip, CircBody,
-  ValueChips, ValueChip, TableWrap, Table, RawText, InlineActions,
+  MeasureTable, ShowMore, MeasureNote, CircMeasures, TableWrap, Table, RawText, InlineActions,
   Cite, Empty, Figures, Figure,
   UrlList, UrlLink, MiniLabel, CircGrid, CircId, CircFacility, CircDate,
-  TableChip, MetaLine, TableHead, Disclaimer, Chart, SIGNIFICANCE,
-  RedshiftPill, RedshiftChip, RedshiftNote,
+  MetaLine, TableHead, Disclaimer, Chart, SIGNIFICANCE,
+  RedshiftPill, RedshiftNote,
 } from '../styled_pages/EventRecord.styled';
 import { eventRedshifts, needsLabel, readRedshift } from '../utils/redshift';
 
@@ -107,6 +107,25 @@ const fmtErr = (deg: number) =>
 const REDSHIFT_KEYS = new Set(['redshift', 'z', 'redshift_z']);
 
 /** Scalar measurements worth surfacing as chips (nulls and tables excluded). */
+/**
+ * Trim absurd float precision before display. The extractor round-trips through JSON
+ * floats, so a declination arrives as "24.192480555555555" — 17 significant figures for
+ * a value good to about 5. Left alone it dominates the value column. Only plain decimal
+ * numbers are touched; anything non-numeric passes through intact.
+ */
+function fmtMeasure(v: string): string {
+  const t = v.trim();
+  if (!/^-?\d*\.?\d+$/.test(t)) return v;
+  const n = Number(t);
+  if (!Number.isFinite(n)) return v;
+  if ((t.split('.')[1] || '').length <= 6) return v;
+  return String(Number(n.toFixed(6)));
+}
+
+/* Rows shown in a collapsed card before "Show N more". Four keeps a dense list
+   scannable while still showing the values readers check first. */
+const PREVIEW_ROWS = 4;
+
 function scalarValues(m: Record<string, any> | undefined): Array<[string, string]> {
   if (!m) return [];
   const out: Array<[string, string]> = [];
@@ -224,6 +243,8 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
   const [openNotice, setOpenNotice] = useState<Set<string>>(new Set());
   const [openCirc, setOpenCirc] = useState<Set<string>>(new Set());
   const [circView, setCircView] = useState<Record<string, 'parsed' | 'raw' | 'files'>>({});
+  /* Which collapsed cards have their measurement table expanded past PREVIEW_ROWS. */
+  const [valsOpen, setValsOpen] = useState<Set<string>>(new Set());
   const [circFilter, setCircFilter] = useState<'all' | 'parsed' | 'tables'>('all');
   const [coordFmt, setCoordFmt] = useState<'hms' | 'deg'>('hms');
   const contentRef = useRef<HTMLElement>(null);
@@ -611,6 +632,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                 const open = openCirc.has(c.alertKey);
                 const view = circView[c.alertKey] || 'parsed';
                 const vals = scalarValues(c.data?.measurements);
+                const showAll = valsOpen.has(c.alertKey);
                 const z = readRedshift(c.data?.measurements);
                 const tables: Array<Record<string, any>> = Array.isArray(c.data?.measurements?.tables)
                   ? c.data!.measurements!.tables : [];
@@ -624,27 +646,55 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                         <CircId>{c.alertKey}</CircId>
                         <CircFacility>{(c.data?.telescopes?.facilities || [])[0] || '—'}</CircFacility>
                         <CircSummary>{c.summary}</CircSummary>
+                        {/* Measurements ride in their own grid column beside the summary, filling
+                            space the capped prose leaves. Clicking the cell still toggles the card;
+                            only Show more stops propagation. */}
+                        <CircMeasures>
+                          {!open && (vals.length > 0 || z) && (
+                            <>
+                              <MiniLabel style={{ margin: '0 0 4px' }}>Extracted</MiniLabel>
+                              <MeasureTable>
+                                <tbody>
+                                  {z && (
+                                    <tr className="z">
+                                      <td className="k">redshift</td>
+                                      <td className="v">{z.display}</td>
+                                    </tr>
+                                  )}
+                                  {(showAll ? vals : vals.slice(0, PREVIEW_ROWS)).map(([k, v]) => (
+                                    <tr key={k}>
+                                      <td className="k">{k}</td>
+                                      <td className="v">{fmtMeasure(v)}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </MeasureTable>
+                              {vals.length > PREVIEW_ROWS && (
+                                <ShowMore
+                                  onClick={e => {
+                                    e.stopPropagation();   /* the cell toggles the card; this must not */
+                                    setValsOpen(s => {
+                                      const n = new Set(s);
+                                      n.has(c.alertKey) ? n.delete(c.alertKey) : n.add(c.alertKey);
+                                      return n;
+                                    });
+                                  }}
+                                >
+                                  {showAll ? 'Show less' : `Show ${vals.length - PREVIEW_ROWS} more`}
+                                </ShowMore>
+                              )}
+                              {tables.length > 0 && (
+                                <MeasureNote>+ {tables.length} row table in Parsed view</MeasureNote>
+                              )}
+                            </>
+                          )}
+                        </CircMeasures>
                         <span style={{ display: 'flex', gap: 6 }}>
                           {(c.tags || []).slice(0, 2).map(tg => <Chip key={tg}>{tg}</Chip>)}
                           {figs.length > 0 && <Chip>{figs.length} fig</Chip>}
                         </span>
                         <CircDate>{tPlus(event.t0, c.date)}</CircDate>
                       </CircGrid>
-                      {/* Collapsed preview only — once open, the Parsed tab shows the same
-                          values, so showing both duplicates them. */}
-                      {!open && (vals.length > 0 || z) && (
-                        <ValueChips style={{ margin: '8px 0 0', alignItems: 'center' }}>
-                          <MiniLabel style={{ margin: 0, marginRight: 6 }}>Extracted</MiniLabel>
-                          {z && <RedshiftChip>{needsLabel(z.display) && <b>z</b>}{z.display}</RedshiftChip>}
-                          {vals.slice(0, 6).map(([k, v]) => (
-                            <ValueChip key={k}><b>{k}</b>{v}</ValueChip>
-                          ))}
-                          {vals.length > 6 && <Chip>+{vals.length - 6} more</Chip>}
-                          {tables.length > 0 && (
-                            <TableChip>+ {tables.length} rows · table</TableChip>
-                          )}
-                        </ValueChips>
-                      )}
                     </CircHead>
 
                     {figs.length > 0 && (
@@ -679,12 +729,22 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                           <>
                             {(vals.length > 0 || z) && <MiniLabel>Extracted</MiniLabel>}
                             {(vals.length > 0 || z) && (
-                              <ValueChips>
-                                {z && <RedshiftChip>{needsLabel(z.display) && <b>z</b>}{z.display}</RedshiftChip>}
-                                {vals.map(([k, v]) => (
-                                  <ValueChip key={k}><b>{k}</b>{v}</ValueChip>
-                                ))}
-                              </ValueChips>
+                              <MeasureTable>
+                                <tbody>
+                                  {z && (
+                                    <tr className="z">
+                                      <td className="k">redshift</td>
+                                      <td className="v">{z.display}</td>
+                                    </tr>
+                                  )}
+                                  {vals.map(([k, v]) => (
+                                    <tr key={k}>
+                                      <td className="k">{k}</td>
+                                      <td className="v">{fmtMeasure(v)}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </MeasureTable>
                             )}
                             {tables.map((_, ti) => {
                               const rows = tables;

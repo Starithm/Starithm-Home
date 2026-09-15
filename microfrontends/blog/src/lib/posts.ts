@@ -1,7 +1,6 @@
 const GITHUB_REPO = 'Starithm/starithm-blog-posts';
 const GITHUB_BRANCH = 'main';
 const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}`;
-const API_BASE = `https://api.github.com/repos/${GITHUB_REPO}/contents/posts`;
 
 export interface PostMeta {
   slug: string;
@@ -40,8 +39,6 @@ function parseFrontmatter(raw: string): { meta: Partial<PostMeta>; content: stri
   return { meta, content: match[2].trim() };
 }
 
-const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
-const GITHUB_HEADERS = GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {};
 
 export async function fetchPostList(): Promise<Post[]> {
   // Single request: index.json contains all post frontmatter sorted by date

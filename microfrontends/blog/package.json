@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "npx tsx scripts/generate-sitemap.ts && vite build && npx tsx scripts/prerender-posts.ts",
+    "build": "npx tsx scripts/generate-sitemap.ts && rm -rf dist && mkdir -p dist && cp -R public/. dist/ && npx tsx scripts/prerender-posts.ts",
     "preview": "vite preview"
   },
   "dependencies": {
