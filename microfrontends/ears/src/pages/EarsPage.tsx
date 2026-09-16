@@ -190,7 +190,9 @@ export default function EarsPage() {
       {picker}
       <Grid $ladder={!playerQuery.isError}>
         {!playerQuery.isError && (
-          <LadderArea>{player && <NoteLadder player={player} time={time} active={started} />}</LadderArea>
+          <LadderArea>
+            {player && <NoteLadder player={player} time={time} active={started} scale={son?.scale} />}
+          </LadderArea>
         )}
 
         <MainArea>

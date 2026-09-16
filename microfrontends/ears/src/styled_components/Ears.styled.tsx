@@ -789,6 +789,35 @@ export const StanzaText = styled.p<{ $active: boolean }>`
   transition: color 650ms ease;
 `;
 
+/* ---- how the track was dressed ---- */
+
+export const Arrangement = styled.section`
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-hairline);
+`;
+
+export const Instruments = styled.div`
+  font-family: var(--font-prose);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-body);
+`;
+
+export const ArrangementReason = styled.p`
+  margin: 0;
+  max-width: var(--measure);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+`;
+
 export const Science = styled.section`
   flex: none;
   display: flex;

@@ -10,9 +10,17 @@ interface Props {
   player: PlayerData;
   time: number;
   active: boolean;
+  /** e.g. "D minor pentatonic". Every track chooses its own key and scale, so this is never assumed. */
+  scale?: string;
 }
 
 const LIT = 0.25;
+
+/* The ladder sits in a ~120px column, so full scale names like "D suspended pentatonic" wrap onto
+ * a second line and push the rungs down. Shorten the words, keep the key. */
+function shortScale(scale: string): string {
+  return scale.replace(/\bsuspended\b/i, 'sus.').replace(/\bpentatonic\b/i, 'pent.');
+}
 
 function averageLevels(rows: number[][] | undefined, voices: number): number[] {
   if (!rows?.length) return Array(voices).fill(0);
@@ -22,7 +30,7 @@ function averageLevels(rows: number[][] | undefined, voices: number): number[] {
 /* Every note of the scale, highest at the top, with how loud it is right now. Violet bars are
  * emission (tones); blue bars from the other end are absorption (breath). Notes tied to a detected
  * spectral line carry its element symbol. */
-export function NoteLadder({ player, time, active }: Props) {
+export function NoteLadder({ player, time, active, scale }: Props) {
   // before playing, show each note's average over the whole song, faintly, so the ladder isn't blank
   const idle = useMemo(() => averageLevels(player.levels, player.notes.length), [player]);
   const idleAbsorb = useMemo(() => averageLevels(player.absorption_levels, player.notes.length), [player]);
@@ -33,7 +41,7 @@ export function NoteLadder({ player, time, active }: Props) {
 
   return (
     <>
-      <Label>Note ladder · D minor pent.</Label>
+      <Label>{scale ? `Note ladder · ${shortScale(scale)}` : 'Note ladder'}</Label>
       <Ladder aria-label="Notes of the scale and their current loudness">
         {rows.map(row => {
           const lit = active && (row.level >= LIT || row.absorb >= LIT);
