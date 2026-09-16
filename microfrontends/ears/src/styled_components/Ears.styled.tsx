@@ -721,7 +721,9 @@ export const LadderCaption = styled.p`
 export const Stanzas = styled.div`
   position: relative;
   overflow-y: auto;
-  min-height: 0;
+  /* The poem is the only shrinkable child of a height-capped column, so it absorbs the whole
+   * shortfall whenever a sibling is added and can collapse to a hairline. It still scrolls. */
+  min-height: 120px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -796,6 +798,7 @@ export const Arrangement = styled.section`
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-top: 18px;
   padding-top: 14px;
   border-top: 1px solid var(--line-hairline);
 `;
