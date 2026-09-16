@@ -8,6 +8,7 @@ import {
 import { absorptionAt, levelsAt, formatClock } from '../lib/playerMath';
 import { usePlayback } from '../lib/usePlayback';
 import { AmbientSky } from '../components/AmbientSky';
+import { ArrangementNote } from '../components/ArrangementNote';
 import { NoteLadder } from '../components/NoteLadder';
 import { SkyMap } from '../components/SkyMap';
 import { SpectrogramStrip } from '../components/SpectrogramStrip';
@@ -192,6 +193,7 @@ export default function EarsPage() {
         {!playerQuery.isError && (
           <LadderArea>
             {player && <NoteLadder player={player} time={time} active={started} scale={son?.scale} />}
+            <ArrangementNote track={track} />
           </LadderArea>
         )}
 

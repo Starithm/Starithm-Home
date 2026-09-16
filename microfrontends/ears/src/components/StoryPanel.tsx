@@ -2,8 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { PlayerData, Track } from '../lib/melodies';
 import { chapterIndex, formatClock } from '../lib/playerMath';
 import {
-  Arrangement, ArrangementReason, Credits, Instruments, Label, Science, SciencePara, Stanza, StanzaHead,
-  StanzaText, Stanzas,
+  Credits, Label, Science, SciencePara, Stanza, StanzaHead, StanzaText, Stanzas,
 } from '../styled_components/Ears.styled';
 import { SpectrumPlot } from './SpectrumPlot';
 
@@ -12,18 +11,6 @@ interface Props {
   player: PlayerData | undefined;
   time: number;
   onSeek: (t: number) => void;
-}
-
-const ROOM: Record<string, string> = {
-  room: 'a small room',
-  hall: 'a warm hall',
-  cathedral: 'a vast, echoing space',
-};
-
-/** "violas, concert harp and contrabass" */
-function readableList(items: string[]): string {
-  if (items.length < 2) return items[0] ?? '';
-  return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
 }
 
 /* The poem, one stanza per chapter of the song. The stanza being heard is lit; selecting a
@@ -62,21 +49,6 @@ export function StoryPanel({ track, player, time, onSeek }: Props) {
             </Stanza>
           ))}
         </Stanzas>
-      )}
-
-      {track.arrangement && track.arrangement.instruments?.length > 0 && (
-        <Arrangement>
-          <Label>How it sounds</Label>
-          <Instruments>
-            {readableList(track.arrangement.instruments)}
-            {track.arrangement.scale ? `, in ${track.arrangement.scale}` : ''}
-            {track.arrangement.space && ROOM[track.arrangement.space]
-              ? `, heard in ${ROOM[track.arrangement.space]}`
-              : ''}
-            .
-          </Instruments>
-          {track.arrangement.reason && <ArrangementReason>{track.arrangement.reason}</ArrangementReason>}
-        </Arrangement>
       )}
 
       <Science>
