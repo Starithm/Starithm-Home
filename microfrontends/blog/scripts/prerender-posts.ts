@@ -7,6 +7,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+// Same helpers the edge prerenderers use — the strip-then-inject rule in particular must
+// not drift between the two, or one surface regrows the duplicate-og:tag bug.
+import { esc, injectHead, truncate } from '../../../api/_shared/prerender';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -21,10 +24,13 @@ const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRAN
 // always used it, which is exactly why that step succeeded in the same failing build.
 const INDEX_URL = `${RAW_BASE}/posts/index.json`;
 const SITE_BASE = 'https://starithm.ai';
+const DEFAULT_OG_IMAGE = `${SITE_BASE}/og/starithm-share.png`;
 
 interface PostMeta {
   slug: string; title: string; date: string; category: string;
   excerpt: string; arxiv_id: string; arxiv_url: string; authors: string; read_time: string;
+  /** Optional per-post share card; falls back to the site-wide card. Frontmatter: `image`. */
+  image: string;
 }
 interface Post extends PostMeta { content: string; }
 
@@ -79,22 +85,72 @@ function markdownToHtml(md: string): string {
   return out.join('\n');
 }
 
+/** The tags every page needs, in one place, so no surface ships a partial set.
+ *  Twitter reads twitter:* in preference to og:*, so omitting them (as this script did
+ *  until 2026-09-16) makes every post share as the generic site card on X. */
+function socialTags(o: {
+  /** Browser tab / search result title. */
+  title: string;
+  /** Card headline; defaults to `title`. Kept separate because unfurlers render
+   *  og:site_name themselves, so "… | Starithm Blog" in the card wastes width. */
+  cardTitle?: string;
+  description: string; url: string; type: 'article' | 'website';
+  image: string; imageAlt: string; author?: string; publishedTime?: string; section?: string;
+}): string {
+  const cardTitle = o.cardTitle ?? o.title;
+  // Dimensions are only asserted for the site card, whose size we know. Claiming
+  // 1200x630 for a per-post image of some other shape makes unfurlers reserve the
+  // wrong box and render a stretched or letterboxed card.
+  const isDefaultImage = o.image === DEFAULT_OG_IMAGE;
+
+  return [
+    `<title>${esc(o.title)}</title>`,
+    `<meta name="description" content="${esc(o.description)}" />`,
+    `<link rel="canonical" href="${o.url}" />`,
+    `<meta property="og:type" content="${o.type}" />`,
+    `<meta property="og:site_name" content="Starithm" />`,
+    `<meta property="og:title" content="${esc(cardTitle)}" />`,
+    `<meta property="og:description" content="${esc(o.description)}" />`,
+    `<meta property="og:url" content="${o.url}" />`,
+    `<meta property="og:image" content="${esc(o.image)}" />`,
+    ...(isDefaultImage
+      ? [
+          `<meta property="og:image:width" content="1200" />`,
+          `<meta property="og:image:height" content="630" />`,
+          `<meta property="og:image:type" content="image/png" />`,
+        ]
+      : []),
+    `<meta property="og:image:alt" content="${esc(o.imageAlt)}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${esc(cardTitle)}" />`,
+    `<meta name="twitter:description" content="${esc(o.description)}" />`,
+    `<meta name="twitter:image" content="${esc(o.image)}" />`,
+    `<meta name="twitter:image:alt" content="${esc(o.imageAlt)}" />`,
+    ...(o.author ? [`<meta name="author" content="${esc(o.author)}" />`] : []),
+    ...(o.publishedTime ? [`<meta property="article:published_time" content="${esc(o.publishedTime)}" />`] : []),
+    ...(o.author ? [`<meta property="article:author" content="${esc(o.author)}" />`] : []),
+    ...(o.section ? [`<meta property="article:section" content="${esc(o.section)}" />`] : []),
+  ].join('\n  ');
+}
+
 function buildHtml(post: Post, template: string): string {
   const url = `${SITE_BASE}/blog/posts/${post.slug}`;
-  const esc = (s: string) => s.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const description = esc(post.excerpt.slice(0, 160));
-  const title = esc(post.title);
+  // Cards are cut on a word boundary — a hard 160-char slice ended posts mid-word
+  // ("...with a sh"). 200 is within what Facebook, Slack and X display.
+  const description = truncate(post.excerpt, 200);
 
-  const metaTags = [
-    `<title>${post.title} | Starithm Blog</title>`,
-    `<meta name="description" content="${description}" />`,
-    `<meta property="og:title" content="${title}" />`,
-    `<meta property="og:description" content="${description}" />`,
-    `<meta property="og:url" content="${url}" />`,
-    `<meta property="og:type" content="article" />`,
-    `<meta name="author" content="${esc(post.authors)}" />`,
-    `<link rel="canonical" href="${url}" />`,
-  ].join('\n  ');
+  const metaTags = socialTags({
+    title: `${post.title} | Starithm Blog`,
+    cardTitle: post.title,
+    description,
+    url,
+    type: 'article',
+    image: post.image || DEFAULT_OG_IMAGE,
+    imageAlt: post.image ? post.title : "Starithm: Astronomy's memory layer",
+    author: post.authors,
+    publishedTime: post.date,
+    section: post.category,
+  });
 
   const contentHtml = markdownToHtml(post.content);
 
@@ -111,10 +167,7 @@ function buildHtml(post: Post, template: string): string {
 </div>
 <script>document.getElementById('__prerender__').style.display='none';</script>`;
 
-  return template
-    .replace(/<title>[^<]*<\/title>/, '')           // remove existing title
-    .replace(/(<head[^>]*>)/, `$1\n  ${metaTags}`)  // inject our SEO tags (includes title)
-    .replace(/(<body[^>]*>)/, `$1\n${noscript}`);
+  return injectHead(template, metaTags, noscript);
 }
 
 function buildTemplate(distDir: string): string {
@@ -155,6 +208,7 @@ async function main() {
         arxiv_url: meta.arxiv_url || '',
         authors: meta.authors || '',
         read_time: meta.read_time || '5 min read',
+        image: meta.image || '',
         content,
       } as Post;
     })
@@ -182,19 +236,17 @@ async function main() {
 </div>
 <script>document.getElementById('__prerender__').style.display='none';</script>`;
 
-  const listMetaTags = [
-    `<title>Starithm Blog | Astronomy Research & Engineering</title>`,
-    `<meta name="description" content="Astronomy research summaries, multi-messenger astrophysics insights, and engineering updates from the Starithm team." />`,
-    `<meta property="og:title" content="Starithm Blog" />`,
-    `<meta property="og:description" content="Astronomy research summaries and engineering updates from Starithm." />`,
-    `<meta property="og:url" content="${SITE_BASE}/blog" />`,
-    `<link rel="canonical" href="${SITE_BASE}/blog" />`,
-  ].join('\n  ');
+  const listMetaTags = socialTags({
+    title: 'Starithm Blog | Astronomy Research & Engineering',
+    cardTitle: 'Starithm Blog',
+    description: 'Astronomy research summaries, multi-messenger astrophysics insights, and engineering updates from the Starithm team.',
+    url: `${SITE_BASE}/blog`,
+    type: 'website',
+    image: DEFAULT_OG_IMAGE,
+    imageAlt: "Starithm: Astronomy's memory layer",
+  });
 
-  const listHtml = template
-    .replace(/<title>[^<]*<\/title>/, '')
-    .replace(/(<head[^>]*>)/, `$1\n  ${listMetaTags}`)
-    .replace(/(<body[^>]*>)/, `$1\n${listNoscript}`);
+  const listHtml = injectHead(template, listMetaTags, listNoscript);
 
   fs.writeFileSync(path.join(distDir, 'index.html'), listHtml);
   console.log(`  ✓ blog list page (index.html)`);
