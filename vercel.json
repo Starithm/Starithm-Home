@@ -22,8 +22,10 @@
       { "source": "/blog/posts/(.*)", "destination": "/index.html" },
       { "source": "/blog/(.*)", "destination": "/index.html" },
 
-      { "source": "/ears-to-the-universe", "destination": "/index.html" },
-      { "source": "/ears-to-the-universe/", "destination": "/index.html" },
+      { "source": "/ears-to-the-universe", "destination": "/api/melody-page" },
+      { "source": "/ears-to-the-universe/", "destination": "/api/melody-page" },
+      { "source": "/ears-to-the-universe/:date", "destination": "/api/melody-page" },
+      { "source": "/ears-to-the-universe/:date/:trackId", "destination": "/api/melody-page" },
       { "source": "/ears-to-the-universe/(.*)", "destination": "/index.html" },
 
       { "source": "/sso-callback", "destination": "/index.html" },
