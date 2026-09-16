@@ -1,0 +1,58 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1200px; height:630px; background:#0E0B16; overflow:hidden; position:relative;
+         font-family:'Google Sans Code',ui-monospace,monospace; }
+  /* Same purple bloom behind the mark as the site card */
+  .glow { position:absolute; right:-60px; top:50%; transform:translateY(-50%);
+          width:760px; height:760px; border-radius:50%;
+          background:radial-gradient(circle, rgba(141,15,245,.34) 0%, rgba(141,15,245,.10) 42%, transparent 66%); }
+  .mark { position:absolute; right:96px; top:50%; transform:translateY(-50%); width:330px; height:335px; }
+  .wrap { position:absolute; left:64px; top:0; height:630px; width:660px;
+          display:flex; flex-direction:column; justify-content:center; }
+  .brand { position:absolute; top:84px; left:64px; }
+  .brand span { font-size:21px; letter-spacing:.34em; color:#F3EFEE; font-weight:500; }
+  .eyebrow { font-size:14.5px; letter-spacing:.30em; color:#8E8496; margin-bottom:26px; }
+  h1 { font-family:Newsreader,Georgia,serif; font-weight:300; font-size:82px; line-height:1.02;
+       color:#F3EFEE; letter-spacing:-.015em; }
+  h1 em { font-style:italic; color:#B57CFF; }
+  .sub { font-family:Newsreader,Georgia,serif; font-size:27px; line-height:1.5; color:#BDB4C4;
+         margin-top:30px; max-width:540px; }
+  .url { position:absolute; bottom:78px; left:64px; font-size:17px; color:#FFB400; letter-spacing:.02em; }
+  /* Thin spectrogram strip along the bottom edge: the one cue that this page is sound. */
+  .bars { position:absolute; left:0; right:0; bottom:0; height:44px; display:flex; align-items:flex-end;
+          gap:3px; padding:0 2px; opacity:.34;
+          mask-image:linear-gradient(90deg, rgba(0,0,0,.95) 0%, rgba(0,0,0,.55) 55%, transparent 97%); }
+  .bars i { flex:1; background:linear-gradient(180deg,#9D5CFF 0%,rgba(157,92,255,.18) 100%); border-radius:1px; }
+</style></head>
+<body>
+  <div class="glow"></div>
+  <svg class="mark" viewBox="0 0 426 432">
+    <path d="M 178.8 290.4 A 70 70 0 1 1 291.9 208.4" fill="none" stroke="#9D5CFF" stroke-width="21" stroke-linecap="round"/>
+    <path d="M 136.8 316.3 A 119 119 0 1 1 329.3 176.2" fill="none" stroke="#9D5CFF" stroke-width="21" stroke-linecap="round" opacity=".7"/>
+    <path d="M 95.1 342.1 A 168 168 0 0 1 366.7 144.4" fill="none" stroke="#9D5CFF" stroke-width="20" stroke-linecap="round" opacity=".42"/>
+    <circle cx="232.5" cy="245.5" r="30" fill="#FFB400"/>
+  </svg>
+  <div class="brand"><span>STARITHM</span></div>
+  <div class="wrap">
+    <div class="eyebrow">EARS TO THE UNIVERSE</div>
+    <h1>The universe,<br><em>as music.</em></h1>
+    <div class="sub">Astrophysics observations, sonified daily.</div>
+  </div>
+  <div class="url">starithm.ai/ears-to-the-universe</div>
+  <div class="bars" id="bars"></div>
+  <script>
+    // Deterministic pseudo-spectrum so the strip reads as sound, not as noise.
+    const el = document.getElementById('bars'); let s = 7;
+    for (let i = 0; i < 132; i++) {
+      s = (s * 1103515245 + 12345) & 0x7fffffff;
+      const env = Math.sin((i / 132) * Math.PI * 2.4) * 0.34 + 0.46;
+      const h = Math.max(3, (env + ((s / 0x7fffffff) - 0.5) * 0.55) * 42);
+      el.insertAdjacentHTML('beforeend', `<i style="height:${h.toFixed(1)}px"></i>`);
+    }
+  </script>
+</body></html>
