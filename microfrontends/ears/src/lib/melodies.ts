@@ -41,6 +41,20 @@ export interface Track {
     grid: [number, number];
     scale: string;
   };
+  /** How the track was dressed: chosen before a note was made, from the measured data.
+   *  Absent on tracks published before instrument palettes existed. */
+  arrangement?: {
+    palette: string;
+    /** Display name of the palette, e.g. "Cathedral". */
+    name: string;
+    /** The three voices a listener hears: melody, plucks, drone. */
+    instruments: string[];
+    space: 'room' | 'hall' | 'cathedral' | null;
+    scale: string | null;
+    /** One sentence from the arranger about why these instruments suit this object. */
+    reason: string | null;
+    chosen_by: 'ai' | 'rule' | null;
+  } | null;
   title: string;
   logline: string | null;
   chapters: Chapter[];
