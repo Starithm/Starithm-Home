@@ -21,6 +21,14 @@ const MELODIES_BASE = (
 const SITE_BASE = 'https://starithm.ai';
 const BASE_PATH = '/ears-to-the-universe';
 
+// The shared Ears card. Source: tools/og-cards/ears-card.html.
+// NOT story.png, which is the vision model's input: a matplotlib figure on a white
+// ground with an axis frame and a "song time (s)" colorbar. It reads as debug output
+// in a feed, and being square it also got centre-cropped by every wide-card unfurler.
+const CARD_IMAGE = `${SITE_BASE}/og/ears-share.png`;
+const CARD_W = 1200;
+const CARD_H = 630;
+
 // Interpolated into an R2 URL, so both are constrained rather than trusted.
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TRACK_ID_RE = /^[A-Za-z0-9._-]+$/;
@@ -37,6 +45,9 @@ interface Track {
   target: { name: string; classification: string | null; type?: string | null; match?: string };
   observation: { program_id: string; program_title: string; instrument: string; observed: string | null };
   arrangement?: { name: string; instruments: string[]; reason: string | null } | null;
+  /** Published asset URLs. If sky-melodies ever emits a per-track card, publishing it
+   *  here as `card_image` (at 1200x630, to match) makes it the share image on its own. */
+  urls?: { card_image?: string } & Record<string, string>;
 }
 
 async function getJson<T>(key: string): Promise<T | null> {
@@ -74,10 +85,15 @@ function buildTags(track: Track): string {
       .join(' '),
     200,
   );
-  // story.png is 700x700. A square image under summary_large_image gets centre-cropped
-  // to 1.91:1 by most unfurlers, losing the top and bottom of the artwork, so this
-  // deliberately requests the square `summary` card instead.
-  const image = assetUrl(track, 'story.png');
+  const perTrackCard = track.urls?.card_image;
+  const image = perTrackCard || CARD_IMAGE;
+  // Dimensions are only asserted for the card we ship, whose size we know. Claiming
+  // 1200x630 for a pipeline image of some other shape would make unfurlers reserve
+  // the wrong box and render it stretched.
+  const knownSize = !perTrackCard;
+  const imageAlt = perTrackCard
+    ? `Artwork for ${track.title}, made from observations of ${track.target.name}`
+    : 'Ears to the Universe: the universe, as music';
 
   return [
     `<title>${esc(title)} · Ears to the Universe · Starithm</title>`,
@@ -89,18 +105,22 @@ function buildTags(track: Track): string {
     `<meta property="og:description" content="${esc(description)}" />`,
     `<meta property="og:url" content="${url}" />`,
     `<meta property="og:image" content="${esc(image)}" />`,
-    `<meta property="og:image:width" content="700" />`,
-    `<meta property="og:image:height" content="700" />`,
-    `<meta property="og:image:type" content="image/png" />`,
-    `<meta property="og:image:alt" content="${esc(`Artwork for ${track.title}, made from JWST observations of ${track.target.name}`)}" />`,
+    ...(knownSize
+      ? [
+          `<meta property="og:image:width" content="${CARD_W}" />`,
+          `<meta property="og:image:height" content="${CARD_H}" />`,
+          `<meta property="og:image:type" content="image/png" />`,
+        ]
+      : []),
+    `<meta property="og:image:alt" content="${esc(imageAlt)}" />`,
     `<meta property="og:audio" content="${esc(assetUrl(track, 'musical.m4a'))}" />`,
     `<meta property="og:audio:type" content="audio/mp4" />`,
     `<meta property="music:duration" content="${Math.round(track.duration_s)}" />`,
-    `<meta name="twitter:card" content="summary" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(title)}" />`,
     `<meta name="twitter:description" content="${esc(description)}" />`,
     `<meta name="twitter:image" content="${esc(image)}" />`,
-    `<meta name="twitter:image:alt" content="${esc(`Artwork for ${track.title}`)}" />`,
+    `<meta name="twitter:image:alt" content="${esc(imageAlt)}" />`,
     `<script type="application/ld+json">${JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'MusicRecording',
