@@ -9,6 +9,7 @@ import { absorptionAt, levelsAt, formatClock } from '../lib/playerMath';
 import { usePlayback } from '../lib/usePlayback';
 import { AmbientSky } from '../components/AmbientSky';
 import { ArrangementNote } from '../components/ArrangementNote';
+import { MappingKey } from '../components/MappingKey';
 import { NoteLadder } from '../components/NoteLadder';
 import { SkyMap } from '../components/SkyMap';
 import { SpectrogramStrip } from '../components/SpectrogramStrip';
@@ -249,6 +250,8 @@ export default function EarsPage() {
           />
 
           <TransportBar playback={playback} duration={duration} />
+
+          {player && <MappingKey track={track} player={player} />}
         </MainArea>
 
         <AsideArea>

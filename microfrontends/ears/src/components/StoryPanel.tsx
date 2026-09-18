@@ -74,7 +74,8 @@ export function StoryPanel({ track, player, time, onSeek }: Props) {
           {track.arrangement?.chosen_by === 'ai' && (
             <>
               <br />
-              Instruments chosen by an AI model from the measured data. The data alone decides every note.
+              Instruments picked by an AI model for character, not to encode anything. They are varied
+              deliberately between tracks, so two tracks sounding different does not mean the objects differ.
             </>
           )}
         </Credits>
