@@ -791,6 +791,105 @@ export const StanzaText = styled.p<{ $active: boolean }>`
   transition: color 650ms ease;
 `;
 
+/* ---- the mapping key: the legend for what the sound means ---- */
+
+export const KeyPanel = styled.section`
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const KeyGrid = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--line-hairline);
+  border: 1px solid var(--line-hairline);
+`;
+
+export const KeyRow = styled.div`
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 4px 16px;
+  padding: 11px 14px;
+
+  ${NARROW} {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+`;
+
+export const KeyChannel = styled.span`
+  grid-row: span 2;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  padding-top: 2px;
+
+  ${NARROW} {
+    grid-row: auto;
+  }
+`;
+
+export const KeyText = styled.span`
+  font-family: var(--font-prose);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-body);
+`;
+
+export const KeyNums = styled.span`
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+`;
+
+export const KeyCaveat = styled.p`
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: var(--measure);
+
+  strong {
+    color: var(--starithm-selective-yellow);
+    font-weight: 400;
+  }
+`;
+
+export const RefButton = styled.button`
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--line-control);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: var(--accent-text);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--line-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 2px;
+  }
+`;
+
 /* ---- how the track was dressed ---- */
 
 export const Arrangement = styled.section`

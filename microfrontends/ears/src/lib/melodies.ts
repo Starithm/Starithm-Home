@@ -89,9 +89,27 @@ export interface DayDoc {
   tracks: Track[];
 }
 
+/** The track's legend: every channel that carries information, with the numbers to read it back.
+ *  Absent on tracks published before the mapping key existed. */
+export interface TrackMapping {
+  pitch: {
+    means: string; direction: string; spacing: string;
+    wavelength_um: [number, number]; frequency_hz: [number, number];
+    octaves: number; notes: number; scale: string; lean_cents: number;
+  };
+  loudness: { means: string; emission_sigma: number; absorption_sigma: number; continuum_window_kms: number };
+  time: { means: string; scan: string; regions: number; seconds_per_region: number };
+  voices: { melody: string; plucks: string; breath: string; drone: string };
+  level: { normalised_rms_dbfs: number; note: string };
+  /** `means` is deliberately null: instruments are chosen for character and encode nothing. */
+  timbre: { means: null; note: string };
+  reference_tone?: { note: string; frequency_hz: [number, number]; wavelength_um: [number, number] };
+}
+
 export interface PlayerData {
   version: 1;
   duration_s: number;
+  mapping?: TrackMapping;
   grid: { width: number; height: number };
   /** How the song walks the target (absent on early tracks, which were serpentine). */
   scan?: 'spiral' | 'serpentine';
@@ -109,7 +127,9 @@ export interface PlayerData {
   spectrogram: { f_min_hz: number; f_max_hz: number; scale: 'log'; columns_per_second: number };
 }
 
-export type TrackAsset = 'musical.m4a' | 'raw.m4a' | 'map.png' | 'spectrogram.png' | 'player.json' | 'story.png' | 'meta.json';
+export type TrackAsset =
+  | 'musical.m4a' | 'raw.m4a' | 'reference.m4a' | 'map.png' | 'spectrogram.png'
+  | 'player.json' | 'story.png' | 'meta.json';
 
 export function assetUrl(track: Pick<Track, 'release_date' | 'id'>, file: TrackAsset): string {
   return `${MELODIES_BASE_URL}/tracks/${track.release_date}/${track.id}/${file}`;
