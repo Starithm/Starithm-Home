@@ -80,8 +80,50 @@ export const Crumb = styled.span`
   color: var(--text-disabled);
 `;
 
-export const HeaderMeta = styled.div`
+/* Everything that sits at the right end of the header: the observation metadata and the
+   account control. They share one auto margin, because two siblings each claiming
+   `margin-left: auto` split the free space between them and strand the metadata mid-header. */
+export const HeaderRight = styled.div`
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 16px;
+`;
+
+/* The account control. Deliberately quiet: this is a player, not a dashboard, and signing in
+   buys nothing yet. It is here so a visitor who lands on a shared track can still reach their
+   account without first navigating away to a page that has a nav bar. */
+export const HeaderAuth = styled.div`
+  display: flex;
+  align-items: center;
+  /* Reserves the row height so the header does not jump when Clerk swaps the sign-in pill for
+     the avatar on load. Clerk's own size is left alone: overriding it means selecting
+     \`.cl-avatarBox\`, and Clerk warns in the console that such selectors depend on its internal
+     DOM and break on component updates. */
+  min-height: 32px;
+`;
+
+export const SignInPill = styled.button`
+  padding: 5px 13px;
+  border: 1px solid var(--line-control);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--accent-border);
+    color: var(--accent-text);
+  }
+`;
+
+export const HeaderMeta = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px 12px;

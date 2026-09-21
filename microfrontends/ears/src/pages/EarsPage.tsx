@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { useQuery } from '@tanstack/react-query';
 import { StarithmLoader } from '@shared/components/StarithmLoader';
 import {
@@ -17,8 +18,9 @@ import { StoryPanel } from '../components/StoryPanel';
 import { TrackPicker } from '../components/TrackPicker';
 import { TransportBar } from '../components/TransportBar';
 import {
-  AsideArea, Brand, BrandLogo, BrandName, Centered, Crumb, Eyebrow, Grid, Header, HeaderMeta, KindTag,
-  LabelRow, LadderArea, Logline, MainArea, MetaLine, Notice, Page, TextButton, Title,
+  AsideArea, Brand, BrandLogo, BrandName, Centered, Crumb, Eyebrow, Grid, Header, HeaderAuth,
+  HeaderMeta, HeaderRight, KindTag,
+  LabelRow, LadderArea, Logline, MainArea, MetaLine, Notice, Page, SignInPill, TextButton, Title,
 } from '../styled_components/Ears.styled';
 
 const BASE_PATH = '/ears-to-the-universe';
@@ -28,6 +30,7 @@ export default function EarsPage() {
   const { date: dateParam, trackId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { isSignedIn } = useAuth();
 
   const indexQuery = useQuery({ queryKey: ['melodies', 'index'], queryFn: fetchIndex, staleTime: STALE, enabled: !!MELODIES_BASE_URL });
   const date = dateParam ?? indexQuery.data?.latest_date ?? undefined;
@@ -85,13 +88,30 @@ export default function EarsPage() {
         <Crumb>/</Crumb>
         <span>Ears to the Universe</span>
       </Brand>
-      {track && (
-        <HeaderMeta>
-          <span>PROGRAM {track.observation.program_id}</span>
-          {track.sonification?.setup && <span>{track.sonification.setup}</span>}
-          {track.observation.observed && <span>OBSERVED {track.observation.observed}</span>}
-        </HeaderMeta>
-      )}
+      <HeaderRight>
+        {track && (
+          <HeaderMeta>
+            <span>PROGRAM {track.observation.program_id}</span>
+            {track.sonification?.setup && <span>{track.sonification.setup}</span>}
+            {track.observation.observed && <span>OBSERVED {track.observation.observed}</span>}
+          </HeaderMeta>
+        )}
+        <HeaderAuth>
+          {isSignedIn ? (
+            /* Where sign-out lands is ClerkProvider's afterSignOutUrl (the site root), not this
+               component's business. Passing it here type-errors in Clerk v6. */
+            <UserButton />
+          ) : (
+            /* Come back to whatever was on screen, so a shared deep link survives the modal. */
+            <SignInButton
+              mode="modal"
+              forceRedirectUrl={typeof window !== 'undefined' ? window.location.href : '/'}
+            >
+              <SignInPill type="button">Sign in</SignInPill>
+            </SignInButton>
+          )}
+        </HeaderAuth>
+      </HeaderRight>
     </Header>
   );
 
