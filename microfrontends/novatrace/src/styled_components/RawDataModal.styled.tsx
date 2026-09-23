@@ -20,7 +20,7 @@ export const Modal = styled.div`
   color: ${({ theme }) => getThemeValue(theme, 'primaryForeground', '#0E0B16')};
   border: 2px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
   border-radius: 0.5rem;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+  padding: var(--space-6);
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
@@ -30,29 +30,29 @@ export const HeaderRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  margin-bottom: var(--space-4);
 `;
 
 export const TitleRow = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const Body = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 `;
 
 export const Meta = styled.div``;
 
 export const MetaTitle = styled.h3`
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
+  font-weight: var(--font-weight-semibold);
 `;
 
 export const MetaText = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
 `;
 
 export const CodeWrapper = styled.div`
@@ -65,8 +65,8 @@ export const CodeWrapper = styled.div`
 `;
 
 export const Pre = styled.pre`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  padding: var(--space-4);
+  font-size: var(--font-size-sm);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   white-space: pre-wrap;
   word-break: break-all;

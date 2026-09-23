@@ -13,50 +13,50 @@ export const AlertListContainer = styled.div`
 export const AlertListHeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
   flex-shrink: 0;
 `;
 
 export const AlertListHeaderTitle = styled.h2`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.lg', '1.5rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   color: ${({ theme }) => {return getThemeValue(theme, 'foreground', '#000')}};
 
 `;
 
 export const AlertListHeaderSubtitle = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#666')};
-  marginTop: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  marginTop: var(--space-2);
 `;
 
 export  const AlertListHeaderDate = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#666')};
-  margin: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin: var(--space-2);
 
 `;
 export const AlertListDateText = styled.span`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#666')};
-  marginLeft: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  marginLeft: var(--space-2);
 `;
 
 export const AlertListEventDescriptionMidSize = styled.p`
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 600)};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#000')};
 `;
 export const AlertListEventDescriptionSmSize = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#666')};
 `;
 export const AlertListEventDescriptionContainer = styled.div`
-  margin-left: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin-left: var(--space-2);
   display: flex;
   flex-direction: column;
 `;
@@ -77,23 +77,23 @@ export const SingleAlertContainer = styled.div`
   flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
-  margin: ${({ theme }) => getThemeValue(theme, 'spacing.2', '1rem')};
+  margin: var(--space-2);
 `;
 export const SingleAlertHeading = styled.div`
   display: flex;
     align-items: center;
     
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 export const SingleAlertHeadingText = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 600)};
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#000')};
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin-bottom: var(--space-2);
 `;
 
 export const SingleAlertCard = styled(Card)<{ isSelected: boolean }>`
-  margin: ${({ theme }) => getThemeValue(theme, 'spacing.1', '0.5rem')};
+  margin: var(--space-1);
   cursor: pointer;
   transition: all 0.3s ease;
   
@@ -146,29 +146,29 @@ export const AlertListContent = styled.div`
 `;
 
 export const AlertListInner = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.1', '1rem')};
+  padding: var(--space-1);
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.1', '0.75rem')};
+  gap: var(--space-1);
 `;
 
 export const AlertListEmptyState = styled.div`
   textAlign: center;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.8', '2rem')} 0;
+  padding: var(--space-8) 0;
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const AlertListEmptyIcon = styled.div`
-    margin: 0 auto ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+    margin: 0 auto var(--space-2);
   opacity: 0.5;
 `;
 
 export const AlertListEmptyTitle = styled.p`
-  marginBottom: ${({ theme }) => getThemeValue(theme, 'spacing.1', '0.25rem')};
+  marginBottom: var(--space-1);
 `;
 
 export const AlertListEmptySubtitle = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
 `;
 
 {/* <div className="p-4 border-t flex-shrink-0">
@@ -199,7 +199,7 @@ export const AlertListEmptySubtitle = styled.p`
           </div>
         </div> */}
 export const AlertListPaginationWrapper = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
   border-top: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
   flex-shrink: 0;
 `;
@@ -208,13 +208,13 @@ export const AlertListPaginationSection = styled.div`
   align-items: center;
   justify-content: space-between;
   div {
-    font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+    font-size: var(--font-size-sm);
     color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
     justify-content: flex-start;
   }
 `;
 export const AlertListPaginationText = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.875rem')};
+  font-size: var(--font-size-xs);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
   justify-content: flex-start;
 `;
@@ -222,7 +222,7 @@ export const AlertListPaginationNavSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const AlertListPaginationNavSectionSeparator = styled.span`

@@ -13,7 +13,7 @@ export const TopRow = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  margin-bottom: var(--space-4);
 `;
 
 export const TitleWrap = styled.div`
@@ -21,34 +21,34 @@ export const TitleWrap = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.2xl', '1.5rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
 export const Subtitle = styled.p`
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
-  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin-top: var(--space-2);
   max-width: 42rem; /* max-w-2xl */
 `;
 
 export const RightBox = styled.div`
-  margin-left: ${({ theme }) => getThemeValue(theme, 'spacing.8', '2rem')};
+  margin-left: var(--space-8);
   width: 24rem; /* w-96 */
 `;
 
 export const StatusRow = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  gap: var(--space-4);
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const StatusItem = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const Dot = styled.div<{ color?: string }>`

@@ -37,7 +37,7 @@ export const CarouselInner = styled.div`
   position: relative;
   height: 100%;
   border-radius: 0.5rem;
-  padding: ${({ theme }) => getThemeValue(theme, "spacing.4", "1rem")};
+  padding: var(--space-4);
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -54,12 +54,12 @@ export const CarouselInner = styled.div`
 `;
 
 export const Header = styled.div`
-  margin-bottom: ${({ theme }) => getThemeValue(theme, "spacing.3", "0.75rem")};
+  margin-bottom: var(--space-3);
 `;
 
 export const HeaderTitle = styled.h2`
-  font-size: ${({ theme }) => getThemeValue(theme, "fontSize.lg", "1.125rem")};
-  font-weight: ${({ theme }) => getThemeValue(theme, "fontWeight.semibold", 600)};
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   color: ${({ theme }) => getThemeValue(theme, "foreground", "#0E0B16")};
 `;
 
@@ -69,8 +69,8 @@ export const ClickableRow = styled.div`
   justify-content: space-between;
   cursor: pointer;
   border-radius: 0.5rem;
-  padding: ${({ theme }) => getThemeValue(theme, "spacing.2", "0.5rem")};
-  transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  padding: var(--space-2);
+  transition: background-color var(--transition-normal);
 
   &:hover {
     background-color: ${({ theme }) => {
@@ -83,7 +83,7 @@ export const ClickableRow = styled.div`
 export const RowLeft = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, "spacing.2", "0.5rem")};
+  gap: var(--space-2);
 `;
 
 export const IconWrap = styled.div`
@@ -93,19 +93,19 @@ export const IconWrap = styled.div`
 `;
 
 export const EventTitle = styled.h3`
-  font-weight: ${({ theme }) => getThemeValue(theme, "fontWeight.semibold", 600)};
+  font-weight: var(--font-weight-semibold);
   color: ${({ theme }) => getThemeValue(theme, "foreground", "#0E0B16")};
 `;
 
 export const EventSubtitle = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, "fontSize.sm", "0.875rem")};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, "mutedForeground", "#686868")};
 `;
 
 export const RowRight = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, "spacing.4", "1rem")};
+  gap: var(--space-4);
 `;
 
 export const CountWrap = styled.div`
@@ -115,24 +115,24 @@ export const CountWrap = styled.div`
 export const CountLine = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, "spacing.2", "0.5rem")};
-  font-weight: ${({ theme }) => getThemeValue(theme, "fontWeight.medium", 500)};
+  gap: var(--space-2);
+  font-weight: var(--font-weight-medium);
   color: ${({ theme }) => getThemeValue(theme, "foreground", "#0E0B16")};
 `;
 
 export const CountNumber = styled.span`
   color: ${({ theme }) => getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.2xl', '1.5rem')};
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-2xl);
 `;
 
 export const CountLabel = styled.span`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const TimeText = styled.div`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
@@ -142,7 +142,7 @@ export const NavButtonLeft = styled.div`
   left: 0.5rem;
   transform: translateY(-50%);
   opacity: 0;
-  transition: opacity ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  transition: opacity var(--transition-normal);
 
   ${CarouselContainer}:hover & {
     opacity: 1;
@@ -163,7 +163,7 @@ export const SmallIconButton = styled(Button)`
 export const Dots = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+  margin-top: var(--space-6);
   gap: 0.25rem;
 `;
 
@@ -171,7 +171,7 @@ export const Dot = styled.div<{ active?: boolean }>`
   height: 0.25rem; /* h-1 */
   width: 2rem;    /* w-8 */
   border-radius: 9999px;
-  transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  transition: background-color var(--transition-normal);
   background-color: ${({ active, theme }) =>
     active
       ? getThemeValue(theme, 'starithmElectricViolet', '#8D0FF5')
@@ -183,6 +183,6 @@ export const CenteredState = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;

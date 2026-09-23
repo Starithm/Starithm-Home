@@ -97,6 +97,58 @@
      needs a measure, it needs its own value; one `ch` number cannot serve both. */
   --measure: 60ch;
 
+
+  /* ── Scales ──────────────────────────────────────────────────────────────────
+     Added 2026-09-22. Mirrors the spacing/type scales in shared/theme/theme.ts
+     EXACTLY — they were previously reachable only through getThemeValue(), which is
+     why 303 of the 519 call sites exist. With these, a styled-component can use
+     var(--space-4) instead of ${({theme}) => getThemeValue(theme, 'spacing.4', '1rem')}.
+     Note globals.css already REFERENCED font-size, spacing and line-height tokens
+     that were never defined; those rules were silently dead and have been removed. */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+  --space-40: 10rem;
+  --space-48: 12rem;
+  --space-56: 14rem;
+  --space-64: 16rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  --font-size-6xl: 3.75rem;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
 }
 .rdp-root {
   --rdp-accent-color: var(--starithm-veronica);
@@ -394,24 +446,10 @@
   --color-input-background: var(--input-background);
   --color-switch-background: var(--switch-background);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-
   /* Starithm Brand Color Utilities */
   --color-starithm-rich-black: var(--starithm-rich-black);
   --color-starithm-bg-black: var(--starithm-bg-black);
@@ -519,9 +557,6 @@
   }
 }
 
-html {
-  font-size: var(--font-size);
-}
 
 /* Starfield animation */
 @keyframes twinkle {
@@ -569,29 +604,8 @@ html {
   flex-direction: column;
 }
 
-/* Typography Utility Classes */
-.heading-1 {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-}
 
-.heading-2 {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-snug);
-}
 
-.heading-3 {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-snug);
-}
-
-.body-text {
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-normal);
-}
 
 /* Responsive Typography */
 @media (min-width: 1024px) {
@@ -604,11 +618,6 @@ html {
   }
 }
 
-@media (min-width: 1280px) {
-  .heading-1 {
-    font-size: var(--font-size-7xl);
-  }
-}
 
 /* Gradient Utility Classes */
 .gradient-primary {
@@ -636,18 +645,6 @@ html {
   transform: translateY(-2px);
 }
 
-/* Spacing Utility Classes */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--spacing-6);
-}
-
-@media (min-width: 1024px) {
-  .container {
-    padding: 0 var(--spacing-8);
-  }
-}
 
 /* ── Starithm loader ──────────────────────────────────────────────────────────
    The mark's three arcs orbit at non-harmonic rates (1 : 1.55 : 2.35) so they never

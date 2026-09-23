@@ -37,10 +37,10 @@ export const AlertDetailsContent = styled.div`
 `;
 
 export const AlertDetailsInner = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+  gap: var(--space-6);
 `;
 
 // Header section
@@ -54,7 +54,7 @@ export const AlertHeader = styled.div`
 export const AlertHeaderLeft = styled.div`
   display: flex;
   aligntItems: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
+  gap: var(--space-3);
 `;
 
 export const AlertIcon = styled.div`
@@ -64,8 +64,8 @@ export const AlertIcon = styled.div`
 export const AlertTitleSection = styled.div``;
 
 export const AlertTitle = styled.h1`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.2xl', '1.5rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.bold', 700)};
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
@@ -76,7 +76,7 @@ export const AlertSubtitle = styled.p`
 export const AlertHeaderRight = styled.div`
   display: flex;
   aligntItems: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 // Empty state
@@ -93,18 +93,18 @@ export const EmptyStateContent = styled.div`
 `;
 
 export const EmptyStateIcon = styled.div`
-  margin: 0 auto ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  margin: 0 auto var(--space-4);
   opacity: 0.5;
 `;
 
 export const EmptyStateTitle = styled.h3`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.lg', '1.125rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-2);
 `;
 
 export const EmptyStateDescription = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
 `;
 
 // Card sections
@@ -115,15 +115,15 @@ export const CardSection = styled.div`
 `;
 
 export const AlertCardHeader = styled(CardHeader)`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
 `;
 
 export const StyledCardTitle = styled.h3`
   display: flex;
   aligntItems: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.lg', '1.125rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
+  gap: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
@@ -132,28 +132,28 @@ export const CardIcon = styled.div`
 `;
 
 export const StyledCardContent = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
   border-radius: 0.5rem;
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  margin-bottom: var(--space-4);
 `;
 
 // Event information grid
 export const EventInfoGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 `;
 
 export const EventInfoItem = styled.div``;
 
 export const EventInfoLabel = styled.label`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const EventInfoValue = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
@@ -170,11 +170,11 @@ export const SummaryCard = styled.div`
 `;
 
 export const SummaryFooter = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
   text-align: right;
   font-style: italic;
-  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin-top: var(--space-2);
 `;
 
 // Timeline section
@@ -219,7 +219,7 @@ export const TimelineScrollContainer = styled.div`
 export const TimelineItems = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 `;
 
 export const TimelineItem = styled.div`
@@ -247,8 +247,8 @@ export const TimelineCard = styled.div`
   flex: 1;
   background-color: ${({ theme }) => getThemeValue(theme, 'background', '#f9fafb')};
   border-radius: 0.5rem;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
-  transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  padding: var(--space-3);
+  transition: background-color var(--transition-normal);
   cursor: pointer;
 
   &:hover {
@@ -260,20 +260,20 @@ export const TimelineCardHeader = styled.div`
   display: flex;
   alignt-items: center;
   justify-content: space-between;
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin-bottom: var(--space-2);
   background-color: ${({ theme }) => getThemeValue(theme, 'background', '#0E0B16')};
 `;
 
 export const TimelineCardLeft = styled.div`
   display: flex;
   alignt-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const TimelineCardRight = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const TimelineStatusDot = styled.div<{ isCurrent: boolean }>`
@@ -284,18 +284,18 @@ export const TimelineStatusDot = styled.div<{ isCurrent: boolean }>`
 `;
 
 export const TimelineCardContent = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#374151')};
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin-bottom: var(--space-2);
 `;
 
 export const TimelineCardFooter = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const TimelineEmptyState = styled.div`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
     margin-left: 2rem;
 `;
@@ -304,24 +304,24 @@ export const TimelineEmptyState = styled.div`
 export const MeasurementsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 `;
 
 export const MeasurementItem = styled.div``;
 
 export const MeasurementLabel = styled.label`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  fontWeight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-size: var(--font-size-sm);
+  fontWeight: var(--font-weight-medium);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const MeasurementValue = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
 export const MeasurementTable = styled.div`
-  marginTop: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  marginTop: var(--space-4);
   border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
   border-radius: 0.5rem;
   overflow: hidden;
@@ -329,23 +329,23 @@ export const MeasurementTable = styled.div`
 
 export const MeasurementTableHeader = styled.div`
   background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}80;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  padding: var(--space-4) var(--space-2);
   borderBottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
 `;
 
 export const MeasurementTableTitle = styled.h4`
-  fontWeight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  fontWeight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
 `;
 
 export const MeasurementTableContent = styled.div`
   overflowX: auto;
-  marginTop: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  marginTop: var(--space-4);
 `;
 
 export const MeasurementTableElement = styled.table`
   width: 100%;
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
 `;
 
 export const MeasurementTableHead = styled.thead`
@@ -353,9 +353,9 @@ export const MeasurementTableHead = styled.thead`
 `;
 
 export const MeasurementTableHeaderCell = styled.th`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  padding: var(--space-4) var(--space-2);
   text-align: left;
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-weight: var(--font-weight-medium);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
   border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
 `;
@@ -364,7 +364,7 @@ export const MeasurementTableBody = styled.tbody``;
 
 export const MeasurementTableRow = styled.tr`
   border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
-  transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  transition: background-color var(--transition-normal);
 
   &:hover {
     background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}33;
@@ -372,13 +372,13 @@ export const MeasurementTableRow = styled.tr`
 `;
 
 export const MeasurementTableCell = styled.td`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  padding: var(--space-4) var(--space-2);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
 export const MeasurementEmptyState = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  padding: var(--space-4);
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
@@ -386,28 +386,28 @@ export const MeasurementEmptyState = styled.div`
 export const ParticipantsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
-  margin-left: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  margin-right: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-6);
+  margin-left: var(--space-4);
+  margin-right: var(--space-4);
+  margin-bottom: var(--space-4);
 `;
 
 export const ParticipantColumn = styled.div``;
 
 export const ParticipantItem = styled.div`
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
+  margin-bottom: var(--space-3);
 `;
 
 export const ParticipantLabel = styled.label`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const ParticipantValue = styled.div`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
-  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.1', '0.25rem')};
+  margin-top: var(--space-1);
 `;
 
 // Images section
@@ -418,7 +418,7 @@ export const AlertImagesSection = styled(Card)`
 export const AlertImagesGrid = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 `;
 
 export const AlertImageItem = styled.div`
@@ -438,7 +438,7 @@ export const AlertImageElement = styled.img`
   border-radius: 0.5rem;
   border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
   cursor: pointer;
-  transition: opacity ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  transition: opacity var(--transition-normal);
 
   &:hover {
     opacity: 0.9;
@@ -454,7 +454,7 @@ export const AlertImageExpandButton = styled.button`
   padding: 0.25rem;
   border-radius: 0.25rem;
   opacity: 0;
-  transition: all ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  transition: all var(--transition-normal);
   border: none;
   cursor: pointer;
   class-name: image-expand-button;
@@ -472,20 +472,20 @@ export const FitsFilesContainer = styled.div`
 `;
 
 export const FitsFilesContent = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const FitsFileItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
+  padding: var(--space-3);
   border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
   border-radius: 0.5rem;
-  transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  transition: background-color var(--transition-normal);
 
   &:hover {
     background-color: ${({ theme }) => getThemeValue(theme, 'gray.50', '#f9fafb')};
@@ -495,7 +495,7 @@ export const FitsFileItem = styled.div`
 export const FitsFileLeft = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const FitsFileIcon = styled.div`
@@ -503,7 +503,7 @@ export const FitsFileIcon = styled.div`
 `;
 
 export const FitsFileName = styled.span`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   font-family: monospace;
   color: ${({ theme }) => getThemeValue(theme, 'gray.700', '#374151')};
 `;
@@ -516,17 +516,17 @@ export const LinksContainer = styled.div`
 `;
 
 export const LinksContent = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const LinkItem = styled.a`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'starithmLink', '#3b82f6')};
   text-decoration: none;
-  transition: text-decoration ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  transition: text-decoration var(--transition-normal);
 
   &:hover {
     text-decoration: underline;
@@ -541,7 +541,7 @@ export const ImageModalContent = styled.div`
 `;
 
 export const ImageModalHeader = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
   border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
 `;
 
@@ -552,12 +552,12 @@ export const ImageModalHeaderContent = styled.div`
 `;
 
 export const ImageModalTitle = styled.h2`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.lg', '1.125rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
 `;
 
 export const ImageModalBody = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
 `;
 
 export const ImageModalImage = styled.img`
@@ -577,22 +577,22 @@ export const AlertCardSection = styled(Card)`
 export const AlertCardTitle = styled(CardTitle)`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const AlertCardContent = styled(CardContent)`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
   border-radius: 0.5rem;
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  margin-left: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  margin-right: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  margin-bottom: var(--space-4);
+  margin-left: var(--space-4);
+  margin-right: var(--space-4);
 `;
 
 export const AlertParticipantsValue = styled.div`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.1', '0.25rem')};
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-1);
 `;
 
 // Summary section with gradient background
@@ -608,27 +608,27 @@ export const AlertSummarySection = styled(Card)`
 
 export const AlertSummaryContent = styled(CardContent)`
   border-radius: 0.5rem;
-  margin-left: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  margin-right: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  margin-left: var(--space-4);
+  margin-right: var(--space-4);
+  margin-bottom: var(--space-4);
 
 `;
 
 export const AlertSummaryText = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
 export const AlertSummaryFooter = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
   text-align: right;
   font-style: italic;
-  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin-top: var(--space-2);
 `;
 
 export const AlertFitsFileName = styled.span`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   font-family: monospace;
   color: ${({ theme }) => getThemeValue(theme, 'gray.700', '#374151')};
 `;
@@ -641,17 +641,17 @@ export const AlertFitsSection = styled(Card)`
 export const AlertFitsContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const AlertFitsFileItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
+  padding: var(--space-3);
   border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
   border-radius: 0.5rem;
-  transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  transition: background-color var(--transition-normal);
 
   &:hover {
     background-color: ${({ theme }) => getThemeValue(theme, 'gray.50', '#f9fafb')};
@@ -661,7 +661,7 @@ export const AlertFitsFileItem = styled.div`
 export const AlertFitsFileLeft = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const AlertFitsFileIcon = styled.div`
@@ -669,33 +669,33 @@ export const AlertFitsFileIcon = styled.div`
 `;
 
 export const AlertMeasurementLabel = styled.label`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const AlertMeasurementValue = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  margin-bottom: var(--space-4);
 `;
 
 export const AlertMeasurementItem = styled.div`
-    margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+    margin-bottom: var(--space-4);
 `;
 export const AlertMeasurementGenericObject = styled.div`
     label {
-        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-        font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
         color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
     }
     p {
-        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+        font-size: var(--font-size-sm);
     }
 `;
 
 export const AlertNoMeasurementsMessage = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
@@ -707,12 +707,12 @@ export const AlertNoMeasurementsMessage = styled.p`
                         </div> */}
 
 export const AlertMeasurementTableSection = styled.div`
-    margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+    margin-top: var(--space-6);
     label {
-        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-        font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
         color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
-        margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+        margin-bottom: var(--space-2);
     }
 `;
 export const AlertMeasurementTableSectionContent= styled.div`
@@ -722,22 +722,22 @@ border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
 
 
 export const AlertMeasurementTableSectionContentTitle = styled.div`
-    padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+    padding: var(--space-4) var(--space-2);
     border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
     background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}50;
     h4 {
-        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-        font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)}; 
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium); 
     }
 `;
                         // Measurement table
 export const AlertMeasurementCard = styled(Card)`
     border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
-    padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+    padding: var(--space-4);
     CardTitle {
         display: flex;
         align-items: center;
-        gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+        gap: var(--space-2);
     }
     CardContent {
         border-radius: 0.5rem;
@@ -746,8 +746,8 @@ export const AlertMeasurementCard = styled(Card)`
 `;
 export const AlertMeasurementTable = styled.table`
   width: 100%;
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-4);
 `;
 export const AlertMeasurementTableWrapper = styled.div`
     overflow-x: auto;
@@ -755,14 +755,14 @@ export const AlertMeasurementTableWrapper = styled.div`
 export const AlertMeasurementGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+    gap: var(--space-4);
 
 
 `;
 export const AlertMeasurementTableNoData = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
 `;
 export const AlertMeasurementTableHead = styled.thead`
   background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}4D;
@@ -777,9 +777,9 @@ export const AlertMeasurementTableRow = styled.tr`
 `;
 
 export const AlertMeasurementTableHeaderCell = styled.th`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  padding: var(--space-4) var(--space-2);
   text-align: left;
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-weight: var(--font-weight-medium);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
   border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
 `;
@@ -787,26 +787,26 @@ export const AlertMeasurementTableHeaderCell = styled.th`
 export const AlertMeasurementTableBody = styled.tbody``;
 
 export const AlertMeasurementTableCell = styled.td`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  padding: var(--space-4) var(--space-2);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
 export const AlertMeasurementSectionTitle = styled.h4`
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
 // Tables section
 export const AlertTablesSection = styled.div`
-  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+  margin-top: var(--space-6);
 `;
 
 export const AlertTablesSectionLabel = styled.label`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin-bottom: var(--space-2);
 `;
 
 export const AlertTablesSectionContainer = styled.div`
@@ -817,13 +817,13 @@ export const AlertTablesSectionContainer = styled.div`
 
 export const AlertTablesSectionHeader = styled.div`
   background-color: ${({ theme }) => getThemeValue(theme, 'muted', '#f3f4f6')}80;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')} ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  padding: var(--space-4) var(--space-2);
   border-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
 `;
 
 export const AlertTablesSectionTitle = styled.h4`
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
@@ -857,7 +857,7 @@ export const AlertImageModal = styled(Dialog)`
         padding: 0;
     }
     DialogHeader {
-        padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+        padding: var(--space-4);
         order-bottom: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
     }
     div{
@@ -866,8 +866,8 @@ export const AlertImageModal = styled(Dialog)`
         justify-content: space-between;
     }
     DialogTitle {
-        font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.lg', '1.125rem')};
-        font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
     }
     Button {
         variant: outline;
@@ -875,7 +875,7 @@ export const AlertImageModal = styled(Dialog)`
     }
 `;
 export const AlertImageModalImage = styled.img`
-    padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+    padding: var(--space-4);
     img {
         width: 100%;
         height: auto;

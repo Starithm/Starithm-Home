@@ -21,7 +21,7 @@ export const ModalContainer = styled.div`
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
   border: 1px solid ${({ theme }) => getThemeValue(theme, 'border', '#686868')};
   border-radius: 0.5rem;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+  padding: var(--space-6);
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
@@ -30,7 +30,7 @@ export const ModalContainer = styled.div`
 
 export const HeaderContainer = styled.div`
   flex-shrink: 0;
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  margin-bottom: var(--space-4);
 `;
 
 export const HeaderRow = styled.div`
@@ -42,15 +42,15 @@ export const HeaderRow = styled.div`
 export const TitleGroup = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.lg', '1.125rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
+  gap: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
 `;
 
 export const Subtitle = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
-  margin-top: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  margin-top: var(--space-2);
 `;
 
 export const ContentWrapper = styled.div`
@@ -109,7 +109,7 @@ export const TimelineContent = styled(CardContent)`
 
 export const TimelineInner = styled.div`
   position: relative;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
 `;
 
 export const TimelineLine = styled.div`
@@ -124,7 +124,7 @@ export const TimelineLine = styled.div`
 export const TimelineList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 `;
 
 export const TimelineItemRow = styled.div`
@@ -151,8 +151,8 @@ export const TimelineEntry = styled.div<{ selected?: boolean }>`
   flex: 1;
   background-color: ${({ theme }) => `${getThemeValue(theme, 'muted', '#f3f4f6')}80`};
   border-radius: 0.5rem;
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
-  transition: background-color ${({ theme }) => getThemeValue(theme, 'transitions.normal', '0.3s ease')};
+  padding: var(--space-3);
+  transition: background-color var(--transition-normal);
   cursor: pointer;
   border: ${({ selected, theme }) => (selected ? `1px solid ${getThemeValue(theme, 'primary', '#8D0FF5')}` : 'none')};
   background-clip: padding-box;
@@ -195,7 +195,7 @@ export const RightPanel = styled.div`
 `;
 
 export const TimelineEmpty = styled.div`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
   margin-left: 2rem; /* ml-8 */
 `;
