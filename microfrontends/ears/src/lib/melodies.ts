@@ -103,6 +103,8 @@ export interface TrackMapping {
   level: { normalised_rms_dbfs: number; note: string };
   /** `means` is deliberately null: instruments are chosen for character and encode nothing. */
   timbre: { means: null; note: string };
+  /** Absent on tracks published before 2026-09-23. */
+  caveat?: { note: string };
   reference_tone?: { note: string; frequency_hz: [number, number]; wavelength_um: [number, number] };
 }
 

@@ -191,10 +191,41 @@ export default function BlogPost() {
               h2: ({ children }) => <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#fff', marginTop: '2rem', marginBottom: '0.75rem' }}>{children}</h2>,
               h3: ({ children }) => <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#fff', marginTop: '1.5rem', marginBottom: '0.5rem' }}>{children}</h3>,
               p: ({ children }) => <p style={{ marginBottom: '1.25rem', color: '#ccc' }}>{children}</p>,
-              a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#f5c518', textDecoration: 'underline' }}>{children}</a>,
+              // A link to an audio file becomes a player, with its link text as the caption.
+              // Done here rather than by enabling rehype-raw: most posts on this blog are
+              // generated from external circular text, and turning on raw HTML would make any
+              // markup that arrives through that pipeline executable. Readers of the RSS feed,
+              // which renders no components, still get an ordinary working link.
+              a: ({ href, children }) => (
+                /\.(m4a|mp3|wav|ogg)$/i.test(href ?? '') ? (
+                  <figure style={{ margin: '1.5rem 0' }}>
+                    <audio controls preload="none" src={href} style={{ width: '100%' }} />
+                    <figcaption style={{ fontSize: '0.875rem', opacity: 0.75, marginTop: '0.5rem' }}>{children}</figcaption>
+                  </figure>
+                ) : (
+                  <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#f5c518', textDecoration: 'underline' }}>{children}</a>
+                )
+              ),
               strong: ({ children }) => <strong style={{ color: '#fff', fontWeight: 600 }}>{children}</strong>,
               code: ({ children }) => <code style={{ background: '#1a1a1a', padding: '0.125rem 0.375rem', borderRadius: 3, fontSize: '0.875rem', color: '#a78bfa' }}>{children}</code>,
               blockquote: ({ children }) => <blockquote style={{ borderLeft: '3px solid #8D0FF5', paddingLeft: '1rem', margin: '1.5rem 0', color: '#888' }}>{children}</blockquote>,
+              // Tables arrived with the first post to use them, and react-markdown renders them
+              // with no cell padding at all, so a wide cell collides with its neighbour. Colours
+              // are rgba rather than hex to keep the design ratchet clean.
+              table: ({ children }) => (
+                <div style={{ overflowX: 'auto', margin: '1.5rem 0' }}>
+                  <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '0.9rem' }}>{children}</table>
+                </div>
+              ),
+              th: ({ children }) => (
+                <th style={{ textAlign: 'left', padding: '0.5rem 0.9rem 0.5rem 0', whiteSpace: 'nowrap',
+                             borderBottom: '1px solid rgba(255,255,255,0.22)', color: 'rgba(255,255,255,0.92)',
+                             fontWeight: 600 }}>{children}</th>
+              ),
+              td: ({ children }) => (
+                <td style={{ padding: '0.5rem 0.9rem 0.5rem 0', verticalAlign: 'top',
+                             borderBottom: '1px solid rgba(255,255,255,0.08)' }}>{children}</td>
+              ),
               img: ({ src, alt }) => <img src={src} alt={alt} style={{ maxWidth: '100%', borderRadius: '0.5rem', margin: '1.5rem 0', background: '#fff', padding: '0.5rem', display: 'block' }} />,
             }}
           >
