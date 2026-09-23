@@ -84,7 +84,6 @@ import {
   SigTag,
   CelestialSphereContainer,
   FloatingEventPanel,
-  SheetHandle,
   EventPanel,
   EventPanelHeader,
   EventPanelContent,
@@ -164,8 +163,7 @@ export default function EventLevel() {
     sourceName: '',
     alertKind: '',
     phase: ''
-  });
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  });  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const [selectedAlertTypes, setSelectedAlertTypes] = useState<string[]>([]);
   const [nlQuery, setNlQuery] = useState('');
@@ -195,6 +193,12 @@ export default function EventLevel() {
   });
   const [view, setView] = useState<ViewMode>('globe');
   const isSheetWidth = useIsSheetWidth();
+  /* Phones get the list, always. The globe needs room for the sphere, its legend,
+     the zoom controls AND the selected-event panel; at <=640px those compete for the
+     same few hundred pixels and every one of them ends up unusable. The toggle is
+     hidden rather than disabled — offering a mode that cannot work is worse than
+     not offering it. */
+  const effectiveView: ViewMode = isSheetWidth ? 'list' : view;
 
 
   // State for search trigger
@@ -528,7 +532,7 @@ export default function EventLevel() {
      flow above the table in list view. MainContent is a centred flex row for
      the globe, so a static child there would sit beside the table. */
   const filterBar = (
-          <SearchSection ref={pillsRef} $overlay={view === 'globe' && !isSheetWidth}>
+          <SearchSection ref={pillsRef} $overlay={effectiveView === 'globe'}>
             {/* NL search bar */}
 
             {/* Filter pills */}
@@ -662,13 +666,17 @@ export default function EventLevel() {
           </SearchBarWrapper>
           {nlError && <SearchErrorText>{nlError}</SearchErrorText>}
             <HeaderRight>
-              <ViewToggle>
-                {(['globe', 'list'] as const).map(v => (
-                  <ViewToggleOption key={v} $active={view === v} onClick={() => setView(v)}>
-                    {v === 'globe' ? 'Globe' : 'List'}
-                  </ViewToggleOption>
-                ))}
-              </ViewToggle>
+              {/* Hidden on phones: the view is pinned to 'list' there, so a toggle
+                  offering Globe would be a control that does nothing. */}
+              {!isSheetWidth && (
+                <ViewToggle>
+                  {(['globe', 'list'] as const).map(v => (
+                    <ViewToggleOption key={v} $active={view === v} onClick={() => setView(v)}>
+                      {v === 'globe' ? 'Globe' : 'List'}
+                    </ViewToggleOption>
+                  ))}
+                </ViewToggle>
+              )}
               <EventCount>
                 <EventCountNumber>{filteredEvents.length} Events</EventCountNumber>
                 <EventCountDate>
@@ -706,12 +714,12 @@ export default function EventLevel() {
         
 
         {/* Search + filter pills */}
-        {(view === 'list' || isSheetWidth) && filterBar}
+        {effectiveView === 'list' && filterBar}
       </Header>
 
       {/* Main Content */}
       <MainContent>
-        {view === 'list' ? (
+        {effectiveView === 'list' ? (
           <EventsTable
             events={filteredEvents}
             selectedEvent={selectedEvent}
@@ -739,16 +747,11 @@ export default function EventLevel() {
 
         {/* After the sphere in DOM order: later siblings paint on top, so the bar
             sits above the canvas without depending on z-index. */}
-        {view === 'globe' && !isSheetWidth && filterBar}
+        {effectiveView === 'globe' && filterBar}
 
         {/* Floating Event Panel */}
-        {view === 'globe' && selectedEvent && (
-          <FloatingEventPanel
-
-          >
-            {/* Visual grip only — the expand/collapse behaviour is deferred, so it
-                is not a button that does nothing. */}
-            <SheetHandle as="div" aria-hidden="true" />
+        {effectiveView === 'globe' && selectedEvent && (
+          <FloatingEventPanel>
             <EventPanel>
               {/* Header */}
               <EventPanelContent>

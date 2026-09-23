@@ -10,21 +10,21 @@ export const NavInner = styled.div`
   display: flex;
   height: 3.5rem; /* h-14 */
   align-items: center;
-  padding-left: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
-  padding-right: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
   position: relative;
 `;
 
 export const LeftGroup = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 `;
 
 export const Brand = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 /* Starithm mark, used bare — the violet box this replaced was the same purple as the
@@ -49,13 +49,13 @@ export const BrandText = styled.div`
 `;
 
 export const BrandTitle = styled.span`
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.lg', '1.125rem')};
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-lg);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
 export const BrandSubtitle = styled.span`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
@@ -64,7 +64,7 @@ export const RightActions = styled.div`
   right: 1rem;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
   @media (max-width: 768px) {
     display: none;
   }

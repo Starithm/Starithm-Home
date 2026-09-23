@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 /* Mobile sheet height, in vh. Tall enough to reach the actions without
    scrolling on a typical phone, short enough to leave the globe usable. */
-export const SHEET_HEIGHT_VH = 58;
 import { getThemeValue } from '@shared/utils/themeUtils';
 
 // Main container
@@ -33,7 +32,7 @@ export const HeaderContent = styled.div`
 export const HeaderTop = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 
   @media (max-width: 640px) {
     flex-wrap: wrap;
@@ -44,7 +43,7 @@ export const HeaderTop = styled.div`
 export const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.3', '0.75rem')};
+  gap: var(--space-3);
 `;
 
 export const LogoContainer = styled.div`
@@ -98,8 +97,8 @@ export const BrandDivider = styled.span`
 `;
 
 export const HeaderTitle = styled.h1`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xl', '1.25rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
   @media (max-width: 640px) {
     display: none;
@@ -151,20 +150,20 @@ export const EventCount = styled.div`
 `;
 
 export const EventCountNumber = styled.div`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-weight: var(--font-weight-medium);
 `;
 
 export const EventCountDate = styled.div`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const LiveIndicator = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
   @media (max-width: 640px) {
     display: none;
   }
@@ -189,13 +188,13 @@ export const LiveDot = styled.div`
 `;
 
 export const LiveText = styled.span`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-size: var(--font-size-sm);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 // Navigation section
 export const Navigation = styled.div`
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')} ${({ theme }) => getThemeValue(theme, 'spacing.6', '1.5rem')};
+  padding: var(--space-2) var(--space-6);
 `;
 
 // Search section
@@ -355,7 +354,7 @@ export const PillDropdownItem = styled.button<{ $selected?: boolean }>`
 export const DateRangeContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const DateRangeSeparator = styled.span`
@@ -384,7 +383,7 @@ export const CelestialSphereContainer = styled.div`
  * Mobile:  a bottom sheet. Previously the panel became a static block *below* a
  *          200px globe, which pushed the sphere to an unusable size and buried
  *          the event. As a sheet it overlays instead, so the globe keeps its
- *          height and the sheet can be dragged between peek and full. */
+ *          height. Mobile now uses the list view instead — see effectiveView. */
 export const FloatingEventPanel = styled.div`
   /* Bottom-anchored rather than full-height, per 2a — a floor-to-ceiling column
      covered the sphere's whole left third including the zoom controls. */
@@ -399,55 +398,8 @@ export const FloatingEventPanel = styled.div`
   align-items: flex-end;
   overflow-y: auto;
 
-  @media (max-width: 640px) {
-    position: fixed;
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 0;
-    z-index: 120;
-    display: block;
-    overflow: hidden;
-    /* One fixed height, content scrolls inside it.
-       The two-position (peek/full) sheet is deferred: neither max-height nor
-       transform would take effect on this element — the inline value and React
-       state were both correct, no competing rule existed, yet geometry never
-       changed. Rather than ship a grab handle that does nothing, the sheet sits
-       at one size that clears the fold and scrolls. See the note in the page. */
-    height: ${SHEET_HEIGHT_VH}vh;
-    max-height: none;
-    border-radius: 14px 14px 0 0;
-    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.55);
-    /* Clear the iOS home indicator. */
-    padding-bottom: env(safe-area-inset-bottom, 0);
-  }
 `;
 
-/* Grab bar — the visible affordance that the sheet moves, and the drag target. */
-export const SheetHandle = styled.button`
-  display: none;
-
-  @media (max-width: 640px) {
-    display: block;
-    width: 100%;
-    background: none;
-    border: 0;
-    padding: 9px 0 5px;
-    cursor: grab;
-    touch-action: none;
-
-    &::before {
-      content: '';
-      display: block;
-      width: 38px;
-      height: 4px;
-      margin: 0 auto;
-      border-radius: 999px;
-      background: rgba(231, 223, 221, 0.28);
-    }
-  }
-`;
 
 export const EventPanel = styled.div`
   width: 100%;
@@ -649,7 +601,7 @@ export const EventPanelHeader = styled.div`
   margin-left: 0.5rem;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const EventPanelContent = styled.div`
@@ -680,12 +632,12 @@ export const EventIconContainer = styled.div`
 `;
 
 export const EventTitle = styled.h3`
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.semibold', 600)};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
 `;
 
 export const EventSubtitle = styled.p`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
@@ -701,20 +653,20 @@ export const EventPanelBody = styled.div`
 export const BadgeContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const SectionContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const SectionHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
 `;
 
 export const SectionIcon = styled.div`
@@ -722,14 +674,14 @@ export const SectionIcon = styled.div`
 `;
 
 export const SectionTitle = styled.span`
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-weight: var(--font-weight-medium);
 `;
 
 export const SectionContent = styled.div`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.1', '0.25rem')};
+  gap: var(--space-1);
 `;
 
 export const SectionRow = styled.div`
@@ -747,8 +699,8 @@ export const SectionValue = styled.span`
 
 export const ActionsContainer = styled.div`
   display: flex;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
-  padding-top: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
+  padding-top: var(--space-2);
 `;
 
 // Status bar
@@ -769,14 +721,14 @@ export const StatusContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.xs', '0.75rem')};
+  font-size: var(--font-size-xs);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const StatusLeft = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
   @media (max-width: 640px) {
     display: none;
   }
@@ -793,7 +745,7 @@ export const StatusSelected = styled.span`
 export const StatusRight = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 `;
 
 export const ConnectionStatus = styled.span``;
@@ -801,7 +753,7 @@ export const ConnectionStatus = styled.span``;
 export const StatusDots = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.1', '0.25rem')};
+  gap: var(--space-1);
 `;
 
 export const StatusDot = styled.div<{ delay?: string }>`

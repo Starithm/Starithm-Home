@@ -3,7 +3,7 @@ import { getThemeValue } from '@shared/utils/themeUtils';
 
 export const FiltersContainer = styled.div`
   background-color: ${({ theme }) => getThemeValue(theme, 'background', '#ffffff')};
-  padding: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  padding: var(--space-4);
   border-radius: 0.5rem;
 `;
 
@@ -11,32 +11,32 @@ export const HeaderRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  margin-bottom: var(--space-4);
 `;
 
 export const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 export const HeaderTitle = styled.span`
-  font-size: ${({ theme }) => getThemeValue(theme, 'fontSize.sm', '0.875rem')};
-  font-weight: ${({ theme }) => getThemeValue(theme, 'fontWeight.medium', 500)};
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: ${({ theme }) => getThemeValue(theme, 'foreground', '#0E0B16')};
 `;
 
 export const Actions = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const FiltersGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.4', '1rem')};
+  gap: var(--space-4);
 
   @media (min-width: ${({ theme }) => getThemeValue(theme, 'breakpoints.md', '768px')}) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -49,14 +49,14 @@ export const FiltersGrid = styled.div`
 export const Field = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const DateInputWrapper = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => getThemeValue(theme, 'spacing.2', '0.5rem')};
+  gap: var(--space-2);
 `;
 
 export const IconLeft = styled.div`
