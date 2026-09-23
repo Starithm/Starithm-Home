@@ -93,6 +93,12 @@ export function MappingKey({ track, player }: { track: Track; player: PlayerData
         mean the objects differ. Loudness is normalised for every track too, at{' '}
         {level.normalised_rms_dbfs} dBFS, so absolute brightness cannot be recovered by ear.
       </KeyCaveat>
+
+      {mapping.caveat && (
+        <KeyCaveat>
+          <strong>The drone's shape is partly the route.</strong> {mapping.caveat.note}.
+        </KeyCaveat>
+      )}
     </KeyPanel>
   );
 }
