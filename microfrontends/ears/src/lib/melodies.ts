@@ -105,6 +105,8 @@ export interface TrackMapping {
   timbre: { means: null; note: string };
   /** Absent on tracks published before 2026-09-23. */
   caveat?: { note: string };
+  /** Absent on tracks published before 2026-10-12, when the space stopped being a model's choice. */
+  space?: { means: string; name: string; half_light_fraction: number | null; note: string };
   reference_tone?: { note: string; frequency_hz: [number, number]; wavelength_um: [number, number] };
 }
 

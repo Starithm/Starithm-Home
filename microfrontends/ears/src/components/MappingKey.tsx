@@ -80,6 +80,19 @@ export function MappingKey({ track, player }: { track: Track; player: PlayerData
           </KeyNums>
         </KeyRow>
 
+        {mapping.space && (
+          <KeyRow>
+            <KeyChannel>Space</KeyChannel>
+            <KeyText>{mapping.space.means[0].toUpperCase() + mapping.space.means.slice(1)}.</KeyText>
+            <KeyNums>
+              {mapping.space.name}
+              {mapping.space.half_light_fraction != null && (
+                <> &middot; half the light in {(mapping.space.half_light_fraction * 100).toFixed(1)}% of the target</>
+              )}
+            </KeyNums>
+          </KeyRow>
+        )}
+
         <KeyRow>
           <KeyChannel>Voices</KeyChannel>
           <KeyText>{voices.melody}. {voices.plucks}.</KeyText>
@@ -88,9 +101,9 @@ export function MappingKey({ track, player }: { track: Track; player: PlayerData
       </KeyGrid>
 
       <KeyCaveat>
-        <strong>Instruments carry no information.</strong> Key and reverb are chosen for character as
-        well, and varied deliberately from track to track, so two tracks sounding different does not
-        mean the objects differ. Loudness is normalised for every track too, at{' '}
+        <strong>Instruments carry no information.</strong> The key is chosen for character as well, and
+        varied deliberately from track to track, so two tracks sounding different does not
+        mean the objects differ.{!mapping.space && ' Reverb is chosen the same way.'} Loudness is normalised for every track too, at{' '}
         {level.normalised_rms_dbfs} dBFS, so absolute brightness cannot be recovered by ear.
       </KeyCaveat>
 

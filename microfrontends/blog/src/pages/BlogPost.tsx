@@ -5,6 +5,19 @@ import remarkGfm from 'remark-gfm';
 import { ArrowLeft, ArrowRight, Calendar, Clock, User, ExternalLink } from 'lucide-react';
 import { fetchPost, fetchPostList, Post, PostMeta } from '../lib/posts';
 
+// Turns a YouTube/Vimeo watch URL into an embed URL, or returns null.
+// The video id is extracted and re-validated against a strict character class rather than
+// interpolated from the href, so a crafted link arriving through the generated-post pipeline
+// cannot inject anything into the iframe src.
+function parseVideoEmbed(href?: string): string | null {
+  if (!href) return null;
+  let m = href.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  if (m) return `https://www.youtube-nocookie.com/embed/${m[1]}`;
+  m = href.match(/vimeo\.com\/(?:video\/)?(\d{6,12})/);
+  if (m) return `https://player.vimeo.com/video/${m[1]}`;
+  return null;
+}
+
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
   const location = useLocation();
@@ -191,21 +204,40 @@ export default function BlogPost() {
               h2: ({ children }) => <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#fff', marginTop: '2rem', marginBottom: '0.75rem' }}>{children}</h2>,
               h3: ({ children }) => <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#fff', marginTop: '1.5rem', marginBottom: '0.5rem' }}>{children}</h3>,
               p: ({ children }) => <p style={{ marginBottom: '1.25rem', color: '#ccc' }}>{children}</p>,
-              // A link to an audio file becomes a player, with its link text as the caption.
+              // A link to an audio file becomes a player, and a link to a YouTube/Vimeo video
+              // becomes an embed — both with the link text as the caption.
               // Done here rather than by enabling rehype-raw: most posts on this blog are
               // generated from external circular text, and turning on raw HTML would make any
               // markup that arrives through that pipeline executable. Readers of the RSS feed,
               // which renders no components, still get an ordinary working link.
-              a: ({ href, children }) => (
-                /\.(m4a|mp3|wav|ogg)$/i.test(href ?? '') ? (
+              a: ({ href, children }) => {
+                const video = parseVideoEmbed(href);
+                if (video) {
+                  return (
+                    <figure style={{ margin: '1.5rem 0' }}>
+                      <div style={{ position: 'relative', paddingTop: '56.25%', borderRadius: '0.5rem', overflow: 'hidden' }}>
+                        <iframe
+                          src={video}
+                          title={typeof children === 'string' ? children : 'Embedded video'}
+                          loading="lazy"
+                          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
+                        />
+                      </div>
+                      <figcaption style={{ fontSize: '0.875rem', opacity: 0.75, marginTop: '0.5rem' }}>{children}</figcaption>
+                    </figure>
+                  );
+                }
+                return /\.(m4a|mp3|wav|ogg)$/i.test(href ?? '') ? (
                   <figure style={{ margin: '1.5rem 0' }}>
                     <audio controls preload="none" src={href} style={{ width: '100%' }} />
                     <figcaption style={{ fontSize: '0.875rem', opacity: 0.75, marginTop: '0.5rem' }}>{children}</figcaption>
                   </figure>
                 ) : (
                   <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#f5c518', textDecoration: 'underline' }}>{children}</a>
-                )
-              ),
+                );
+              },
               strong: ({ children }) => <strong style={{ color: '#fff', fontWeight: 600 }}>{children}</strong>,
               code: ({ children }) => <code style={{ background: '#1a1a1a', padding: '0.125rem 0.375rem', borderRadius: 3, fontSize: '0.875rem', color: '#a78bfa' }}>{children}</code>,
               blockquote: ({ children }) => <blockquote style={{ borderLeft: '3px solid #8D0FF5', paddingLeft: '1rem', margin: '1.5rem 0', color: '#888' }}>{children}</blockquote>,
@@ -226,7 +258,23 @@ export default function BlogPost() {
                 <td style={{ padding: '0.5rem 0.9rem 0.5rem 0', verticalAlign: 'top',
                              borderBottom: '1px solid rgba(255,255,255,0.08)' }}>{children}</td>
               ),
-              img: ({ src, alt }) => <img src={src} alt={alt} style={{ maxWidth: '100%', borderRadius: '0.5rem', margin: '1.5rem 0', background: '#fff', padding: '0.5rem', display: 'block' }} />,
+              // Two kinds of image appear on this blog and they need opposite treatment.
+              // Generated posts embed scientific figures (arXiv, HEASARC) that are line plots on
+              // white or transparent backgrounds — those NEED the white mat, or a transparent plot
+              // renders as invisible ink on a dark page. Hand-written posts embed photographs,
+              // where a white mat looks like a framing mistake.
+              // The rule: supply a markdown title and you get photo treatment with that title as
+              // the caption — `![alt](url "Credit: IceCube/NSF")`. Omit it and you get the figure
+              // mat, so every existing generated post is unaffected.
+              img: ({ src, alt, title }) =>
+                title ? (
+                  <figure style={{ margin: '1.5rem 0' }}>
+                    <img src={src} alt={alt} style={{ maxWidth: '100%', borderRadius: '0.5rem', display: 'block' }} />
+                    <figcaption style={{ fontSize: '0.875rem', opacity: 0.75, marginTop: '0.5rem' }}>{title}</figcaption>
+                  </figure>
+                ) : (
+                  <img src={src} alt={alt} style={{ maxWidth: '100%', borderRadius: '0.5rem', margin: '1.5rem 0', background: '#fff', padding: '0.5rem', display: 'block' }} />
+                ),
             }}
           >
             {post.content}
