@@ -14,6 +14,8 @@ export const MELODIES_BASE_URL = ((import.meta.env.VITE_MELODIES_BASE_URL as str
  *  not chosen, so every one of these turns up in practice. Ordered close to cavernous. */
 export type Space = 'dry' | 'chamber' | 'room' | 'hall' | 'cathedral' | 'void';
 
+export type Archive = 'jwst' | 'muse' | 'alma';
+
 export interface DayIndexEntry {
   date: string;
   track_count: number;
@@ -76,8 +78,14 @@ export interface Track {
     dec: number | null;
   };
   observation: {
+    /** Which archive published the cube. Absent on tracks from before there were three of them,
+     *  all of which came from MAST. */
+    archive?: Archive;
+    /** Spelled out, e.g. "the Atacama Large Millimeter/submillimeter Array". Absent on older tracks. */
+    telescope?: string | null;
     program_id: string;
     program_title: string;
+    /** Empty when the archive publishes no page for this programme. */
     program_url: string;
     instrument: string;
     file: string;
@@ -181,4 +189,60 @@ export function targetKind(track: Track): string | null {
   if (track.target.type && track.target.match === 'name') return track.target.type;
   const parts = (track.target.classification || '').split(';').map(s => s.trim()).filter(Boolean);
   return parts.length ? parts[parts.length - 1] : track.target.type ?? null;
+}
+
+
+const ARCHIVE_LABEL: Record<Archive, string> = { jwst: 'JWST', muse: 'VLT/MUSE', alma: 'ALMA' };
+const PROGRAM_WORD: Record<Archive, string> = {
+  jwst: 'JWST program',
+  muse: 'ESO programme',
+  alma: 'ALMA project',
+};
+
+/** Everything published before the pipeline read more than one archive came from MAST. */
+function archiveOf(track: Track): Archive {
+  return track.observation.archive ?? 'jwst';
+}
+
+export function telescopeName(track: Track): string {
+  return track.observation.telescope || 'the James Webb Space Telescope';
+}
+
+export function programLabel(track: Track): string {
+  return `${PROGRAM_WORD[archiveOf(track)] ?? 'program'} ${track.observation.program_id}`;
+}
+
+/** "JWST · MIRI CH3 · SHORT", "VLT/MUSE", "ALMA · BAND 7".
+ *
+ * The instrument setup repeats the archive's own name for MUSE and ALMA and not for JWST, so the
+ * words already in the archive label are dropped rather than printed twice. */
+export function instrumentLine(track: Track): string {
+  const label = ARCHIVE_LABEL[archiveOf(track)] ?? archiveOf(track).toUpperCase();
+  const said = new Set(label.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean));
+  const rest = (track.sonification?.setup ?? '')
+    .split(/\s+/)
+    .filter(word => word && !said.has(word.toUpperCase()))
+    .join(' ')
+    .replace(/^·\s*/, '')
+    .trim();
+  return rest ? `${label} · ${rest}` : label;
+}
+
+/** The published range now runs from 0.47 um (MUSE) to about 3000 um (ALMA), five orders of
+ *  magnitude, so the unit follows the number instead of always being microns. Nobody describes
+ *  H-alpha in microns or a CO line in anything but millimetres. */
+export function wavelengthRange([shortUm, longUm]: [number, number]): string {
+  if (longUm < 1) return span(shortUm * 1000, longUm * 1000, 'nm', 0);
+  if (shortUm >= 1000) return span(shortUm / 1000, longUm / 1000, 'mm', 2);
+  return span(shortUm, longUm, '\u00b5m', shortUm >= 100 ? 1 : 2);
+}
+
+/** ALMA publishes one spectral window at a time and a window is a few tenths of a percent wide,
+ *  so a fixed number of decimals prints both ends of a real range as the same number: 2598 to
+ *  2603 um reads "2.60-2.60 mm". Widen until the two ends are distinguishable. */
+function span(lo: number, hi: number, unit: string, digits: number): string {
+  for (let d = digits; d < 4; d++) {
+    if (lo.toFixed(d) !== hi.toFixed(d)) return `${lo.toFixed(d)}\u2013${hi.toFixed(d)} ${unit}`;
+  }
+  return `${lo.toFixed(4)}\u2013${hi.toFixed(4)} ${unit}`;
 }

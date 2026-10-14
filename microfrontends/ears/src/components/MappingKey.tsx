@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { PlayerData, Track } from '../lib/melodies';
-import { assetUrl } from '../lib/melodies';
+import { assetUrl, wavelengthRange } from '../lib/melodies';
 import {
   KeyCaveat, KeyChannel, KeyGrid, KeyNums, KeyPanel, KeyRow, KeyText, LabelRow, RefButton,
 } from '../styled_components/Ears.styled';
@@ -25,7 +25,6 @@ export function MappingKey({ track, player }: { track: Track; player: PlayerData
   if (!mapping) return null;
 
   const { pitch, loudness, time, voices, level } = mapping;
-  const [shortUm, longUm] = pitch.wavelength_um;
   const [lowHz, highHz] = pitch.frequency_hz;
 
   const toggleReference = () => {
@@ -58,7 +57,7 @@ export function MappingKey({ track, player }: { track: Track; player: PlayerData
           <KeyChannel>Pitch</KeyChannel>
           <KeyText>{pitch.direction}.</KeyText>
           <KeyNums>
-            {shortUm} &ndash; {longUm} &micro;m &rarr; {Math.round(lowHz)} &ndash; {Math.round(highHz)} Hz
+            {wavelengthRange(pitch.wavelength_um)} &rarr; {Math.round(lowHz)} &ndash; {Math.round(highHz)} Hz
             {' '}&middot; {pitch.notes} notes over {pitch.octaves} octaves &middot; {pitch.scale}
           </KeyNums>
         </KeyRow>

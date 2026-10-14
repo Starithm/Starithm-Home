@@ -4,7 +4,8 @@ import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { useQuery } from '@tanstack/react-query';
 import { StarithmLoader } from '@shared/components/StarithmLoader';
 import {
-  MELODIES_BASE_URL, assetUrl, fetchDay, fetchIndex, fetchPlayer, friendlyLineName, targetKind, type Track,
+  MELODIES_BASE_URL, assetUrl, fetchDay, fetchIndex, fetchPlayer, friendlyLineName, instrumentLine,
+  targetKind, wavelengthRange, type Track,
 } from '../lib/melodies';
 import { absorptionAt, levelsAt, formatClock } from '../lib/playerMath';
 import { usePlayback } from '../lib/usePlayback';
@@ -92,7 +93,7 @@ export default function EarsPage() {
         {track && (
           <HeaderMeta>
             <span>PROGRAM {track.observation.program_id}</span>
-            {track.sonification?.setup && <span>{track.sonification.setup}</span>}
+            <span>{instrumentLine(track)}</span>
             {track.observation.observed && <span>OBSERVED {track.observation.observed}</span>}
           </HeaderMeta>
         )}
@@ -158,7 +159,7 @@ export default function EarsPage() {
         {header}
         <Notice>
           <h2>The first melodies are on their way</h2>
-          <p>Every day, newly public James Webb Space Telescope observations become music here.</p>
+          <p>Every day, newly public observations from JWST, ESO&rsquo;s Very Large Telescope and ALMA become music here.</p>
         </Notice>
       </Page>
     );
@@ -185,7 +186,7 @@ export default function EarsPage() {
           <p>
             {dayQuery.isError
               ? "We couldn't find melodies for this day."
-              : 'No new public JWST spectral cubes with a clear target were released that day.'}
+              : 'No new public spectral cubes with a clear target were released that day.'}
           </p>
           {index.latest_date && index.latest_date !== date && (
             <TextButton onClick={() => navigate(`${BASE_PATH}/${index.latest_date}`)}>Go to the latest</TextButton>
@@ -229,7 +230,7 @@ export default function EarsPage() {
           {track.logline && <Logline>{track.logline}</Logline>}
           <MetaLine>
             {[
-              son && `${son.wavelength_um[0].toFixed(2)}–${son.wavelength_um[1].toFixed(2)} µm`,
+              son && wavelengthRange(son.wavelength_um),
               son && `${son.regions} regions`,
               `${Math.round(duration)} s`,
               track.target.simbad_id,
