@@ -10,6 +10,10 @@
 
 export const MELODIES_BASE_URL = ((import.meta.env.VITE_MELODIES_BASE_URL as string | undefined) || '').replace(/\/$/, '');
 
+/** How much room a track is heard in. Measured from how concentrated the target's light is,
+ *  not chosen, so every one of these turns up in practice. Ordered close to cavernous. */
+export type Space = 'dry' | 'chamber' | 'room' | 'hall' | 'cathedral' | 'void';
+
 export interface DayIndexEntry {
   date: string;
   track_count: number;
@@ -49,7 +53,7 @@ export interface Track {
     name: string;
     /** The three voices a listener hears: melody, plucks, drone. */
     instruments: string[];
-    space: 'room' | 'hall' | 'cathedral' | null;
+    space: Space | null;
     scale: string | null;
     /** One sentence from the arranger about why these instruments suit this object. */
     reason: string | null;
