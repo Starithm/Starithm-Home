@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { PlayerData, Track } from '../lib/melodies';
+import { programLabel, telescopeName } from '../lib/melodies';
 import { chapterIndex, formatClock } from '../lib/playerMath';
 import {
   Credits, Label, Science, SciencePara, Stanza, StanzaHead, StanzaText, Stanzas,
@@ -55,13 +56,19 @@ export function StoryPanel({ track, player, time, onSeek }: Props) {
         <Label>The science</Label>
         <SciencePara>
           {track.science_note ||
-            `Music made from a JWST ${track.observation.instrument} spectral cube of ${track.target.name}.`}
+            `Music made from a ${track.observation.instrument} spectral cube of ${track.target.name}, recorded by ${telescopeName(track)}.`}
         </SciencePara>
         {player && <SpectrumPlot player={player} />}
         <Credits>
-          <a href={track.observation.program_url} target="_blank" rel="noreferrer">
-            JWST program {track.observation.program_id}
-          </a>
+          {/* ESO and ALMA programme ids are not numbers and some have no page of their own, so
+              the credit has to survive an empty url rather than link back to this one. */}
+          {track.observation.program_url ? (
+            <a href={track.observation.program_url} target="_blank" rel="noreferrer">
+              {programLabel(track)}
+            </a>
+          ) : (
+            programLabel(track)
+          )}
           {track.observation.program_title ? `: ${track.observation.program_title}` : ''}
           <br />
           Sonified from {track.observation.file}
