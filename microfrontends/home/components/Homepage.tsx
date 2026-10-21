@@ -369,8 +369,11 @@ export function Homepage() {
             <FooterCol>
               <span>Contact</span>
               <button type="button" onClick={() => setIsContactDialogOpen(true)}>Contact us</button>
-              <a href="https://x.com/starithm_ai" target="_blank" rel="noopener noreferrer">@starithm_ai</a>
-              <a href="https://www.instagram.com/starithm.ai/" target="_blank" rel="noopener noreferrer">@starithm.ai</a>
+              {/* Platform names, not handles: @starithm_ai and @starithm.ai differ only by
+                  underscore vs dot and were indistinguishable at this size. aria-label keeps
+                  the handle available to screen readers and as a hover tooltip. */}
+              <a href="https://x.com/starithm_ai" target="_blank" rel="noopener noreferrer" aria-label="Starithm on X (@starithm_ai)" title="@starithm_ai">X</a>
+              <a href="https://www.instagram.com/starithm.ai/" target="_blank" rel="noopener noreferrer" aria-label="Starithm on Instagram (@starithm.ai)" title="@starithm.ai">Instagram</a>
               <a href="/privacy">Privacy</a>
             </FooterCol>
           </FooterCols>
