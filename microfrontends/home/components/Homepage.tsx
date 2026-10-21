@@ -370,6 +370,7 @@ export function Homepage() {
               <span>Contact</span>
               <button type="button" onClick={() => setIsContactDialogOpen(true)}>Contact us</button>
               <a href="https://x.com/starithm_ai" target="_blank" rel="noopener noreferrer">@starithm_ai</a>
+              <a href="https://www.instagram.com/starithm.ai/" target="_blank" rel="noopener noreferrer">@starithm.ai</a>
               <a href="/privacy">Privacy</a>
             </FooterCol>
           </FooterCols>
