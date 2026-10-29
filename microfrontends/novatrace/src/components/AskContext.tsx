@@ -136,6 +136,7 @@ const FactRow = styled.div`
   line-height: 1.45;
   color: var(--text-body);
   & + & { border-top: 1px solid var(--line-hairline); }
+  @media (max-width: 560px) { grid-template-columns: 112px minmax(0, 1fr); padding: 9px 12px; }
 `;
 const FactLabel = styled.span`color: var(--text-muted);`;
 const ImageGrid = styled.div`

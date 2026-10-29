@@ -1,0 +1,1445 @@
+{
+ "question": "How did the sky localization of S250818k change across alerts?",
+ "recorded": "2026-10-29T11:22:50.479Z",
+ "events": [
+  {
+   "t": 1,
+   "event": {
+    "type": "status",
+    "step": "understanding",
+    "text": "Understanding your question…"
+   }
+  },
+  {
+   "t": 3633,
+   "event": {
+    "type": "status",
+    "step": "searching",
+    "text": "Searching 45,000 circulars…"
+   }
+  },
+  {
+   "t": 5664,
+   "event": {
+    "type": "status",
+    "step": "found",
+    "text": "Found 41 circulars across 1 event"
+   }
+  },
+  {
+   "t": 5664,
+   "event": {
+    "type": "sources",
+    "sources": [
+     {
+      "key": "NOTICES-S250818k",
+      "n": "notices",
+      "date": "2025-08-18",
+      "subject": "GCN notices · S250818k (5)",
+      "snippet": "2025-08-18 01:20:06 UTC · IceCube (gcn.notices.icecube.lvk_nu_track_search) - 2025-08-18 01:20:35 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 99.027°, Dec −59.109° · classification: Terrestrial 71%, BNS 29% · skymap",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41410",
+      "n": "41410",
+      "date": "2025-08-18",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Coverage and upper limits from MAXI/GSC observations",
+      "snippet": "We examined MAXI/GSC all-sky X-ray images (2-20 keV) after compact binary merger candidate S250818k at 2025-08-18 01:20:06.030 UTC. At the trigger time of S250818k, the high-voltage of MAXI/GSC was on. The instantaneous ",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41414",
+      "n": "41414",
+      "date": "2025-08-18",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Candidates from the Zwicky Transient Facility",
+      "snippet": ", On behalf of the Zwicky Transient Facility (ZTF) and Global Relay of Observatories Watching Transients Happen (GROWTH) collaborations: We observed the localization region of the LVK trigger S250818k with the Palomar 48",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41421",
+      "n": "41421",
+      "date": "2025-08-19",
+      "subject": "LIGO/Virgo/KAGRA S250818k: FTW optical and NIR observations of AT 2025ulz",
+      "snippet": "We observed the source AT 2025ulz reported by Stein et al. (GCN 41414) with the Three Channel Imager (3KK) at the Fraunhofer Telescope at Wendelstein Observatory (FTW) in the g, r, i, z, and J bands starting at 2025-08-1",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41433",
+      "n": "41433",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: FTW Fast reddening of AT 2025ulz",
+      "snippet": "We observed the source AT 2025ulz reported by Stein et al. (GCN 41414) with the Three Channel Imager (3KK) at the Fraunhofer Telescope at Wendelstein Observatory (FTW) in the g, r, i, z, and J bands starting at 2025-08-1",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41436",
+      "n": "41436",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Keck I LRIS spectroscopy of ZTF25abjmnps (AT2025ulz)",
+      "snippet": "We observed ZTF25abjmnps (AT2025ulz; Stein et al. GCN 41414) starting UTC 2025-08-19 06:42 with the LRIS spectrograph on Keck I. We derive a redshift of 0.0848 based on host galaxy emission lines - this is consistent wit",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41437",
+      "n": "41437",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Properties of the low-significance GW compact binary merger candidate potentially associated with AT 2025ulz",
+      "snippet": "The LIGO Scientific Collaboration, the Virgo Collaboration, and the KAGRA Collaboration (LVK) report: We identified the compact binary merger candidate S250818k during real-time processing of data from LIGO Hanford Obser",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41439",
+      "n": "41439",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Pan-STARRS pre-detection limits for AT2025ulz",
+      "snippet": "pre-discovery limits on the source AT2025ulz, reported by Stein et al. (GCN 41414) and possibly associated with the sub-threshold gravitational wave candidate S20250818k (The LIGO-Virgo-Kagra Collaboration, GCN 41437), o",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41440",
+      "n": "41440",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Updated Sky localization and EM Bright Classification",
+      "snippet": "The LIGO Scientific Collaboration, the Virgo Collaboration, and the KAGRA Collaboration report: We have conducted further analysis of the LIGO Hanford Observatory (H1), LIGO Livingston Observatory (L1), and Virgo Observa",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41441",
+      "n": "41441",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Upper limits from Fermi-GBM Observations",
+      "snippet": "For S250818k (GCN 41437, LVK Collaboration) and using the updated bayestar skymap, Fermi-GBM was observing 51.0% of the localization probability at event time. There was no Fermi-GBM onboard trigger around the event time",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41443",
+      "n": "41443",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: AstroSat CZTI non-detection and upper limits",
+      "snippet": "We have carried a search [1] for X-ray candidates in Astrosat CZTI data in a 100 sec window around the trigger time of the event S250818k (UTC 2025-08-18 01:20:06; LVK Collaboration, GCN Circ. 41437). We use the Bilby.of",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41451",
+      "n": "41451",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: ATLAS pre-discovery limits for AT2025ulz",
+      "snippet": "pre-discovery upper limits from ATLAS observations of AT2025ulz/ZTF25abjmnps reported by Stein et al. (GCN 41414), possibly associated with the sub-threshold gravitational wave event S250818k (GCN 41437). ATLAS observed ",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41452",
+      "n": "41452",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Multi-band Gemini GMOS Detections",
+      "snippet": "Using Gemini GMOS-N, we observed the source AT 2025ulz/ZTF25abjmnps reported by Stein et al. (GCN 41414) discovered during ZTF follow-up of the low-significance gravitational wave event S250818k (GCN 41437, 41440; https:",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41453",
+      "n": "41453",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Swift observations of AT 2025ulz",
+      "snippet": "We requested ToO observations of AT 2025ulz, reported by Stein et al. (GCN 41414) as a possible counterpart to the LVK sub-threshold event S250818k (GCN 41437, 41440). The observation was taken with a midpoint time of 20",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41454",
+      "n": "41454",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Pan-STARRS grizy-band imaging and photometry of AT2025ulz",
+      "snippet": "J. H. Gillanders (Oxford), M. E. Huber, K. C. Chambers (IfA, Univ. Hawaii), S. J. Smartt, K. W. Smith (Oxford/QUB), S. Srivastav, F. Stoppa, H. Stevance, J. Tweddle (Oxford), M. Nicholl, D. R. Young, A. Aamer, C. R. Angu",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41456",
+      "n": "41456",
+      "date": "2025-08-20",
+      "subject": "LIGO/Virgo/KAGRA S250818k: WINTER J-band observations of AT 2025ulz",
+      "snippet": "We observed AT2025ulz (Stein et al., GCN 41414), a possible counterpart to the LVK sub-threshold event S250818k (LVK, GCN 41437, 41440), with the 1.2 sq. degree near-IR WINTER camera on the Palomar 1-m telescope (Lourie ",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41460",
+      "n": "41460",
+      "date": "2025-08-21",
+      "subject": "LIGO/Virgo/KAGRA S250818k: EP/FXT observation of AT 2025ulz",
+      "snippet": "R.-Z. Li (YNAO, CAS), X.-P. Xu, H. Sun, D.-Y. Li, Y. Liu, W. Yuan (NAO ,CAS) and B. Zhang (HKU) on behalf of the Einstein Probe (EP) team: We performed a ToO observation with the Follow-up X-ray Telescope (FXT) on board ",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41461",
+      "n": "41461",
+      "date": "2025-08-21",
+      "subject": "LIGO/Virgo/KAGRA S250818k: WFST pre-discovery limits and follow-up observations of AT 2025ulz",
+      "snippet": "We report the pre-discovery upper limits and follow-up photometry results of AT2025ulz/ZTF25abjmnps reported by Stein et al. (GCN 41414), possibly associated with the sub-threshold gravitational wave (GW) event S250818k ",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41464",
+      "n": "41464",
+      "date": "2025-08-21",
+      "subject": "LIGO/Virgo/KAGRA S250818k: 10 GHz VLA observations of AT2025ulz",
+      "snippet": "Authors: R. Ricci, M. Yadav, E. Troja (U Rome) report: We observed the optical transient AT2025ulz/ZTF25abjmnps (Stein et al. GCN 41414; Hall et al. GCN 41433; Karambelkar et al. GCN 41436; O’Connor et al. GCN 41452) pos",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41468",
+      "n": "41468",
+      "date": "2025-08-21",
+      "subject": "LIGO/Virgo/KAGRA S250818k: GOTO counterpart search and upper limits",
+      "snippet": "K. Ackley, A. Kumar, D. O'Neill, M. J. Dyer, J. Lyman, K. Ulaczyk, S. Belkin, D. Steeghs, D. K. Galloway, V. Dhillon, P. O'Brien, G. Ramsay, K. Noysena, R. Kotak, R. P. Breton, L. K. Nuttall, D. Pollacco, J. Casares Vela",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41474",
+      "n": "41474",
+      "date": "2025-08-21",
+      "subject": "LIGO/Virgo/KAGRA S250818k : Tautenburg observations, upper limits",
+      "snippet": "S. Klose, B. Stecklum, A. Nicuesa Guelbenzu, and F. Ludwig (all Tautenburg) report: We observed the optical transient ZTF25abjmnps/AT2025ulz (Stein et al., GCN 41414), possibly associated with the gravitational wave even",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41476",
+      "n": "41476",
+      "date": "2025-08-21",
+      "subject": "LIGO/Virgo/KAGRA S250818k: ENGRAVE observations of AT 2025ulz",
+      "snippet": "for the ENGRAVE collaboration: “We report preliminary analysis of ESO VLT observations obtained by the ENGRAVE collaboration of AT 2025ulz (Stein et al., GCN 41414), which was discovered within the 3D localization of the",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41480",
+      "n": "41480",
+      "date": "2025-08-21",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Continued fading and reddening from Keck/LRIS imaging observations",
+      "snippet": "The location of AT2025ulz (ZTF25abjmnps; Stein et al., GCN 41414), a candidate counterpart to S250818k (LVK Collaboration, GCNs 41437, 41440), was imaged using the Low-Resolution Imaging Spectrometer (LRIS) on the Keck I",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41489",
+      "n": "41489",
+      "date": "2025-08-22",
+      "subject": "LIGO/Virgo/KAGRA S250818k: GRAWITA TNG NIR observations of AT2025ulz",
+      "snippet": "We observed the optical transient AT2025ulz (Stein et al., GCN Circ. 41414; Busmann et al., GCN Circ. 41421; Hall et al., GCN Circ. 41433; Karambelkar et al., GCN Circ. 41436; O’Connor et al., GCN Circ. 41452; Gillanders",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41492",
+      "n": "41492",
+      "date": "2025-08-22",
+      "subject": "LIGO/Virgo/KAGRA S250818k: NOT optical observations of AT2025ulz",
+      "snippet": "We observed the optical transient AT2025ulz (Stein et al., GCN 41414; Busmann et al., GCN 41421; Hall et al., GCN 41433; Karambelkar et al., GCN 41436; O’Connor et al., GCN 41452; Gillanders et al., GCN 41454; Liu et al.",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41493",
+      "n": "41493",
+      "date": "2025-08-22",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Pan-STARRS coverage of the skymap and candidate counterparts",
+      "snippet": "S. J. Smartt, J. H. Gillanders (Oxford), M. E. Huber, K. C. Chambers (IfA, Univ. Hawaii), K. W. Smith (Oxford/QUB), S. Srivastav, F. Stoppa, H. Stevance, J. Tweddle (Oxford), M. Nicholl, D. R. Young, A. Aamer, C. R. Angu",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41500",
+      "n": "41500",
+      "date": "2025-08-22",
+      "subject": "LIGO/Virgo/KAGRA S250818k: 3 GHz MeerKAT observations of AT2025ulz",
+      "snippet": "G. Bruni [1], L. Piro [1], G. Gianfagna [1] and A. L. Thakur [1] report: We observed the field of AT2025ulz (announced by Stein et al., GCN 41414), which is proposed as a candidate counterpart for the subthreshold GW eve",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41501",
+      "n": "41501",
+      "date": "2025-08-22",
+      "subject": "LIGO/Virgo/Kagra S250818k: STEP/T80N upper limits on 2025ulz",
+      "snippet": "We observed the optical transient AT2025ulz (Stein et al., GCN 41414; Busmann et al., GCN 41421; Hall et al., GCN 41433; Karambelkar et al., GCN 41436; O’Connor et al., GCN 41452; Gillanders et al., GCN 41454; Liu et al.",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41502",
+      "n": "41502",
+      "date": "2025-08-22",
+      "subject": "LIGO/Virgo/KAGRA S250818k: GTC/OSIRIS Optical Detection of AT2025ulz",
+      "snippet": "We observed the field of AT2025ulz/ZTF25abjmnps, reported by Stein et al. (GCN 41414) and possibly associated with the candidate gravitational wave signal S250818k (LVK Collaboration, GCN 41437, 41440), with the OSIRIS i",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41503",
+      "n": "41503",
+      "date": "2025-08-22",
+      "subject": "LIGO/Virgo/KAGRA S250818k: JinShan optical observations of AT2025ulz",
+      "snippet": "We observed the optical transient AT2025ulz (Stein et al., GCN 41414; Busmann et al., GCN 41421; Hall et al., GCN 41433; Karambelkar et al., GCN 41436; O’Connor et al., GCN 41452; Gillanders et al., GCN 41454; Liu et al.",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41504",
+      "n": "41504",
+      "date": "2025-08-22",
+      "subject": "LIGO/Virgo/KAGRA S250818k: PRIME nIR observations of AT2025ulz",
+      "snippet": "N. Passaleva (U Rome), J. Durbak (UMD), O. Guiffreda (UMD), E. Troja (U Rome), R.Hamada (Osaka U), A. S. Kutyrev (NASA/GSFC), D. Suzuki (Osaka U), T. Sumi (Osaka U), A. Idei (Osaka U), S. B. Cenko (NASA/GSFC) We observed",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41505",
+      "n": "41505",
+      "date": "2025-08-23",
+      "subject": "LIGO/Virgo/KAGRA S250818k: J-GEM follow-up observation for AT2025ulz",
+      "snippet": "K. Taguchi (Kyoto U.), Y. Utsumi (NAOJ), M. Sasada (Science Tokyo), R. Itoh (Bisei Astronomical Observatory), T. Morokuma (Chiba Tech), K. Ohta (Kyoto U.), I. Takahashi (Science Tokyo), M. Tanaka (Tohoku), N. Tominaga (N",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41506",
+      "n": "41506",
+      "date": "2025-08-23",
+      "subject": "LIGO/Virgo/KAGRA S250818k: HST nIR detection of AT 2025ulz",
+      "snippet": "We observed the field of AT2025ulz/ZTF25abjmnps, reported by Stein et al. (GCN 41414) and possibly associated with the candidate gravitational wave signal S250818k (LVK Collaboration, GCN 41437, 41440) with the Hubble Sp",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41507",
+      "n": "41507",
+      "date": "2025-08-23",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Rebrightening detected with Gemini/GMOS",
+      "snippet": "Using Gemini/GMOS-N, starting at 2025-08-23 05:30:48 UTC, we observed the source AT 2025ulz/ZTF25abjmnps reported by Stein et al. (GCN 41414) discovered during ZTF follow-up of the low-significance gravitational wave eve",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41518",
+      "n": "41518",
+      "date": "2025-08-24",
+      "subject": "LIGO/Virgo/KAGRA S250818k: COLIBRÍ confirmation of rebrightening of AT2025ulz",
+      "snippet": "We imaged the field of the AT2025ulz (Stein et al., GCN Circ. 41414) using the DDRAGO wide-field imager on the COLIBRÍ telescope. We observed at two epochs, from 2025-08-22 03:19 to 05:29 UTC (4.13 days after the trigger",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41519",
+      "n": "41519",
+      "date": "2025-08-24",
+      "subject": "LIGO/Virgo/KAGRA S250818k: CFH/MegaCam follow-up observation for AT2025ulz",
+      "snippet": "on behalf on ZTF collaboration: We observed the optical transient AT2025ulz/ZTF25abjmnps (Stein et al., GCN 41414) over several nights, which has been reported by Stein et al., GCN 41414; Busmann et al., GCN 41421; Hall ",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41528",
+      "n": "41528",
+      "date": "2025-08-24",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Swift Observations of AT 2025ulz - Second Epoch",
+      "snippet": "We requested a second epoch of ToO observations of AT2025ulz/ZTF25abjmnps (Stein et al.; GCN 41414) discovered within the localization of the candidate gravitational wave signal S250818k (LVK Collaboration, GCN 41437, 41",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41532",
+      "n": "41532",
+      "date": "2025-08-24",
+      "subject": "LIGO/Virgo/KAGRA S250818k: ENGRAVE observations of SN 2025ulz as a type II supernova",
+      "snippet": "for the ENGRAVE collaboration: We report preliminary analysis from follow-up ESO VLT observations obtained by the ENGRAVE collaboration of SN 2025ulz (Stein et al., GCN 41414), which was discovered within the 3D localiza",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41534",
+      "n": "41534",
+      "date": "2025-08-25",
+      "subject": "LIGO/Virgo/KAGRA S250818k:  MASTER  predicovery limits of the AT2025ulz/ZTF25abjmnps KN candidate",
+      "snippet": "V.Lipunov, E.Gorbovskoy, A.Kuznetsov, N.Tiurina, D.Vlasenko, P.Balanutsa, I.Panchenko, A.Sankovich, A.Chasovnikov K.Zhirkov, G.Antipov, I.Gorbunov, A.Sosnovskij, Yu.Tselik, Ya.Kechin, V.Senik, V.Topolev (Lomonosov MSU), ",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41535",
+      "n": "41535",
+      "date": "2025-08-25",
+      "subject": "LIGO/Virgo/KAGRA S250818k: FTW Observations Show Continued Reddening of AT 2025ulz",
+      "snippet": "We observed the source AT 2025ulz reported by Stein et al. (GCN 41414) possible counterpart to the LVK sub-threshold event S250818k (GCN 41437, 41440), with the Three Channel Imager (3KK) at the Fraunhofer Telescope at W",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-41538",
+      "n": "41538",
+      "date": "2025-08-25",
+      "subject": "LIGO/Virgo/KAGRA S250818k: Continued Keck I LRIS spectroscopy of ZTF25abjmnps (AT2025ulz)",
+      "snippet": "We continue to observe ZTF25abjmnps (AT2025ulz; Stein et al. GCN 41414) with the LRIS spectrograph on Keck I. Our latest epoch starts at UTC 2025-08-25 06:50. We reduce the data with lpipe (Perley et al. 2019) and subtra",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     }
+    ],
+    "circulars": 41,
+    "events": 1,
+    "degraded": false
+   }
+  },
+  {
+   "t": 5664,
+   "event": {
+    "type": "context",
+    "mode": "event",
+    "event": {
+     "canonicalId": "S250818k",
+     "name": "LIGO/Virgo/KAGRA S250818k",
+     "kind": "gw",
+     "aliases": [
+      "S250818k",
+      "s250818k",
+      "LIGO/Virgo/KAGRA S250818k",
+      "LIGO/VIRGO/KAGRA S250818k",
+      "LIGO/Virgo/Kagra S250818k",
+      "ligovirgokagras250818k"
+     ],
+     "t0": "2025-08-18 01:20:06.029+00",
+     "raDeg": 242.75390625,
+     "decDeg": 37.6384766148738,
+     "posErrorDeg": null,
+     "positionQuality": "unknown",
+     "classification": null,
+     "circularCount": "48",
+     "noticeCount": "10",
+     "hasSkymap": true,
+     "hasOptical": false
+    }
+   }
+  },
+  {
+   "t": 5664,
+   "event": {
+    "type": "status",
+    "step": "writing",
+    "text": "Writing summary…"
+   }
+  },
+  {
+   "t": 12217,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "The localization sh"
+   }
+  },
+  {
+   "t": 12233,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "ifted in"
+   }
+  },
+  {
+   "t": 12256,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": " several ste"
+   }
+  },
+  {
+   "t": 12274,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "ps. The G"
+   }
+  },
+  {
+   "t": 12299,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "CN notice"
+   }
+  },
+  {
+   "t": 12312,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": " st"
+   }
+  },
+  {
+   "t": 12335,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "ream l"
+   }
+  },
+  {
+   "t": 12355,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "ists a"
+   }
+  },
+  {
+   "t": 12377,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": " first"
+   }
+  },
+  {
+   "t": 12475,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": " position at "
+   }
+  },
+  {
+   "t": 12476,
+   "event": {
+    "type": "citation",
+    "block": 1,
+    "key": "NOTICES-S250818k",
+    "citedText": "- 2025-08-18 01:20:06 UTC · IceCube (gcn.notices.icecube.lvk_nu_track_search)\n- 2025-08-18 01:20:35 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 99.027°, Dec −59.109° · classification: Terrestrial 71%, BNS 29% · skymap\n- 2025-08-18 01:25:12 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 242.314°, Dec +37.169° · classification: Terrestrial 71%, BNS 29% · skymap\n- 2025-08-20 04:52:51 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 242.314°, Dec +37.169° · classification: Terrestrial 71%, BNS 29% · skymap\n- 2025-08-20 09:57:08 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 242.754°, Dec +37.638° · classification: Terrestrial 71%, BNS 29% · skymap"
+   }
+  },
+  {
+   "t": 12477,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "2"
+   }
+  },
+  {
+   "t": 12477,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "025-08-18"
+   }
+  },
+  {
+   "t": 12477,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": " 01:20:35 U"
+   }
+  },
+  {
+   "t": 12499,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "TC · LIGO-"
+   }
+  },
+  {
+   "t": 12525,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "Virgo-K"
+   }
+  },
+  {
+   "t": 12541,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "AGRA (igw"
+   }
+  },
+  {
+   "t": 12571,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "n"
+   }
+  },
+  {
+   "t": 12585,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": ".gw"
+   }
+  },
+  {
+   "t": 12604,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "alert) · RA 99"
+   }
+  },
+  {
+   "t": 12621,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": ".027°, Dec −"
+   }
+  },
+  {
+   "t": 12641,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "59.109°"
+   }
+  },
+  {
+   "t": 12662,
+   "event": {
+    "type": "text",
+    "block": 2,
+    "text": ", while"
+   }
+  },
+  {
+   "t": 12682,
+   "event": {
+    "type": "text",
+    "block": 2,
+    "text": " later notices give"
+   }
+  },
+  {
+   "t": 12706,
+   "event": {
+    "type": "text",
+    "block": 2,
+    "text": " "
+   }
+  },
+  {
+   "t": 12771,
+   "event": {
+    "type": "citation",
+    "block": 3,
+    "key": "NOTICES-S250818k",
+    "citedText": "- 2025-08-18 01:20:06 UTC · IceCube (gcn.notices.icecube.lvk_nu_track_search)\n- 2025-08-18 01:20:35 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 99.027°, Dec −59.109° · classification: Terrestrial 71%, BNS 29% · skymap\n- 2025-08-18 01:25:12 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 242.314°, Dec +37.169° · classification: Terrestrial 71%, BNS 29% · skymap\n- 2025-08-20 04:52:51 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 242.314°, Dec +37.169° · classification: Terrestrial 71%, BNS 29% · skymap\n- 2025-08-20 09:57:08 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 242.754°, Dec +37.638° · classification: Terrestrial 71%, BNS 29% · skymap"
+   }
+  },
+  {
+   "t": 12771,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "RA 242."
+   }
+  },
+  {
+   "t": 12771,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "314°, Dec +37"
+   }
+  },
+  {
+   "t": 12779,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": ".169°"
+   }
+  },
+  {
+   "t": 12795,
+   "event": {
+    "type": "text",
+    "block": 4,
+    "text": " and"
+   }
+  },
+  {
+   "t": 12819,
+   "event": {
+    "type": "text",
+    "block": 4,
+    "text": " then "
+   }
+  },
+  {
+   "t": 12836,
+   "event": {
+    "type": "citation",
+    "block": 5,
+    "key": "NOTICES-S250818k",
+    "citedText": "- 2025-08-18 01:20:06 UTC · IceCube (gcn.notices.icecube.lvk_nu_track_search)\n- 2025-08-18 01:20:35 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 99.027°, Dec −59.109° · classification: Terrestrial 71%, BNS 29% · skymap\n- 2025-08-18 01:25:12 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 242.314°, Dec +37.169° · classification: Terrestrial 71%, BNS 29% · skymap\n- 2025-08-20 04:52:51 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 242.314°, Dec +37.169° · classification: Terrestrial 71%, BNS 29% · skymap\n- 2025-08-20 09:57:08 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 242.754°, Dec +37.638° · classification: Terrestrial 71%, BNS 29% · skymap"
+   }
+  },
+  {
+   "t": 12837,
+   "event": {
+    "type": "text",
+    "block": 5,
+    "text": "RA "
+   }
+  },
+  {
+   "t": 12857,
+   "event": {
+    "type": "text",
+    "block": 5,
+    "text": "242.754°, Dec"
+   }
+  },
+  {
+   "t": 12878,
+   "event": {
+    "type": "text",
+    "block": 5,
+    "text": " +37.638°"
+   }
+  },
+  {
+   "t": 12897,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " on 2025"
+   }
+  },
+  {
+   "t": 12997,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": "-08-20."
+   }
+  },
+  {
+   "t": 12997,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " These"
+   }
+  },
+  {
+   "t": 12997,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " notices are machine-generated"
+   }
+  },
+  {
+   "t": 12997,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " and"
+   }
+  },
+  {
+   "t": 13000,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " do not say"
+   }
+  },
+  {
+   "t": 13020,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " which s"
+   }
+  },
+  {
+   "t": 13041,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": "ky map each position came"
+   }
+  },
+  {
+   "t": 13062,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " from, and no"
+   }
+  },
+  {
+   "t": 13088,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " circular explains the jump from"
+   }
+  },
+  {
+   "t": 13101,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " the first position to the later "
+   }
+  },
+  {
+   "t": 13122,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": "ones. Circular 41437"
+   }
+  },
+  {
+   "t": 13144,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " re"
+   }
+  },
+  {
+   "t": 13164,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": "ports that "
+   }
+  },
+  {
+   "t": 13205,
+   "event": {
+    "type": "citation",
+    "block": 7,
+    "key": "GCN-41437",
+    "citedText": "Three sky maps are available at this time and can be retrieved from the GraceDB event page:\n * bayestar.multiorder.fits,0, an initial localization generated by BAYESTAR [4], distributed via GCN and SCiMMA notices about 28 seconds after the candidate event time.\n * bayestar.multiorder.fits,1, an initial localization generated by BAYESTAR [4], distributed via GCN and SCiMMA notices about 5 minutes after the candidate event time.\n * bayestar.multiorder.fits,2, an initial localization generated by BAYESTAR [4], distributed via GCN and SCiMMA notices about 2 days after the candidate event time.\n\n"
+   }
+  },
+  {
+   "t": 13225,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": "three sky maps are"
+   }
+  },
+  {
+   "t": 13245,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": " available at this time"
+   }
+  },
+  {
+   "t": 13286,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": ", dist"
+   }
+  },
+  {
+   "t": 13305,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": "ributed about"
+   }
+  },
+  {
+   "t": 13326,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": " "
+   }
+  },
+  {
+   "t": 13346,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": "28 se"
+   }
+  },
+  {
+   "t": 13367,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": "conds, 5 minut"
+   }
+  },
+  {
+   "t": 13388,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": "es, and 2 days after"
+   }
+  },
+  {
+   "t": 13408,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": " the event"
+   }
+  },
+  {
+   "t": 13522,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": ","
+   }
+  },
+  {
+   "t": 13522,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": " and that"
+   }
+  },
+  {
+   "t": 13523,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": " "
+   }
+  },
+  {
+   "t": 13523,
+   "event": {
+    "type": "citation",
+    "block": 9,
+    "key": "GCN-41437",
+    "citedText": "The preferred sky map at this time is bayestar.multiorder.fits,2. "
+   }
+  },
+  {
+   "t": 13523,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": "the preferred"
+   }
+  },
+  {
+   "t": 13536,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": " sky map at this time is b"
+   }
+  },
+  {
+   "t": 13536,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": "ayestar.mult"
+   }
+  },
+  {
+   "t": 13550,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": "iorder.fits,2"
+   }
+  },
+  {
+   "t": 13572,
+   "event": {
+    "type": "text",
+    "block": 10,
+    "text": ","
+   }
+  },
+  {
+   "t": 13592,
+   "event": {
+    "type": "text",
+    "block": 10,
+    "text": " whose "
+   }
+  },
+  {
+   "t": 13614,
+   "event": {
+    "type": "citation",
+    "block": 11,
+    "key": "GCN-41437",
+    "citedText": "For the bayestar.multiorder.fits,2 sky map, the 90% credible region is 786 deg2. "
+   }
+  },
+  {
+   "t": 13614,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": "90%"
+   }
+  },
+  {
+   "t": 13635,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": " credible region is 786 de"
+   }
+  },
+  {
+   "t": 13660,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": "g2"
+   }
+  },
+  {
+   "t": 13678,
+   "event": {
+    "type": "text",
+    "block": 12,
+    "text": ". Circular 41440"
+   }
+  },
+  {
+   "t": 13696,
+   "event": {
+    "type": "text",
+    "block": 12,
+    "text": " then re"
+   }
+  },
+  {
+   "t": 13715,
+   "event": {
+    "type": "text",
+    "block": 12,
+    "text": "ports a new map"
+   }
+  },
+  {
+   "t": 13735,
+   "event": {
+    "type": "text",
+    "block": 12,
+    "text": ","
+   }
+  },
+  {
+   "t": 13759,
+   "event": {
+    "type": "text",
+    "block": 12,
+    "text": " "
+   }
+  },
+  {
+   "t": 13776,
+   "event": {
+    "type": "citation",
+    "block": 13,
+    "key": "GCN-41440",
+    "citedText": "Parameter estimation has been performed using Bilby [1] and a new sky map, Bilby.offline0.multiorder.fits,0, distributed via GCN and SCiMMA notices, is available for retrieval from the GraceDB event page:\n\nhttps://gracedb.ligo.org/superevents/S250818k\n\nBased on posterior support from parameter estimation [1], under the assumption that the candidate S250818k is astrophysical in origin, the probability that at least one of the compact objects is consistent with a neutron star mass above one solar mass (HasNS) is 80%. "
+   }
+  },
+  {
+   "t": 13776,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": "Bilby"
+   }
+  },
+  {
+   "t": 13818,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": ".offline0.multior"
+   }
+  },
+  {
+   "t": 13826,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": "der.fits,0"
+   }
+  },
+  {
+   "t": 13849,
+   "event": {
+    "type": "text",
+    "block": 14,
+    "text": ", with a"
+   }
+  },
+  {
+   "t": 13861,
+   "event": {
+    "type": "text",
+    "block": 14,
+    "text": " "
+   }
+  },
+  {
+   "t": 13878,
+   "event": {
+    "type": "citation",
+    "block": 15,
+    "key": "GCN-41440",
+    "citedText": "For the Bilby.offline0.multiorder.fits,0 sky map, the 90% credible region is 949 deg2. "
+   }
+  },
+  {
+   "t": 13878,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": "90% credible"
+   }
+  },
+  {
+   "t": 13906,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": " region of"
+   }
+  },
+  {
+   "t": 13918,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": " 949 deg2"
+   }
+  },
+  {
+   "t": 13939,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": ". The circ"
+   }
+  },
+  {
+   "t": 14049,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": "ul"
+   }
+  },
+  {
+   "t": 14049,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": "ars do not state a"
+   }
+  },
+  {
+   "t": 14049,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": " direct comparison between"
+   }
+  },
+  {
+   "t": 14049,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": " the "
+   }
+  },
+  {
+   "t": 14049,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": "786 de"
+   }
+  },
+  {
+   "t": 14062,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": "g2 and 949 de"
+   }
+  },
+  {
+   "t": 14082,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": "g2 regions,"
+   }
+  },
+  {
+   "t": 14102,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": " and they come"
+   }
+  },
+  {
+   "t": 14127,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": " from different map"
+   }
+  },
+  {
+   "t": 14155,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": " types,"
+   }
+  },
+  {
+   "t": 14174,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": " so the reason for the dif"
+   }
+  },
+  {
+   "t": 14215,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": "ference is not docum"
+   }
+  },
+  {
+   "t": 14224,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": "ented."
+   }
+  },
+  {
+   "t": 14224,
+   "event": {
+    "type": "status",
+    "step": "checking",
+    "text": "Checking citations…"
+   }
+  },
+  {
+   "t": 14225,
+   "event": {
+    "type": "done",
+    "searchId": "fixture-lniu4t6t",
+    "kind": "event",
+    "answer": [
+     {
+      "text": "The GCN notice stream lists a first position at 2025-08-18 01:20:35 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 99.027°, Dec −59.109°, while later notices give RA 242.314°, Dec +37.169° and then RA 242.754°, Dec +37.638° on 2025-08-20.",
+      "cites": [
+       "NOTICES-S250818k"
+      ],
+      "absence": false
+     },
+     {
+      "text": "Circular 41437 reports that three sky maps are available at this time, distributed about 28 seconds, 5 minutes, and 2 days after the event, and that the preferred sky map at this time is bayestar.multiorder.fits,2, whose 90% credible region is 786 deg2.",
+      "cites": [
+       "GCN-41437"
+      ],
+      "absence": false
+     },
+     {
+      "text": "Circular 41440 then reports a new map, Bilby.offline0.multiorder.fits,0, with a 90% credible region of 949 deg2.",
+      "cites": [
+       "GCN-41440"
+      ],
+      "absence": false
+     },
+     {
+      "text": "The circulars do not state a direct comparison between the 786 deg2 and 949 deg2 regions, and they come from different map types, so the reason for the difference is not documented.",
+      "cites": [],
+      "absence": true
+     }
+    ],
+    "dropped": 2,
+    "check": {
+     "sentences": 4,
+     "circulars": 3
+    },
+    "ms": 14224
+   }
+  }
+ ]
+}

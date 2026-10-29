@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { type AnswerSentence, type AskSource, circularUrl } from '@novatrace/lib/askCosmos';
+import { type AnswerSentence, type AskSource, circularUrl, sourceLabel } from '@novatrace/lib/askCosmos';
 import {
   CiteCard, CiteChip, CiteWrap, Link, Mono, Sentence, SummaryText,
 } from '@novatrace/styled_pages/AskPage.styled';
@@ -39,25 +39,28 @@ function Cite({ sourceKey, source, first, active, onHover }: {
 }) {
   const [open, setOpen] = useState(false);
   const n = source?.n ?? sourceKey.replace(/^GCN-/, '');
-  const label = sourceKey.startsWith('ATel-') ? `ATel ${n.replace('ATel ', '')}` : first ? `GCN ${n}` : n;
+  const full = sourceLabel({ key: sourceKey, n });
+  // After the first chip in a sentence, GCN chips show the bare number to save space.
+  const label = first || !full.startsWith('GCN ') ? full : n;
   return (
     <CiteWrap
       onMouseEnter={() => { setOpen(true); onHover(sourceKey); }}
       onMouseLeave={() => { setOpen(false); onHover(null); }}
     >
-      <CiteChip $active={active} href={source ? circularUrl(source) : undefined} target="_blank" rel="noreferrer"
+      <CiteChip $active={active} href={source ? circularUrl(source) : undefined}
+        {...(sourceKey.startsWith('NOTICES-') ? {} : { target: '_blank', rel: 'noreferrer' })}
         onFocus={() => onHover(sourceKey)} onBlur={() => onHover(null)}>
         {label}
       </CiteChip>
       {open && source && (
         <CiteCard role="tooltip">
           <span style={{ display: 'flex', gap: 8 }}>
-            <Mono style={{ color: 'var(--accent-text)' }}>{label.startsWith('GCN') || label.startsWith('ATel') ? label : `GCN ${n}`}</Mono>
+            <Mono style={{ color: 'var(--accent-text)' }}>{full}</Mono>
             <Mono style={{ color: 'var(--text-muted)' }}>{source.date}</Mono>
           </span>
           <span style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--text-body)' }}>{source.subject}</span>
-          <Link href={circularUrl(source)} target="_blank" rel="noreferrer">
-            {source.archive ? 'Archive circular · View on gcn.nasa.gov ↗' : 'Open circular ↗'}
+          <Link href={circularUrl(source)} {...(sourceKey.startsWith('NOTICES-') ? {} : { target: '_blank', rel: 'noreferrer' })}>
+            {sourceKey.startsWith('NOTICES-') ? 'Event page →' : source.archive ? 'Archive circular · View on gcn.nasa.gov ↗' : 'Open circular ↗'}
           </Link>
         </CiteCard>
       )}

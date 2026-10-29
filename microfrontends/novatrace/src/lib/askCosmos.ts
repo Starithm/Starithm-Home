@@ -139,8 +139,17 @@ export function noteAnonAsked(): void {
 
 /** Where a circular lives: extracted ones open their event page, the rest open on GCN / ATel. */
 export function circularUrl(s: Pick<AskSource, 'key' | 'n'>): string {
+  // The digest of an event's GCN notices (backend key NOTICES-<canonical_id>) links to its event page.
+  if (s.key.startsWith('NOTICES-')) return `/novatrace/events/${encodeURIComponent(s.key.slice(8))}`;
   if (s.key.startsWith('ATel-')) return `https://www.astronomerstelegram.org/?read=${s.key.slice(5)}`;
   return `https://gcn.nasa.gov/circulars/${s.key.replace(/^GCN-/, '')}`;
+}
+
+/** Short label for a source: "GCN 41436", "ATel 18121", or "Notices" for the notice digest. */
+export function sourceLabel(s: Pick<AskSource, 'key' | 'n'>): string {
+  if (s.key.startsWith('NOTICES-')) return 'Notices';
+  if (s.key.startsWith('ATel-')) return `ATel ${s.key.slice(5)}`;
+  return `GCN ${s.n}`;
 }
 
 export const EXAMPLE_QUESTIONS = [

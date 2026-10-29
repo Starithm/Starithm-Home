@@ -130,8 +130,13 @@ export const MobileTab = styled.button<{ $active: boolean }>`
   cursor: pointer;
 `;
 
+/* A block of the answer column that belongs to one mobile tab. Layout lives here, not in an
+   inline style: an inline display would override the media query and break the tabs. */
 export const MobileOnly = styled.div<{ $show: boolean }>`
-  @media (max-width: 860px) { display: ${(p) => (p.$show ? 'block' : 'none')}; }
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  @media (max-width: 860px) { display: ${(p) => (p.$show ? 'flex' : 'none')}; }
 `;
 
 /* ── Sections ──────────────────────────────────────────────────────────────── */

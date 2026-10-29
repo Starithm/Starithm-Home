@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { type AskSource, circularUrl } from '@novatrace/lib/askCosmos';
+import { type AskSource, circularUrl, sourceLabel } from '@novatrace/lib/askCosmos';
 import { Link, Mono, SectionLabel } from '@novatrace/styled_pages/AskPage.styled';
 
 /* The source rail: every circular retrieved, as a filterable vertical list (not a carousel:
@@ -66,7 +66,7 @@ export default function AskSources({ sources, countText, hoverKey, onHover }: Pr
             onMouseEnter={() => onHover(s.key)} onMouseLeave={() => onHover(null)}>
             <CardTop>
               <Mono style={{ color: 'var(--accent-text)', fontWeight: 500 }}>
-                {s.key.startsWith('ATel-') ? s.n : `GCN ${s.n}`}
+                {sourceLabel(s)}
               </Mono>
               <Mono style={{ color: 'var(--text-muted)' }}>{s.date}</Mono>
               <span style={{ flex: 1 }} />
@@ -76,9 +76,13 @@ export default function AskSources({ sources, countText, hoverKey, onHover }: Pr
             </CardTop>
             <Subject>{s.subject}</Subject>
             {s.snippet && <Snippet>{s.snippet}</Snippet>}
-            <Link href={circularUrl(s)} target="_blank" rel="noreferrer" style={{ fontSize: 12 }}>
-              {s.archive ? 'View on gcn.nasa.gov ↗' : 'Open circular ↗'}
-            </Link>
+            {s.key.startsWith('NOTICES-') ? (
+              <Link href={circularUrl(s)} style={{ fontSize: 12 }}>Event page →</Link>
+            ) : (
+              <Link href={circularUrl(s)} target="_blank" rel="noreferrer" style={{ fontSize: 12 }}>
+                {s.archive ? 'View on gcn.nasa.gov ↗' : 'Open circular ↗'}
+              </Link>
+            )}
             <SrIndex>[{i + 1}]</SrIndex>
           </SourceCard>
         ))}

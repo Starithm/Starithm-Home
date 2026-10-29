@@ -205,7 +205,7 @@ export default function AskPage() {
           {outOfScope ? (
             <OutOfScope message={state.message} onAsk={(q) => { setInput(q); run(q); }} />
           ) : state.phase !== 'error' && state.phase !== 'limited' && (
-            <S.MobileOnly $show={tab === 'answer'} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <S.MobileOnly $show={tab === 'answer'}>
               <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <S.SectionHead>
                   <S.SectionLabel>Summary</S.SectionLabel>
@@ -233,7 +233,7 @@ export default function AskPage() {
 
           {!outOfScope && state.phase !== 'error' && state.phase !== 'limited' && (state.event || state.events) && (
             // Below the summary on desktop; on mobile, shown on both the Answer and Events tabs.
-            <S.MobileOnly $show={tab === 'answer' || tab === 'events'} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <S.MobileOnly $show={tab === 'answer' || tab === 'events'}>
               {state.event && <FactSheet event={state.event} />}
               {!state.event && state.events && <EventsInvolved events={state.events} />}
             </S.MobileOnly>
