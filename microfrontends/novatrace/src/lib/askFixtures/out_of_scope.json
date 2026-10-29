@@ -1,0 +1,38 @@
+{
+ "question": "best pizza in Delhi",
+ "recorded": "2026-10-29T10:57:31.413Z",
+ "events": [
+  {
+   "t": 1,
+   "event": {
+    "type": "status",
+    "step": "understanding",
+    "text": "Understanding your question…"
+   }
+  },
+  {
+   "t": 2570,
+   "event": {
+    "type": "status",
+    "step": "searching",
+    "text": "Searching 45,000 circulars…"
+   }
+  },
+  {
+   "t": 4914,
+   "event": {
+    "type": "done",
+    "searchId": "fixture-e7q8kzhw",
+    "kind": "out_of_scope",
+    "answer": [],
+    "dropped": 0,
+    "check": {
+     "sentences": 0,
+     "circulars": 0
+    },
+    "ms": 4913,
+    "message": "Cosmos covers GCN Circulars (1997 to today) and recent ATels. I couldn't find anything about \"best pizza in Delhi\". Try a transient, an instrument, or an event like GRB 250108A."
+   }
+  }
+ ]
+}

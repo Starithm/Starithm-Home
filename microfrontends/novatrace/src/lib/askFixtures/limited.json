@@ -1,0 +1,14 @@
+{
+ "question": "Which GRBs had near-infrared afterglow candidates in 2025?",
+ "synthetic": true,
+ "events": [
+  {
+   "t": 300,
+   "event": {
+    "type": "limited",
+    "reason": "sign_in",
+    "message": "Your first question is free. Sign in to ask another."
+   }
+  }
+ ]
+}

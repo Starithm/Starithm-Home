@@ -1,0 +1,38 @@
+{
+ "question": "best pizza in Delhi",
+ "recorded": "2026-10-29T10:56:52.746Z",
+ "events": [
+  {
+   "t": 2,
+   "event": {
+    "type": "status",
+    "step": "understanding",
+    "text": "Understanding your question…"
+   }
+  },
+  {
+   "t": 2689,
+   "event": {
+    "type": "status",
+    "step": "searching",
+    "text": "Searching 45,000 circulars…"
+   }
+  },
+  {
+   "t": 3268,
+   "event": {
+    "type": "done",
+    "searchId": "fixture-o9c6gpa3",
+    "kind": "degraded",
+    "answer": [],
+    "dropped": 0,
+    "check": {
+     "sentences": 0,
+     "circulars": 0
+    },
+    "ms": 3267,
+    "message": "Semantic search is unavailable right now, and no circular matches the event names or keywords in your question. Please try again shortly."
+   }
+  }
+ ]
+}

@@ -89,7 +89,7 @@ export function Navbar() {
 
         <RightActions>
           <NavTextLink onClick={navigateToEvents}>View events</NavTextLink>
-          <NavTextLink onClick={navigateToSearch}>Search</NavTextLink>
+          <NavTextLink onClick={navigateToSearch}>Ask Cosmos</NavTextLink>
           <NavTextLink onClick={navigateToHome}>Home</NavTextLink>
           {!isSignedIn ? (
             <SignInButton mode="modal" forceRedirectUrl={typeof window !== 'undefined' ? window.location.href : '/'}>
@@ -123,7 +123,7 @@ export function Navbar() {
                 style={drawerBtnStyle}
               >
                 <Search size={16} style={{ flexShrink: 0 }} />
-                Search
+                Ask Cosmos
               </button>
               <button
                 onClick={() => { setDrawerOpen(false); navigateToHome(); }}
