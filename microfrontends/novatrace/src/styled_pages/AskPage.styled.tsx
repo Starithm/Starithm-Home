@@ -161,6 +161,19 @@ export const SectionNote = styled.span`
   color: var(--text-muted);
 `;
 
+/* The "AI-generated" disclosure: always shown with a summary, quiet but not hidden. */
+export const AiNote = styled.p`
+  margin: 0;
+  padding: 8px 12px;
+  border-left: 2px solid var(--accent-border);
+  background: var(--surface-sunken);
+  border-radius: 0 6px 6px 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 78ch;
+`;
+
 export const CheckedLine = styled.span`
   margin-left: auto;
   display: flex;

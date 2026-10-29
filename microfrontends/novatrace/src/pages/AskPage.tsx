@@ -266,6 +266,10 @@ export default function AskPage() {
                     <S.CheckedLine>Citations checked · {state.check.sentences} sentences · {state.check.circulars} circulars</S.CheckedLine>
                   ) : state.steps.writing ? <S.CheckedLine>Writing…</S.CheckedLine> : null}
                 </S.SectionHead>
+                <S.AiNote>
+                  AI-generated summary, written by a language model from the circulars cited below. Check the
+                  sources before relying on it: it can miss a later correction or retraction.
+                </S.AiNote>
                 {state.draft.length === 0 && !state.answer ? (
                   <WorkingSteps steps={state.steps} done={state.phase === 'done'} />
                 ) : (
@@ -279,7 +283,7 @@ export default function AskPage() {
                 <Feedback searchId={state.searchId} getToken={() => (isSignedIn ? getToken() : Promise.resolve(null))} />
               )}
               {state.phase === 'done' && (
-                <S.SectionNote>Every sentence cites its circulars. Uncited sentences are not shown.</S.SectionNote>
+                <S.SectionNote>Every sentence cites its circulars; uncited claims are removed before the answer is shown.</S.SectionNote>
               )}
             </S.MobileOnly>
           )}
