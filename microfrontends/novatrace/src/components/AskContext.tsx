@@ -55,7 +55,9 @@ export function FactSheet({ event }: { event: AskEventFacts }) {
       <SectionHead>
         <SectionLabel>Fact sheet</SectionLabel>
         <SectionNote>{eventLabel(event)}</SectionNote>
-        <Link href={eventPage(event.canonicalId)} style={{ marginLeft: 'auto', fontSize: 12.5 }}>Event page →</Link>
+        {event.noticeCount > 0 && (
+          <Link href={eventPage(event.canonicalId)} style={{ marginLeft: 'auto', fontSize: 12.5 }}>Event page →</Link>
+        )}
       </SectionHead>
       <Card>
         {rows.map(([label, value]) => (
@@ -112,13 +114,15 @@ function Images({ event }: { event: AskEventFacts }) {
 }
 
 export function EventsInvolved({ events }: { events: (AskEventFacts & { sources: number })[] }) {
-  if (!events.length) return null;
-  const sorted = [...events].sort((a, b) => (b.t0 ?? '').localeCompare(a.t0 ?? ''));
+  // Only events with a page: circular-only events (no notices) have none and their links 404.
+  const withPages = events.filter((e) => e.noticeCount > 0);
+  if (!withPages.length) return null;
+  const sorted = [...withPages].sort((a, b) => (b.t0 ?? '').localeCompare(a.t0 ?? ''));
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <SectionHead>
         <SectionLabel>Events involved</SectionLabel>
-        <SectionNote>{events.length}</SectionNote>
+        <SectionNote>{withPages.length}</SectionNote>
       </SectionHead>
       <Card>
         {sorted.map((e) => (

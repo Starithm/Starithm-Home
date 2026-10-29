@@ -76,7 +76,7 @@ export default function AskSources({ sources, countText, hoverKey, onHover, onOp
               <Mono style={{ color: 'var(--text-muted)' }}>{s.date}</Mono>
               <span style={{ flex: 1 }} />
               {s.match === 'keyword' && <Tag>keyword</Tag>}
-              {s.eventName && (s.event ? (
+              {s.eventName && (s.event && s.eventPage ? (
                 <EventTag as="a" href={`/novatrace/events/${encodeURIComponent(s.event)}`} onClick={(e) => e.stopPropagation()}
                   title="Open the event page">{s.eventName.replace(/^LIGO\/Virgo\/KAGRA /, '')}</EventTag>
               ) : <EventTag>{s.eventName.replace(/^LIGO\/Virgo\/KAGRA /, '')}</EventTag>)}
