@@ -8,7 +8,7 @@ import { EventsInvolved, FactSheet } from '@novatrace/components/AskContext';
 import { saveReturnUrl } from '@shared/lib/auth';
 import {
   type AnswerSentence, type AskEvent, type AskEventFacts, type AskKind, type AskSource, type AskStep,
-  EXAMPLE_QUESTIONS, anonAskedCount, anonId, noteAnonAsked, sendFeedback, streamAsk,
+  EXAMPLE_QUESTIONS, anonAskedCount, eventLabel, anonId, noteAnonAsked, sendFeedback, streamAsk,
 } from '@novatrace/lib/askCosmos';
 import * as S from '@novatrace/styled_pages/AskPage.styled';
 
@@ -162,7 +162,7 @@ export default function AskPage() {
 
   const working = state.phase === 'working';
   const outOfScope = state.phase === 'done' && (state.kind === 'out_of_scope' || (state.sources?.length ?? 0) === 0);
-  const badge = state.event ? `Event question → ${state.event.name.replace(/^LIGO\/Virgo\/KAGRA /, '')}`
+  const badge = state.event ? `Event question → ${eventLabel(state.event, true)}`
     : state.phase === 'done' && !outOfScope ? 'Topic question' : null;
 
   return (

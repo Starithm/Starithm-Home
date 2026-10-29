@@ -18,7 +18,7 @@ export interface AskSource {
   match: 'vector' | 'event' | 'keyword'; distance: number | null;
 }
 export interface AskEventFacts {
-  canonicalId: string; name: string; kind: string | null; aliases: string[]; t0: string | null;
+  canonicalId: string; name: string | null; kind: string | null; aliases: string[] | null; t0: string | null;
   raDeg: number | null; decDeg: number | null; posErrorDeg: number | null; positionQuality: string | null;
   classification: string | null; circularCount: number; noticeCount: number;
   hasSkymap: boolean | null; hasOptical: boolean | null;
@@ -143,6 +143,13 @@ export function circularUrl(s: Pick<AskSource, 'key' | 'n'>): string {
   if (s.key.startsWith('NOTICES-')) return `/novatrace/events/${encodeURIComponent(s.key.slice(8))}`;
   if (s.key.startsWith('ATel-')) return `https://www.astronomerstelegram.org/?read=${s.key.slice(5)}`;
   return `https://gcn.nasa.gov/circulars/${s.key.replace(/^GCN-/, '')}`;
+}
+
+/** A display name for an event. `primary_name` can be null in canonical_events (seen live on
+ * GRB 261024A), so fall back to a capitalised alias, then the canonical id. Never throws. */
+export function eventLabel(e: Pick<AskEventFacts, 'name' | 'aliases' | 'canonicalId'>, short = false): string {
+  const name = e.name || (e.aliases ?? []).find((a) => /[A-Z]/.test(a)) || e.canonicalId;
+  return short ? name.replace(/^LIGO\/Virgo\/KAGRA /, '') : name;
 }
 
 /** Short label for a source: "GCN 41436", "ATel 18121", or "Notices" for the notice digest. */

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { type AskEventFacts } from '@novatrace/lib/askCosmos';
+import { type AskEventFacts, eventLabel } from '@novatrace/lib/askCosmos';
 import { Card, Link, Mono, SectionHead, SectionLabel, SectionNote } from '@novatrace/styled_pages/AskPage.styled';
 
 /* Left-column context. An event question gets a fact sheet (and real images when they exist);
@@ -25,14 +25,21 @@ function eventPage(id: string) {
   return `/novatrace/events/${encodeURIComponent(id)}`;
 }
 
+/* (0, 0) is a placeholder, not a position: ~586 GBM events were stored there (known data bug).
+ * A zero error radius is likewise "unknown", not "exact". */
+function realPosition(e: AskEventFacts): boolean {
+  return e.raDeg != null && e.decDeg != null && !(e.raDeg === 0 && e.decDeg === 0);
+}
+
 export function FactSheet({ event }: { event: AskEventFacts }) {
   const t0 = utc(event.t0);
-  const pos = event.raDeg != null && event.decDeg != null
-    ? `${event.raDeg.toFixed(4)}°, ${event.decDeg >= 0 ? '+' : ''}${event.decDeg.toFixed(4)}°${event.posErrorDeg != null ? ` ± ${event.posErrorDeg < 0.1 ? `${(event.posErrorDeg * 3600).toFixed(1)}″` : `${event.posErrorDeg.toFixed(2)}°`}` : ''}`
+  const err = event.posErrorDeg && event.posErrorDeg > 0 ? event.posErrorDeg : null;
+  const pos = realPosition(event) && event.raDeg != null && event.decDeg != null
+    ? `${event.raDeg.toFixed(4)}°, ${event.decDeg >= 0 ? '+' : ''}${event.decDeg.toFixed(4)}°${err != null ? ` ± ${err < 0.1 ? `${(err * 3600).toFixed(1)}″` : `${err.toFixed(2)}°`}` : ''}`
     : null;
   // Aliases include case variants and normalised keys ("s250818k"); show each name once.
-  const seen = new Set([event.name.toLowerCase()]);
-  const others = event.aliases.filter((a) => /[A-Z]/.test(a) && !seen.has(a.toLowerCase()) && seen.add(a.toLowerCase())).slice(0, 3);
+  const seen = new Set([eventLabel(event).toLowerCase()]);
+  const others = (event.aliases ?? []).filter((a) => /[A-Z]/.test(a) && !seen.has(a.toLowerCase()) && seen.add(a.toLowerCase())).slice(0, 3);
   const rows: [string, React.ReactNode][] = [
     ['Kind', event.kind ? KIND[event.kind] ?? event.kind : NOT_REPORTED],
     ['Trigger (UTC)', t0 ? <Mono>{t0}</Mono> : NOT_REPORTED],
@@ -47,7 +54,7 @@ export function FactSheet({ event }: { event: AskEventFacts }) {
     <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <SectionHead>
         <SectionLabel>Fact sheet</SectionLabel>
-        <SectionNote>{event.name}</SectionNote>
+        <SectionNote>{eventLabel(event)}</SectionNote>
         <Link href={eventPage(event.canonicalId)} style={{ marginLeft: 'auto', fontSize: 12.5 }}>Event page →</Link>
       </SectionHead>
       <Card>
@@ -68,8 +75,8 @@ function Images({ event }: { event: AskEventFacts }) {
   }
   // A sky cutout only means something for a well-localised source. A GW "position" is the
   // centre of a ~1000 deg² region, and an unknown error could be just as large.
-  if (event.raDeg != null && event.decDeg != null && event.kind !== 'gw'
-      && event.posErrorDeg != null && event.posErrorDeg < 0.5) {
+  if (realPosition(event) && event.raDeg != null && event.decDeg != null && event.kind !== 'gw'
+      && event.posErrorDeg != null && event.posErrorDeg > 0 && event.posErrorDeg < 0.5) {
     const fov = Math.min(Math.max((event.posErrorDeg ?? 0.02) * 4, 0.05), 1);
     imgs.push({
       key: 'sky',
@@ -86,7 +93,7 @@ function Images({ event }: { event: AskEventFacts }) {
       </SectionHead>
       {shown.length === 0 ? (
         <SectionNote>
-          {event.raDeg == null ? 'No images: the position is not reported, so there is no sky cutout.'
+          {!realPosition(event) ? 'No images: the position is not reported, so there is no sky cutout.'
             : 'No images: the position is too uncertain for a useful sky cutout.'}
           {event.kind !== 'gw' ? ' Skymaps exist only for gravitational-wave events.' : ''}
         </SectionNote>
@@ -116,7 +123,7 @@ export function EventsInvolved({ events }: { events: (AskEventFacts & { sources:
       <Card>
         {sorted.map((e) => (
           <EventRow key={e.canonicalId} href={eventPage(e.canonicalId)}>
-            <span style={{ color: 'var(--text-body)', fontWeight: 500 }}>{e.name.replace(/^LIGO\/Virgo\/KAGRA /, '')}</span>
+            <span style={{ color: 'var(--text-body)', fontWeight: 500 }}>{eventLabel(e, true)}</span>
             <span style={{ color: 'var(--text-muted)' }}>{e.kind ? KIND[e.kind] ?? e.kind : ''}</span>
             <Mono style={{ color: 'var(--text-muted)' }}>{utc(e.t0)?.slice(0, 10) ?? 'time not reported'}</Mono>
             <Mono style={{ marginLeft: 'auto', color: 'var(--accent-text)' }}>{e.sources} source{e.sources === 1 ? '' : 's'}</Mono>
