@@ -167,7 +167,6 @@ export default function EventLevel() {
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const [selectedAlertTypes, setSelectedAlertTypes] = useState<string[]>([]);
   const [nlQuery, setNlQuery] = useState('');
-  const [nlLoading, setNlLoading] = useState(false);
   const [nlError, setNlError] = useState<string | null>(null);
   const [semanticQuery, setSemanticQuery] = useState<string | null>(null);
   const [openPill, setOpenPill] = useState<'date' | 'types' | 'instruments' | 'sky' | null>(null);
@@ -320,12 +319,6 @@ export default function EventLevel() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const handleFilterChange = (key: keyof EventFilters, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setFiltersModified(true);
-    console.log("filters", filters);
-  };
-
   const handleDateRangeChange = (start: string, end: string) => {
     setDateRange({ start, end });
     setFiltersModified(true);
@@ -351,44 +344,16 @@ export default function EventLevel() {
     setFiltersModified(false);
   };
 
-  const handleNLSearch = async () => {
-    if (!nlQuery.trim()) return;
-    setNlLoading(true);
-    setNlError(null);
-    try {
-      const res = await fetch(API_ENDPOINTS.nlSearch, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: nlQuery }),
-      });
-      const data = await res.json();
-      if (data.error) {
-        setNlError(data.error);
-        return;
-      }
-      const f = data.filters;
-      if (f.sourceName) setSelectedSources(f.sourceName);
-      if (f.alertKind) setSelectedAlertTypes(f.alertKind);
-      if (f.fromDate || f.toDate) {
-        setDateRange({
-          start: f.fromDate ?? dateRange.start,
-          end: f.toDate ?? dateRange.end,
-        });
-      }
-      if (f.canonicalId) handleFilterChange('search', f.canonicalId);
-      if (f.raDeg != null && f.decDeg != null && f.radiusDeg != null) {
-        setConeSearch({ raDeg: f.raDeg, decDeg: f.decDeg, radiusDeg: f.radiusDeg });
-        setConeRa(String(f.raDeg));
-        setConeDec(String(f.decDeg));
-        setConeRadius(String(f.radiusDeg));
-      }
-      setSemanticQuery(f.semanticQuery ?? null);
-      setFiltersModified(false);
-      setSearchTrigger(prev => prev + 1);
-    } catch {
-      setNlError('Search service unavailable');
-    } finally {
-      setNlLoading(false);
+  // The header bar is now Ask Cosmos: Enter opens the answer page with the question (it used to
+  // turn the question into event filters via /api/search/nl).
+  const handleNLSearch = () => {
+    const q = nlQuery.trim();
+    if (!q) return;
+    const target = `/novatrace/search?q=${encodeURIComponent(q)}`;
+    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'navigate', path: target }, '*');
+    } else {
+      window.location.href = target;
     }
   };
 
@@ -648,20 +613,18 @@ export default function EventLevel() {
             </HeaderLeft>
           <SearchBarWrapper>
             <SearchBarInput
-              placeholder="Search in natural language — e.g. Fermi GRBs last week with position"
+              placeholder="Ask Cosmos — e.g. kilonova candidates with a red near-infrared excess"
+              aria-label="Ask Cosmos a question"
               value={nlQuery}
               onChange={e => { setNlQuery(e.target.value); setNlError(null); }}
               onKeyDown={e => e.key === 'Enter' && handleNLSearch()}
             />
             <SearchBarSendButton
               onClick={handleNLSearch}
-              disabled={nlLoading || !nlQuery.trim()}
-              title="Search"
+              disabled={!nlQuery.trim()}
+              title="Ask Cosmos"
             >
-              {nlLoading
-                ? <RotateCcw size={14} style={{ animation: 'spin 1s linear infinite' }} />
-                : <ArrowRight size={14} />
-              }
+              <ArrowRight size={14} />
             </SearchBarSendButton>
           </SearchBarWrapper>
           {nlError && <SearchErrorText>{nlError}</SearchErrorText>}

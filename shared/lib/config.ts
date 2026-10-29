@@ -14,6 +14,8 @@ export const API_ENDPOINTS = {
   events: `${API_BASE_URL}/api/events`,
   eventFilters: `${API_BASE_URL}/api/filters`,
   nlSearch: `${API_BASE_URL}/api/search/nl`,
+  ask: `${API_BASE_URL}/api/ask`,
+  askFeedback: `${API_BASE_URL}/api/ask/feedback`,
   eventDetails: (id: string) => `${API_BASE_URL}/api/events/${id}`,
   publicEvent: (id: string) => `${API_BASE_URL}/api/public/events/${id}`,
   publicEventList: `${API_BASE_URL}/api/public/events`,

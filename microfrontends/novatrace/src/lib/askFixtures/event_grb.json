@@ -1,0 +1,1274 @@
+{
+ "question": "What did Swift observe for GRB 250108A?",
+ "recorded": "2026-10-29T11:12:07.676Z",
+ "events": [
+  {
+   "t": 0,
+   "event": {
+    "type": "status",
+    "step": "understanding",
+    "text": "Understanding your question…"
+   }
+  },
+  {
+   "t": 1763,
+   "event": {
+    "type": "status",
+    "step": "searching",
+    "text": "Searching 45,000 circulars…"
+   }
+  },
+  {
+   "t": 2927,
+   "event": {
+    "type": "status",
+    "step": "found",
+    "text": "Found 27 circulars across 11 events"
+   }
+  },
+  {
+   "t": 2927,
+   "event": {
+    "type": "sources",
+    "sources": [
+     {
+      "key": "GCN-38845",
+      "n": "38845",
+      "date": "2025-01-08",
+      "subject": "GRB 250108A: SVOM detection of a soft long burst",
+      "snippet": ". The SVOM/ECLAIRs telescope triggered and located the long duration GRB 250108A (sb25010802) starting at 2025-01-08T04:37:01.513 UTC (Tb). The following trigger information was received on the ground with low-latency by",
+      "event": "grb250108a",
+      "eventName": "GRB 250108A",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-38846",
+      "n": "38846",
+      "date": "2025-01-08",
+      "subject": "GRB 250108A: Swift ToO observations",
+      "snippet": "P. A. Evans (U. Leicester) reports on behalf of the Swift team: Swift has initiated a ToO observation of the SVOM/ECLAIRs GRB 250108A. Automated analysis of the XRT data will be presented online at https://www.swift.ac.u",
+      "event": "grb250108a",
+      "eventName": "GRB 250108A",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-38852",
+      "n": "38852",
+      "date": "2025-01-08",
+      "subject": "GRB 250108A:SVOM/VT optical candidate",
+      "snippet": "The SVOM/VT conducted follow-up observations of the GRB 250108A (Zheng et al., GCN 38845) in VT_B (400nm-650nm) and VT_R (650nm-1000nm) channel simultaneously. With the X band downlinked data, an uncatalogued optical sou",
+      "event": "grb250108a",
+      "eventName": "GRB 250108A",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-38853",
+      "n": "38853",
+      "date": "2025-01-08",
+      "subject": "GRB 250108A: Swift-XRT afterglow detection",
+      "snippet": "Swift-XRT has performed follow-up observations of the SVOM/ECLAIRs-detected burst GRB 250108A. We searched for X-ray sources in 2.7 ks of Photon Counting (PC) mode data. The total exposure at the position of the afterglo",
+      "event": "grb250108a",
+      "eventName": "GRB 250108A",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-38862",
+      "n": "38862",
+      "date": "2025-01-09",
+      "subject": "GRB 250108A: NOT optical upper limit",
+      "snippet": "We observed the field of the SVOM GRB 250108A (Zheng et al., GRB 38845) using the Nordic Optical Telescope (NOT) equipped with ALFOSC. The observations were carried out in the z band, with a mid time 2025 Jan 9.14 UT (22",
+      "event": "grb250108a",
+      "eventName": "GRB 250108A",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-38866",
+      "n": "38866",
+      "date": "2025-01-09",
+      "subject": "GRB 250108A: Swift/UVOT Upper Limits",
+      "snippet": "The Swift/UVOT began settled observations of the field of SVOM/ECLAIRs-detected burst GRB 250108A 102468 s after the SVOM trigger (Zheng et al., GCN Circ. 38845). No optical afterglow consistent with either the Swift-XRT",
+      "event": "grb250108a",
+      "eventName": "GRB 250108A",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-38898",
+      "n": "38898",
+      "date": "2025-01-10",
+      "subject": "GRB 250108A: Swift/XRT afterglow fading",
+      "snippet": "Swift-XRT has performed further follow-up observations of the SVOM/ECLAIRs GRB 250108A (Zheng et al., GCN 38845), collecting 6.6 ks of Photon Counting (PC) mode data between T0+16.1 ks and T0+192.1 ks. The X-ray source d",
+      "event": "grb250108a",
+      "eventName": "GRB 250108A",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
+     {
+      "key": "GCN-38847",
+      "n": "38847",
+      "date": "2025-01-08",
+      "subject": "GRB 250108B: Swift detection of a burst",
+      "snippet": "At 10:23:06 UT, the Swift Burst Alert Telescope (BAT) triggered and located GRB 250108B (trigger=1280056). Swift slewed immediately to the burst. The BAT on-board calculated location is RA, Dec 201.297, +25.613 which is ",
+      "event": "grb250108b",
+      "eventName": "GRB 250108B",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.6268853599551821
+     },
+     {
+      "key": "GCN-39058",
+      "n": "39058",
+      "date": "2025-01-28",
+      "subject": "GRB 250128B: Swift detection of a short burst",
+      "snippet": "At 16:22:53 UT, the Swift Burst Alert Telescope (BAT) triggered and located GRB 250128B (trigger=1285677). Swift slewed immediately to the burst. The BAT on-board calculated location is RA, Dec 231.420, -0.517 which is R",
+      "event": "grb250128b",
+      "eventName": "GRB 250128B",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.6848320562646761
+     },
+     {
+      "key": "GCN-38875",
+      "n": "38875",
+      "date": "2025-01-09",
+      "subject": "GRB 250108B: 1.3m DFOT upper limit",
+      "snippet": "Amit K. Ror, Anshika Gupta, RKS Yadav, Shashi B. Pandey, Kuntal Mishra (ARIES) report: We observed the field of GRB 250108B detected by Swift (Swift Observatory Team, Klingler et al. 2025, GCN 38847) with the 1.3m Devast",
+      "event": "grb250108b",
+      "eventName": "GRB 250108B",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.695235087339373
+     },
+     {
+      "key": "GCN-38874",
+      "n": "38874",
+      "date": "2025-01-09",
+      "subject": "GRB 250108B: REM optical/NIR upper limits",
+      "snippet": "R. Brivio, M. Ferro, P. D’Avanzo, S. Covino, D. Fugazza (INAF-OAB) report on behalf of the REM team: We observed the field of GRB 250108B detected by Swift (Klingler et al., GCN 38847) with the REM 60cm robotic telescope",
+      "event": "grb250108b",
+      "eventName": "GRB 250108B",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7088106641423566
+     },
+     {
+      "key": "GCN-38752",
+      "n": "38752",
+      "date": "2025-01-01",
+      "subject": "GRB 250101A: Swift detection of a burst with an optical counterpart",
+      "snippet": "At 13:22:50 UT, the Swift Burst Alert Telescope (BAT) triggered and located GRB 250101A (trigger=1278305). Swift slewed immediately to the burst. The BAT on-board calculated location is RA, Dec 37.061, +19.154 which is R",
+      "event": "grb250101a",
+      "eventName": "GRB 250101A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7177218671684424
+     },
+     {
+      "key": "GCN-40853",
+      "n": "40853",
+      "date": "2025-06-27",
+      "subject": "GRB 250628A: Swift detection of a burst",
+      "snippet": "At 00:55:56.71 UT, the Swift Burst Alert Telescope (BAT) triggered and located GRB 250628A (trigger=1328546). Swift slewed immediately to the burst. The BAT on-board calculated location is RA, Dec 38.551, -38.081 which i",
+      "event": "grb250628a",
+      "eventName": "GRB 250628A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7257939447415783
+     },
+     {
+      "key": "GCN-41403",
+      "n": "41403",
+      "date": "2025-08-18",
+      "subject": "GRB 250818A: Swift detection of a burst",
+      "snippet": "At 01:31:22 UT, the Swift Burst Alert Telescope (BAT) triggered and located GRB 250818A (trigger=1343270). Swift slewed immediately to the burst. The BAT on-board calculated location is RA, Dec 213.833, -58.007 which is ",
+      "event": "grb250818a",
+      "eventName": "GRB 250818A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7306121032725253
+     },
+     {
+      "key": "GCN-37274",
+      "n": "37274",
+      "date": "2024-08-25",
+      "subject": "GRB 240825A: Swift detection of a burst with a bright optical counterpart",
+      "snippet": "At 15:52:59 UT, the Swift Burst Alert Telescope (BAT) triggered and located GRB 240825A (trigger=1250617). Swift slewed immediately to the burst. The BAT on-board calculated location is RA, Dec 344.551, +1.036 which is R",
+      "event": "grb240825a",
+      "eventName": "GRB 240825A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7311946505604436
+     },
+     {
+      "key": "GCN-38858",
+      "n": "38858",
+      "date": "2025-01-08",
+      "subject": "Swift GRB 250108B: Global MASTER-Net observations report",
+      "snippet": "V.Lipunov, E.Gorbovskoy, N.Tiurina, P.Balanutsa, , D.Vlasenko, I.Panchenko, A.Kuznetsov, G.Antipov, A.Sankovich, A.Sosnovskij, Yu.Tselik, M.Gulyaev, Ya.Kechin, V.Senik, A.Chasovnikov, K.Labsina, I. Gorbunov (Lomonosov MS",
+      "event": "grb250108b",
+      "eventName": "GRB 250108B",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7366889858604665
+     },
+     {
+      "key": "GCN-41462",
+      "n": "41462",
+      "date": "2025-08-21",
+      "subject": "GRB 250821A: Swift detection of a burst",
+      "snippet": "At 10:46:17 UT, the Swift Burst Alert Telescope (BAT) triggered and located GRB 250821A (trigger=1344131). Swift slewed immediately to the burst. The BAT on-board calculated location is RA, Dec 358.412, -28.618 which is ",
+      "event": "grb250821a",
+      "eventName": "GRB 250821A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7372555747948404
+     },
+     {
+      "key": "GCN-8059",
+      "n": "8059",
+      "date": "2008-08-05",
+      "subject": "GRB 080805: Swift detection of a burst",
+      "snippet": "At 07:41:34 UT, the Swift Burst Alert Telescope (BAT) triggered and located GRB 080805 (trigger=319036). Swift slewed immediately to the burst. The BAT on-board calculated location is RA, Dec 314.231, -62.438 which is RA",
+      "event": "grb080805",
+      "eventName": "GRB 080805",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7402478621972781
+     },
+     {
+      "key": "GCN-38869",
+      "n": "38869",
+      "date": "2025-01-09",
+      "subject": "GRB 250101A: Terskol K-800 optical observations",
+      "snippet": "We performed optical observations of the field of GRB 250101A (Page et. al, GCN 38752; Li et. al, GCN 38753; Mohan et. al, GCN 38754; Zhu et. al, GCN 38755; Budnev et. al, GCN 38756; Wu et. al, GCN 38758; Zhu et. al, GCN",
+      "event": "grb250101a",
+      "eventName": "GRB 250101A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7404423725930297
+     },
+     {
+      "key": "GCN-41252",
+      "n": "41252",
+      "date": "2025-08-06",
+      "subject": "GRB 250805A: Swift-BAT refined analysis",
+      "snippet": "further analysis of BAT GRB 250805A (trigger #1339848) (Ambrosi, et al., GCN Circ. 41233). The BAT ground-calculated position is RA, Dec = 24.124, -81.400 deg which is RA(J2000) = 01h 36m 29.8s Dec(J2000) = -81d 23' 59.0",
+      "event": "grb250805a",
+      "eventName": "GRB 250805A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.742028189175065
+     },
+     {
+      "key": "GCN-41300",
+      "n": "41300",
+      "date": "2025-08-09",
+      "subject": "GRB 250808A: Swift-XRT candidate counterpart detection",
+      "snippet": "Swift-XRT has performed follow-up observations of the SVOM/ECLAIRs-detected source GRB 250808A, collecting 1.7 ks of Photon Counting (PC) mode data between T0+3.7 ks and T0+5.6 ks after the trigger. A candidate counterpa",
+      "event": "grb250808a",
+      "eventName": "GRB 250808A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7420517245126949
+     },
+     {
+      "key": "GCN-39081",
+      "n": "39081",
+      "date": "2025-01-29",
+      "subject": "GRB 250128B: NOT optical upper limit",
+      "snippet": "We observed the field of the short Fermi and Swift GRB 250128B (Fermi GBM team, GCN 39057; Evans et al., GCN 39058) using the Nordic Optical Telescope (NOT) equipped with the ALFOSC camera. Three exposures by 300 s each ",
+      "event": "grb250128b",
+      "eventName": "GRB 250128B",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7445629453367133
+     },
+     {
+      "key": "GCN-41233",
+      "n": "41233",
+      "date": "2025-08-05",
+      "subject": "GRB 250805A: Swift detection of a burst",
+      "snippet": "At 06:09:08 UT, the Swift Burst Alert Telescope (BAT) triggered and located GRB 250805A (trigger=1339848). The BAT on-board calculated location is RA, Dec 24.153, -81.406 which is RA(J2000) = 01h 36m 37s Dec(J2000) = -81",
+      "event": "grb250805a",
+      "eventName": "GRB 250805A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7446290263191502
+     },
+     {
+      "key": "GCN-38755",
+      "n": "38755",
+      "date": "2025-01-01",
+      "subject": "GRB 250101A: Nanshan/HMT optical observations",
+      "snippet": "We observed the optical counterpart of GRB 250101A detected by Swift/BAT (Page et. al., GCN 38752), using the HMT-0.5m telescope located at Nanshan, Xinjiang, China. Observations started at 13:24:51 UT on 2025-01-01, i.e",
+      "event": "grb250101a",
+      "eventName": "GRB 250101A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7456077071020757
+     },
+     {
+      "key": "GCN-39094",
+      "n": "39094",
+      "date": "2025-01-30",
+      "subject": "GRB 250128B: SAO RAS Zeiss-1000 and CrAO ZTSh optical upper limits",
+      "snippet": "between IKI-GRB-FuN and the GRB follow-up team. We observed the field of GRB 250128B (Fermi GBM team, GCN 39057; Evans et al., GCN 39058; Myers and Meegan, GCN 39063; Osborne et al., GCN 39064) with the 1-meter Zeiss-100",
+      "event": "grb250128b",
+      "eventName": "GRB 250128B",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7466071793865797
+     },
+     {
+      "key": "GCN-38837",
+      "n": "38837",
+      "date": "2025-01-07",
+      "subject": "GRB 250101A: J band upper limit by SYSU 80cm telescope",
+      "snippet": "Jia-Qi Lin, Jin-Ji Li, Zhong-Nan Dong, Si-Yuan Zhu, Wei-Sen Huang, Pu Lin, Hao-Nan Yang, Yan Yu, Hao-Ran Zhang, Pak-Hin Thomas Tam, Bin Ma (Sun Yat-sen University) report on behalf of the SYSU 80cm telescope team: We obs",
+      "event": "grb250101a",
+      "eventName": "GRB 250101A",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7470905774927118
+     },
+     {
+      "key": "GCN-39059",
+      "n": "39059",
+      "date": "2025-01-28",
+      "subject": "GRB 250128B: LCO optical observations",
+      "snippet": "We observed the field of the short GRB 250128B (Evans et al., GCN #39058) with the Sinistro instrument mounted on the 1-m telescope of the LCO network, located at Siding Spring, Australia. Observations started on 2025 Ja",
+      "event": "grb250128b",
+      "eventName": "GRB 250128B",
+      "archive": false,
+      "match": "vector",
+      "distance": 0.7477253753372409
+     }
+    ],
+    "circulars": 27,
+    "events": 11,
+    "degraded": false
+   }
+  },
+  {
+   "t": 2927,
+   "event": {
+    "type": "context",
+    "mode": "event",
+    "event": {
+     "canonicalId": "grb250108a",
+     "name": "GRB 250108A",
+     "kind": "grb",
+     "aliases": [
+      "GRB 250108A",
+      "grb250108a"
+     ],
+     "t0": null,
+     "raDeg": null,
+     "decDeg": null,
+     "posErrorDeg": null,
+     "positionQuality": "unknown",
+     "classification": null,
+     "circularCount": "7",
+     "noticeCount": "0",
+     "hasSkymap": false,
+     "hasOptical": false
+    }
+   }
+  },
+  {
+   "t": 2927,
+   "event": {
+    "type": "status",
+    "step": "writing",
+    "text": "Writing summary…"
+   }
+  },
+  {
+   "t": 6083,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "Swift's"
+   }
+  },
+  {
+   "t": 6098,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": " XRT and UVOT"
+   }
+  },
+  {
+   "t": 6115,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": " both"
+   }
+  },
+  {
+   "t": 6136,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": " followed up"
+   }
+  },
+  {
+   "t": 6165,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": " G"
+   }
+  },
+  {
+   "t": 6184,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "RB 250108A, star"
+   }
+  },
+  {
+   "t": 6205,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "ting with a "
+   }
+  },
+  {
+   "t": 6220,
+   "event": {
+    "type": "text",
+    "block": 0,
+    "text": "ToO observation. "
+   }
+  },
+  {
+   "t": 6284,
+   "event": {
+    "type": "citation",
+    "block": 1,
+    "key": "GCN-38846",
+    "citedText": "GRB 250108A: Swift ToO observations\n\nP. A. Evans (U. Leicester) reports on behalf of the Swift team:\n\nSwift has initiated a ToO observation of the SVOM/ECLAIRs GRB 250108A. \n"
+   }
+  },
+  {
+   "t": 6284,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "Swift"
+   }
+  },
+  {
+   "t": 6299,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": " has initiated a ToO"
+   }
+  },
+  {
+   "t": 6299,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": " observation of the SVO"
+   }
+  },
+  {
+   "t": 6416,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "M/ECLA"
+   }
+  },
+  {
+   "t": 6416,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "IR"
+   }
+  },
+  {
+   "t": 6416,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "s GRB 250108A"
+   }
+  },
+  {
+   "t": 6416,
+   "event": {
+    "type": "text",
+    "block": 1,
+    "text": "."
+   }
+  },
+  {
+   "t": 6417,
+   "event": {
+    "type": "text",
+    "block": 2,
+    "text": " Sw"
+   }
+  },
+  {
+   "t": 6430,
+   "event": {
+    "type": "text",
+    "block": 2,
+    "text": "ift-XRT detected "
+   }
+  },
+  {
+   "t": 6471,
+   "event": {
+    "type": "citation",
+    "block": 3,
+    "key": "GCN-38853",
+    "citedText": "An uncatalogued X-ray source is detected within the estimated 3-sigma\nSVOM/MXTs error region (98 arcsec) and is above the LSXPS 3-sigma upper\nlimit at this position, and is therefore likely the GRB afterglow.\n"
+   }
+  },
+  {
+   "t": 6471,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "an uncatal"
+   }
+  },
+  {
+   "t": 6483,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "ogued X-ray source within"
+   }
+  },
+  {
+   "t": 6511,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": " the est"
+   }
+  },
+  {
+   "t": 6532,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "imated 3-sigma"
+   }
+  },
+  {
+   "t": 6552,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": " SVO"
+   }
+  },
+  {
+   "t": 6573,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "M/MXT"
+   }
+  },
+  {
+   "t": 6592,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "s error"
+   }
+  },
+  {
+   "t": 6613,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": " region (98 arcsec"
+   }
+  },
+  {
+   "t": 6638,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": ")"
+   }
+  },
+  {
+   "t": 6654,
+   "event": {
+    "type": "text",
+    "block": 4,
+    "text": ", with"
+   }
+  },
+  {
+   "t": 6676,
+   "event": {
+    "type": "text",
+    "block": 4,
+    "text": " an"
+   }
+  },
+  {
+   "t": 6695,
+   "event": {
+    "type": "text",
+    "block": 4,
+    "text": " enhanced position of"
+   }
+  },
+  {
+   "t": 6715,
+   "event": {
+    "type": "text",
+    "block": 4,
+    "text": " "
+   }
+  },
+  {
+   "t": 6736,
+   "event": {
+    "type": "citation",
+    "block": 5,
+    "key": "GCN-38853",
+    "citedText": "Using 2670 s of PC mode data and 2 UVOT images, we find an enhanced XRT\nposition (using the XRT-UVOT alignment and matching UVOT field sources\nto the USNO-B1 catalogue): RA, Dec = 207.92093, +26.21642 which is\nequivalent to:\n\nRA (J2000): 13h 51m 41.02s\nDec(J2000): +26d 12' 59.1\"\n\nwith an uncertainty of 4.1 arcsec (radius, 90% confidence). "
+   }
+  },
+  {
+   "t": 6736,
+   "event": {
+    "type": "text",
+    "block": 5,
+    "text": "RA,"
+   }
+  },
+  {
+   "t": 6758,
+   "event": {
+    "type": "text",
+    "block": 5,
+    "text": " Dec = 207.92093"
+   }
+  },
+  {
+   "t": 6780,
+   "event": {
+    "type": "text",
+    "block": 5,
+    "text": ", +26.21642"
+   }
+  },
+  {
+   "t": 6801,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " and"
+   }
+  },
+  {
+   "t": 6819,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " an uncertainty of "
+   }
+  },
+  {
+   "t": 6926,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": "4.1 arcsec"
+   }
+  },
+  {
+   "t": 6937,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " (radius, 90% conf"
+   }
+  },
+  {
+   "t": 6937,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": "idence). That"
+   }
+  },
+  {
+   "t": 6937,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " position"
+   }
+  },
+  {
+   "t": 6937,
+   "event": {
+    "type": "text",
+    "block": 6,
+    "text": " is "
+   }
+  },
+  {
+   "t": 6949,
+   "event": {
+    "type": "citation",
+    "block": 7,
+    "key": "GCN-38853",
+    "citedText": "This\nposition is 73 arcsec from the SVOM/MXTs position.  "
+   }
+  },
+  {
+   "t": 6949,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": "73 ar"
+   }
+  },
+  {
+   "t": 6964,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": "csec from the SVO"
+   }
+  },
+  {
+   "t": 6982,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": "M/MXTs"
+   }
+  },
+  {
+   "t": 7005,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": " position."
+   }
+  },
+  {
+   "t": 7023,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": " In"
+   }
+  },
+  {
+   "t": 7044,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": " a later X"
+   }
+  },
+  {
+   "t": 7064,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": "RT camp"
+   }
+  },
+  {
+   "t": 7084,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": "aign,"
+   }
+  },
+  {
+   "t": 7104,
+   "event": {
+    "type": "text",
+    "block": 8,
+    "text": " "
+   }
+  },
+  {
+   "t": 7145,
+   "event": {
+    "type": "citation",
+    "block": 9,
+    "key": "GCN-38898",
+    "citedText": "GRB 250108A: Swift/XRT afterglow fading\n\nTullia Sbarrato (INAF-OAB) & Noel Klinger (GSFC/UMBC/CRESSTII)\nreport on behalf of the Swift-XRT team:\n\nSwift-XRT has performed further follow-up observations of the\nSVOM/ECLAIRs GRB 250108A (Zheng et al., GCN 38845), \ncollecting 6.6 ks of Photon Counting (PC) mode data between \nT0+16.1 ks and T0+192.1 ks. \n\n"
+   }
+  },
+  {
+   "t": 7145,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": "6"
+   }
+  },
+  {
+   "t": 7167,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": ".6 ks of Phot"
+   }
+  },
+  {
+   "t": 7186,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": "on Counting (PC)"
+   }
+  },
+  {
+   "t": 7206,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": " mode data between"
+   }
+  },
+  {
+   "t": 7227,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": " T0+16.1 "
+   }
+  },
+  {
+   "t": 7247,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": "ks and T0+192.1"
+   }
+  },
+  {
+   "t": 7268,
+   "event": {
+    "type": "text",
+    "block": 9,
+    "text": " ks"
+   }
+  },
+  {
+   "t": 7287,
+   "event": {
+    "type": "text",
+    "block": 10,
+    "text": " were"
+   }
+  },
+  {
+   "t": 7309,
+   "event": {
+    "type": "text",
+    "block": 10,
+    "text": " collected, and the source "
+   }
+  },
+  {
+   "t": 7352,
+   "event": {
+    "type": "citation",
+    "block": 11,
+    "key": "GCN-38898",
+    "citedText": "The X-ray source detected in the first 2.7 ks of data reported as \n“Source 1” and presented as possible GRB afterglow candidate \n(Ambrosi et al., GCN 38853) has faded more than 2 sigma \nin the latest observation, and it is thus confirmed as the \nX-ray afterglow of the burst.\n\n"
+   }
+  },
+  {
+   "t": 7352,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": "has faded more than "
+   }
+  },
+  {
+   "t": 7452,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": "2 sigma in the lat"
+   }
+  },
+  {
+   "t": 7464,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": "est observation, and it is th"
+   }
+  },
+  {
+   "t": 7464,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": "us confirmed as the X"
+   }
+  },
+  {
+   "t": 7465,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": "-ray afterglow of"
+   }
+  },
+  {
+   "t": 7465,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": " the burst."
+   }
+  },
+  {
+   "t": 7494,
+   "event": {
+    "type": "text",
+    "block": 12,
+    "text": " The"
+   }
+  },
+  {
+   "t": 7513,
+   "event": {
+    "type": "text",
+    "block": 12,
+    "text": " U"
+   }
+  },
+  {
+   "t": 7533,
+   "event": {
+    "type": "text",
+    "block": 12,
+    "text": "VOT began"
+   }
+  },
+  {
+   "t": 7553,
+   "event": {
+    "type": "text",
+    "block": 12,
+    "text": " "
+   }
+  },
+  {
+   "t": 7594,
+   "event": {
+    "type": "citation",
+    "block": 13,
+    "key": "GCN-38866",
+    "citedText": "A. Breeveld (UCL-MSSL) and N. J. Klingler (GSFC/UMBC/CRESSTII) report on behalf of the Swift/UVOT team:\n\nThe Swift/UVOT began settled observations of the field of SVOM/ECLAIRs-detected burst GRB 250108A 102468 s after the SVOM trigger (Zheng et al., GCN Circ. "
+   }
+  },
+  {
+   "t": 7595,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": "settled observations of"
+   }
+  },
+  {
+   "t": 7616,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": " the field of SVO"
+   }
+  },
+  {
+   "t": 7643,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": "M/ECLA"
+   }
+  },
+  {
+   "t": 7655,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": "IR"
+   }
+  },
+  {
+   "t": 7677,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": "s-detected burst GR"
+   }
+  },
+  {
+   "t": 7696,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": "B 250108A 102468"
+   }
+  },
+  {
+   "t": 7719,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": " s after the SVOM"
+   }
+  },
+  {
+   "t": 7743,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": " trigger"
+   }
+  },
+  {
+   "t": 7759,
+   "event": {
+    "type": "text",
+    "block": 14,
+    "text": ", and "
+   }
+  },
+  {
+   "t": 7778,
+   "event": {
+    "type": "citation",
+    "block": 15,
+    "key": "GCN-38866",
+    "citedText": "38852), is detected in the initial UVOT exposures.\n"
+   }
+  },
+  {
+   "t": 7799,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": "no optical afterglow cons"
+   }
+  },
+  {
+   "t": 7823,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": "istent with either the Swift"
+   }
+  },
+  {
+   "t": 7841,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": "-XRT proposed X"
+   }
+  },
+  {
+   "t": 7866,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": "-ray counterpart or"
+   }
+  },
+  {
+   "t": 7882,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": " the VT optical aftergl"
+   }
+  },
+  {
+   "t": 7988,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": "ow candidate,"
+   }
+  },
+  {
+   "t": 7988,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": " is detected in the initial U"
+   }
+  },
+  {
+   "t": 7988,
+   "event": {
+    "type": "text",
+    "block": 15,
+    "text": "VOT exposures."
+   }
+  },
+  {
+   "t": 7989,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": " The pre"
+   }
+  },
+  {
+   "t": 8003,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": "liminary 3-sig"
+   }
+  },
+  {
+   "t": 8024,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": "ma upper limit in"
+   }
+  },
+  {
+   "t": 8043,
+   "event": {
+    "type": "text",
+    "block": 16,
+    "text": " the w1 filter is "
+   }
+  },
+  {
+   "t": 8089,
+   "event": {
+    "type": "citation",
+    "block": 17,
+    "key": "GCN-38866",
+    "citedText": "1358, 373) for the initial exposures are:\n\nFilter         T_start(s)   T_stop(s)      Exp(s)         Mag\n\nw1              102468       109462         2632         >20.9\n\nThe magnitudes in the table are not corrected for the Galactic extinction due to the reddening of E(B-V) = 0.012 in the direction of the burst (Schlegel et al. "
+   }
+  },
+  {
+   "t": 8089,
+   "event": {
+    "type": "text",
+    "block": 17,
+    "text": ">20.9"
+   }
+  },
+  {
+   "t": 8106,
+   "event": {
+    "type": "text",
+    "block": 18,
+    "text": "."
+   }
+  },
+  {
+   "t": 8133,
+   "event": {
+    "type": "status",
+    "step": "checking",
+    "text": "Checking citations…"
+   }
+  },
+  {
+   "t": 8133,
+   "event": {
+    "type": "done",
+    "searchId": "fixture-ivsa1f4l",
+    "kind": "event",
+    "answer": [
+     {
+      "text": "Swift has initiated a ToO observation of the SVOM/ECLAIRs GRB 250108A.",
+      "cites": [
+       "GCN-38846"
+      ],
+      "absence": false
+     },
+     {
+      "text": "Swift-XRT detected an uncatalogued X-ray source within the estimated 3-sigma SVOM/MXTs error region (98 arcsec), with an enhanced position of RA, Dec = 207.92093, +26.21642 and an uncertainty of 4.1 arcsec (radius, 90% confidence).",
+      "cites": [
+       "GCN-38853"
+      ],
+      "absence": false
+     },
+     {
+      "text": "That position is 73 arcsec from the SVOM/MXTs position.",
+      "cites": [
+       "GCN-38853"
+      ],
+      "absence": false
+     },
+     {
+      "text": "In a later XRT campaign, 6.6 ks of Photon Counting (PC) mode data between T0+16.1 ks and T0+192.1 ks were collected, and the source has faded more than 2 sigma in the latest observation, and it is thus confirmed as the X-ray afterglow of the burst.",
+      "cites": [
+       "GCN-38898"
+      ],
+      "absence": false
+     },
+     {
+      "text": "The UVOT began settled observations of the field of SVOM/ECLAIRs-detected burst GRB 250108A 102468 s after the SVOM trigger, and no optical afterglow consistent with either the Swift-XRT proposed X-ray counterpart or the VT optical afterglow candidate, is detected in the initial UVOT exposures.",
+      "cites": [
+       "GCN-38866"
+      ],
+      "absence": false
+     },
+     {
+      "text": "The preliminary 3-sigma upper limit in the w1 filter is >20.9.",
+      "cites": [
+       "GCN-38866"
+      ],
+      "absence": false
+     }
+    ],
+    "dropped": 1,
+    "check": {
+     "sentences": 6,
+     "circulars": 4
+    },
+    "ms": 8133
+   }
+  }
+ ]
+}

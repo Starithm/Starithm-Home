@@ -4,7 +4,7 @@ import InfraStatus from '../../microfrontends/novatrace/src/pages/InfraStatus';
 import AlertsLevel from '../../microfrontends/novatrace/src/pages/AlertLevelDashboard';
 import EventLevel from '../../microfrontends/novatrace/src/pages/EventLevelDashboard';
 import EventRecordPage from '../../microfrontends/novatrace/src/pages/EventRecordPage';
-import SearchPage from '../../microfrontends/novatrace/src/pages/SearchPage';
+import AskPage from '../../microfrontends/novatrace/src/pages/AskPage';
 import CircularEventPage from '../../microfrontends/novatrace/src/pages/CircularEventPage';
 import CircularArchive from '../../microfrontends/novatrace/src/pages/CircularArchive';
 import NotFound from '../../microfrontends/novatrace/src/pages/NotFound';
@@ -42,8 +42,9 @@ const NovaTraceMicrofrontend: React.FC = () => {
       // FITS viewer, which the archive popup does not yet wire up.
       case '/novatrace/alerts-legacy':
         return <AlertsLevel />;
+      // Ask Cosmos replaced the old keyword event search here (the question is in ?q=).
       case '/novatrace/search':
-        return <SearchPage />;
+        return <AskPage />;
       default:
         return <NotFound />;
     }
