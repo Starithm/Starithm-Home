@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { type AnswerSentence, type AskSource, circularUrl, sourceLabel } from '@novatrace/lib/askCosmos';
+import { type AnswerSentence, type AskSource, circularUrl, opensInPopup, sourceLabel } from '@novatrace/lib/askCosmos';
 import {
   CiteCard, CiteChip, CiteWrap, Link, Mono, Sentence, SummaryText,
 } from '@novatrace/styled_pages/AskPage.styled';
@@ -14,9 +14,10 @@ interface Props {
   sources: Record<string, AskSource>;
   hoverKey: string | null;
   onHover: (key: string | null) => void;
+  onOpen: (key: string) => void;
 }
 
-export default function AskSummary({ draft, answer, sources, hoverKey, onHover }: Props) {
+export default function AskSummary({ draft, answer, sources, hoverKey, onHover, onOpen }: Props) {
   const parts = answer ?? draft.map((d) => ({ text: d.text, cites: d.cites, absence: false }));
   return (
     <SummaryText>
@@ -25,7 +26,7 @@ export default function AskSummary({ draft, answer, sources, hoverKey, onHover }
           <Sentence $highlight={!!hoverKey && p.cites.includes(hoverKey)} $absence={p.absence}>{p.text}</Sentence>
           {p.cites.map((key, j) => (
             <Cite key={key} sourceKey={key} source={sources[key]} first={j === 0}
-              active={hoverKey === key} onHover={onHover} />
+              active={hoverKey === key} onHover={onHover} onOpen={onOpen} />
           ))}
           {answer ? ' ' : ''}
         </React.Fragment>
@@ -34,9 +35,13 @@ export default function AskSummary({ draft, answer, sources, hoverKey, onHover }
   );
 }
 
-function Cite({ sourceKey, source, first, active, onHover }: {
+function Cite({ sourceKey, source, first, active, onHover, onOpen }: {
   sourceKey: string; source?: AskSource; first: boolean; active: boolean; onHover: (k: string | null) => void;
+  onOpen: (k: string) => void;
 }) {
+  const popup = opensInPopup(sourceKey);
+  // Circulars open in the popup; the notice digest links to its event page.
+  const openPopup = (e: React.MouseEvent) => { if (popup) { e.preventDefault(); onOpen(sourceKey); } };
   const [open, setOpen] = useState(false);
   const n = source?.n ?? sourceKey.replace(/^GCN-/, '');
   const full = sourceLabel({ key: sourceKey, n });
@@ -47,8 +52,7 @@ function Cite({ sourceKey, source, first, active, onHover }: {
       onMouseEnter={() => { setOpen(true); onHover(sourceKey); }}
       onMouseLeave={() => { setOpen(false); onHover(null); }}
     >
-      <CiteChip $active={active} href={source ? circularUrl(source) : undefined}
-        {...(sourceKey.startsWith('NOTICES-') ? {} : { target: '_blank', rel: 'noreferrer' })}
+      <CiteChip $active={active} href={source ? circularUrl(source) : undefined} onClick={openPopup}
         onFocus={() => onHover(sourceKey)} onBlur={() => onHover(null)}>
         {label}
       </CiteChip>
@@ -59,8 +63,8 @@ function Cite({ sourceKey, source, first, active, onHover }: {
             <Mono style={{ color: 'var(--text-muted)' }}>{source.date}</Mono>
           </span>
           <span style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--text-body)' }}>{source.subject}</span>
-          <Link href={circularUrl(source)} {...(sourceKey.startsWith('NOTICES-') ? {} : { target: '_blank', rel: 'noreferrer' })}>
-            {sourceKey.startsWith('NOTICES-') ? 'Event page →' : source.archive ? 'Archive circular · View on gcn.nasa.gov ↗' : 'Open circular ↗'}
+          <Link href={circularUrl(source)} onClick={openPopup}>
+            {popup ? (source.archive ? 'Open circular (archive text)' : 'Open circular') : 'Event page →'}
           </Link>
         </CiteCard>
       )}

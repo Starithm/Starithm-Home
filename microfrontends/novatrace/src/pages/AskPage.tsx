@@ -5,10 +5,11 @@ import { Navbar } from '@novatrace/components/Navbar';
 import AskSummary from '@novatrace/components/AskSummary';
 import AskSources from '@novatrace/components/AskSources';
 import { EventsInvolved, FactSheet } from '@novatrace/components/AskContext';
+import { CircularDetailModal } from '@novatrace/components/CircularDetailModal';
 import { saveReturnUrl } from '@shared/lib/auth';
 import {
   type AnswerSentence, type AskEvent, type AskEventFacts, type AskKind, type AskSource, type AskStep,
-  EXAMPLE_QUESTIONS, anonAskedCount, eventLabel, anonId, noteAnonAsked, sendFeedback, streamAsk,
+  EXAMPLE_QUESTIONS, anonAskedCount, eventLabel, fetchCircular, opensInPopup, anonId, noteAnonAsked, sendFeedback, streamAsk,
 } from '@novatrace/lib/askCosmos';
 import * as S from '@novatrace/styled_pages/AskPage.styled';
 
@@ -93,6 +94,10 @@ export default function AskPage() {
   const [gate, setGate] = useState<string | null>(null);
   const [tab, setTab] = useState<'answer' | 'sources' | 'events'>('answer');
   const abort = useRef<AbortController | null>(null);
+  // The circular popup (same component as the circular archive). ↑/↓ step through the sources.
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  const [openAlert, setOpenAlert] = useState<any | null>(null);
+  const [popupView, setPopupView] = useState<'parsed' | 'raw'>('raw');
 
   const run = useCallback(async (question: string) => {
     const q = question.trim();
@@ -129,6 +134,44 @@ export default function AskPage() {
     return () => abort.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const popupKeys = useMemo(() => (state.sources ?? []).map((s) => s.key).filter(opensInPopup), [state.sources]);
+  const openIndex = openKey ? popupKeys.indexOf(openKey) : -1;
+  const stepPopup = useCallback((dir: -1 | 1) => {
+    const next = popupKeys[openIndex + dir];
+    if (next) setOpenKey(next);
+  }, [popupKeys, openIndex]);
+
+  useEffect(() => {
+    if (!openKey) { setOpenAlert(null); return; }
+    let live = true;
+    // Seed the popup with what the source card already knows, so it never shows an empty date.
+    const src = (state.sources ?? []).find((x) => x.key === openKey);
+    const seed = { alertKey: openKey, date: src?.date, event: src?.eventName ?? undefined, data: { subject: src?.subject } };
+    setOpenAlert({ ...seed, data: { ...seed.data, raw: 'Loading…' } });
+    setPopupView('raw');
+    fetchCircular(openKey).then((a) => {
+      if (!live) return;
+      if (!a) { setOpenAlert({ ...seed, data: { ...seed.data, raw: 'This circular could not be loaded. Please try again shortly.' } }); return; }
+      setOpenAlert(a);
+      // Measurements first when the circular has been extracted; archive circulars are text only.
+      const m = a?.data?.measurements;
+      setPopupView(!a.archive && m && Object.keys(m).length ? 'parsed' : 'raw');
+    });
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openKey]);
+
+  useEffect(() => {
+    if (!openKey) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenKey(null);
+      else if (e.key === 'ArrowUp') { e.preventDefault(); stepPopup(-1); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); stepPopup(1); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [openKey, stepPopup]);
 
   const sourcesByKey = useMemo(
     () => Object.fromEntries((state.sources ?? []).map((s) => [s.key, s])), [state.sources]);
@@ -217,7 +260,7 @@ export default function AskPage() {
                   <WorkingSteps steps={state.steps} done={state.phase === 'done'} />
                 ) : (
                   <AskSummary draft={state.draft} answer={state.answer} sources={sourcesByKey}
-                    hoverKey={hoverKey} onHover={setHoverKey} />
+                    hoverKey={hoverKey} onHover={setHoverKey} onOpen={setOpenKey} />
                 )}
                 {state.draft.length > 0 && working && <WorkingSteps steps={state.steps} done={false} compact />}
               </section>
@@ -242,10 +285,24 @@ export default function AskPage() {
 
         {!outOfScope && state.phase !== 'error' && state.phase !== 'limited' && (
           <S.Rail $hiddenOnMobile={tab !== 'sources'}>
-            <AskSources sources={state.sources} countText={countText} hoverKey={hoverKey} onHover={setHoverKey} />
+            <AskSources sources={state.sources} countText={countText} hoverKey={hoverKey} onHover={setHoverKey} onOpen={setOpenKey} />
           </S.Rail>
         )}
       </S.Body>
+
+      {openKey && openAlert && (
+        <CircularDetailModal
+          alert={openAlert}
+          allAlerts={[openAlert]}
+          onClose={() => setOpenKey(null)}
+          onSelect={(gcn) => setOpenKey(gcn == null ? null : `GCN-${gcn}`)}
+          onStep={stepPopup}
+          canPrev={openIndex > 0}
+          canNext={openIndex >= 0 && openIndex < popupKeys.length - 1}
+          view={popupView}
+          onViewChange={setPopupView}
+        />
+      )}
 
       {gate && (
         <S.GateBackdrop role="dialog" aria-modal="true" aria-labelledby="gate-title">

@@ -137,6 +137,21 @@ export function noteAnonAsked(): void {
   try { localStorage.setItem(ASKED_KEY, String(anonAskedCount() + 1)); } catch { /* ignore */ }
 }
 
+/** One circular for the source popup: the full alert, or an archive circular's raw text. Cached per key. */
+const circularCache = new Map<string, Promise<any | null>>();
+export function fetchCircular(key: string): Promise<any | null> {
+  if (!circularCache.has(key)) {
+    circularCache.set(key, fetch(API_ENDPOINTS.publicCircular(key))
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
+      .then((a) => { if (!a) circularCache.delete(key); return a; }));
+  }
+  return circularCache.get(key)!;
+}
+
+/** Whether a source opens in the popup (circulars do; the notice digest goes to its event page). */
+export const opensInPopup = (key: string) => !key.startsWith('NOTICES-');
+
 /** Where a circular lives: extracted ones open their event page, the rest open on GCN / ATel. */
 export function circularUrl(s: Pick<AskSource, 'key' | 'n'>): string {
   // The digest of an event's GCN notices (backend key NOTICES-<canonical_id>) links to its event page.
