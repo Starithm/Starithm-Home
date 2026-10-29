@@ -251,8 +251,10 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
 
   useEffect(() => {
     if (!canonicalId) return;
+    // Any non-2xx is "not found", not data: a 500 body is `{error}`, and storing it as the
+    // event crashed the `narrowing` memo (`event.notices.map`) and blanked the page.
     fetch(API_ENDPOINTS.publicEvent(canonicalId))
-      .then(r => (r.status === 404 ? (setNotFound(true), null) : r.json()))
+      .then(r => (r.ok ? r.json() : (setNotFound(true), null)))
       .then(d => { if (d) setEvent(d); })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
