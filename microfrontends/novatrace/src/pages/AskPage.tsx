@@ -173,6 +173,16 @@ export default function AskPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [openKey, stepPopup]);
 
+  // Events involved = the events behind what the answer actually cites, once it is checked. While
+  // streaming, the backend's list (events of all sources) is shown; it can include events that
+  // merely share words with the question (e.g. 2025 GW candidates for a 2017 BNS question).
+  const citedEvents = useMemo(() => {
+    if (!state.answer || !state.events) return state.events;
+    const cited = new Set(state.answer.flatMap((a) => a.cites));
+    const ids = new Set((state.sources ?? []).filter((s) => cited.has(s.key) && s.event).map((s) => s.event as string));
+    return state.events.filter((e) => ids.has(e.canonicalId));
+  }, [state.answer, state.events, state.sources]);
+
   const sourcesByKey = useMemo(
     () => Object.fromEntries((state.sources ?? []).map((s) => [s.key, s])), [state.sources]);
   const eventCount = new Set((state.sources ?? []).map((s) => s.event).filter(Boolean)).size;
@@ -225,8 +235,8 @@ export default function AskPage() {
         <S.MobileTabs role="tablist">
           <S.MobileTab $active={tab === 'answer'} onClick={() => setTab('answer')}>Answer</S.MobileTab>
           <S.MobileTab $active={tab === 'sources'} onClick={() => setTab('sources')}>Sources {state.sources?.length ?? ''}</S.MobileTab>
-          {(state.event || state.events?.length) && (
-            <S.MobileTab $active={tab === 'events'} onClick={() => setTab('events')}>Events {state.event ? 1 : state.events?.length}</S.MobileTab>
+          {(!!state.event || !!citedEvents?.length) && (
+            <S.MobileTab $active={tab === 'events'} onClick={() => setTab('events')}>Events {state.event ? 1 : citedEvents?.length}</S.MobileTab>
           )}
         </S.MobileTabs>
       )}
@@ -256,6 +266,10 @@ export default function AskPage() {
                     <S.CheckedLine>Citations checked · {state.check.sentences} sentences · {state.check.circulars} circulars</S.CheckedLine>
                   ) : state.steps.writing ? <S.CheckedLine>Writing…</S.CheckedLine> : null}
                 </S.SectionHead>
+                <S.AiNote>
+                  AI-generated summary, written by a language model from the circulars cited below. Check the
+                  sources before relying on it: it can miss a later correction or retraction.
+                </S.AiNote>
                 {state.draft.length === 0 && !state.answer ? (
                   <WorkingSteps steps={state.steps} done={state.phase === 'done'} />
                 ) : (
@@ -269,16 +283,16 @@ export default function AskPage() {
                 <Feedback searchId={state.searchId} getToken={() => (isSignedIn ? getToken() : Promise.resolve(null))} />
               )}
               {state.phase === 'done' && (
-                <S.SectionNote>Every sentence cites its circulars. Uncited sentences are not shown.</S.SectionNote>
+                <S.SectionNote>Every sentence cites its circulars; uncited claims are removed before the answer is shown.</S.SectionNote>
               )}
             </S.MobileOnly>
           )}
 
-          {!outOfScope && state.phase !== 'error' && state.phase !== 'limited' && (state.event || state.events) && (
+          {!outOfScope && state.phase !== 'error' && state.phase !== 'limited' && (!!state.event || !!citedEvents?.length) && (
             // Below the summary on desktop; on mobile, shown on both the Answer and Events tabs.
             <S.MobileOnly $show={tab === 'answer' || tab === 'events'}>
               {state.event && <FactSheet event={state.event} />}
-              {!state.event && state.events && <EventsInvolved events={state.events} />}
+              {!state.event && citedEvents && <EventsInvolved events={citedEvents} />}
             </S.MobileOnly>
           )}
         </S.AnswerColumn>

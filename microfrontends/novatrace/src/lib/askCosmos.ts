@@ -16,6 +16,8 @@ export interface AskSource {
   key: string; n: string; date: string; subject: string; snippet: string;
   event: string | null; eventName: string | null; archive: boolean;
   match: 'vector' | 'event' | 'keyword'; distance: number | null;
+  /** Whether the event has a page (only events with notices do; circular-only ones 404). */
+  eventPage?: boolean;
 }
 export interface AskEventFacts {
   canonicalId: string; name: string | null; kind: string | null; aliases: string[] | null; t0: string | null;
