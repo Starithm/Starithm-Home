@@ -1,9 +1,9 @@
 {
  "question": "What happened with S250818k?",
- "recorded": "2026-10-29T11:11:53.797Z",
+ "recorded": "2026-10-29T11:33:49.427Z",
  "events": [
   {
-   "t": 0,
+   "t": 1,
    "event": {
     "type": "status",
     "step": "understanding",
@@ -11,7 +11,7 @@
    }
   },
   {
-   "t": 1734,
+   "t": 1635,
    "event": {
     "type": "status",
     "step": "searching",
@@ -19,18 +19,30 @@
    }
   },
   {
-   "t": 3000,
+   "t": 3550,
    "event": {
     "type": "status",
     "step": "found",
-    "text": "Found 40 circulars across 1 event"
+    "text": "Found 41 circulars across 1 event"
    }
   },
   {
-   "t": 3000,
+   "t": 3550,
    "event": {
     "type": "sources",
     "sources": [
+     {
+      "key": "NOTICES-S250818k",
+      "n": "notices",
+      "date": "2025-08-18",
+      "subject": "GCN notices · S250818k (5)",
+      "snippet": "2025-08-18 01:20:06 UTC · IceCube (gcn.notices.icecube.lvk_nu_track_search) - 2025-08-18 01:20:35 UTC · LIGO-Virgo-KAGRA (igwn.gwalert) · RA 99.027°, Dec −59.109° · classification: Terrestrial 71%, BNS 29% · skymap",
+      "event": "S250818k",
+      "eventName": "LIGO/Virgo/KAGRA S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null
+     },
      {
       "key": "GCN-41410",
       "n": "41410",
@@ -48,7 +60,7 @@
       "n": "41414",
       "date": "2025-08-18",
       "subject": "LIGO/Virgo/KAGRA S250818k: Candidates from the Zwicky Transient Facility",
-      "snippet": "We observed the localization region of the LVK trigger S250818k with the Palomar 48-inch telescope, equipped with the 47 square degree ZTF camera (Bellm et al. 2019, Graham et al. 2019). We started observations in the g-",
+      "snippet": ", On behalf of the Zwicky Transient Facility (ZTF) and Global Relay of Observatories Watching Transients Happen (GROWTH) collaborations: We observed the localization region of the LVK trigger S250818k with the Palomar 48",
       "event": "S250818k",
       "eventName": "LIGO/Virgo/KAGRA S250818k",
       "archive": false,
@@ -512,13 +524,13 @@
       "distance": null
      }
     ],
-    "circulars": 40,
+    "circulars": 41,
     "events": 1,
     "degraded": false
    }
   },
   {
-   "t": 3000,
+   "t": 3550,
    "event": {
     "type": "context",
     "mode": "event",
@@ -548,7 +560,7 @@
    }
   },
   {
-   "t": 3000,
+   "t": 3550,
    "event": {
     "type": "status",
     "step": "writing",
@@ -556,184 +568,136 @@
    }
   },
   {
-   "t": 7512,
+   "t": 7419,
    "event": {
     "type": "text",
     "block": 0,
-    "text": "S250818k was a"
+    "text": "The"
    }
   },
   {
-   "t": 7513,
+   "t": 7419,
    "event": {
     "type": "text",
     "block": 0,
-    "text": " comp"
+    "text": " L"
    }
   },
   {
-   "t": 7513,
+   "t": 7419,
    "event": {
     "type": "text",
     "block": 0,
-    "text": "act binary merger candidate"
+    "text": "VK comp"
    }
   },
   {
-   "t": 7513,
+   "t": 7419,
    "event": {
     "type": "text",
     "block": 0,
-    "text": " at"
+    "text": "act binary mer"
    }
   },
   {
-   "t": 7533,
+   "t": 7419,
    "event": {
     "type": "text",
     "block": 0,
-    "text": " 2025-08-18 "
+    "text": "ger candidate S250818k"
    }
   },
   {
-   "t": 7548,
+   "t": 7420,
    "event": {
     "type": "text",
     "block": 0,
-    "text": "01:20:06.030 "
+    "text": " was identified at "
    }
   },
   {
-   "t": 7569,
-   "event": {
-    "type": "text",
-    "block": 0,
-    "text": "UTC, but"
-   }
-  },
-  {
-   "t": 7589,
-   "event": {
-    "type": "text",
-    "block": 0,
-    "text": " "
-   }
-  },
-  {
-   "t": 7673,
+   "t": 7466,
    "event": {
     "type": "citation",
     "block": 1,
     "key": "GCN-41437",
-    "citedText": "Based on the analysis of gravitational-wave (GW) data alone, this candidate does not meet our criteria for a high-significance public alert as its false alarm rate is estimated by the online analysis to be 6.8e-08 Hz or about one in 5 months. "
+    "citedText": "LIGO/Virgo/KAGRA S250818k: Properties of the low-significance GW compact binary merger candidate potentially associated with AT 2025ulz\n\nThe LIGO Scientific Collaboration, the Virgo Collaboration, and the KAGRA Collaboration (LVK) report:\n\nWe identified the compact binary merger candidate S250818k during real-time processing of data from LIGO Hanford Observatory (H1), LIGO Livingston Observatory (L1), and Virgo Observatory (V1) at 2025-08-18 01:20:06.030 UTC (GPS time: 1439515224.030). "
    }
   },
   {
-   "t": 7673,
+   "t": 7466,
    "event": {
     "type": "text",
     "block": 1,
-    "text": "based"
+    "text": "2025-08-18"
    }
   },
   {
-   "t": 7696,
+   "t": 7486,
    "event": {
     "type": "text",
     "block": 1,
-    "text": " on the anal"
+    "text": " 01:20:06.030"
    }
   },
   {
-   "t": 7712,
+   "t": 7521,
    "event": {
     "type": "text",
     "block": 1,
-    "text": "ysis of gravitational-"
+    "text": " UTC (GP"
    }
   },
   {
-   "t": 7733,
+   "t": 7534,
    "event": {
     "type": "text",
     "block": 1,
-    "text": "wave (GW) data al"
+    "text": "S time: 1439"
    }
   },
   {
-   "t": 7753,
+   "t": 7555,
    "event": {
     "type": "text",
     "block": 1,
-    "text": "one, this candidate does not"
+    "text": "515224"
    }
   },
   {
-   "t": 7774,
+   "t": 7573,
    "event": {
     "type": "text",
     "block": 1,
-    "text": " meet our cri"
+    "text": ".030)"
    }
   },
   {
-   "t": 7794,
+   "t": 7599,
    "event": {
     "type": "text",
-    "block": 1,
-    "text": "teria for a high-signific"
+    "block": 2,
+    "text": ", but it is a"
    }
   },
   {
-   "t": 7815,
+   "t": 7628,
    "event": {
     "type": "text",
-    "block": 1,
-    "text": "ance public alert as its false al"
+    "block": 2,
+    "text": " low-significance event"
    }
   },
   {
-   "t": 7836,
+   "t": 7629,
    "event": {
     "type": "text",
-    "block": 1,
-    "text": "arm rate is estimated"
+    "block": 2,
+    "text": ":"
    }
   },
   {
-   "t": 7856,
-   "event": {
-    "type": "text",
-    "block": 1,
-    "text": " by the online analysis to be"
-   }
-  },
-  {
-   "t": 7876,
-   "event": {
-    "type": "text",
-    "block": 1,
-    "text": " 6.8e-08 "
-   }
-  },
-  {
-   "t": 7896,
-   "event": {
-    "type": "text",
-    "block": 1,
-    "text": "Hz or about one in "
-   }
-  },
-  {
-   "t": 7916,
-   "event": {
-    "type": "text",
-    "block": 1,
-    "text": "5 months."
-   }
-  },
-  {
-   "t": 8023,
+   "t": 7650,
    "event": {
     "type": "text",
     "block": 2,
@@ -741,156 +705,269 @@
    }
   },
   {
-   "t": 8035,
+   "t": 7671,
    "event": {
     "type": "citation",
     "block": 3,
+    "key": "GCN-41437",
+    "citedText": "Based on the analysis of gravitational-wave (GW) data alone, this candidate does not meet our criteria for a high-significance public alert as its false alarm rate is estimated by the online analysis to be 6.8e-08 Hz or about one in 5 months. "
+   }
+  },
+  {
+   "t": 7671,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "its false alar"
+   }
+  },
+  {
+   "t": 7691,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "m rate is estimated by"
+   }
+  },
+  {
+   "t": 7712,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": " the online analysis to be "
+   }
+  },
+  {
+   "t": 7731,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "6.8e-08 "
+   }
+  },
+  {
+   "t": 7752,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "Hz or about one in "
+   }
+  },
+  {
+   "t": 7774,
+   "event": {
+    "type": "text",
+    "block": 3,
+    "text": "5 months"
+   }
+  },
+  {
+   "t": 7795,
+   "event": {
+    "type": "text",
+    "block": 4,
+    "text": ". The"
+   }
+  },
+  {
+   "t": 7815,
+   "event": {
+    "type": "text",
+    "block": 4,
+    "text": " class"
+   }
+  },
+  {
+   "t": 7927,
+   "event": {
+    "type": "text",
+    "block": 4,
+    "text": "ification is "
+   }
+  },
+  {
+   "t": 7928,
+   "event": {
+    "type": "citation",
+    "block": 5,
     "key": "GCN-41437",
     "citedText": "The GW candidate’s properties can be found at this URL:\n\nhttps://gracedb.ligo.org/superevents/S250818k\n\nThe classification of the GW candidate, in order of descending probability, is Terrestrial (71%), BNS (29%), NSBH (<1%), or BBH (<1%).\n"
    }
   },
   {
-   "t": 8035,
+   "t": 7928,
    "event": {
     "type": "text",
-    "block": 3,
-    "text": "The classification of the"
+    "block": 5,
+    "text": "Ter"
    }
   },
   {
-   "t": 8035,
+   "t": 7928,
    "event": {
     "type": "text",
-    "block": 3,
-    "text": " GW candidate, in order"
+    "block": 5,
+    "text": "restrial (71%),"
    }
   },
   {
-   "t": 8035,
+   "t": 7928,
    "event": {
     "type": "text",
-    "block": 3,
-    "text": " of descending probability, is"
+    "block": 5,
+    "text": " BNS (29%), N"
    }
   },
   {
-   "t": 8035,
+   "t": 7928,
    "event": {
     "type": "text",
-    "block": 3,
-    "text": " Terrestrial (71%"
+    "block": 5,
+    "text": "SB"
    }
   },
   {
-   "t": 8063,
+   "t": 7933,
    "event": {
     "type": "text",
-    "block": 3,
-    "text": "), BNS (29%),"
+    "block": 5,
+    "text": "H (<1"
    }
   },
   {
-   "t": 8081,
+   "t": 7957,
    "event": {
     "type": "text",
-    "block": 3,
-    "text": " NSB"
+    "block": 5,
+    "text": "%), or BBH ("
    }
   },
   {
-   "t": 8103,
+   "t": 7974,
    "event": {
     "type": "text",
-    "block": 3,
-    "text": "H (<1%), or B"
+    "block": 5,
+    "text": "<1%)"
    }
   },
   {
-   "t": 8122,
+   "t": 7991,
    "event": {
     "type": "text",
-    "block": 3,
-    "text": "BH (<1%)."
+    "block": 6,
+    "text": "."
    }
   },
   {
-   "t": 8142,
+   "t": 8018,
    "event": {
     "type": "text",
-    "block": 4,
+    "block": 6,
     "text": " The"
    }
   },
   {
-   "t": 8163,
+   "t": 8039,
    "event": {
     "type": "text",
-    "block": 4,
-    "text": " L"
+    "block": 6,
+    "text": " updated analysis gives "
+   }
+  },
+  {
+   "t": 8100,
+   "event": {
+    "type": "citation",
+    "block": 7,
+    "key": "GCN-41440",
+    "citedText": "Marginalized over the whole sky, the a posteriori luminosity distance estimate is 237 +/- 62 Mpc (a posteriori mean +/- standard deviation).\n\n"
+   }
+  },
+  {
+   "t": 8100,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": "a poste"
+   }
+  },
+  {
+   "t": 8120,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": "riori luminosity distance"
+   }
+  },
+  {
+   "t": 8144,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": " estimate is"
+   }
+  },
+  {
+   "t": 8162,
+   "event": {
+    "type": "text",
+    "block": 7,
+    "text": " 237 +/- 62"
    }
   },
   {
    "t": 8180,
    "event": {
     "type": "text",
-    "block": 4,
-    "text": "VK circular says"
+    "block": 7,
+    "text": " Mpc"
    }
   },
   {
-   "t": 8205,
+   "t": 8202,
    "event": {
     "type": "text",
-    "block": 4,
-    "text": " "
+    "block": 8,
+    "text": "."
    }
   },
   {
-   "t": 8225,
-   "event": {
-    "type": "citation",
-    "block": 5,
-    "key": "GCN-41437",
-    "citedText": "However, we are issuing this Circular to confirm the properties of the GW candidate because of its potential association with the optical transient ZTF25abjmnps / AT 2025ulz (Stein et al, GCN 41414) which has been confirmed and reported to be fading and reddening rapidly (Busmann et al., GCN 41421; Hall et al., GCN 41433; Karambelkar et al., GCN 41436). "
-   }
-  },
-  {
-   "t": 8225,
+   "t": 8223,
    "event": {
     "type": "text",
-    "block": 5,
-    "text": "the opt"
+    "block": 8,
+    "text": "\n\nA poss"
    }
   },
   {
-   "t": 8246,
+   "t": 8242,
    "event": {
     "type": "text",
-    "block": 5,
-    "text": "ical transient ZTF25"
+    "block": 8,
+    "text": "ible optical counterpart,"
    }
   },
   {
    "t": 8264,
    "event": {
     "type": "text",
-    "block": 5,
-    "text": "ab"
+    "block": 8,
+    "text": " ZTF25ab"
    }
   },
   {
-   "t": 8285,
+   "t": 8289,
    "event": {
     "type": "text",
-    "block": 5,
+    "block": 8,
     "text": "j"
    }
   },
   {
-   "t": 8309,
+   "t": 8304,
    "event": {
     "type": "text",
-    "block": 5,
+    "block": 8,
     "text": "mn"
    }
   },
@@ -898,318 +975,165 @@
    "t": 8327,
    "event": {
     "type": "text",
-    "block": 5,
+    "block": 8,
     "text": "ps"
    }
   },
   {
-   "t": 8346,
+   "t": 8345,
    "event": {
     "type": "text",
-    "block": 5,
-    "text": " / AT "
-   }
-  },
-  {
-   "t": 8366,
-   "event": {
-    "type": "text",
-    "block": 5,
-    "text": "2025ulz"
-   }
-  },
-  {
-   "t": 8386,
-   "event": {
-    "type": "text",
-    "block": 5,
-    "text": " (Stein et al,"
-   }
-  },
-  {
-   "t": 8408,
-   "event": {
-    "type": "text",
-    "block": 5,
-    "text": " GCN 41414)"
-   }
-  },
-  {
-   "t": 8429,
-   "event": {
-    "type": "text",
-    "block": 5,
-    "text": " which"
+    "block": 8,
+    "text": " /"
    }
   },
   {
    "t": 8448,
    "event": {
     "type": "text",
-    "block": 5,
-    "text": " has been confirmed and re"
+    "block": 8,
+    "text": " AT "
    }
   },
   {
-   "t": 8558,
+   "t": 8448,
    "event": {
     "type": "text",
-    "block": 5,
-    "text": "ported to be fading and redd"
+    "block": 8,
+    "text": "2025ulz, was re"
    }
   },
   {
-   "t": 8558,
+   "t": 8448,
    "event": {
     "type": "text",
-    "block": 5,
-    "text": "ening rapidly"
+    "block": 8,
+    "text": "ported by Stein et al."
    }
   },
   {
-   "t": 8558,
+   "t": 8448,
    "event": {
     "type": "text",
-    "block": 6,
-    "text": " mot"
+    "block": 8,
+    "text": " ("
    }
   },
   {
-   "t": 8558,
+   "t": 8448,
    "event": {
     "type": "text",
-    "block": 6,
-    "text": "ivated its"
+    "block": 8,
+    "text": "GCN 41414)."
    }
   },
   {
-   "t": 8560,
+   "t": 8468,
    "event": {
     "type": "text",
-    "block": 6,
-    "text": " release"
-   }
-  },
-  {
-   "t": 8570,
-   "event": {
-    "type": "text",
-    "block": 6,
-    "text": ". A"
-   }
-  },
-  {
-   "t": 8611,
-   "event": {
-    "type": "text",
-    "block": 6,
+    "block": 8,
     "text": " Keck I"
    }
   },
   {
-   "t": 8627,
+   "t": 8489,
    "event": {
     "type": "text",
-    "block": 6,
-    "text": " sp"
+    "block": 8,
+    "text": " spectroscopy g"
    }
   },
   {
-   "t": 8655,
+   "t": 8507,
    "event": {
     "type": "text",
-    "block": 6,
-    "text": "ectrum gave"
+    "block": 8,
+    "text": "ives"
    }
   },
   {
-   "t": 8674,
+   "t": 8527,
    "event": {
     "type": "text",
-    "block": 6,
+    "block": 8,
     "text": " "
    }
   },
   {
-   "t": 8713,
+   "t": 8550,
    "event": {
     "type": "citation",
-    "block": 7,
+    "block": 9,
     "key": "GCN-41436",
     "citedText": "We derive a redshift of 0.0848 based on host galaxy emission lines - this is consistent with the 3D GW localization for S250818k. "
    }
   },
   {
-   "t": 8714,
+   "t": 8550,
    "event": {
     "type": "text",
-    "block": 7,
-    "text": "a"
+    "block": 9,
+    "text": "a redshift"
    }
   },
   {
-   "t": 8734,
+   "t": 8567,
    "event": {
     "type": "text",
-    "block": 7,
-    "text": " redshift of 0.0"
+    "block": 9,
+    "text": " of 0.0848 based"
    }
   },
   {
-   "t": 8757,
+   "t": 8589,
    "event": {
     "type": "text",
-    "block": 7,
-    "text": "848 based on host galax"
+    "block": 9,
+    "text": " on host galaxy emission"
    }
   },
   {
-   "t": 8774,
+   "t": 8613,
    "event": {
     "type": "text",
-    "block": 7,
-    "text": "y emission lines -"
+    "block": 9,
+    "text": " lines -"
    }
   },
   {
-   "t": 8794,
+   "t": 8630,
    "event": {
     "type": "text",
-    "block": 7,
+    "block": 9,
     "text": " this is consistent with the "
    }
   },
   {
-   "t": 8817,
-   "event": {
-    "type": "text",
-    "block": 7,
-    "text": "3D G"
-   }
-  },
-  {
-   "t": 8837,
-   "event": {
-    "type": "text",
-    "block": 7,
-    "text": "W localization for S250818k"
-   }
-  },
-  {
-   "t": 8855,
-   "event": {
-    "type": "text",
-    "block": 7,
-    "text": "."
-   }
-  },
-  {
-   "t": 8876,
-   "event": {
-    "type": "text",
-    "block": 8,
-    "text": " After"
-   }
-  },
-  {
-   "t": 8900,
-   "event": {
-    "type": "text",
-    "block": 8,
-    "text": " subtracting host"
-   }
-  },
-  {
-   "t": 8919,
-   "event": {
-    "type": "text",
-    "block": 8,
-    "text": " light"
-   }
-  },
-  {
-   "t": 8939,
-   "event": {
-    "type": "text",
-    "block": 8,
-    "text": ", "
-   }
-  },
-  {
-   "t": 8958,
-   "event": {
-    "type": "citation",
-    "block": 9,
-    "key": "GCN-41436",
-    "citedText": "Subtracting host galaxy light, we see a blue continuum excess from the transient, and no tell-tale supernova-like features. "
-   }
-  },
-  {
-   "t": 8958,
+   "t": 8651,
    "event": {
     "type": "text",
     "block": 9,
-    "text": "we see a"
+    "text": "3D GW localization for S"
    }
   },
   {
-   "t": 9069,
+   "t": 8677,
    "event": {
     "type": "text",
     "block": 9,
-    "text": " blue continuum exc"
+    "text": "250818k"
    }
   },
   {
-   "t": 9082,
-   "event": {
-    "type": "text",
-    "block": 9,
-    "text": "ess from the transient, and no"
-   }
-  },
-  {
-   "t": 9082,
-   "event": {
-    "type": "text",
-    "block": 9,
-    "text": " tell-tale supernova"
-   }
-  },
-  {
-   "t": 9082,
-   "event": {
-    "type": "text",
-    "block": 9,
-    "text": "-like features"
-   }
-  },
-  {
-   "t": 9082,
+   "t": 8688,
    "event": {
     "type": "text",
     "block": 10,
-    "text": ", and the"
+    "text": ", and "
    }
   },
   {
-   "t": 9104,
-   "event": {
-    "type": "text",
-    "block": 10,
-    "text": " authors state"
-   }
-  },
-  {
-   "t": 9128,
-   "event": {
-    "type": "text",
-    "block": 10,
-    "text": " that "
-   }
-  },
-  {
-   "t": 9147,
+   "t": 8735,
    "event": {
     "type": "citation",
     "block": 11,
@@ -1218,15 +1142,23 @@
    }
   },
   {
-   "t": 9147,
+   "t": 8735,
    "event": {
     "type": "text",
     "block": 11,
-    "text": "the data in"
+    "text": "the"
    }
   },
   {
-   "t": 9162,
+   "t": 8754,
+   "event": {
+    "type": "text",
+    "block": 11,
+    "text": " data in"
+   }
+  },
+  {
+   "t": 8773,
    "event": {
     "type": "text",
     "block": 11,
@@ -1234,7 +1166,7 @@
    }
   },
   {
-   "t": 9198,
+   "t": 8794,
    "event": {
     "type": "text",
     "block": 11,
@@ -1242,7 +1174,7 @@
    }
   },
   {
-   "t": 9198,
+   "t": 8813,
    "event": {
     "type": "text",
     "block": 11,
@@ -1250,47 +1182,39 @@
    }
   },
   {
-   "t": 9225,
+   "t": 8834,
    "event": {
     "type": "text",
     "block": 11,
-    "text": " a kilonova."
+    "text": " a kilonova"
    }
   },
   {
-   "t": 9265,
+   "t": 8855,
    "event": {
     "type": "text",
     "block": 12,
-    "text": " Follow-up at"
+    "text": ". Follow"
    }
   },
   {
-   "t": 9287,
+   "t": 8959,
    "event": {
     "type": "text",
     "block": 12,
-    "text": " F"
+    "text": "-up show"
    }
   },
   {
-   "t": 9317,
+   "t": 8973,
    "event": {
     "type": "text",
     "block": 12,
-    "text": "TW found"
+    "text": "ed "
    }
   },
   {
-   "t": 9317,
-   "event": {
-    "type": "text",
-    "block": 12,
-    "text": " "
-   }
-  },
-  {
-   "t": 9346,
+   "t": 8973,
    "event": {
     "type": "citation",
     "block": 13,
@@ -1299,184 +1223,168 @@
    }
   },
   {
-   "t": 9346,
+   "t": 8973,
    "event": {
     "type": "text",
     "block": 13,
-    "text": "significant redd"
+    "text": "signific"
    }
   },
   {
-   "t": 9367,
+   "t": 8973,
    "event": {
     "type": "text",
     "block": 13,
-    "text": "ening and fading from our"
+    "text": "ant reddening and f"
    }
   },
   {
-   "t": 9387,
+   "t": 8973,
    "event": {
     "type": "text",
     "block": 13,
-    "text": " previous report (GCN "
+    "text": "ading from our previous report ("
    }
   },
   {
-   "t": 9409,
+   "t": 8973,
    "event": {
     "type": "text",
     "block": 13,
-    "text": "41421), with the g band d"
+    "text": "GCN 41421), with"
    }
   },
   {
-   "t": 9433,
+   "t": 8999,
    "event": {
     "type": "text",
     "block": 13,
-    "text": "ropping 0.83 A"
+    "text": " the g band dropping 0"
    }
   },
   {
-   "t": 9450,
+   "t": 9018,
    "event": {
     "type": "text",
     "block": 13,
-    "text": "B mag in 24.6"
+    "text": ".83 AB mag in"
    }
   },
   {
-   "t": 9468,
+   "t": 9040,
    "event": {
     "type": "text",
     "block": 13,
-    "text": " hours and r band now being"
+    "text": " 24.6 hours and"
    }
   },
   {
-   "t": 9489,
+   "t": 9061,
    "event": {
     "type": "text",
     "block": 13,
-    "text": " brighter than g."
+    "text": " r band now being brighter than"
    }
   },
   {
-   "t": 9606,
+   "t": 9080,
+   "event": {
+    "type": "text",
+    "block": 13,
+    "text": " g"
+   }
+  },
+  {
+   "t": 9122,
    "event": {
     "type": "text",
     "block": 14,
-    "text": " No"
+    "text": ".\n\nNo high"
    }
   },
   {
-   "t": 9606,
+   "t": 9123,
    "event": {
     "type": "text",
     "block": 14,
-    "text": " high"
+    "text": "-energy coun"
    }
   },
   {
-   "t": 9606,
+   "t": 9141,
    "event": {
     "type": "text",
     "block": 14,
-    "text": "-energy counterpart has"
+    "text": "terpart has"
    }
   },
   {
-   "t": 9607,
+   "t": 9161,
    "event": {
     "type": "text",
     "block": 14,
-    "text": " been reported: "
+    "text": " been reported. "
    }
   },
   {
-   "t": 9622,
+   "t": 9184,
    "event": {
     "type": "citation",
     "block": 15,
-    "key": "GCN-41441",
-    "citedText": "There was no Fermi-GBM onboard trigger around the event time of the LIGO/Virgo/KAGRA (LVK) detection of GW trigger S250818k . "
+    "key": "GCN-41453",
+    "citedText": "The source was not detected with XRT with an upper limit of 3.8 * 10^-3 cts/s at 0.3 - 10 keV. "
    }
   },
   {
-   "t": 9632,
+   "t": 9203,
    "event": {
     "type": "text",
     "block": 15,
-    "text": "there was no Fermi-"
+    "text": "The source was not detected with X"
    }
   },
   {
-   "t": 9653,
+   "t": 9224,
    "event": {
     "type": "text",
     "block": 15,
-    "text": "GBM onboard trig"
+    "text": "RT with an upper limit"
    }
   },
   {
-   "t": 9674,
+   "t": 9245,
    "event": {
     "type": "text",
     "block": 15,
-    "text": "ger around the event time of the L"
+    "text": " of 3.8 * "
    }
   },
   {
-   "t": 9694,
+   "t": 9264,
    "event": {
     "type": "text",
     "block": 15,
-    "text": "I"
+    "text": "10^-3 cts/"
    }
   },
   {
-   "t": 9715,
+   "t": 9284,
    "event": {
     "type": "text",
     "block": 15,
-    "text": "GO/Virgo/"
+    "text": "s at 0.3 -"
    }
   },
   {
-   "t": 9736,
+   "t": 9305,
    "event": {
     "type": "text",
     "block": 15,
-    "text": "KAGRA (LV"
+    "text": " 10 keV."
    }
   },
   {
-   "t": 9758,
-   "event": {
-    "type": "text",
-    "block": 15,
-    "text": "K) detection of GW tr"
-   }
-  },
-  {
-   "t": 9775,
-   "event": {
-    "type": "text",
-    "block": 15,
-    "text": "igger S250818k"
-   }
-  },
-  {
-   "t": 9796,
-   "event": {
-    "type": "text",
-    "block": 16,
-    "text": ", and"
-   }
-  },
-  {
-   "t": 9814,
+   "t": 9355,
    "event": {
     "type": "text",
     "block": 16,
@@ -1484,72 +1392,96 @@
    }
   },
   {
-   "t": 9858,
+   "t": 9374,
    "event": {
     "type": "citation",
     "block": 17,
-    "key": "GCN-41453",
-    "citedText": "The source was not detected with XRT with an upper limit of 3.8 * 10^-3 cts/s at 0.3 - 10 keV. "
+    "key": "GCN-41441",
+    "citedText": "There was no Fermi-GBM onboard trigger around the event time of the LIGO/Virgo/KAGRA (LVK) detection of GW trigger S250818k . "
    }
   },
   {
-   "t": 9859,
+   "t": 9374,
    "event": {
     "type": "text",
     "block": 17,
-    "text": "the source was not det"
+    "text": "There was no"
    }
   },
   {
-   "t": 9880,
+   "t": 9389,
    "event": {
     "type": "text",
     "block": 17,
-    "text": "ected with XRT with"
+    "text": " Fermi-GBM on"
    }
   },
   {
-   "t": 9898,
+   "t": 9500,
    "event": {
     "type": "text",
     "block": 17,
-    "text": " an upper limit of 3"
+    "text": "board trigger around the event"
    }
   },
   {
-   "t": 9940,
+   "t": 9500,
    "event": {
     "type": "text",
     "block": 17,
-    "text": ".8 * 10^-"
+    "text": " time of the LI"
    }
   },
   {
-   "t": 9940,
+   "t": 9500,
    "event": {
     "type": "text",
     "block": 17,
-    "text": "3 cts/s at "
+    "text": "GO/"
    }
   },
   {
-   "t": 9960,
+   "t": 9501,
    "event": {
     "type": "text",
     "block": 17,
-    "text": "0.3 - 10 "
+    "text": "Virgo/K"
    }
   },
   {
-   "t": 10003,
+   "t": 9501,
    "event": {
     "type": "text",
     "block": 17,
-    "text": "keV."
+    "text": "AGRA (LVK"
    }
   },
   {
-   "t": 10026,
+   "t": 9509,
+   "event": {
+    "type": "text",
+    "block": 17,
+    "text": ") detection of GW trig"
+   }
+  },
+  {
+   "t": 9532,
+   "event": {
+    "type": "text",
+    "block": 17,
+    "text": "ger S250818k"
+   }
+  },
+  {
+   "t": 9550,
+   "event": {
+    "type": "text",
+    "block": 18,
+    "text": "."
+   }
+  },
+  {
+   "t": 9568,
    "event": {
     "type": "status",
     "step": "checking",
@@ -1557,69 +1489,73 @@
    }
   },
   {
-   "t": 10027,
+   "t": 9570,
    "event": {
     "type": "done",
-    "searchId": "fixture-9xrwhdqn",
+    "searchId": "fixture-a3zvgokn",
     "kind": "event",
     "answer": [
      {
-      "text": "S250818k was a compact binary merger candidate at 2025-08-18 01:20:06.030 UTC, but based on the analysis of gravitational-wave (GW) data alone, this candidate does not meet our criteria for a high-significance public alert as its false alarm rate is estimated by the online analysis to be 6.8e-08 Hz or about one in 5 months.",
+      "text": "The LVK compact binary merger candidate S250818k was identified at 2025-08-18 01:20:06.030 UTC (GPS time: 1439515224.030), but it is a low-significance event: its false alarm rate is estimated by the online analysis to be 6.8e-08 Hz or about one in 5 months.",
       "cites": [
        "GCN-41437"
       ],
       "absence": false
      },
      {
-      "text": "The classification of the GW candidate, in order of descending probability, is Terrestrial (71%), BNS (29%), NSBH (<1%), or BBH (<1%).",
+      "text": "The classification is Terrestrial (71%), BNS (29%), NSBH (<1%), or BBH (<1%).",
       "cites": [
        "GCN-41437"
       ],
       "absence": false
      },
      {
-      "text": "The LVK circular says the optical transient ZTF25abjmnps / AT 2025ulz (Stein et al, GCN 41414) which has been confirmed and reported to be fading and reddening rapidly motivated its release.",
+      "text": "The updated analysis gives a posteriori luminosity distance estimate is 237 +/- 62 Mpc.",
       "cites": [
-       "GCN-41437"
+       "GCN-41440"
       ],
       "absence": false
      },
      {
-      "text": "A Keck I spectrum gave a redshift of 0.0848 based on host galaxy emission lines - this is consistent with the 3D GW localization for S250818k.",
+      "text": "Keck I spectroscopy gives a redshift of 0.0848 based on host galaxy emission lines - this is consistent with the 3D GW localization for S250818k, and the data in-hand thus far appears consistent with a kilonova.",
       "cites": [
        "GCN-41436"
       ],
       "absence": false
      },
      {
-      "text": "After subtracting host light, we see a blue continuum excess from the transient, and no tell-tale supernova-like features, and the authors state that the data in-hand thus far appears consistent with a kilonova.",
-      "cites": [
-       "GCN-41436"
-      ],
-      "absence": false
-     },
-     {
-      "text": "Follow-up at FTW found significant reddening and fading from our previous report (GCN 41421), with the g band dropping 0.83 AB mag in 24.6 hours and r band now being brighter than g.",
+      "text": "Follow-up showed significant reddening and fading from our previous report (GCN 41421), with the g band dropping 0.83 AB mag in 24.6 hours and r band now being brighter than g.",
       "cites": [
        "GCN-41433"
       ],
       "absence": false
      },
      {
-      "text": "No high-energy counterpart has been reported: there was no Fermi-GBM onboard trigger around the event time of the LIGO/Virgo/KAGRA (LVK) detection of GW trigger S250818k, and the source was not detected with XRT with an upper limit of 3.8 * 10^-3 cts/s at 0.3 - 10 keV.",
+      "text": "No high-energy counterpart has been reported.",
+      "cites": [],
+      "absence": true
+     },
+     {
+      "text": "The source was not detected with XRT with an upper limit of 3.8 * 10^-3 cts/s at 0.3 - 10 keV.",
       "cites": [
-       "GCN-41441",
        "GCN-41453"
+      ],
+      "absence": false
+     },
+     {
+      "text": "There was no Fermi-GBM onboard trigger around the event time of the LIGO/Virgo/KAGRA (LVK) detection of GW trigger S250818k.",
+      "cites": [
+       "GCN-41441"
       ],
       "absence": false
      }
     ],
-    "dropped": 0,
+    "dropped": 2,
     "check": {
-     "sentences": 7,
-     "circulars": 5
+     "sentences": 8,
+     "circulars": 6
     },
-    "ms": 10027
+    "ms": 9569
    }
   }
  ]
