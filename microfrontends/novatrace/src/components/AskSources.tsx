@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { type AskSource, circularUrl, sourceLabel } from '@novatrace/lib/askCosmos';
+import { type AskSource, circularUrl, opensInPopup, sourceLabel } from '@novatrace/lib/askCosmos';
 import { Link, Mono, SectionLabel } from '@novatrace/styled_pages/AskPage.styled';
 
 /* The source rail: every circular retrieved, as a filterable vertical list (not a carousel:
@@ -14,9 +14,11 @@ interface Props {
   countText: string;
   hoverKey: string | null;
   onHover: (key: string | null) => void;
+  /** Open a circular in the popup (the same one the circular archive uses). */
+  onOpen: (key: string) => void;
 }
 
-export default function AskSources({ sources, countText, hoverKey, onHover }: Props) {
+export default function AskSources({ sources, countText, hoverKey, onHover, onOpen }: Props) {
   const [event, setEvent] = useState('all');
   const [sort, setSort] = useState<Sort>('relevance');
 
@@ -62,8 +64,11 @@ export default function AskSources({ sources, countText, hoverKey, onHover }: Pr
 
       <Scroller tabIndex={0} aria-label="Sources list">
         {shown.map((s, i) => (
-          <SourceCard key={s.key} $archive={s.archive} $active={hoverKey === s.key}
-            onMouseEnter={() => onHover(s.key)} onMouseLeave={() => onHover(null)}>
+          <SourceCard key={s.key} $archive={s.archive} $active={hoverKey === s.key} $clickable={opensInPopup(s.key)}
+            onMouseEnter={() => onHover(s.key)} onMouseLeave={() => onHover(null)}
+            role={opensInPopup(s.key) ? 'button' : undefined} tabIndex={opensInPopup(s.key) ? 0 : undefined}
+            onClick={() => opensInPopup(s.key) && onOpen(s.key)}
+            onKeyDown={(e) => { if (opensInPopup(s.key) && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onOpen(s.key); } }}>
             <CardTop>
               <Mono style={{ color: 'var(--accent-text)', fontWeight: 500 }}>
                 {sourceLabel(s)}
@@ -71,17 +76,18 @@ export default function AskSources({ sources, countText, hoverKey, onHover }: Pr
               <Mono style={{ color: 'var(--text-muted)' }}>{s.date}</Mono>
               <span style={{ flex: 1 }} />
               {s.match === 'keyword' && <Tag>keyword</Tag>}
-              {s.eventName && <EventTag>{s.eventName.replace(/^LIGO\/Virgo\/KAGRA /, '')}</EventTag>}
+              {s.eventName && (s.event ? (
+                <EventTag as="a" href={`/novatrace/events/${encodeURIComponent(s.event)}`} onClick={(e) => e.stopPropagation()}
+                  title="Open the event page">{s.eventName.replace(/^LIGO\/Virgo\/KAGRA /, '')}</EventTag>
+              ) : <EventTag>{s.eventName.replace(/^LIGO\/Virgo\/KAGRA /, '')}</EventTag>)}
               {s.archive && <Tag>Archive · not extracted</Tag>}
             </CardTop>
             <Subject>{s.subject}</Subject>
             {s.snippet && <Snippet>{s.snippet}</Snippet>}
-            {s.key.startsWith('NOTICES-') ? (
-              <Link href={circularUrl(s)} style={{ fontSize: 12 }}>Event page →</Link>
+            {opensInPopup(s.key) ? (
+              <OpenHint>{s.archive ? 'Open circular (archive text)' : 'Open circular'}</OpenHint>
             ) : (
-              <Link href={circularUrl(s)} target="_blank" rel="noreferrer" style={{ fontSize: 12 }}>
-                {s.archive ? 'View on gcn.nasa.gov ↗' : 'Open circular ↗'}
-              </Link>
+              <Link href={circularUrl(s)} style={{ fontSize: 12 }} onClick={(e) => e.stopPropagation()}>Event page →</Link>
             )}
             <SrIndex>[{i + 1}]</SrIndex>
           </SourceCard>
@@ -117,8 +123,10 @@ const Scroller = styled(List)`
   &:focus-visible { outline: 1px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
   @media (max-width: 860px) { max-height: none; overflow: visible; }
 `;
-const SourceCard = styled.div<{ $archive: boolean; $active: boolean }>`
+const SourceCard = styled.div<{ $archive: boolean; $active: boolean; $clickable: boolean }>`
   position: relative;
+  cursor: ${(p) => (p.$clickable ? 'pointer' : 'default')};
+  &:focus-visible { outline: 1px solid var(--primary); outline-offset: 2px; }
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -136,8 +144,10 @@ const Tag = styled.span`
 `;
 const EventTag = styled.span`
   padding: 2px 7px; border-radius: 4px; background: var(--accent-surface);
-  color: var(--accent-text); font-size: 11.5px;
+  color: var(--accent-text); font-size: 11.5px; text-decoration: none;
+  &[href]:hover { text-decoration: underline; }
 `;
+const OpenHint = styled.span`font-size: 12px; color: var(--starithm-link);`;
 const Subject = styled.div`font-size: 13.5px; line-height: 1.4; font-weight: 500; color: var(--text-body); text-wrap: pretty;`;
 const Snippet = styled.div`font-size: 12.5px; line-height: 1.5; color: var(--text-muted); text-wrap: pretty;`;
 const SrIndex = styled.span`position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);`;
