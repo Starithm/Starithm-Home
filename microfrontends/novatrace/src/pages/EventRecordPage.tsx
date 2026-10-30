@@ -27,7 +27,7 @@ import { eventRedshifts, needsLabel, readRedshift } from '../utils/redshift';
 
 /* Types mirror GET /api/public/events/:canonicalId exactly — no fields beyond it. */
 interface Notice {
-  id: string; topic: string; phase: string | null; t0: string | null;
+  id: string; topic: string; sourceName?: string | null; phase: string | null; t0: string | null;
   producedAt: string | null; raDeg: number | null; decDeg: number | null;
   posErrorDeg: number | { radius?: number; type?: string } | null;
   classification: Record<string, number> | null;

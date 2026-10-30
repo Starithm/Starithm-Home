@@ -80,11 +80,6 @@ export function FactSheet({ event }: { event: AskEventFacts }) {
 
 type Figure = { key: string; src: string; caption: string };
 
-const ASSET_LABEL: Record<string, string> = { lightcurve: 'Light curve', locationmap: 'Location map' };
-const NOTICE_SOURCE: Record<string, string> = {
-  fermi_gbm: 'Fermi GBM', fermi_lat: 'Fermi LAT', swift: 'Swift', svom: 'SVOM', einstein_probe: 'Einstein Probe',
-  icecube: 'IceCube', igwn: 'LVK',
-};
 
 /* Figures linked from the event's notices (Fermi GBM light curve and location plot, …) and
  * circulars (instrument quicklooks, SVOM / GECAM plots), from the same record the event page
@@ -106,10 +101,8 @@ function useRecordFigures(canonicalId: string): Figure[] {
           if (!seen.has(k) && seen.add(k)) out.push({ key: k, src, caption });
         };
         for (const n of d.notices ?? []) {
-          const topic = (n.topic as string | undefined) ?? '';
-          const source = Object.entries(NOTICE_SOURCE).find(([re]) => new RegExp(re, 'i').test(topic))?.[1];
           for (const [label, u] of noticeAssets(n).images) {
-            add(u, `${ASSET_LABEL[label] ?? label}${source ? ` · ${source}` : ''} notice`);
+            add(u, `${label}${n.sourceName ? ` · ${n.sourceName}` : ''} notice`);
           }
         }
         for (const c of d.circulars ?? []) {

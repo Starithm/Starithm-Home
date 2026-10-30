@@ -9,8 +9,13 @@ export const FITS_EXTS = /\.fits(\.gz)?(\?.*)?$/i;
 export const imageUrls = (urls?: string[] | null): string[] =>
   (urls || []).filter(u => typeof u === 'string' && IMAGE_EXTS.test(u));
 
-/** Label a `*_url` payload key: lightcurve_url -> "lightcurve". */
-const urlLabel = (k: string) => k.replace(/_url$/i, '').replace(/_/g, ' ').trim().toLowerCase();
+const KNOWN_LABELS: Record<string, string> = { lightcurve: 'Light curve', locationmap: 'Location map' };
+
+/** Label a `*_url` payload key: LightCurve_URL -> "Light curve", healpix_url -> "healpix". */
+const urlLabel = (k: string) => {
+  const key = k.replace(/_url$/i, '').replace(/_/g, ' ').trim().toLowerCase();
+  return KNOWN_LABELS[key] ?? key;
+};
 
 /**
  * Notice assets hang off payload keys ending in `_url` (lightcurve_url,
