@@ -69,7 +69,7 @@ export default function PrivacyPolicy() {
         </Section>
 
         <Section title="8. Cookies">
-          <p>We use cookies only for authentication session management (via Clerk). We do not use tracking or advertising cookies. Ask Cosmos keeps a random identifier in your browser's local storage (not a cookie) so it can apply its question limit before you sign in; clearing your browser data removes it.</p>
+          <p>We use cookies only for authentication session management (via Clerk). We do not use tracking or advertising cookies. Ask Cosmos keeps a random identifier in your browser's local storage (not a cookie) so it can apply its question limit before you sign in.</p>
         </Section>
 
         <Section title="9. Children's Privacy">
