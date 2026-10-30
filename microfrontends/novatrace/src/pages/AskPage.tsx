@@ -84,7 +84,7 @@ function readQuery(): { q: string; mock: string | null } {
 }
 
 export default function AskPage() {
-  const { getToken, isSignedIn } = useAuth();
+  const { getToken, isSignedIn, isLoaded } = useAuth();
   const { openSignIn } = useClerk();
   const initial = useMemo(readQuery, []);
   const [input, setInput] = useState(initial.q);
@@ -129,11 +129,23 @@ export default function AskPage() {
     }
   }, [getToken, isSignedIn, initial.mock, state.phase]);
 
+  // The question in the URL is asked once Clerk has restored the session. On a reload the
+  // first render has no session yet, so asking at mount went out anonymous and a signed-in
+  // user whose browser had used its free question got the sign-in gate.
+  const askedInitial = useRef(false);
   useEffect(() => {
+    if (!isLoaded || askedInitial.current) return;
+    askedInitial.current = true;
     if (initial.q) run(initial.q);
-    return () => abort.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isLoaded]);
+  useEffect(() => () => abort.current?.abort(), []);
+
+  // Signed in while the gate was open (e.g. in another tab): close it and ask.
+  useEffect(() => {
+    if (isSignedIn && gate) { const q = gate; setGate(null); run(q); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn]);
 
   const popupKeys = useMemo(() => (state.sources ?? []).map((s) => s.key).filter(opensInPopup), [state.sources]);
   const openIndex = openKey ? popupKeys.indexOf(openKey) : -1;
