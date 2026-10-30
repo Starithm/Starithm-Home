@@ -151,13 +151,15 @@ export function fetchCircular(key: string): Promise<any | null> {
   return circularCache.get(key)!;
 }
 
-/** Whether a source opens in the popup (circulars do; the notice digest goes to its event page). */
-export const opensInPopup = (key: string) => !key.startsWith('NOTICES-');
+/** Whether a source opens in the popup. Circulars do; the two lists built from notices (an event's
+ *  notice digest, NOTICES-<id>, and a time window's events, EVENTS-window) link to pages instead. */
+export const opensInPopup = (key: string) => !key.startsWith('NOTICES-') && !key.startsWith('EVENTS-');
 
 /** Where a circular lives: extracted ones open their event page, the rest open on GCN / ATel. */
 export function circularUrl(s: Pick<AskSource, 'key' | 'n'>): string {
   // The digest of an event's GCN notices (backend key NOTICES-<canonical_id>) links to its event page.
   if (s.key.startsWith('NOTICES-')) return `/novatrace/events/${encodeURIComponent(s.key.slice(8))}`;
+  if (s.key.startsWith('EVENTS-')) return '/novatrace/events';
   if (s.key.startsWith('ATel-')) return `https://www.astronomerstelegram.org/?read=${s.key.slice(5)}`;
   return `https://gcn.nasa.gov/circulars/${s.key.replace(/^GCN-/, '')}`;
 }
@@ -172,6 +174,7 @@ export function eventLabel(e: Pick<AskEventFacts, 'name' | 'aliases' | 'canonica
 /** Short label for a source: "GCN 41436", "ATel 18121", or "Notices" for the notice digest. */
 export function sourceLabel(s: Pick<AskSource, 'key' | 'n'>): string {
   if (s.key.startsWith('NOTICES-')) return 'Notices';
+  if (s.key.startsWith('EVENTS-')) return 'Events';
   if (s.key.startsWith('ATel-')) return `ATel ${s.key.slice(5)}`;
   return `GCN ${s.n}`;
 }

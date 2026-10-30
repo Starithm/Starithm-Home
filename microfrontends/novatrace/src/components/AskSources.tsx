@@ -87,7 +87,7 @@ export default function AskSources({ sources, countText, hoverKey, onHover, onOp
             {opensInPopup(s.key) ? (
               <OpenHint>{s.archive ? 'Open circular (archive text)' : 'Open circular'}</OpenHint>
             ) : (
-              <Link href={circularUrl(s)} style={{ fontSize: 12 }} onClick={(e) => e.stopPropagation()}>Event page →</Link>
+              <Link href={circularUrl(s)} style={{ fontSize: 12 }} onClick={(e) => e.stopPropagation()}>{s.key.startsWith('EVENTS-') ? 'All events →' : 'Event page →'}</Link>
             )}
             <SrIndex>[{i + 1}]</SrIndex>
           </SourceCard>
