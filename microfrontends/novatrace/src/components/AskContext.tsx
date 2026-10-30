@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { API_ENDPOINTS } from '@shared/lib/config';
 import { type AskEventFacts, eventLabel } from '@novatrace/lib/askCosmos';
+import { imageUrls, noticeAssets } from '@novatrace/lib/eventAssets';
 import { Card, Link, Mono, SectionHead, SectionLabel, SectionNote } from '@novatrace/styled_pages/AskPage.styled';
 import {
   CardField, CardFieldLabel, CardFieldValue, CardGrid, CardMetaLine, EventPanel, EventPanelBody, EventPanelContent,
@@ -76,9 +78,48 @@ export function FactSheet({ event }: { event: AskEventFacts }) {
   );
 }
 
+type Figure = { key: string; src: string; caption: string };
+
+
+/* Figures linked from the event's notices (Fermi GBM light curve and location plot, …) and
+ * circulars (instrument quicklooks, SVOM / GECAM plots), from the same record the event page
+ * reads. Events minted from circulars alone 404 there, and simply show none. */
+function useRecordFigures(canonicalId: string): Figure[] {
+  const [figs, setFigs] = useState<Figure[]>([]);
+  useEffect(() => {
+    let live = true;
+    setFigs([]);
+    fetch(API_ENDPOINTS.publicEvent(canonicalId))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!live || !d) return;
+        const out: Figure[] = [];
+        // The same file is linked over http by notices and https by circulars.
+        const seen = new Set<string>();
+        const add = (src: string, caption: string) => {
+          const k = src.replace(/^https?:\/\//i, '');
+          if (!seen.has(k) && seen.add(k)) out.push({ key: k, src, caption });
+        };
+        for (const n of d.notices ?? []) {
+          for (const [label, u] of noticeAssets(n).images) {
+            add(u, `${label}${n.sourceName ? ` · ${n.sourceName}` : ''} notice`);
+          }
+        }
+        for (const c of d.circulars ?? []) {
+          for (const u of imageUrls(c.data?.urls)) add(u, c.alertKey.replace(/^GCN-/, 'GCN '));
+        }
+        setFigs(out);
+      })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [canonicalId]);
+  return figs;
+}
+
 function Images({ event }: { event: AskEventFacts }) {
   const [broken, setBroken] = useState<Record<string, boolean>>({});
-  const imgs: { key: string; src: string; caption: string }[] = [];
+  const record = useRecordFigures(event.canonicalId);
+  const imgs: Figure[] = [];
   if (event.kind === 'gw' && event.hasSkymap) {
     imgs.push({ key: 'skymap', src: `https://gracedb.ligo.org/apiweb/superevents/${encodeURIComponent(event.canonicalId)}/files/bayestar.png`, caption: 'LVK skymap · GraceDB' });
   }
@@ -93,24 +134,27 @@ function Images({ event }: { event: AskEventFacts }) {
       caption: `Pan-STARRS · ${event.raDeg.toFixed(4)}°, ${event.decDeg >= 0 ? '+' : ''}${event.decDeg.toFixed(4)}°`,
     });
   }
+  imgs.push(...record);
   const shown = imgs.filter((i) => !broken[i.key]);
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <SectionHead>
         <SectionLabel>Images</SectionLabel>
-        <SectionNote>From LVK and sky surveys. Circulars are text only.</SectionNote>
+        <SectionNote>Linked from the event's notices and circulars, plus LVK skymaps and sky surveys.</SectionNote>
       </SectionHead>
       {shown.length === 0 ? (
         <SectionNote>
-          {!realPosition(event) ? 'No images: the position is not reported, so there is no sky cutout.'
-            : 'No images: the position is too uncertain for a useful sky cutout.'}
-          {event.kind !== 'gw' ? ' Skymaps exist only for gravitational-wave events.' : ''}
+          No images: none of this event's notices or circulars link one, and{' '}
+          {!realPosition(event) ? 'the position is not reported, so there is no sky cutout.'
+            : 'the position is too uncertain for a useful sky cutout.'}
         </SectionNote>
       ) : (
         <ImageGrid>
           {shown.map((i) => (
             <figure key={i.key} style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-              <Img src={i.src} alt={i.caption} loading="lazy" onError={() => setBroken((b) => ({ ...b, [i.key]: true }))} />
+              <a href={i.src} target="_blank" rel="noopener noreferrer">
+                <Img src={i.src} alt={i.caption} loading="lazy" onError={() => setBroken((b) => ({ ...b, [i.key]: true }))} />
+              </a>
               <figcaption style={{ fontSize: 12, color: 'var(--text-muted)' }}>{i.caption}</figcaption>
             </figure>
           ))}
@@ -236,7 +280,8 @@ const ImageGrid = styled.div`
 const Img = styled.img`
   width: 100%;
   aspect-ratio: 4 / 3;
-  object-fit: cover;
+  /* Plots and location maps: cropping would cut off axes and labels. */
+  object-fit: contain;
   border-radius: 8px;
   border: 1px solid var(--line-hairline);
   background: var(--surface-sunken);
