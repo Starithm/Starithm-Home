@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { type AskEventFacts, eventLabel } from '@novatrace/lib/askCosmos';
 import { Card, Link, Mono, SectionHead, SectionLabel, SectionNote } from '@novatrace/styled_pages/AskPage.styled';
+import {
+  CardField, CardFieldLabel, CardFieldValue, CardGrid, CardMetaLine, EventPanel, EventPanelBody, EventPanelContent,
+  EventPanelLeft, EventPanelTop, EventTitle, KindChip, PrimaryAction,
+} from '@novatrace/styled_pages/EventLevelDashboard.styled';
+import { kindColor } from '@shared/utils/eventColors';
+import { getTimeAgo } from '../utils/duration';
+import { hasPosition, posErrorRadius } from '../utils/sky';
 
 /* Left-column context. An event question gets a fact sheet (and real images when they exist);
  * a topic question gets the events behind its sources. Missing fields say "not reported":
@@ -113,30 +120,100 @@ function Images({ event }: { event: AskEventFacts }) {
   );
 }
 
+/* Sexagesimal, as the /events card shows it. */
+function hms(ra: number): string {
+  const h = Math.floor(ra / 15), m = Math.floor((ra % 15) * 4), sec = ((ra % 15) * 4 - m) * 60;
+  return `${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m ${sec.toFixed(1)}s`;
+}
+function dms(dec: number): string {
+  const a = Math.abs(dec), d = Math.floor(a), m = Math.floor((a % 1) * 60), sec = ((a % 1) * 60 - m) * 60;
+  return `${dec >= 0 ? '+' : '-'}${String(d).padStart(2, '0')}° ${String(m).padStart(2, '0')}' ${sec.toFixed(1)}"`;
+}
+
+/**
+ * The events behind an answer as a vertical list of the /events page's floating event card
+ * (same styled pieces: title + kind chip, meta line, T0 / error / RA / Dec grid, "Open full
+ * record"), so an event reads the same on both pages.
+ */
 export function EventsInvolved({ events }: { events: (AskEventFacts & { sources: number })[] }) {
   // Only events with a page: circular-only events (no notices) have none and their links 404.
-  const withPages = events.filter((e) => e.noticeCount > 0);
+  const withPages = events.filter((e) => Number(e.noticeCount) > 0);
   if (!withPages.length) return null;
-  const sorted = [...withPages].sort((a, b) => (b.t0 ?? '').localeCompare(a.t0 ?? ''));
+  const sorted = [...withPages].sort((a, b) => String(b.t0 ?? '').localeCompare(String(a.t0 ?? '')));
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <SectionHead>
         <SectionLabel>Events involved</SectionLabel>
         <SectionNote>{withPages.length}</SectionNote>
       </SectionHead>
-      <Card>
-        {sorted.map((e) => (
-          <EventRow key={e.canonicalId} href={eventPage(e.canonicalId)}>
-            <span style={{ color: 'var(--text-body)', fontWeight: 500 }}>{eventLabel(e, true)}</span>
-            <span style={{ color: 'var(--text-muted)' }}>{e.kind ? KIND[e.kind] ?? e.kind : ''}</span>
-            <Mono style={{ color: 'var(--text-muted)' }}>{utc(e.t0)?.slice(0, 10) ?? 'time not reported'}</Mono>
-            <Mono style={{ marginLeft: 'auto', color: 'var(--accent-text)' }}>{e.sources} source{e.sources === 1 ? '' : 's'}</Mono>
-          </EventRow>
-        ))}
-      </Card>
+      <CardList>
+        {sorted.map((e) => {
+          const err = posErrorRadius(e.posErrorDeg);
+          const pos = hasPosition(e) && !(e.raDeg === 0 && e.decDeg === 0);
+          return (
+            <ListPanel key={e.canonicalId}>
+              <EventPanelContent>
+                <EventPanelTop>
+                  <EventPanelLeft>
+                    <EventTitle>{eventLabel(e, true)}</EventTitle>
+                    {e.kind && <KindChip $color={kindColor(e.kind)}>{e.kind}</KindChip>}
+                  </EventPanelLeft>
+                </EventPanelTop>
+              </EventPanelContent>
+              <EventPanelBody>
+                <CardMetaLine>
+                  {[
+                    `${e.noticeCount} notice${Number(e.noticeCount) === 1 ? '' : 's'}`,
+                    `${e.circularCount} circular${Number(e.circularCount) === 1 ? '' : 's'}`,
+                    e.t0 && getTimeAgo(new Date(e.t0)),
+                    e.sources ? `${e.sources} source${e.sources === 1 ? '' : 's'} here` : null,
+                  ].filter(Boolean).join(' · ')}
+                </CardMetaLine>
+                <CardGrid>
+                  <CardField>
+                    <CardFieldLabel>T0 (UTC)</CardFieldLabel>
+                    <CardFieldValue>{utc(e.t0) ?? '—'}</CardFieldValue>
+                  </CardField>
+                  <CardField>
+                    <CardFieldLabel>Error</CardFieldLabel>
+                    <CardFieldValue>{err != null ? `± ${err.toFixed(3)}°` : 'not reported'}</CardFieldValue>
+                  </CardField>
+                  <CardField>
+                    <CardFieldLabel>RA</CardFieldLabel>
+                    <CardFieldValue>{pos ? hms(e.raDeg!) : '—'}</CardFieldValue>
+                  </CardField>
+                  <CardField>
+                    <CardFieldLabel>Dec</CardFieldLabel>
+                    <CardFieldValue>{pos ? dms(e.decDeg!) : '—'}</CardFieldValue>
+                  </CardField>
+                </CardGrid>
+                <PrimaryAction as="a" href={eventPage(e.canonicalId)} style={{ marginTop: 12 }}>
+                  Open full record →
+                </PrimaryAction>
+              </EventPanelBody>
+            </ListPanel>
+          );
+        })}
+      </CardList>
     </section>
   );
 }
+
+const CardList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+/* The /events card, in a list rather than floating: its phone style is a full-height bottom
+   sheet, which a list item must not be. */
+const ListPanel = styled(EventPanel)`
+  @media (max-width: 640px) {
+    height: auto;
+    display: block;
+    border: 1px solid var(--line-subtle);
+    border-radius: 1rem;
+  }
+`;
 
 const FactRow = styled.div`
   display: grid;
@@ -163,15 +240,4 @@ const Img = styled.img`
   border-radius: 8px;
   border: 1px solid var(--line-hairline);
   background: var(--surface-sunken);
-`;
-const EventRow = styled.a`
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  padding: 10px 16px;
-  font-size: 13px;
-  text-decoration: none;
-  flex-wrap: wrap;
-  & + & { border-top: 1px solid var(--line-hairline); }
-  &:hover { background: var(--row-hover); }
 `;
