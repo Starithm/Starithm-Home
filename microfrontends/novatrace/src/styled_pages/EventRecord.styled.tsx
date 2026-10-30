@@ -514,7 +514,14 @@ export const Row = styled.button`
   color: ${PLATINUM};
   &:hover { background: ${line(0.03)}; }
   &:focus-visible { outline: 1px solid ${line(0.3)}; outline-offset: -1px; }
-  @media (max-width: 620px) { grid-template-columns: 1fr; gap: 4px; }
+  /* Phone: time and phase share the first line, topic takes the full second line.
+     One column per field stacked every notice into three lines. */
+  @media (max-width: 620px) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 12px;
+    padding: 11px 14px;
+    > :nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  }
 `;
 
 /* The design wraps notices/circulars in a single bordered container; rows are
@@ -794,6 +801,14 @@ export const MeasureTable = styled.table`
     font-size: ${fs(11)};
     width: 1%;
     white-space: nowrap;
+    /* Phone: a long value ("2025 Aug 26 at 13:30 UT") pushed the table ~60px past
+       the screen. Let it wrap instead, capped so the key keeps some room. */
+    @media (max-width: 620px) {
+      white-space: normal;
+      width: auto;
+      max-width: 55%;
+      overflow-wrap: anywhere;
+    }
   }
   /* The redshift row keeps the violet ribbon the pill carried, so the one value
      readers look for first stays findable in a uniform grid. */

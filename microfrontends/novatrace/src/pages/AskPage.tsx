@@ -222,6 +222,7 @@ export default function AskPage() {
     <S.AskPageRoot>
       <Navbar />
       <S.QuestionHeader>
+        <S.PageTitle>Ask Cosmos</S.PageTitle>
         <AskBar value={input} onChange={setInput} onSubmit={submit} disabled={working} />
         <S.MetaRow>
           {badge && <S.Badge>{badge}</S.Badge>}

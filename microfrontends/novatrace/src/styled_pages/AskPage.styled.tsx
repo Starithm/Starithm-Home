@@ -23,6 +23,14 @@ export const QuestionHeader = styled.div`
   @media (max-width: 720px) { padding: 16px; }
 `;
 
+/* The page's name above the bar once a question is asked (the idle view has its own IdleTitle). */
+export const PageTitle = styled.h1`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-body);
+`;
+
 export const AskForm = styled.form<{ $large?: boolean }>`
   display: flex;
   align-items: center;

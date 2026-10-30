@@ -126,6 +126,18 @@ function fmtMeasure(v: string): string {
    scannable while still showing the values readers check first. */
 const PREVIEW_ROWS = 4;
 
+/** A measurement value as text. Extraction sometimes nests objects (an exposure as
+ *  [{filter, time}, …]); String() rendered those as "[object Object]". */
+function measureText(v: any): string {
+  if (v == null) return '';
+  if (Array.isArray(v)) return v.map(measureText).filter(Boolean).join('; ');
+  if (typeof v === 'object') {
+    return Object.entries(v).filter(([, x]) => x != null && x !== '')
+      .map(([k, x]) => `${k.replace(/_/g, ' ')} ${measureText(x)}`).join(', ');
+  }
+  return String(v);
+}
+
 function scalarValues(m: Record<string, any> | undefined): Array<[string, string]> {
   if (!m) return [];
   const out: Array<[string, string]> = [];
@@ -135,7 +147,8 @@ function scalarValues(m: Record<string, any> | undefined): Array<[string, string
     if (k === 'other_measurements' && typeof v === 'object') {
       for (const [ok, ov] of Object.entries(v as Record<string, any>)) {
         if (ov == null || ov === '' || REDSHIFT_KEYS.has(ok)) continue;
-        out.push([ok.replace(/_/g, ' '), String(ov)]);
+        const text = measureText(ov);
+        if (text) out.push([ok.replace(/_/g, ' '), text]);
       }
       continue;
     }
@@ -172,7 +185,11 @@ function payloadFields(payload: Record<string, any> | null | undefined): Array<[
     }
     out.push([k, String(v)]);
   }
-  return out;
+  // Embedded binaries (an LVK notice's base64 skymap is ~100 KB) are summarised, not
+  // printed: on a phone the blob filled the whole payload table.
+  return out.map(([k, v]) => (v.length > 300 && /^[A-Za-z0-9+/=\s]+$/.test(v)
+    ? [k, `binary data, ${Math.round((v.length * 3) / 4 / 1024)} KB (not shown)`]
+    : [k, v]));
 }
 
 /* Same matcher the previous page used — circular urls occasionally point at finder
