@@ -179,6 +179,8 @@ export default function AskPage() {
   const citedEvents = useMemo(() => {
     if (!state.answer || !state.events) return state.events;
     const cited = new Set(state.answer.flatMap((a) => a.cites));
+    // A cited time-window list ("GRBs in the last 2 days") is about all of its events.
+    if ([...cited].some((k) => k.startsWith('EVENTS-'))) return state.events;
     const ids = new Set((state.sources ?? []).filter((s) => cited.has(s.key) && s.event).map((s) => s.event as string));
     return state.events.filter((e) => ids.has(e.canonicalId));
   }, [state.answer, state.events, state.sources]);
@@ -222,6 +224,7 @@ export default function AskPage() {
     <S.AskPageRoot>
       <Navbar />
       <S.QuestionHeader>
+        <S.PageTitle>Ask Cosmos</S.PageTitle>
         <AskBar value={input} onChange={setInput} onSubmit={submit} disabled={working} />
         <S.MetaRow>
           {badge && <S.Badge>{badge}</S.Badge>}
