@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const LAST_UPDATED = 'July 8, 2026';
+const LAST_UPDATED = 'October 30, 2026';
 const CONTACT_EMAIL = 'contact.starithm@gmail.com';
+// Bold lead-ins inside a section (this page predates the design tokens).
+const STRONG = { color: '#fff' };
 
 export default function PrivacyPolicy() {
   return (
@@ -23,10 +25,11 @@ export default function PrivacyPolicy() {
         </Section>
 
         <Section title="2. Information We Collect">
-          <p><strong style={{ color: '#fff' }}>Account information.</strong> When you sign in with GitHub, Google, or LinkedIn, we receive your name and email address from the OAuth provider. We store these in our database to identify your account.</p>
-          <p><strong style={{ color: '#fff' }}>Profile information.</strong> You may optionally add your institution or ORCID iD to your profile.</p>
-          <p><strong style={{ color: '#fff' }}>Comments and observations.</strong> Any comments or photometry data you submit on event pages are stored and displayed publicly alongside your display name and institution.</p>
-          <p><strong style={{ color: '#fff' }}>Usage data.</strong> We collect standard server logs (IP address, browser, pages visited) for debugging and security purposes. We use Vercel Analytics for aggregate, anonymised traffic statistics.</p>
+          <p><strong style={STRONG}>Account information.</strong> When you sign in with GitHub, Google, or LinkedIn, we receive your name and email address from the OAuth provider. We store these in our database to identify your account.</p>
+          <p><strong style={STRONG}>Profile information.</strong> You may optionally add your institution or ORCID iD to your profile.</p>
+          <p><strong style={STRONG}>Comments and observations.</strong> Any comments or photometry data you submit on event pages are stored and displayed publicly alongside your display name and institution.</p>
+          <p><strong style={STRONG}>Ask Cosmos questions.</strong> When you ask Ask Cosmos a question, we store the question, the answer we gave, the circulars it cited, how long it took and what it cost, and any thumbs up or down or note you leave on the answer. If you are signed in, the record is linked to your account. If you are not, it is linked to a random identifier your browser keeps in local storage, which contains nothing about you. We use these records to limit how many questions can be asked and to improve search. We do not store your IP address or browser details with them.</p>
+          <p><strong style={STRONG}>Usage data.</strong> We collect standard server logs (IP address, browser, pages visited) for debugging and security purposes. We use Vercel Analytics for aggregate, anonymised traffic statistics.</p>
         </Section>
 
         <Section title="3. How We Use Your Information">
@@ -35,6 +38,7 @@ export default function PrivacyPolicy() {
             <li>To display your name and institution alongside your contributions</li>
             <li>To send transactional emails if you opt in to event alerts (future feature)</li>
             <li>To improve the platform through anonymised analytics</li>
+            <li>To answer Ask Cosmos questions, apply its daily question limits, and find where its answers fall short</li>
           </ul>
           <p>We do not sell your data. We do not use your data for advertising.</p>
         </Section>
@@ -42,11 +46,12 @@ export default function PrivacyPolicy() {
         <Section title="4. Third-Party Services">
           <p>We use the following third-party services that may process your data:</p>
           <ul style={{ paddingLeft: '1.25rem', lineHeight: 2 }}>
-            <li><strong style={{ color: '#fff' }}>Clerk</strong> — authentication and user management (clerk.com)</li>
-            <li><strong style={{ color: '#fff' }}>CockroachDB</strong> — database hosting (cockroachlabs.com)</li>
-            <li><strong style={{ color: '#fff' }}>Render</strong> — backend hosting (render.com)</li>
-            <li><strong style={{ color: '#fff' }}>Vercel</strong> — frontend hosting and analytics (vercel.com)</li>
-            <li><strong style={{ color: '#fff' }}>Anthropic</strong> — AI-generated event summaries (anthropic.com)</li>
+            <li><strong style={STRONG}>Clerk</strong> — authentication and user management (clerk.com)</li>
+            <li><strong style={STRONG}>CockroachDB</strong> — database hosting (cockroachlabs.com)</li>
+            <li><strong style={STRONG}>Render</strong> — backend hosting (render.com)</li>
+            <li><strong style={STRONG}>Vercel</strong> — frontend hosting and analytics (vercel.com)</li>
+            <li><strong style={STRONG}>Anthropic</strong> — AI-generated event summaries and Ask Cosmos answers; your question and the circulars retrieved for it are sent to Anthropic to write the answer (anthropic.com)</li>
+            <li><strong style={STRONG}>Featherless</strong> — the text of your Ask Cosmos question is sent to Featherless to turn it into a search vector and, for questions about a time period, into search filters (featherless.ai)</li>
           </ul>
           <p>Each of these services has its own privacy policy governing how they handle data.</p>
         </Section>
@@ -56,7 +61,7 @@ export default function PrivacyPolicy() {
         </Section>
 
         <Section title="6. Data Retention">
-          <p>We retain your account information for as long as your account is active. If you delete your account, we delete your account record and all comments associated with it. Anonymised server logs may be retained for up to 90 days.</p>
+          <p>We retain your account information for as long as your account is active. If you delete your account, we delete your account record and all comments associated with it. Anonymised server logs may be retained for up to 90 days. Ask Cosmos questions and answers are kept to improve search; we will delete the ones linked to your account or browser identifier on request.</p>
         </Section>
 
         <Section title="7. Your Rights">
@@ -64,7 +69,7 @@ export default function PrivacyPolicy() {
         </Section>
 
         <Section title="8. Cookies">
-          <p>We use cookies only for authentication session management (via Clerk). We do not use tracking or advertising cookies.</p>
+          <p>We use cookies only for authentication session management (via Clerk). We do not use tracking or advertising cookies. Ask Cosmos keeps a random identifier in your browser's local storage (not a cookie) so it can apply its question limit before you sign in; clearing your browser data removes it.</p>
         </Section>
 
         <Section title="9. Children's Privacy">

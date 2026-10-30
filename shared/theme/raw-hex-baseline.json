@@ -1,6 +1,6 @@
 {
  "src/main.tsx": 67,
- "src/pages/PrivacyPolicy.tsx": 21,
+ "src/pages/PrivacyPolicy.tsx": 13,
  "shared/components/UnifiedThemeProvider.tsx": 2,
  "shared/components/ui/celestial-sphere.tsx": 3,
  "shared/components/ui/error.tsx": 1,
