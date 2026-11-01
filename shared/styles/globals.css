@@ -46,6 +46,8 @@
   --starithm-electric-violet-dark: #9A48FF;
   --starithm-veronica-dark: #C84BF7;
   --starithm-link: #69acf4;
+  /* nebula teal: [O III] at 500.7 nm, the glow of planetary nebulae. Voyager countdown. 12.0:1 on --background */
+  --starithm-nebula-teal: #4FE0CF;
 
   /* React Day Picker Theme Variables - Light Mode */
   

@@ -28,6 +28,8 @@
       { "source": "/ears-to-the-universe/:date/:trackId", "destination": "/api/melody-page" },
       { "source": "/ears-to-the-universe/(.*)", "destination": "/index.html" },
 
+      { "source": "/voyager-1", "destination": "/index.html" },
+
       { "source": "/sso-callback", "destination": "/index.html" },
       { "source": "/privacy", "destination": "/index.html" }
     ],
@@ -43,6 +45,12 @@
       "source": "/(home|novatrace)/index.html",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/voyager-1",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
     },
     {
