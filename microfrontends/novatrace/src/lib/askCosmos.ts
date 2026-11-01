@@ -151,14 +151,18 @@ export function fetchCircular(key: string): Promise<any | null> {
   return circularCache.get(key)!;
 }
 
-/** Whether a source opens in the popup. Circulars do; the two lists built from notices (an event's
- *  notice digest, NOTICES-<id>, and a time window's events, EVENTS-window) link to pages instead. */
-export const opensInPopup = (key: string) => !key.startsWith('NOTICES-') && !key.startsWith('EVENTS-');
+/** Lists NovaTrace builds itself, not circulars: an event's notice digest (NOTICES-<id>), its
+ *  optical candidates (OPTICAL-<id>), and a time window's events (EVENTS-window). */
+const isDigest = (key: string) => /^(NOTICES|OPTICAL|EVENTS)-/.test(key);
+
+/** Whether a source opens in the popup. Circulars do; digests link to pages instead. */
+export const opensInPopup = (key: string) => !isDigest(key);
 
 /** Where a circular lives: extracted ones open their event page, the rest open on GCN / ATel. */
 export function circularUrl(s: Pick<AskSource, 'key' | 'n'>): string {
-  // The digest of an event's GCN notices (backend key NOTICES-<canonical_id>) links to its event page.
-  if (s.key.startsWith('NOTICES-')) return `/novatrace/events/${encodeURIComponent(s.key.slice(8))}`;
+  // An event's notice digest and optical candidates (NOTICES-/OPTICAL-<canonical_id>) link to its event page.
+  const eventDigest = s.key.match(/^(?:NOTICES|OPTICAL)-(.+)$/);
+  if (eventDigest) return `/novatrace/events/${encodeURIComponent(eventDigest[1])}`;
   if (s.key.startsWith('EVENTS-')) return '/novatrace/events';
   if (s.key.startsWith('ATel-')) return `https://www.astronomerstelegram.org/?read=${s.key.slice(5)}`;
   return `https://gcn.nasa.gov/circulars/${s.key.replace(/^GCN-/, '')}`;
@@ -171,9 +175,10 @@ export function eventLabel(e: Pick<AskEventFacts, 'name' | 'aliases' | 'canonica
   return short ? name.replace(/^LIGO\/Virgo\/KAGRA /, '') : name;
 }
 
-/** Short label for a source: "GCN 41436", "ATel 18121", or "Notices" for the notice digest. */
+/** Short label for a source: "GCN 41436", "ATel 18121", "Notices" / "Optical" for the digests. */
 export function sourceLabel(s: Pick<AskSource, 'key' | 'n'>): string {
   if (s.key.startsWith('NOTICES-')) return 'Notices';
+  if (s.key.startsWith('OPTICAL-')) return 'Optical';
   if (s.key.startsWith('EVENTS-')) return 'Events';
   if (s.key.startsWith('ATel-')) return `ATel ${s.key.slice(5)}`;
   return `GCN ${s.n}`;
