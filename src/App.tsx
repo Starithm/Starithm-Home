@@ -13,6 +13,7 @@ const HomeMicrofrontend = lazy(() => import('./microfrontends/HomeMicrofrontend'
 const NovaTraceMicrofrontend = lazy(() => import('./microfrontends/NovaTraceMicrofrontend'));
 const BlogMicrofrontend = lazy(() => import('./microfrontends/BlogMicrofrontend'));
 const EarsMicrofrontend = lazy(() => import('./microfrontends/EarsMicrofrontend'));
+const VoyagerMicrofrontend = lazy(() => import('./microfrontends/VoyagerMicrofrontend'));
 
 function App() {
   const location = useLocation();
@@ -22,7 +23,9 @@ function App() {
   const isHome = location.pathname === '/';
   // The player is a full-screen instrument with its own header.
   const isEars = location.pathname.startsWith('/ears-to-the-universe');
-  const hideShellChrome = isNovaTrace || isHome || isEars;
+  // Voyager 1 is an event screen, also projected full-screen.
+  const isVoyager = location.pathname.startsWith('/voyager-1');
+  const hideShellChrome = isNovaTrace || isHome || isEars || isVoyager;
   const { isSignedIn } = useAuth();
   const prevSignedIn = useRef<boolean | undefined>(undefined);
 
@@ -75,6 +78,7 @@ function App() {
               <Route path="/novatrace/*" element={<NovaTraceMicrofrontend />} />
               <Route path="/blog/*" element={<BlogMicrofrontend />} />
               <Route path="/ears-to-the-universe/*" element={<EarsMicrofrontend />} />
+              <Route path="/voyager-1" element={<VoyagerMicrofrontend />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               {/* Clerk lands here after a provider redirect (homepage OAuth buttons).
                   Without this route the handshake cannot complete. */}
