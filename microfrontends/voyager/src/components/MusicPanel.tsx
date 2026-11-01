@@ -42,7 +42,7 @@ export function MusicPanel(p: Props) {
       </PanelHead>
 
       <Prose>
-        Voyager 1 sends <strong>{DOWNLINK_BPS} bits a second</strong>. At {BPM} beats a minute each note lasts
+        Voyager 1 sends <strong>{DOWNLINK_BPS} bits a second</strong>. At {BPM} beats a minute each note lasts{' '}
         {BEAT_MS / 1000} s, the time it takes the spacecraft to send <strong>{BITS_PER_NOTE} bits</strong>. One note, one
         breath of data.
       </Prose>
