@@ -346,34 +346,6 @@ export const Note = styled.div`
   }
 `;
 
-/* under the note track: how many notes (and bits) have come home */
-export const TrackCount = styled.div`
-  ${prose};
-  position: absolute;
-  transform: translateX(-50%);
-  text-align: center;
-  white-space: nowrap;
-  color: var(--text-body);
-
-  div {
-    font-family: var(--font-prose);
-  }
-  div:first-child {
-    font-size: 30px;
-    line-height: 1.25;
-  }
-  div:last-child {
-    font-size: 22px;
-    line-height: 1.3;
-    color: var(--slide-label);
-  }
-  span {
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-    color: var(--accent-text);
-  }
-`;
-
 export const Credit = styled.div`
   ${prose};
   position: absolute;
