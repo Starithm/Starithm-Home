@@ -4,12 +4,12 @@ import {
   Section, SectionHead, SectionTitle, SectionNote, Card, Muted, TableWrap, Table, MiniLabel,
   Disclaimer,
 } from '../styled_pages/EventRecord.styled';
-import { EventSkyMap, type PointKind, type SkyPoint } from './EventSkyMap';
+import { EventSkyMap, type PointKind, type SkyPoint, type SkyRegion } from './EventSkyMap';
 
 /* Everything NovaTrace found around an event, in one section: other events cross-match grouped
  * with it, optical candidates from the cone search (Lasair Rubin/ZTF, TNS) with the cross-match
  * model's scores, Rubin sources in a wide error region (Fink), and known catalogued sources in the
- * region (4FGL, XMM, ROSAT, Swift-XRT via HEASARC). Shapes mirror the crossMatch / optical / catalog
+ * region (4FGL, TeVCat, XMM, ROSAT, Swift-XRT via HEASARC). Shapes mirror the crossMatch / optical / catalog
  * fields of GET /api/public/events/:canonicalId. None of it is a confirmed counterpart. */
 
 export interface RelatedEvent {
@@ -31,7 +31,9 @@ export interface RegionSource {
 export interface CatalogSource {
   catalog: string; name: string; ra: number | null; dec: number | null; sep_deg: number | null; err_deg: number | null;
   class: string | null; assoc: string | null; flux: number | null; flux_unit: string | null;
-  variable: boolean | null; extra?: Record<string, unknown>;
+  variable: boolean | null; url?: string | null; extra?: Record<string, unknown>;
+  /* With a map region: the smallest credible region holding the source (0.2 = the 20% region). */
+  region_level?: number | null;
 }
 export interface Counterparts {
   crossMatch: { reasoning: string | null; related: RelatedEvent[] } | null;
@@ -41,13 +43,17 @@ export interface Counterparts {
   } | null;
   catalog?: {
     queriedAt: string | null; radiusDeg: number | null; sources: CatalogSource[];
-    catalogs: Record<string, { total: number | null; kept: number; error?: string }>;
+    /* With a map region, `core` counts the 50% region and `chance` what the region holds by chance. */
+    catalogs: Record<string, { total: number | null; kept: number; error?: string; core?: number; chance?: number | null }>;
+    /* The localisation map's credible region, when that was searched instead of a circle. */
+    region?: SkyRegion | null;
   } | null;
 }
 
-const CATALOG_LABEL: Record<string, string> = { '4FGL': 'Fermi-LAT 4FGL', XMM: 'XMM 5XMM', '2RXS': 'ROSAT 2RXS', '2SXPS': 'Swift-XRT 2SXPS' };
+const CATALOG_LABEL: Record<string, string> = { '4FGL': 'Fermi-LAT 4FGL', TeVCat: 'TeVCat', XMM: 'XMM 5XMM', '2RXS': 'ROSAT 2RXS', '2SXPS': 'Swift-XRT 2SXPS' };
 // Display order, gamma-ray first. Not the stored order: JSONB re-sorts keys (2RXS, 2SXPS, 4FGL, XMM).
-const CATALOG_ORDER = ['4FGL', 'XMM', '2SXPS', '2RXS'];
+const CATALOG_ORDER = ['4FGL', 'TeVCat', 'XMM', '2SXPS', '2RXS'];
+const GAMMA = ['4FGL', 'TeVCat'];
 
 
 
@@ -103,7 +109,8 @@ function skyPoints(c: Counterparts): SkyPoint[] {
   for (const s of c.catalog?.sources ?? []) {
     if (s.ra == null || s.dec == null || !CATALOG_LABEL[s.catalog]) continue;
     pts.push({
-      key: `${s.catalog}:${s.name}`, kind: s.catalog as PointKind, name: s.name, ra: s.ra, dec: s.dec, sepDeg: s.sep_deg,
+      key: `${s.catalog}:${s.name}`, kind: s.catalog as PointKind, name: s.name, ra: s.ra, dec: s.dec, sepDeg: s.sep_deg, url: s.url ?? null,
+      level: s.region_level ?? null, minor: s.catalog === '4FGL' && !s.assoc,
       details: [['Class', s.class], ['Association', s.assoc], ['Variable', s.variable == null ? null : s.variable ? 'yes' : 'no'],
         ['Flux', s.flux == null ? null : <>{s.flux.toExponential(2)} <Muted>{s.flux_unit}</Muted></>],
         ...Object.entries(s.extra ?? {}).map(([k, v]) => [k.replace(/_/g, ' '), num(v)] as [string, React.ReactNode])],
@@ -112,15 +119,25 @@ function skyPoints(c: Counterparts): SkyPoint[] {
   return pts;
 }
 
-/* Under the map: which catalogs kept only their brightest sources (wide regions) or failed. */
+/* Under the map: the region searched, how many sources sit in its core and how many it would hold
+ * by chance, which catalogs kept only their brightest sources or failed, and that X-ray catalogs
+ * are left out of wide regions (heasarc.py searches them up to 1°). */
 function catalogNote(cat: Counterparts['catalog']): React.ReactNode {
   if (!cat) return null;
+  const region = cat.region?.areaDeg2 != null
+    ? ` inside the ${Math.round((cat.region.level ?? 0.9) * 100)}% localisation region (${Math.round(cat.region.areaDeg2).toLocaleString()} deg²)` : '';
+  const xray = Object.keys(cat.catalogs).some(n => !GAMMA.includes(n)) ? '' : ' X-ray catalogs are searched only in regions up to 1° across.';
+  const core = `${Math.round((cat.region?.coreLevel ?? 0.5) * 100)}%`;
   const parts = CATALOG_ORDER.filter(n => cat.catalogs[n]).map(n => {
     const m = cat.catalogs[n];
     if (m.error) return `${n}: lookup failed`;
+    if (cat.region && m.total != null) {
+      return [`${n}: ${m.total.toLocaleString()}`, m.core != null && `${m.core} in the ${core} region`,
+        m.chance != null && `~${Math.round(m.chance)} expected by chance`].filter(Boolean).join(', ');
+    }
     return m.total != null && m.kept < m.total ? `${n}: ${m.kept} brightest of ${m.total.toLocaleString()}` : null;
   }).filter(Boolean);
-  return parts.length ? `Known sources from HEASARC. ${parts.join(' · ')}.` : 'Known sources from HEASARC.';
+  return `Known sources from HEASARC${region}.${parts.length ? ` ${parts.join(' · ')}.` : ''}${xray}`;
 }
 
 /* Only blocks with something in them render; with nothing at all, neither does the section (the
@@ -196,7 +213,8 @@ export function EventCounterparts({ data, position }: {
             <MiniLabel style={{ marginTop: related.length || candidates.length ? 18 : 0 }}>
               Sky map · {points.length} source{points.length === 1 ? '' : 's'} in and around the error region
             </MiniLabel>
-            <EventSkyMap points={points} raDeg={position.raDeg} decDeg={position.decDeg} errorDeg={position.errorDeg} note={catalogNote(data.catalog)} />
+            <EventSkyMap points={points} raDeg={position.raDeg} decDeg={position.decDeg} errorDeg={position.errorDeg}
+              region={data.catalog?.region} note={catalogNote(data.catalog)} />
           </>
         )}
 
