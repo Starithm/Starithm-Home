@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Section, SectionHead, SectionTitle, SectionNote, Card, Muted, TableWrap, Table, MiniLabel,
-  ShowMore, Disclaimer,
+  Disclaimer,
 } from '../styled_pages/EventRecord.styled';
+import { EventSkyMap, type PointKind, type SkyPoint } from './EventSkyMap';
 
 /* Everything NovaTrace found around an event, in one section: other events cross-match grouped
  * with it, optical candidates from the cone search (Lasair Rubin/ZTF, TNS) with the cross-match
@@ -16,19 +17,19 @@ export interface RelatedEvent {
   confidence: number | null; matchMethod: string | null; fap: number | null;
 }
 export interface OpticalCandidate {
-  objectId: string; brokers: string[]; url: string | null; separationArcsec: number | null;
+  objectId: string; brokers: string[]; url: string | null; ra?: number | null; dec?: number | null; separationArcsec: number | null;
   dtTriggerMin: number | null; mag: number | null; magFilter: string | null;
   finkClass: string | null; finkClassScore: number | null; sherlockClass: string | null; tnsClass: string | null;
   llmConfidence: number | null; llmReason: string | null;
 }
 export interface RegionSource {
-  objectId: string; url: string | null; separationDeg: number | null; dtTriggerMin: number | null;
+  objectId: string; url: string | null; ra?: number | null; dec?: number | null; separationDeg: number | null; dtTriggerMin: number | null;
   nDetections: number | null; mag: number | null; magFilter: string | null;
   finkClass: string | null; finkClassScore: number | null;
 }
 /* One source from data_extraction_microservice/catalogs/heasarc.py; `extra` holds catalog-specific fields. */
 export interface CatalogSource {
-  catalog: string; name: string; sep_deg: number | null; err_deg: number | null;
+  catalog: string; name: string; ra: number | null; dec: number | null; sep_deg: number | null; err_deg: number | null;
   class: string | null; assoc: string | null; flux: number | null; flux_unit: string | null;
   variable: boolean | null; extra?: Record<string, unknown>;
 }
@@ -45,9 +46,10 @@ export interface Counterparts {
 }
 
 const CATALOG_LABEL: Record<string, string> = { '4FGL': 'Fermi-LAT 4FGL', XMM: 'XMM 5XMM', '2RXS': 'ROSAT 2RXS', '2SXPS': 'Swift-XRT 2SXPS' };
-const CATALOG_PREVIEW = 3;
+// Display order, gamma-ray first. Not the stored order: JSONB re-sorts keys (2RXS, 2SXPS, 4FGL, XMM).
+const CATALOG_ORDER = ['4FGL', 'XMM', '2SXPS', '2RXS'];
 
-const REGION_PREVIEW = 3;
+
 
 const pct = (x: number | null) => (x == null ? '—' : `${Math.round(x * 100)}%`);
 const utc = (iso: string | null) => (iso ? `${new Date(iso).toISOString().slice(0, 16).replace('T', ' ')} UTC` : null);
@@ -76,53 +78,61 @@ export function counterpartsCount(c: Counterparts): number {
 /* Whether the section has anything to show, catalog sources included. */
 export const hasCounterparts = (c: Counterparts) => counterpartsCount(c) > 0 || (c.catalog?.sources.length ?? 0) > 0;
 
-const sepText = (d: number | null) => (d == null ? '—' : d < 0.1 ? `${(d * 3600).toFixed(0)}″` : `${d.toFixed(2)}°`);
+const num = (v: unknown) => (typeof v === 'number' ? (Math.abs(v) < 1e-3 || Math.abs(v) >= 1e5 ? v.toExponential(2) : String(+v.toFixed(3))) : String(v));
 
-/* Known sources, one table, grouped by catalog; each catalog shows its nearest few until expanded,
- * with "N of total" since wide regions keep only the brightest. */
-function KnownSources({ catalog, offset }: { catalog: NonNullable<Counterparts['catalog']>; offset: boolean }) {
-  const [all, setAll] = useState(false);
-  const groups = Object.entries(catalog.catalogs)
-    .map(([name, meta]) => ({ name, meta, rows: catalog.sources.filter(s => s.catalog === name) }))
-    .filter(g => g.rows.length > 0);
-  const hidden = groups.reduce((n, g) => n + Math.max(0, g.rows.length - CATALOG_PREVIEW), 0);
-  return (
-    <>
-      <MiniLabel style={{ marginTop: offset ? 18 : 0 }}>
-        Known sources in the region · {groups.map(g => `${g.name} ${g.rows.length < (g.meta.total ?? 0) ? `${g.rows.length} of ${(g.meta.total ?? 0).toLocaleString()}` : g.rows.length}`).join(' · ')}
-        {catalog.radiusDeg != null && ` · within ${catalog.radiusDeg < 1 ? catalog.radiusDeg.toFixed(2) : catalog.radiusDeg.toFixed(1)}°`}
-      </MiniLabel>
-      <TableWrap>
-        <Table>
-          <thead><tr><th>Catalog</th><th>Source</th><th>Sep</th><th>Class · association</th><th>Flux</th><th>Variable</th></tr></thead>
-          <tbody>{groups.flatMap(g => (all ? g.rows : g.rows.slice(0, CATALOG_PREVIEW)).map(s => (
-            <tr key={`${s.catalog}:${s.name}`}>
-              <td><Muted>{CATALOG_LABEL[s.catalog] ?? s.catalog}</Muted></td>
-              <td>{s.name}</td>
-              <td>{sepText(s.sep_deg)}</td>
-              <td>{[s.class, s.assoc].filter(Boolean).join(' · ') || '—'}</td>
-              <td>{s.flux == null ? '—' : <>{s.flux.toExponential(2)} <Muted>{s.flux_unit}</Muted></>}</td>
-              <td>{s.variable == null ? '—' : s.variable ? 'yes' : 'no'}</td>
-            </tr>
-          )))}</tbody>
-        </Table>
-      </TableWrap>
-      {hidden > 0 && <ShowMore onClick={() => setAll(v => !v)}>{all ? 'Show fewer' : `Show all (${hidden} more)`}</ShowMore>}
-    </>
-  );
+/* Every source with coordinates, as map points with their details-card rows. */
+function skyPoints(c: Counterparts): SkyPoint[] {
+  const pts: SkyPoint[] = [];
+  for (const o of c.optical?.candidates ?? []) {
+    if (o.ra == null || o.dec == null) continue;
+    pts.push({
+      key: `optical:${o.objectId}`, kind: 'optical', name: o.objectId, ra: o.ra, dec: o.dec, url: o.url,
+      sepDeg: o.separationArcsec != null ? o.separationArcsec / 3600 : null,
+      details: [['Survey', survey(o.brokers)], ['First seen', since(o.dtTriggerMin)], ['Mag', mag(o.mag, o.magFilter)],
+        ['Class', candidateClass(o)], ['Model score', o.llmConfidence == null ? null : pct(o.llmConfidence)], ['Model reason', o.llmReason]],
+    });
+  }
+  for (const r of c.optical?.region?.sources ?? []) {
+    if (r.ra == null || r.dec == null) continue;
+    pts.push({
+      key: `region:${r.objectId}`, kind: 'region', name: r.objectId, ra: r.ra, dec: r.dec, url: r.url, sepDeg: r.separationDeg,
+      details: [['First seen', since(r.dtTriggerMin)], ['Detections', r.nDetections], ['Mag', mag(r.mag, r.magFilter)],
+        ['Fink class', r.finkClass ? `${r.finkClass}${r.finkClassScore != null ? ` (${pct(r.finkClassScore)})` : ''}` : null]],
+    });
+  }
+  for (const s of c.catalog?.sources ?? []) {
+    if (s.ra == null || s.dec == null || !CATALOG_LABEL[s.catalog]) continue;
+    pts.push({
+      key: `${s.catalog}:${s.name}`, kind: s.catalog as PointKind, name: s.name, ra: s.ra, dec: s.dec, sepDeg: s.sep_deg,
+      details: [['Class', s.class], ['Association', s.assoc], ['Variable', s.variable == null ? null : s.variable ? 'yes' : 'no'],
+        ['Flux', s.flux == null ? null : <>{s.flux.toExponential(2)} <Muted>{s.flux_unit}</Muted></>],
+        ...Object.entries(s.extra ?? {}).map(([k, v]) => [k.replace(/_/g, ' '), num(v)] as [string, React.ReactNode])],
+    });
+  }
+  return pts;
+}
+
+/* Under the map: which catalogs kept only their brightest sources (wide regions) or failed. */
+function catalogNote(cat: Counterparts['catalog']): React.ReactNode {
+  if (!cat) return null;
+  const parts = CATALOG_ORDER.filter(n => cat.catalogs[n]).map(n => {
+    const m = cat.catalogs[n];
+    if (m.error) return `${n}: lookup failed`;
+    return m.total != null && m.kept < m.total ? `${n}: ${m.kept} brightest of ${m.total.toLocaleString()}` : null;
+  }).filter(Boolean);
+  return parts.length ? `Known sources from HEASARC. ${parts.join(' · ')}.` : 'Known sources from HEASARC.';
 }
 
 /* Only blocks with something in them render; with nothing at all, neither does the section (the
  * page's rail drops its entry too, via counterpartsCount). */
-export function EventCounterparts({ data }: { data: Counterparts }) {
-  const [allRegion, setAllRegion] = useState(false);
+export function EventCounterparts({ data, position }: {
+  data: Counterparts; position: { raDeg: number; decDeg: number; errorDeg: number | null } | null;
+}) {
   const related = data.crossMatch?.related ?? [];
   const optical = data.optical;
   const candidates = optical?.candidates ?? [];
-  const sources = optical?.region?.sources ?? [];
   if (!hasCounterparts(data)) return null;
-  const region = optical?.region ?? null;
-  const shown = allRegion ? sources : sources.slice(0, REGION_PREVIEW);
+  const points = position ? skyPoints(data) : [];
 
   return (
     <Section id="counterparts">
@@ -181,41 +191,13 @@ export function EventCounterparts({ data }: { data: Counterparts }) {
           </>
         )}
 
-        {region && sources.length > 0 && (
+        {position && points.length > 0 && (
           <>
             <MiniLabel style={{ marginTop: related.length || candidates.length ? 18 : 0 }}>
-              Sources in the region · {sources.length} Rubin object{sources.length === 1 ? '' : 's'}
-              {region.radiusDeg != null && ` within ${region.radiusDeg.toFixed(region.radiusDeg < 1 ? 2 : 1)}°`} · {utc(region.queriedAt)}
+              Sky map · {points.length} source{points.length === 1 ? '' : 's'} in and around the error region
             </MiniLabel>
-            {(
-              <>
-                <TableWrap>
-                  <Table>
-                    <thead><tr><th>Rubin object</th><th>Sep</th><th>First seen</th><th>Det.</th><th>Mag</th><th>Fink class</th></tr></thead>
-                    <tbody>{shown.map(s => (
-                      <tr key={s.objectId}>
-                        <td><Ext href={s.url}>{s.objectId}</Ext></td>
-                        <td>{s.separationDeg == null ? '—' : `${s.separationDeg.toFixed(2)}°`}</td>
-                        <td>{since(s.dtTriggerMin)}</td>
-                        <td>{s.nDetections ?? '—'}</td>
-                        <td>{mag(s.mag, s.magFilter)}</td>
-                        <td>{s.finkClass ?? '—'}{s.finkClass && s.finkClassScore != null && <Muted> {pct(s.finkClassScore)}</Muted>}</td>
-                      </tr>
-                    ))}</tbody>
-                  </Table>
-                </TableWrap>
-                {sources.length > REGION_PREVIEW && (
-                  <ShowMore onClick={() => setAllRegion(v => !v)}>
-                    {allRegion ? 'Show fewer' : `Show all ${sources.length}`}
-                  </ShowMore>
-                )}
-              </>
-            )}
+            <EventSkyMap points={points} raDeg={position.raDeg} decDeg={position.decDeg} errorDeg={position.errorDeg} note={catalogNote(data.catalog)} />
           </>
-        )}
-
-        {data.catalog && data.catalog.sources.length > 0 && (
-          <KnownSources catalog={data.catalog} offset={related.length > 0 || candidates.length > 0 || sources.length > 0} />
         )}
 
         <Disclaimer>
