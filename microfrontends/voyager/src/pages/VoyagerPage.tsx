@@ -132,7 +132,7 @@ export default function VoyagerPage() {
   return (
     <Page>
       {/* The event screen, exactly one viewport. Everything below is for website visitors. */}
-      <LiveSlide ref={slideRef} link={link} clock={clock}>
+      <LiveSlide ref={slideRef} clock={clock}>
         {travelOpen && <TimeTravel clock={clock} onChange={setClock} onClose={closeTravel} />}
       </LiveSlide>
 

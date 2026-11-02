@@ -1,14 +1,12 @@
 import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { LAUNCH_UTC, ONE_LIGHT_DAY_UTC, positionAt } from '../lib/ephemeris';
-import type { VoyagerLink } from '../lib/dsn';
-import { BEAT_MS, BITS_PER_NOTE } from '../lib/signal-music';
 import { virtualNow, type Clock } from '../lib/time-travel';
 import score from '../data/score-onsets.json';
 import { BitRing } from './BitRing';
 import { NoteTrack } from './NoteTrack';
 import {
-  BigUnit, Credit, Crossed, DotCredit, DotWords, FinalCount, Frame, Kicker, Layer, LeftCol, Listening, LiveRow,
-  CraftLine, CraftPhoto, LiveTag, Marker, MarkerLabel, Note, PaleBlueDot, Readout, RecordCard, RightCol, Ring, Ripples, STAGE_H, STAGE_W, Sky,
+  BigUnit, Credit, Crossed, DotCredit, DotWords, FinalCount, Frame, Kicker, Layer, LeftCol, LiveRow,
+  CraftLine, CraftPhoto, LiveTag, Marker, MarkerLabel, PaleBlueDot, Readout, RecordCard, RightCol, Ring, Ripples, STAGE_H, STAGE_W, Sky, Zone,
   SlideTitle, Stage, TickLabel,
 } from '../styled_components/LiveSlide.styled';
 
@@ -22,11 +20,6 @@ import {
 const DAY = 86_400_000;
 const DOT_MS = 7_000; // the Pale Blue Dot holds for 7 s after the crossing
 const CELEBRATE_MS = 3_600_000; // then an hour of "24 hours" before counting up
-const PLACES: Record<string, string> = {
-  Canberra: 'Canberra, Australia',
-  Madrid: 'Madrid, Spain',
-  Goldstone: 'Goldstone, California',
-};
 
 const p2 = (n: number) => String(n).padStart(2, '0');
 const plural = (n: number, w: string) => (n === 1 ? w : `${w}s`);
@@ -203,15 +196,13 @@ const RIPPLE_PLAN: { at: number; rings: RingSpec[] }[] = (() => {
 })();
 
 interface Props {
-  /** The DSN link to show, already resolved by the page (live feed or rehearsal pass). */
-  link: VoyagerLink | null;
   /** Time travel: null shows now. */
   clock: Clock | null;
   /** Overlays drawn on the frame, outside the scaled stage (the time-travel dock). */
   children?: ReactNode;
 }
 
-export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ link, clock, children }, frameRef) {
+export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clock, children }, frameRef) {
   const live = !clock;
 
   const [now, setNow] = useState(() => Date.now());
@@ -327,6 +318,8 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ lin
     : dayKey(sent) === dayKey(new Date(t - DAY))
       ? 'yesterday'
       : sent.toLocaleDateString([], { weekday: 'long' });
+  // the viewer's own clock, labelled, since the live row above is UTC
+  const zone = new Intl.DateTimeFormat([], { timeZoneName: 'short' }).formatToParts(sent).find((x) => x.type === 'timeZoneName')?.value;
   const days = Math.floor((t - LAUNCH_UTC) / DAY);
   const years = Math.floor((t - LAUNCH_UTC) / (365.25 * DAY));
 
@@ -362,7 +355,6 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ lin
   const ghost = [gA[0] + (gB[0] - gA[0]) * (g % 1), gA[1] + (gB[1] - gA[1]) * (g % 1)];
   const [vx, vy] = sky.pts[40];
 
-  const station = link?.down?.active ? PLACES[link.station] ?? link.station : null;
   const ripples = phase === 'crossing'
     ? [0, 1, 2].map((i) => <Ring key={`g${Math.floor(now / 1600) - i}`} $gold />)
     : notes.map((r) => (
@@ -479,7 +471,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ lin
             <div>{p2(Math.floor(lt / 3600))}h {p2(Math.floor((lt % 3600) / 60))}m {p2(lt % 60)}s</div>
           </Readout>
           <Readout>
-            <div>Light left Voyager</div>
+            <div>Light left Voyager{zone && <Zone> · {zone}</Zone>}</div>
             <div>{sentDay}, {sent.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
           </Readout>
           <Readout $size={40}>
@@ -490,21 +482,8 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ lin
             <div>Distance from Sun</div>
             <div>{num.format(pos.sunKm)} km</div>
           </Readout>
-          {station && (
-            <Readout>
-              <div>Listening now</div>
-              <Listening>{station}</Listening>
-            </Readout>
-          )}
         </RightCol>
 
-        {ripplesOn && phase !== 'crossing' && (
-          <Note>
-            <span>*</span> Each piano note lasts {BEAT_MS === 1000 ? 'one second' : `${BEAT_MS / 1000} seconds`}, as
-            long as Voyager needs to send us {BITS_PER_NOTE} bits: about {Math.round(BITS_PER_NOTE / 8)} letters of
-            text. The ripples follow the music, not Voyager's real data.
-          </Note>
-        )}
         <RecordCard>
           <img src="/voyager/golden-record-disc-pia14113.jpg" alt="The Golden Record carried by Voyager 1" />
           <div>

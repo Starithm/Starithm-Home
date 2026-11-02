@@ -7,10 +7,6 @@ import styled, { css, keyframes } from 'styled-components';
 export const STAGE_W = 1920;
 export const STAGE_H = 1080;
 
-const dot = keyframes`
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.75); }
-`;
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 const rise = keyframes`from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; }`;
 const ring = keyframes`
@@ -308,42 +304,10 @@ export const LiveTag = styled.span<{ $live: boolean }>`
   text-shadow: none;
 `;
 
-export const Listening = styled.div`
-  ${prose};
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  font-size: 32px;
-
-  &::before {
-    content: '';
-    width: 14px;
-    height: 14px;
-    flex: none;
-    border-radius: 50%;
-    background: var(--accent-text);
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--primary) 28%, transparent);
-    animation: ${dot} 2.4s ease-in-out infinite;
-  }
-`;
-
-export const Note = styled.div`
-  ${prose};
-  position: absolute;
-  left: 360px;
-  right: 360px;
-  bottom: 40px;
-  text-align: center;
-  font-size: 20px;
-  font-style: italic;
-  line-height: 1.35;
-  color: var(--slide-label);
-  text-wrap: balance;
-
-  span {
-    color: var(--accent-text);
-  }
+/** The viewer's time zone, beside a readout label: local times are otherwise unmarked next to the UTC clock. */
+export const Zone = styled.span`
+  font-family: var(--font-prose);
+  color: var(--text-faint);
 `;
 
 export const Credit = styled.div`
