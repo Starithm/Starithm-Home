@@ -5,6 +5,7 @@ import { BEAT_MS, BITS_PER_NOTE } from '../lib/signal-music';
 import { virtualNow, type Clock } from '../lib/time-travel';
 import score from '../data/score-onsets.json';
 import { BitRing } from './BitRing';
+import { NoteTrack } from './NoteTrack';
 import {
   BigUnit, Credit, Crossed, DotCredit, DotWords, FinalCount, Frame, Kicker, Layer, LeftCol, Listening, LiveRow,
   CraftLine, CraftPhoto, LiveTag, Marker, MarkerLabel, Note, PaleBlueDot, Readout, RecordCard, RightCol, Ring, Ripples, STAGE_H, STAGE_W, Sky,
@@ -220,6 +221,8 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ lin
   const [loadedAt] = useState(() => Date.now());
   // the ring of bits filling around Voyager; ?bits=0 hides it
   const showBits = new URLSearchParams(window.location.search).get('bits') !== '0';
+  // notes travelling home to a track below Voyager; ?track=0 hides it
+  const showTrack = new URLSearchParams(window.location.search).get('track') !== '0';
   // what sits in the crosshair: the NASA render by default; ?craft=line (drawn) or ?craft=point
   const craft = new URLSearchParams(window.location.search).get('craft') ?? 'photo';
   const [fit, setFit] = useState({ scale: 1, x: 0, y: 0 });
@@ -420,6 +423,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ lin
               <div>now, in Ophiuchus</div>
             </MarkerLabel>
           </Marker>
+          {showTrack && ripplesOn && phase !== 'crossing' && <NoteTrack origin={cueAt ?? loadedAt} vx={vx} vy={vy} />}
         </Layer>
 
         <SlideTitle>
