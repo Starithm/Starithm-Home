@@ -333,7 +333,7 @@ export const Note = styled.div`
   position: absolute;
   left: 360px;
   right: 360px;
-  bottom: 54px;
+  bottom: 40px;
   text-align: center;
   font-size: 20px;
   font-style: italic;
@@ -350,7 +350,7 @@ export const Credit = styled.div`
   ${prose};
   position: absolute;
   right: 96px;
-  bottom: 54px;
+  bottom: 40px;
   font-size: 20px;
   color: var(--slide-label);
 `;
@@ -601,7 +601,7 @@ const spin = keyframes`to { transform: rotate(360deg); }`;
 
 export const RecordCard = styled.div`
   position: absolute;
-  top: 800px;
+  top: 822px;
   right: 96px;
   flex-direction: row-reverse;
   text-align: right;
