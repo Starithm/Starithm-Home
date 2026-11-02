@@ -346,7 +346,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ lin
     const toCross = (ONE_LIGHT_DAY_UTC - t) / DAY;
     if (toCross > 2 && toCross <= 40) {
       if (Math.abs(toCross - 20) < 6) ticks.splice(2, 1);
-      ticks.push(tick(toCross, '19 Nov · one light-day', true));
+      ticks.push(tick(toCross, '18 Nov · one light-day', true));
     }
     return { pts, d: 'M' + pts.map((p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' L'), ticks };
     // eslint-disable-next-line react-hooks/exhaustive-deps

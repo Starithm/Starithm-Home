@@ -93,7 +93,7 @@ export function TimeTravel({ clock, onChange, onClose }: Props) {
           </Chip>
         ))}
         <Hint style={{ alignSelf: 'center', marginLeft: 'auto' }}>
-          {Math.abs(offset) < DAY ? 'crossing: 19 Nov 2026, 02:17:30 UTC' : 'gold tick on the track = the crossing'}
+          {Math.abs(offset) < DAY ? 'crossing: 18 Nov 2026, 10:16:07 UTC' : 'gold tick on the track = the crossing'}
         </Hint>
       </Chips>
     </Dock>
