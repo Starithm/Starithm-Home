@@ -32,6 +32,20 @@
     "type": "sources",
     "sources": [
      {
+      "key": "OPTICAL-S250818k",
+      "n": "optical",
+      "date": "2025-08-19",
+      "subject": "Optical candidates · S250818k (2)",
+      "snippet": "ZTF25abjmnps (Lasair-ZTF); 412 arcsec from the event position; first detected 9.8 h after the trigger; mag 21.0 (r); Sherlock host class SN",
+      "event": "S250818k",
+      "eventName": "S250818k",
+      "archive": false,
+      "match": "event",
+      "distance": null,
+      "eventPage": true,
+      "url": "https://lasair-ztf.lsst.ac.uk/objects/ZTF25abjmnps/"
+     },
+     {
       "key": "NOTICES-S250818k",
       "n": "notices",
       "date": "2025-08-18",
@@ -555,7 +569,8 @@
      "circularCount": "48",
      "noticeCount": "10",
      "hasSkymap": true,
-     "hasOptical": false
+     "hasOptical": false,
+     "opticalCandidates": 2
     }
    }
   },

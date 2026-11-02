@@ -23,6 +23,7 @@ const KIND: Record<string, string> = {
 };
 
 const NOT_REPORTED = <span style={{ color: 'var(--text-faint)' }}>not reported</span>;
+const NOT_SEARCHED = <span style={{ color: 'var(--text-faint)' }}>not searched</span>;
 
 function utc(t: string | null) {
   if (!t) return null;
@@ -56,7 +57,9 @@ export function FactSheet({ event }: { event: AskEventFacts }) {
     ['Classification', event.classification || NOT_REPORTED],
     ['Circulars · notices', <Mono key="c">{event.circularCount} · {event.noticeCount}</Mono>],
     ['Skymap', event.hasSkymap ? 'available' : NOT_REPORTED],
-    ['Optical counterpart', event.hasOptical ? 'yes' : NOT_REPORTED],
+    // From the optical-candidates search, not canonical_events.has_optical (never set).
+    ['Optical candidates', event.opticalCandidates == null ? NOT_SEARCHED
+      : event.opticalCandidates === 0 ? 'none found' : `${event.opticalCandidates} nearby, not confirmed counterparts`],
     ...(others.length ? [['Also known as', others.join(', ')] as [string, React.ReactNode]] : []),
   ];
   return (
