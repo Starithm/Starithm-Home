@@ -6,7 +6,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  *
  * The voicing borrows Arvo Pärt's tintinnabuli (the language of Für Alina): a melody voice that
  * moves by step through B minor, and a second voice that always takes the nearest B-minor
- * triad note below it. The data chooses the steps; the rules keep it music. */
+ * triad note below it.
+ *
+ * The phrases come from where Voyager stands in the sky of the dish listening to it. The higher it
+ * is, the longer the phrase (2 notes near the horizon, 8 at the top), so a whole pass plays as an
+ * arch. While it rises, each phrase falls to B4; while it sets, each phrase climbs to B4. Phrases
+ * are separated by a 3-beat rest, and the received power sets how loud they are. */
 
 export const BPM = 60;
 export const BEAT_MS = 60_000 / BPM;
@@ -16,6 +21,8 @@ export const BITS_PER_NOTE = Math.round((DOWNLINK_BPS * BEAT_MS) / 1000);
 const B_MINOR = [59, 61, 62, 64, 66, 67, 69, 71, 73, 74, 76, 78, 79, 81, 83]; // B3..B5
 const TRIAD = new Set([11, 2, 6]); // B, D, F# pitch classes
 const PEDAL = 47; // B2
+const HOME = 7; // index of B4 in B_MINOR
+const REST_BEATS = 3;
 const NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
 
 export const noteName = (midi: number) => `${NAMES[midi % 12]}${Math.floor(midi / 12) - 1}`;
@@ -24,16 +31,32 @@ export interface SignalSource {
   /** true when a DSN antenna is receiving Voyager 1 right now */
   live: boolean;
   dbm: number | null;
-  distanceKm: number;
+  station: string;
+  elevationDeg: number;
+  rising: boolean;
 }
 
+/** One beat. `melody` is null on a rest between phrases. */
 export interface Beat {
   at: number;
-  melody: number;
-  tin: number;
+  melody: number | null;
+  tin: number | null;
   pedal: boolean;
   velocity: number;
   live: boolean;
+  station: string;
+  elevationDeg: number;
+  rising: boolean;
+}
+
+export function phraseLength(elevationDeg: number) {
+  return 2 + Math.round(Math.max(0, Math.min(1, (elevationDeg - 10) / 60)) * 6);
+}
+
+function phrase(src: SignalSource) {
+  const len = phraseLength(src.elevationDeg);
+  const dir = src.rising ? -1 : 1; // rising: fall to B4 from above; setting: climb to B4 from below
+  return Array.from({ length: len }, (_, k) => B_MINOR[HOME - dir * (len - 1 - k)]);
 }
 
 function tintinnabuli(m: number) {
@@ -47,16 +70,19 @@ interface MidiOut {
   send(data: number[], timestamp?: number): void;
 }
 
-export function useSignalMusic(source: () => SignalSource) {
+/** `source(n)` describes beat n; returning null ends the piece. */
+export function useSignalMusic(source: (n: number) => SignalSource | null) {
   const [playing, setPlaying] = useState(false);
   const [beats, setBeats] = useState<Beat[]>([]);
   const [midiOutputs, setMidiOutputs] = useState<MidiOut[]>([]);
   const [midiId, setMidiId] = useState<string>('');
   const [midiError, setMidiError] = useState<string | null>(null);
   const [beatStart, setBeatStart] = useState<number | null>(null);
+  const [count, setCount] = useState(0);
 
   const ctxRef = useRef<AudioContext | null>(null);
-  const stepRef = useRef(7); // index into B_MINOR: start on B4
+  const queueRef = useRef<number[]>([]);
+  const restRef = useRef(0);
   const countRef = useRef(0);
   const sourceRef = useRef(source);
   sourceRef.current = source;
@@ -115,34 +141,39 @@ export function useSignalMusic(source: () => SignalSource) {
   }, []);
 
   const tick = useCallback(() => {
-    const src = sourceRef.current();
     const n = countRef.current++;
+    const src = sourceRef.current(n);
+    if (!src) {
+      setPlaying(false);
+      return;
+    }
 
-    // The data picks a step of -2..+2 through the scale: from the received power while a dish is
-    // listening, otherwise from the metres Voyager covered during this beat.
-    const metres = Math.floor(src.distanceKm * 1000);
-    const seed = src.live && src.dbm != null ? metres ^ Math.round(src.dbm * 1000) : metres;
-    const step = (((seed % 5) + 5) % 5) - 2;
-    let i = stepRef.current + step;
-    if (i < 0 || i >= B_MINOR.length) i = stepRef.current - step; // reflect at the edges
-    stepRef.current = i;
-
-    const melody = B_MINOR[i];
-    const tin = tintinnabuli(melody);
-    const pedal = n % 8 === 0;
+    let melody: number | null = null;
+    let pedal = false;
+    if (restRef.current > 0) {
+      restRef.current--;
+    } else {
+      if (!queueRef.current.length) {
+        queueRef.current = phrase(src);
+        pedal = true;
+      }
+      melody = queueRef.current.shift()!;
+      if (!queueRef.current.length) restRef.current = REST_BEATS;
+    }
+    const tin = melody == null ? null : tintinnabuli(melody);
     const velocity = src.live && src.dbm != null
       ? Math.round(Math.max(45, Math.min(110, 45 + (src.dbm + 170) * 2.2)))
       : 52;
 
     const ctx = ctxRef.current;
-    if (ctx) {
+    if (ctx && melody != null && tin != null) {
       const t = ctx.currentTime + 0.02;
       voice(melody, velocity, t, 2.6);
       voice(tin, velocity * 0.7, t, 2.6);
       if (pedal) voice(PEDAL, velocity * 0.8, t, 6);
     }
     const midi = midiRef.current;
-    if (midi) {
+    if (midi && melody != null && tin != null) {
       const notes = pedal ? [melody, tin, PEDAL] : [melody, tin];
       const offAt = performance.now() + BEAT_MS * 0.92;
       for (const note of notes) {
@@ -151,8 +182,11 @@ export function useSignalMusic(source: () => SignalSource) {
       }
     }
     const at = Date.now();
+    setCount(n + 1);
     setBeatStart(at);
-    setBeats((b) => [...b.slice(-31), { at, melody, tin, pedal, velocity, live: src.live }]);
+    setBeats((b) => [...b.slice(-31), {
+      at, melody, tin, pedal, velocity, live: src.live, station: src.station, elevationDeg: src.elevationDeg, rising: src.rising,
+    }]);
   }, [voice]);
 
   useEffect(() => {
@@ -162,12 +196,21 @@ export function useSignalMusic(source: () => SignalSource) {
     return () => clearInterval(id);
   }, [playing, tick]);
 
-  const toggle = useCallback(async () => {
+  const start = useCallback(async () => {
     if (!ctxRef.current) ctxRef.current = new AudioContext();
     await ctxRef.current.resume();
-    setPlaying((p) => !p);
+    countRef.current = 0;
+    queueRef.current = [];
+    restRef.current = 0;
+    setBeats([]);
+    setCount(0);
+    setBeatStart(null);
+    setPlaying(true);
+  }, []);
+  const stop = useCallback(() => {
+    setPlaying(false);
     setBeatStart(null);
   }, []);
 
-  return { playing, toggle, beats, beatStart, midiOutputs, midiId, setMidiId, connectMidi, midiError };
+  return { playing, start, stop, beats, beatStart, count, midiOutputs, midiId, setMidiId, connectMidi, midiError };
 }

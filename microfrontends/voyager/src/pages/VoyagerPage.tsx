@@ -8,8 +8,8 @@ import { SkyPanel } from '../components/SkyPanel';
 import { StatStrip } from '../components/StatStrip';
 import { TimeTravel } from '../components/TimeTravel';
 import { useDsn, type VoyagerLink } from '../lib/dsn';
-import { positionAt } from '../lib/ephemeris';
 import { useSignalMusic } from '../lib/signal-music';
+import { elevationAt, highestStation, isRising, passAt, STATIONS, type Pass, type StationName } from '../lib/sky-elevation';
 import { clockFromUrl, type Clock } from '../lib/time-travel';
 import { useNow } from '../lib/use-now';
 import {
@@ -35,6 +35,12 @@ function useSimulatedLink(on: boolean): VoyagerLink | null {
   );
 }
 
+/** A whole pass, rise to set, squeezed into this many beats (three minutes at 60 bpm). */
+const PASS_BEATS = 180;
+
+const asStation = (name: string | undefined): StationName | null =>
+  name && name in STATIONS ? (name as StationName) : null;
+
 function UtcClock() {
   const now = useNow(1000);
   return <span>{new Date(now).toISOString().slice(11, 19)} UTC</span>;
@@ -49,15 +55,42 @@ export default function VoyagerPage() {
 
   const linkRef = useRef(link);
   linkRef.current = link;
-  const source = useCallback(() => {
+  // Live: where Voyager stands now over the dish receiving it (or the station where it is highest).
+  // Pass: a whole pass over that station, replayed at one beat per 1/180th of it.
+  const [pass, setPass] = useState<Pass | null>(null);
+  const passRef = useRef(pass);
+  passRef.current = pass;
+  const source = useCallback((n: number) => {
     const l = linkRef.current;
+    const p = passRef.current;
+    if (p) {
+      if (n >= PASS_BEATS) return null;
+      const t = p.rise + (n / PASS_BEATS) * (p.set - p.rise);
+      return { live: false, dbm: null, station: p.station, elevationDeg: elevationAt(t, p.station), rising: isRising(t, p.station) };
+    }
+    const t = Date.now();
+    const station = asStation(l?.station) ?? highestStation(t);
     return {
       live: !!l?.down?.active,
       dbm: l?.down?.active ? l.down.dbm : null,
-      distanceKm: positionAt(Date.now()).earthKm,
+      station,
+      elevationDeg: elevationAt(t, station),
+      rising: isRising(t, station),
     };
   }, []);
   const music = useSignalMusic(source);
+  const listenLive = () => {
+    setPass(null);
+    passRef.current = null;
+    music.start();
+  };
+  const listenPass = () => {
+    const t = Date.now();
+    const p = passAt(t, asStation(linkRef.current?.station) ?? highestStation(t));
+    setPass(p);
+    passRef.current = p;
+    music.start();
+  };
 
   useEffect(() => {
     const prev = document.title;
@@ -122,7 +155,7 @@ export default function VoyagerPage() {
 
         <Grid $cols="minmax(0, 1fr) minmax(0, 1fr)">
           <DsnPanel dsn={dsn} link={link} simulated={simulated} onSimulate={setSimulated} />
-          <MusicPanel {...music} live={receiving} />
+          <MusicPanel {...music} live={receiving} pass={pass} onLive={listenLive} onPass={listenPass} passBeats={PASS_BEATS} />
         </Grid>
 
         <ScaleBar />
