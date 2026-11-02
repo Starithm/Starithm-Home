@@ -18,12 +18,16 @@ export interface AskSource {
   match: 'vector' | 'event' | 'keyword'; distance: number | null;
   /** Whether the event has a page (only events with notices do; circular-only ones 404). */
   eventPage?: boolean;
+  /** Where a digest links instead of the event page: OPTICAL- links to its nearest candidate. */
+  url?: string;
 }
 export interface AskEventFacts {
   canonicalId: string; name: string | null; kind: string | null; aliases: string[] | null; t0: string | null;
   raDeg: number | null; decDeg: number | null; posErrorDeg: number | null; positionQuality: string | null;
   classification: string | null; circularCount: number; noticeCount: number;
   hasSkymap: boolean | null; hasOptical: boolean | null;
+  /** Optical candidates near the position (event questions): null = never searched. */
+  opticalCandidates?: number | null;
 }
 export interface AnswerSentence { text: string; cites: string[]; absence: boolean }
 
@@ -159,7 +163,9 @@ const isDigest = (key: string) => /^(NOTICES|OPTICAL|EVENTS)-/.test(key);
 export const opensInPopup = (key: string) => !isDigest(key);
 
 /** Where a circular lives: extracted ones open their event page, the rest open on GCN / ATel. */
-export function circularUrl(s: Pick<AskSource, 'key' | 'n'>): string {
+export function circularUrl(s: Pick<AskSource, 'key' | 'n' | 'url'>): string {
+  // Optical candidates link to the nearest candidate's Lasair/TNS page: the event page doesn't list them.
+  if (s.key.startsWith('OPTICAL-') && s.url) return s.url;
   // An event's notice digest and optical candidates (NOTICES-/OPTICAL-<canonical_id>) link to its event page.
   const eventDigest = s.key.match(/^(?:NOTICES|OPTICAL)-(.+)$/);
   if (eventDigest) return `/novatrace/events/${encodeURIComponent(eventDigest[1])}`;
@@ -167,6 +173,17 @@ export function circularUrl(s: Pick<AskSource, 'key' | 'n'>): string {
   if (s.key.startsWith('ATel-')) return `https://www.astronomerstelegram.org/?read=${s.key.slice(5)}`;
   return `https://gcn.nasa.gov/circulars/${s.key.replace(/^GCN-/, '')}`;
 }
+
+/** The link text for a digest source: where circularUrl sends it. */
+export function digestLinkLabel(s: Pick<AskSource, 'key' | 'url'>): string {
+  if (s.key.startsWith('EVENTS-')) return 'All events →';
+  if (s.key.startsWith('OPTICAL-') && s.url) return 'Nearest candidate →';
+  return 'Event page →';
+}
+
+/** Off-site links (Lasair, TNS) open in a new tab, so the answer isn't lost. */
+export const linkTarget = (href: string) =>
+  /^https?:/.test(href) ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 
 /** A display name for an event. `primary_name` can be null in canonical_events (seen live on
  * GRB 261024A), so fall back to a capitalised alias, then the canonical id. Never throws. */

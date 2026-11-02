@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { type AskSource, circularUrl, opensInPopup, sourceLabel } from '@novatrace/lib/askCosmos';
+import { type AskSource, circularUrl, digestLinkLabel, linkTarget, opensInPopup, sourceLabel } from '@novatrace/lib/askCosmos';
 import { Link, Mono, SectionLabel } from '@novatrace/styled_pages/AskPage.styled';
 
 /* The source rail: every circular retrieved, as a filterable vertical list (not a carousel:
@@ -87,7 +87,7 @@ export default function AskSources({ sources, countText, hoverKey, onHover, onOp
             {opensInPopup(s.key) ? (
               <OpenHint>{s.archive ? 'Open circular (archive text)' : 'Open circular'}</OpenHint>
             ) : (
-              <Link href={circularUrl(s)} style={{ fontSize: 12 }} onClick={(e) => e.stopPropagation()}>{s.key.startsWith('EVENTS-') ? 'All events →' : 'Event page →'}</Link>
+              <Link href={circularUrl(s)} {...linkTarget(circularUrl(s))} style={{ fontSize: 12 }} onClick={(e) => e.stopPropagation()}>{digestLinkLabel(s)}</Link>
             )}
             <SrIndex>[{i + 1}]</SrIndex>
           </SourceCard>
