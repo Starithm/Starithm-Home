@@ -1,8 +1,5 @@
 import { useEffect, useRef } from 'react';
 import score from '../data/score-onsets.json';
-import { BITS_PER_NOTE } from '../lib/signal-music';
-import { useNow } from '../lib/use-now';
-import { TrackCount } from '../styled_components/LiveSlide.styled';
 
 /* Each note of the piece travels home as light: it leaves Voyager, lands on a track below it just as
  * the piano plays it, then drifts left and fades, so the rests show as gaps. Timing only (gold marks
@@ -36,7 +33,6 @@ export function NoteTrack({ origin, vx, vy }: { origin: number; vx: number; vy: 
   const ref = useRef<HTMLCanvasElement>(null);
   const from = useRef({ origin, vx, vy });
   from.current = { origin, vx, vy };
-  const now = useNow(250);
 
   useEffect(() => {
     const el = ref.current;
@@ -159,31 +155,13 @@ export function NoteTrack({ origin, vx, vy }: { origin: number; vx: number; vy: 
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // notes landed since the cue (or page load)
-  const len = score.lengthMs;
-  const since = Math.max(0, now - origin);
-  const into = since % len;
-  const count = Math.floor(since / len) * onsets.length + onsets.filter((at) => at <= into).length;
-
   return (
-    <>
-      <canvas
-        ref={ref}
-        width={W}
-        height={H}
-        aria-hidden="true"
-        style={{ position: 'absolute', inset: 0, width: W, height: H, pointerEvents: 'none' }}
-      />
-      <TrackCount style={{ left: (X0 + EX) / 2, top: EY + 44 }}>
-        <div>
-          <span>{count.toLocaleString('en-US')}</span> {count === 1 ? 'note' : 'notes'} sent home so far
-        </div>
-        <div>
-          {count
-            ? `${(count * BITS_PER_NOTE).toLocaleString('en-US')} bits, ${BITS_PER_NOTE} for each note`
-            : `Each note carries ${BITS_PER_NOTE} bits`}
-        </div>
-      </TrackCount>
-    </>
+    <canvas
+      ref={ref}
+      width={W}
+      height={H}
+      aria-hidden="true"
+      style={{ position: 'absolute', inset: 0, width: W, height: H, pointerEvents: 'none' }}
+    />
   );
 }
