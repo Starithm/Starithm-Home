@@ -45,6 +45,8 @@ export interface Counterparts {
 }
 
 const CATALOG_LABEL: Record<string, string> = { '4FGL': 'Fermi-LAT 4FGL', XMM: 'XMM 5XMM', '2RXS': 'ROSAT 2RXS', '2SXPS': 'Swift-XRT 2SXPS' };
+// Display order, gamma-ray first. Not the stored order: JSONB re-sorts keys (2RXS, 2SXPS, 4FGL, XMM).
+const CATALOG_ORDER = ['4FGL', 'XMM', '2SXPS', '2RXS'];
 const CATALOG_PREVIEW = 3;
 
 const REGION_PREVIEW = 3;
@@ -82,7 +84,9 @@ const sepText = (d: number | null) => (d == null ? '—' : d < 0.1 ? `${(d * 360
  * with "N of total" since wide regions keep only the brightest. */
 function KnownSources({ catalog, offset }: { catalog: NonNullable<Counterparts['catalog']>; offset: boolean }) {
   const [all, setAll] = useState(false);
+  const rank = (n: string) => (CATALOG_ORDER.indexOf(n) + 1 || 99);
   const groups = Object.entries(catalog.catalogs)
+    .sort(([a], [b]) => rank(a) - rank(b))
     .map(([name, meta]) => ({ name, meta, rows: catalog.sources.filter(s => s.catalog === name) }))
     .filter(g => g.rows.length > 0);
   const hidden = groups.reduce((n, g) => n + Math.max(0, g.rows.length - CATALOG_PREVIEW), 0);
