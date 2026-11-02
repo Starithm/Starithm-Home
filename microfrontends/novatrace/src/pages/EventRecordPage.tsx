@@ -536,7 +536,8 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
             </Card>
           </Section>
 
-          <EventCounterparts data={counterpartsData} />
+          <EventCounterparts data={counterpartsData}
+            position={event.raDeg != null && event.decDeg != null ? { raDeg: event.raDeg, decDeg: event.decDeg, errorDeg: err } : null} />
 
           <Section id="notices">
             <SectionHead>
