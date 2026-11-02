@@ -373,7 +373,8 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
       <Shell>
         <Rail>
           <RailHead>On this record</RailHead>
-          {SECTIONS.map(s => (
+          {/* Counterparts has no section when there is nothing to show, so no rail entry either. */}
+          {SECTIONS.filter(s => s.id !== 'counterparts' || counts.counterparts).map(s => (
             <RailLink
               key={s.id}
               $active={active === s.id}
@@ -533,7 +534,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
             </Card>
           </Section>
 
-          <EventCounterparts data={{ crossMatch: event.crossMatch ?? null, optical: event.optical ?? null }} errorDeg={err} />
+          <EventCounterparts data={{ crossMatch: event.crossMatch ?? null, optical: event.optical ?? null }} />
 
           <Section id="notices">
             <SectionHead>

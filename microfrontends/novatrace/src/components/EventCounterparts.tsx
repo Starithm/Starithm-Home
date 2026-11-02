@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Section, SectionHead, SectionTitle, SectionNote, Card, Muted, TableWrap, Table, MiniLabel,
-  Empty, ShowMore, Disclaimer,
+  ShowMore, Disclaimer,
 } from '../styled_pages/EventRecord.styled';
 
 /* Everything NovaTrace found around an event, in one section: other events cross-match grouped
@@ -33,9 +33,6 @@ export interface Counterparts {
   } | null;
 }
 
-/* The optical worker's limits (scripts/main/optical-candidates-worker.ts): Lasair cone up to 1°,
- * Fink region search up to 2°. */
-const REGION_MAX_DEG = 2;
 const REGION_PREVIEW = 3;
 
 const pct = (x: number | null) => (x == null ? '—' : `${Math.round(x * 100)}%`);
@@ -60,12 +57,17 @@ export function counterpartsCount(c: Counterparts): number {
   return (c.crossMatch?.related.length ?? 0) + (c.optical?.candidates.length ?? 0) + (c.optical?.region?.sources.length ?? 0);
 }
 
-export function EventCounterparts({ data, errorDeg }: { data: Counterparts; errorDeg: number | null }) {
+/* Only blocks with something in them render; with nothing at all, neither does the section (the
+ * page's rail drops its entry too, via counterpartsCount). */
+export function EventCounterparts({ data }: { data: Counterparts }) {
   const [allRegion, setAllRegion] = useState(false);
   const related = data.crossMatch?.related ?? [];
   const optical = data.optical;
-  const region = optical?.region ?? null;
-  const shown = region ? (allRegion ? region.sources : region.sources.slice(0, REGION_PREVIEW)) : [];
+  const candidates = optical?.candidates ?? [];
+  const sources = optical?.region?.sources ?? [];
+  if (counterpartsCount(data) === 0) return null;
+  const region = optical!.region;
+  const shown = allRegion ? sources : sources.slice(0, REGION_PREVIEW);
 
   return (
     <Section id="counterparts">
@@ -74,67 +76,63 @@ export function EventCounterparts({ data, errorDeg }: { data: Counterparts; erro
         <SectionNote>Candidates · not confirmed</SectionNote>
       </SectionHead>
       <Card>
-        <MiniLabel>Related events · {related.length}</MiniLabel>
-        {related.length ? (
-          <TableWrap>
-            <Table>
-              <thead><tr><th>Event</th><th>Kind</th><th>Match</th><th>Confidence</th><th>FAP</th></tr></thead>
-              <tbody>{related.map(r => (
-                <tr key={r.canonicalId}>
-                  <td><Link to={`/novatrace/events/${encodeURIComponent(r.canonicalId)}`} style={{ color: 'inherit' }}>{r.name || r.canonicalId}</Link></td>
-                  <td><Muted>{r.alertKind ?? '—'}</Muted></td>
-                  <td><Muted>{r.matchMethod ?? '—'}</Muted></td>
-                  <td>{pct(r.confidence)}</td>
-                  <td>{r.fap == null ? '—' : `${(r.fap * 100).toFixed(2)}%`}</td>
-                </tr>
-              ))}</tbody>
-            </Table>
-          </TableWrap>
-        ) : <Empty>No other event matched by position and time.</Empty>}
-
-        <MiniLabel style={{ marginTop: 18 }}>
-          Optical candidates · {optical?.candidates.length ?? 0}
-          {optical?.queriedAt && ` · cone search ${utc(optical.queriedAt)}`}
-        </MiniLabel>
-        {!optical ? (
-          <Empty>{errorDeg != null && errorDeg > REGION_MAX_DEG
-            ? `Not searched: the error region (± ${errorDeg.toFixed(1)}°) is too wide for an optical search.`
-            : 'Not searched yet.'}</Empty>
-        ) : optical.candidates.length === 0 ? (
-          <Empty>{region ? 'No cone search: the error region is wider than a Lasair cone (0.28°); see the region search below.' : 'None found in the cone search.'}</Empty>
-        ) : (
-          <TableWrap>
-            <Table>
-              <thead><tr><th>Object</th><th>Survey</th><th>Sep</th><th>First seen</th><th>Mag</th><th>Class</th><th>Score</th></tr></thead>
-              <tbody>{optical.candidates.map(c => (
-                <React.Fragment key={c.objectId}>
-                  <tr>
-                    <td><Ext href={c.url}>{c.objectId}</Ext></td>
-                    <td><Muted>{survey(c.brokers)}</Muted></td>
-                    <td>{c.separationArcsec == null ? '—' : `${c.separationArcsec.toFixed(0)}″`}</td>
-                    <td>{since(c.dtTriggerMin)}</td>
-                    <td>{mag(c.mag, c.magFilter)}</td>
-                    <td>{candidateClass(c)}</td>
-                    <td>{c.llmConfidence == null ? <Muted>not scored</Muted> : pct(c.llmConfidence)}</td>
+        {related.length > 0 && (
+          <>
+            <MiniLabel>Related events · {related.length}</MiniLabel>
+            <TableWrap>
+              <Table>
+                <thead><tr><th>Event</th><th>Kind</th><th>Match</th><th>Confidence</th><th>FAP</th></tr></thead>
+                <tbody>{related.map(r => (
+                  <tr key={r.canonicalId}>
+                    <td><Link to={`/novatrace/events/${encodeURIComponent(r.canonicalId)}`} style={{ color: 'inherit' }}>{r.name || r.canonicalId}</Link></td>
+                    <td><Muted>{r.alertKind ?? '—'}</Muted></td>
+                    <td><Muted>{r.matchMethod ?? '—'}</Muted></td>
+                    <td>{pct(r.confidence)}</td>
+                    <td>{r.fap == null ? '—' : `${(r.fap * 100).toFixed(2)}%`}</td>
                   </tr>
-                  {c.llmReason && (
-                    <tr><td colSpan={7} style={{ whiteSpace: 'normal', paddingTop: 0 }}><Muted>{c.llmReason}</Muted></td></tr>
-                  )}
-                </React.Fragment>
-              ))}</tbody>
-            </Table>
-          </TableWrap>
+                ))}</tbody>
+              </Table>
+            </TableWrap>
+          </>
         )}
 
-        {region && (
+        {candidates.length > 0 && (
           <>
-            <MiniLabel style={{ marginTop: 18 }}>
-              Sources in the region · {region.sources.length} Rubin object{region.sources.length === 1 ? '' : 's'}
+            <MiniLabel style={{ marginTop: related.length ? 18 : 0 }}>
+              Optical candidates · {candidates.length}
+              {optical?.queriedAt && ` · cone search ${utc(optical.queriedAt)}`}
+            </MiniLabel>
+            <TableWrap>
+              <Table>
+                <thead><tr><th>Object</th><th>Survey</th><th>Sep</th><th>First seen</th><th>Mag</th><th>Class</th><th>Score</th></tr></thead>
+                <tbody>{candidates.map(c => (
+                  <React.Fragment key={c.objectId}>
+                    <tr>
+                      <td><Ext href={c.url}>{c.objectId}</Ext></td>
+                      <td><Muted>{survey(c.brokers)}</Muted></td>
+                      <td>{c.separationArcsec == null ? '—' : `${c.separationArcsec.toFixed(0)}″`}</td>
+                      <td>{since(c.dtTriggerMin)}</td>
+                      <td>{mag(c.mag, c.magFilter)}</td>
+                      <td>{candidateClass(c)}</td>
+                      <td>{c.llmConfidence == null ? <Muted>not scored</Muted> : pct(c.llmConfidence)}</td>
+                    </tr>
+                    {c.llmReason && (
+                      <tr><td colSpan={7} style={{ whiteSpace: 'normal', paddingTop: 0 }}><Muted>{c.llmReason}</Muted></td></tr>
+                    )}
+                  </React.Fragment>
+                ))}</tbody>
+              </Table>
+            </TableWrap>
+          </>
+        )}
+
+        {region && sources.length > 0 && (
+          <>
+            <MiniLabel style={{ marginTop: related.length || candidates.length ? 18 : 0 }}>
+              Sources in the region · {sources.length} Rubin object{sources.length === 1 ? '' : 's'}
               {region.radiusDeg != null && ` within ${region.radiusDeg.toFixed(region.radiusDeg < 1 ? 2 : 1)}°`} · {utc(region.queriedAt)}
             </MiniLabel>
-            {region.sources.length === 0 ? (
-              <Empty>No Rubin object first seen after the trigger, detected at least twice, in the region.</Empty>
-            ) : (
+            {(
               <>
                 <TableWrap>
                   <Table>
@@ -151,9 +149,9 @@ export function EventCounterparts({ data, errorDeg }: { data: Counterparts; erro
                     ))}</tbody>
                   </Table>
                 </TableWrap>
-                {region.sources.length > REGION_PREVIEW && (
+                {sources.length > REGION_PREVIEW && (
                   <ShowMore onClick={() => setAllRegion(v => !v)}>
-                    {allRegion ? 'Show fewer' : `Show all ${region.sources.length}`}
+                    {allRegion ? 'Show fewer' : `Show all ${sources.length}`}
                   </ShowMore>
                 )}
               </>
