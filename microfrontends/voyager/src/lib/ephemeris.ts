@@ -8,13 +8,14 @@ export const AU_KM = 149_597_870.7;
 export const C_KM_S = 299_792.458;
 export const LIGHT_DAY_KM = C_KM_S * 86_400;
 
-/* The minute the one-way light time from Earth passes 24 h, from a 1-minute Horizons run. */
-export const ONE_LIGHT_DAY_UTC = Date.UTC(2026, 10, 19, 2, 17, 30);
+/* The moment Voyager 1 is one light-day from Earth's centre (geometric range), as NASA gives it and
+ * as Horizons confirms. The first signal to have travelled a full 24 h arrives later, about 02:17 UTC on 19 Nov. */
+export const ONE_LIGHT_DAY_UTC = Date.UTC(2026, 10, 18, 10, 16, 7);
 export const LAUNCH_UTC = Date.UTC(1977, 8, 5, 12, 56);
 /* Voyager 1 crossed the heliopause on 25 August 2012, at about 121.6 AU. */
 export const HELIOPAUSE_AU = 121.6;
 
-type Row = [number, number, number, number, number, number, number];
+type Row = [number, number, number, number, number, number, number, number];
 const rows = data.rows as Row[];
 
 export interface Position {
@@ -22,6 +23,8 @@ export interface Position {
   earthKmS: number;
   sunKm: number;
   sunKmS: number;
+  /** total speed relative to the Sun, as NASA quotes it */
+  sunSpeedKmS: number;
   raDeg: number;
   decDeg: number;
   lightSeconds: number;
@@ -51,6 +54,7 @@ export function positionAt(ms: number): Position {
     earthKmS: lerp(a[6], b[6]),
     sunKm,
     sunKmS: lerp(a[4], b[4]),
+    sunSpeedKmS: lerp(a[7], b[7]),
     raDeg: lerp(a[1], b[1]),
     decDeg: lerp(a[2], b[2]),
     lightSeconds: earthKm / C_KM_S,

@@ -22,7 +22,7 @@ export function StatStrip() {
       <Stat>
         <StatLabel>From the Sun</StatLabel>
         <StatValue>{km.format(p.sunKm)}<small>km</small></StatValue>
-        <StatNote>{(p.sunKm / AU_KM).toFixed(5)} AU · {p.sunKmS.toFixed(2)} km/s outward</StatNote>
+        <StatNote>{(p.sunKm / AU_KM).toFixed(5)} AU · {p.sunSpeedKmS.toFixed(2)} km/s</StatNote>
       </Stat>
       <Stat>
         <StatLabel>In flight</StatLabel>
