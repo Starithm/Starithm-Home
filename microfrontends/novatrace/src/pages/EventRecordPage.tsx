@@ -24,7 +24,7 @@ import {
   RedshiftPill, RedshiftNote,
 } from '../styled_pages/EventRecord.styled';
 import { eventRedshifts, needsLabel, readRedshift } from '../utils/redshift';
-import { EventCounterparts, counterpartsCount, type Counterparts } from '../components/EventCounterparts';
+import { EventCounterparts, counterpartsCount, hasCounterparts, type Counterparts } from '../components/EventCounterparts';
 
 /* Types mirror GET /api/public/events/:canonicalId exactly — no fields beyond it. */
 interface Notice {
@@ -57,6 +57,7 @@ interface PublicEvent {
   /* Absent until the API with counterparts is deployed. */
   crossMatch?: Counterparts['crossMatch'];
   optical?: Counterparts['optical'];
+  catalog?: Counterparts['catalog'];
 }
 
 /* posErrorDeg is jsonb ({radius,type}); older rows are plain numbers. */
@@ -341,10 +342,11 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
     .filter(Boolean).sort().pop() || null;
   const bestNotice = narrowing.length ? narrowing[narrowing.length - 1] : null;
 
+  const counterpartsData: Counterparts = { crossMatch: event.crossMatch ?? null, optical: event.optical ?? null, catalog: event.catalog ?? null };
   const counts: Record<string, number | undefined> = {
     notices: event.notices.length,
     circulars: event.circulars.length,
-    counterparts: counterpartsCount({ crossMatch: event.crossMatch ?? null, optical: event.optical ?? null }),
+    counterparts: counterpartsCount(counterpartsData) || undefined,
   };
 
   return (
@@ -374,7 +376,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
         <Rail>
           <RailHead>On this record</RailHead>
           {/* Counterparts has no section when there is nothing to show, so no rail entry either. */}
-          {SECTIONS.filter(s => s.id !== 'counterparts' || counts.counterparts).map(s => (
+          {SECTIONS.filter(s => s.id !== 'counterparts' || hasCounterparts(counterpartsData)).map(s => (
             <RailLink
               key={s.id}
               $active={active === s.id}
@@ -534,7 +536,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
             </Card>
           </Section>
 
-          <EventCounterparts data={{ crossMatch: event.crossMatch ?? null, optical: event.optical ?? null }} />
+          <EventCounterparts data={counterpartsData} />
 
           <Section id="notices">
             <SectionHead>
