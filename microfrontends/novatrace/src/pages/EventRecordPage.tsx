@@ -24,6 +24,7 @@ import {
   RedshiftPill, RedshiftNote,
 } from '../styled_pages/EventRecord.styled';
 import { eventRedshifts, needsLabel, readRedshift } from '../utils/redshift';
+import { EventCounterparts, counterpartsCount, type Counterparts } from '../components/EventCounterparts';
 
 /* Types mirror GET /api/public/events/:canonicalId exactly — no fields beyond it. */
 interface Notice {
@@ -53,6 +54,9 @@ interface PublicEvent {
   aiSummary: { headline: string; significance: string; details: string; generatedAt: string } | null;
   notices: Notice[];
   circulars: Circular[];
+  /* Absent until the API with counterparts is deployed. */
+  crossMatch?: Counterparts['crossMatch'];
+  optical?: Counterparts['optical'];
 }
 
 /* posErrorDeg is jsonb ({radius,type}); older rows are plain numbers. */
@@ -214,6 +218,7 @@ const toCsv = (rows: Array<Record<string, any>>) => {
 const SECTIONS = [
   { id: 'summary', label: 'Summary' },
   { id: 'position', label: 'Position' },
+  { id: 'counterparts', label: 'Counterparts' },
   { id: 'notices', label: 'Notices' },
   { id: 'circulars', label: 'Circulars' },
   { id: 'cite', label: 'Cite' },
@@ -339,6 +344,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
   const counts: Record<string, number | undefined> = {
     notices: event.notices.length,
     circulars: event.circulars.length,
+    counterparts: counterpartsCount({ crossMatch: event.crossMatch ?? null, optical: event.optical ?? null }),
   };
 
   return (
@@ -526,6 +532,8 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
               ) : <Empty>No position reported.</Empty>}
             </Card>
           </Section>
+
+          <EventCounterparts data={{ crossMatch: event.crossMatch ?? null, optical: event.optical ?? null }} errorDeg={err} />
 
           <Section id="notices">
             <SectionHead>
