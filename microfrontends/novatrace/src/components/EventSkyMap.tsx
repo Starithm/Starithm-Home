@@ -6,18 +6,26 @@ import styled from 'styled-components';
  * (catalog sources, optical candidates, Fink region sources); nothing is pre-rendered.
  * Gnomonic projection about the event position, north up, east left, as on the sky.
  * The region is a HEALPix credible region when the lookup searched one (GBM maps), drawn from its
- * pixel corners, otherwise the error circle. */
+ * pixel corners with its 50% core shaded darker, otherwise the error circle. With a region the list
+ * runs most probable first and folds away the `minor` points (unassociated 4FGL sources). */
 
 export type PointKind = '4FGL' | 'TeVCat' | 'XMM' | '2SXPS' | '2RXS' | 'optical' | 'region';
 
-/** A HEALPix credible region: per pixel, its four [ra, dec] corners. */
-export interface SkyRegion { level: number | null; areaDeg2: number | null; outline: [number, number][][] }
+/** A HEALPix credible region and its core: per pixel, its four [ra, dec] corners. */
+export interface SkyRegion {
+  level: number | null; areaDeg2: number | null; outline: [number, number][][];
+  coreLevel?: number | null; coreAreaDeg2?: number | null; coreOutline?: [number, number][][];
+}
 
 export interface SkyPoint {
   key: string; kind: PointKind; name: string; ra: number; dec: number; sepDeg: number | null;
   /** Details card rows, label → value; a missing value is left out. */
   details: [string, React.ReactNode][];
   url?: string | null;
+  /** Smallest credible region of the map holding the point (0.2 = the 20% region). */
+  level?: number | null;
+  /** Listed under a fold rather than in the main list. */
+  minor?: boolean;
 }
 
 const KINDS: Record<PointKind, { label: string; color: string; shape: 'diamond' | 'star' | 'circle' | 'square' | 'triangle' | 'ring' | 'cross' }> = {
@@ -76,15 +84,22 @@ export function EventSkyMap({ points, raDeg, decDeg, errorDeg, region, note }: {
   const [hover, setHover] = useState<string | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
   const [filter, setFilter] = useState<PointKind | 'all'>('all');
+  const [showMinor, setShowMinor] = useState(false);
 
   const corners = useMemo(() => (region?.outline ?? []).map(px => px.map(([ra, dec]) => project(ra, dec, raDeg, decDeg))), [region, raDeg, decDeg]);
+  const coreCorners = useMemo(() => (region?.coreOutline ?? []).map(px => px.map(([ra, dec]) => project(ra, dec, raDeg, decDeg))), [region, raDeg, decDeg]);
   // Extent: the region (or error circle) or the farthest source, whichever is larger.
   const extent = Math.max(corners.length ? 0 : errorDeg ?? 0, ...corners.flat().map(([x, y]) => Math.max(Math.abs(x), Math.abs(y))),
     ...points.map(p => p.sepDeg ?? 0), 1 / 3600) * 1.1;
   const scale = (SIZE / 2 - PAD) / extent;
   // One path for every pixel, so the shared edges don't show as seams.
-  const regionPath = corners.map(px => `M${px.map(([x, y]) => `${(SIZE / 2 + x * scale).toFixed(1)},${(SIZE / 2 - y * scale).toFixed(1)}`).join('L')}Z`).join('');
-  const regionLabel = region ? `${Math.round((region.level ?? 0.9) * 100)}% region` : null;
+  const toPath = (px: [number, number][][]) => px.map(c => `M${c.map(([x, y]) => `${(SIZE / 2 + x * scale).toFixed(1)},${(SIZE / 2 - y * scale).toFixed(1)}`).join('L')}Z`).join('');
+  const regionPath = toPath(corners);
+  const corePath = toPath(coreCorners);
+  const pct = (x: number) => `${Math.round(x * 100)}%`;
+  const regionLabel = region ? `${pct(region.level ?? 0.9)} region` : null;
+  const core = region?.coreLevel ?? 0.5;
+  const coreLabel = corePath ? `${pct(core)} region` : null;
   const xy = useMemo(() => new Map(points.map(p => {
     const [x, y] = project(p.ra, p.dec, raDeg, decDeg);
     return [p.key, [SIZE / 2 + x * scale, SIZE / 2 - y * scale] as [number, number]];
@@ -92,7 +107,10 @@ export function EventSkyMap({ points, raDeg, decDeg, errorDeg, region, note }: {
 
   const kinds = KIND_ORDER.filter(k => points.some(p => p.kind === k));
   const shown = points.filter(p => filter === 'all' || p.kind === filter);
-  const list = [...shown].sort((a, b) => (a.sepDeg ?? 1e9) - (b.sepDeg ?? 1e9));
+  const byMap = shown.some(p => p.level != null);
+  const sorted = [...shown].sort((a, b) => byMap ? (a.level ?? 2) - (b.level ?? 2) : (a.sepDeg ?? 1e9) - (b.sepDeg ?? 1e9));
+  const list = byMap ? sorted.filter(p => !p.minor) : sorted;
+  const minor = byMap ? sorted.filter(p => p.minor) : [];
   const active = hover ?? picked;
   // Draw the highlighted marker last so it sits on top.
   const drawn = [...shown].sort((a, b) => Number(a.key === active) - Number(b.key === active));
@@ -106,14 +124,15 @@ export function EventSkyMap({ points, raDeg, decDeg, errorDeg, region, note }: {
       <MapCol>
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} width="100%" role="img"
           aria-label={`Sky map of the error region with ${points.length} sources`} onClick={() => setPicked(null)}>
-          {regionPath && <path d={regionPath} fill="var(--accent-text)" fillOpacity={0.14} />}
+          {regionPath && <path d={regionPath} fill="var(--accent-text)" fillOpacity={0.12} />}
+          {corePath && <path d={corePath} fill="var(--accent-text)" fillOpacity={0.16} />}
           {!regionPath && errorDeg != null && errorDeg > 0 && (
             <circle cx={SIZE / 2} cy={SIZE / 2} r={errorDeg * scale} fill="none" stroke="var(--accent-text)" strokeDasharray="4 4" strokeOpacity={0.7} />
           )}
           <path d={`M${SIZE / 2 - 8} ${SIZE / 2}h16M${SIZE / 2} ${SIZE / 2 - 8}v16`} stroke="var(--foreground)" />
           <text x={SIZE - PAD} y={PAD} textAnchor="end" fontSize="10" fill="var(--text-muted)">N ↑  E ←</text>
           <text x={PAD} y={SIZE - 6} fontSize="10" fill="var(--text-muted)">
-            {regionPath && regionLabel ? `${regionLabel}${region?.areaDeg2 != null ? ` · ${Math.round(region.areaDeg2).toLocaleString()} deg²` : ''}`
+            {regionPath && regionLabel ? `${regionLabel}${region?.areaDeg2 != null ? ` · ${Math.round(region.areaDeg2).toLocaleString()} deg²` : ''}${coreLabel && region?.coreAreaDeg2 != null ? ` · ${coreLabel} ${Math.round(region.coreAreaDeg2).toLocaleString()} deg²` : ''}`
               : errorDeg != null ? `error radius ${sepText(errorDeg)}` : `map radius ${sepText(extent)}`}
           </text>
           {drawn.map(p => {
@@ -136,6 +155,7 @@ export function EventSkyMap({ points, raDeg, decDeg, errorDeg, region, note }: {
               <Close onClick={() => setPicked(null)} aria-label="Close">×</Close>
             </CardHead>
             <Faint>{KINDS[pick.kind].label} · {sepText(pick.sepDeg)} from the event position</Faint>
+            {pick.level != null && <Faint>{pick.level <= core ? `Inside the ${pct(core)} region` : `At the ${pct(pick.level)} level of the map`}</Faint>}
             <CardGrid>
               {pick.details.filter(([, v]) => v != null && v !== '').map(([k, v]) => (
                 <React.Fragment key={k}><Faint>{k}</Faint><span>{v}</span></React.Fragment>
@@ -145,6 +165,7 @@ export function EventSkyMap({ points, raDeg, decDeg, errorDeg, region, note }: {
         )}
         <Legend>
           {kinds.map(k => <span key={k}><Glyph kind={k} />{KINDS[k].label}</span>)}
+          {corePath && <span><Swatch $core /> {coreLabel}</span>}
           {regionPath ? <span><Swatch /> {regionLabel} (localisation map)</span>
             : errorDeg != null && <span><Dash>- - -</Dash> error region</span>}
         </Legend>
@@ -160,15 +181,23 @@ export function EventSkyMap({ points, raDeg, decDeg, errorDeg, region, note }: {
             </Chip>
           ))}
         </Chips>
+        {byMap && <Faint as="div" style={{ fontSize: 11, marginBottom: 6 }}>Most probable first</Faint>}
         <List>
-          {list.map(p => (
-            <Item key={p.key} $on={p.key === active}
-              onMouseEnter={() => setHover(p.key)} onMouseLeave={() => setHover(null)} onClick={() => setPicked(p.key)}>
-              <Glyph kind={p.kind} />
-              <Name>{p.name}</Name>
-              <Faint>{sepText(p.sepDeg)}</Faint>
-            </Item>
+          {[...list, ...(showMinor ? minor : [])].map((p, i) => (
+            <React.Fragment key={p.key}>
+              {showMinor && i === list.length && <Fold onClick={() => setShowMinor(false)}>Hide {minor.length} unassociated</Fold>}
+              <Item $on={p.key === active}
+                onMouseEnter={() => setHover(p.key)} onMouseLeave={() => setHover(null)} onClick={() => setPicked(p.key)}>
+                <Glyph kind={p.kind} />
+                <Name>{p.name}</Name>
+                {p.level != null && p.level <= core && <Tag>{pct(core)}</Tag>}
+                <Faint>{sepText(p.sepDeg)}</Faint>
+              </Item>
+            </React.Fragment>
           ))}
+          {minor.length > 0 && !showMinor && (
+            <Fold onClick={() => setShowMinor(true)}>Show {minor.length} unassociated 4FGL source{minor.length === 1 ? '' : 's'}</Fold>
+          )}
         </List>
       </ListCol>
     </Wrap>
@@ -216,7 +245,12 @@ const Legend = styled.div`
   span { display: inline-flex; align-items: center; gap: 5px; }
 `;
 const Dash = styled.span`color: var(--accent-text);`;
-const Swatch = styled.span`width: 12px; height: 10px; background: var(--accent-text); opacity: 0.3;`;
+const Swatch = styled.span<{ $core?: boolean }>`width: 12px; height: 10px; background: var(--accent-text); opacity: ${p => (p.$core ? 0.5 : 0.25)};`;
+const Tag = styled.span`font-size: 10px; padding: 0 4px; color: var(--accent-text); border: 1px solid var(--accent-border);`;
+const Fold = styled.button`
+  display: block; width: 100%; text-align: left; padding: 6px; font-size: 11px; cursor: pointer;
+  background: none; border: 0; border-bottom: 1px solid var(--line-subtle); color: var(--accent-text);
+`;
 const Chips = styled.div`display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;`;
 const Chip = styled.button<{ $on: boolean }>`
   font-size: 11px;

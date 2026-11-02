@@ -32,6 +32,8 @@ export interface CatalogSource {
   catalog: string; name: string; ra: number | null; dec: number | null; sep_deg: number | null; err_deg: number | null;
   class: string | null; assoc: string | null; flux: number | null; flux_unit: string | null;
   variable: boolean | null; url?: string | null; extra?: Record<string, unknown>;
+  /* With a map region: the smallest credible region holding the source (0.2 = the 20% region). */
+  region_level?: number | null;
 }
 export interface Counterparts {
   crossMatch: { reasoning: string | null; related: RelatedEvent[] } | null;
@@ -41,7 +43,8 @@ export interface Counterparts {
   } | null;
   catalog?: {
     queriedAt: string | null; radiusDeg: number | null; sources: CatalogSource[];
-    catalogs: Record<string, { total: number | null; kept: number; error?: string }>;
+    /* With a map region, `core` counts the 50% region and `chance` what the region holds by chance. */
+    catalogs: Record<string, { total: number | null; kept: number; error?: string; core?: number; chance?: number | null }>;
     /* The localisation map's credible region, when that was searched instead of a circle. */
     region?: SkyRegion | null;
   } | null;
@@ -107,6 +110,7 @@ function skyPoints(c: Counterparts): SkyPoint[] {
     if (s.ra == null || s.dec == null || !CATALOG_LABEL[s.catalog]) continue;
     pts.push({
       key: `${s.catalog}:${s.name}`, kind: s.catalog as PointKind, name: s.name, ra: s.ra, dec: s.dec, sepDeg: s.sep_deg, url: s.url ?? null,
+      level: s.region_level ?? null, minor: s.catalog === '4FGL' && !s.assoc,
       details: [['Class', s.class], ['Association', s.assoc], ['Variable', s.variable == null ? null : s.variable ? 'yes' : 'no'],
         ['Flux', s.flux == null ? null : <>{s.flux.toExponential(2)} <Muted>{s.flux_unit}</Muted></>],
         ...Object.entries(s.extra ?? {}).map(([k, v]) => [k.replace(/_/g, ' '), num(v)] as [string, React.ReactNode])],
@@ -115,16 +119,22 @@ function skyPoints(c: Counterparts): SkyPoint[] {
   return pts;
 }
 
-/* Under the map: the region searched, which catalogs kept only their brightest sources or failed,
- * and that X-ray catalogs are left out of wide regions (heasarc.py searches them up to 1°). */
+/* Under the map: the region searched, how many sources sit in its core and how many it would hold
+ * by chance, which catalogs kept only their brightest sources or failed, and that X-ray catalogs
+ * are left out of wide regions (heasarc.py searches them up to 1°). */
 function catalogNote(cat: Counterparts['catalog']): React.ReactNode {
   if (!cat) return null;
   const region = cat.region?.areaDeg2 != null
     ? ` inside the ${Math.round((cat.region.level ?? 0.9) * 100)}% localisation region (${Math.round(cat.region.areaDeg2).toLocaleString()} deg²)` : '';
   const xray = Object.keys(cat.catalogs).some(n => !GAMMA.includes(n)) ? '' : ' X-ray catalogs are searched only in regions up to 1° across.';
+  const core = `${Math.round((cat.region?.coreLevel ?? 0.5) * 100)}%`;
   const parts = CATALOG_ORDER.filter(n => cat.catalogs[n]).map(n => {
     const m = cat.catalogs[n];
     if (m.error) return `${n}: lookup failed`;
+    if (cat.region && m.total != null) {
+      return [`${n}: ${m.total.toLocaleString()}`, m.core != null && `${m.core} in the ${core} region`,
+        m.chance != null && `~${Math.round(m.chance)} expected by chance`].filter(Boolean).join(', ');
+    }
     return m.total != null && m.kept < m.total ? `${n}: ${m.kept} brightest of ${m.total.toLocaleString()}` : null;
   }).filter(Boolean);
   return `Known sources from HEASARC${region}.${parts.length ? ` ${parts.join(' · ')}.` : ''}${xray}`;
