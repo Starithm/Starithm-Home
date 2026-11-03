@@ -7,13 +7,14 @@ import AskSources from '@novatrace/components/AskSources';
 import { EventsInvolved, FactSheet } from '@novatrace/components/AskContext';
 import { CircularDetailModal } from '@novatrace/components/CircularDetailModal';
 import { saveReturnUrl } from '@shared/lib/auth';
+import { ASK_ASSISTANT, ASSISTANT_NAME } from '@shared/lib/config';
 import {
   type AnswerSentence, type AskEvent, type AskEventFacts, type AskKind, type AskSource, type AskStep,
   EXAMPLE_QUESTIONS, anonAskedCount, eventLabel, fetchCircular, opensInPopup, anonId, noteAnonAsked, sendFeedback, streamAsk,
 } from '@novatrace/lib/askCosmos';
 import * as S from '@novatrace/styled_pages/AskPage.styled';
 
-/* Ask Cosmos: the question box and its answer page. Replaces the old keyword event search at
+/* Ask Evren: the question box and its answer page. Replaces the old keyword event search at
  * /novatrace/search (the question lives in ?q=). Requirements: NovaTrace
  * docs/search/ask-cosmos-requirements.md; design: Claude Design direction 1a. */
 
@@ -125,7 +126,7 @@ export default function AskPage() {
         });
       if (!isSignedIn && !initial.mock) noteAnonAsked();
     } catch (err) {
-      if (!controller.signal.aborted) dispatch({ type: 'event', e: { type: 'error', message: 'Cosmos could not answer right now. Please try again.' } });
+      if (!controller.signal.aborted) dispatch({ type: 'event', e: { type: 'error', message: `${ASSISTANT_NAME} could not answer right now. Please try again.` } });
     }
   }, [getToken, isSignedIn, initial.mock, state.phase]);
 
@@ -210,7 +211,7 @@ export default function AskPage() {
       <S.AskPageRoot>
         <Navbar />
         <S.Idle>
-          <S.IdleTitle>Ask Cosmos</S.IdleTitle>
+          <S.IdleTitle>{ASK_ASSISTANT}</S.IdleTitle>
           <S.IdleNote>Gamma-ray bursts, gravitational-wave events, neutrino alerts and X-ray transients.</S.IdleNote>
           <AskBar value={input} onChange={setInput} onSubmit={submit} large autoFocus />
           <S.SectionLabel>Try asking</S.SectionLabel>
@@ -236,7 +237,7 @@ export default function AskPage() {
     <S.AskPageRoot>
       <Navbar />
       <S.QuestionHeader>
-        <S.PageTitle>Ask Cosmos</S.PageTitle>
+        <S.PageTitle>{ASK_ASSISTANT}</S.PageTitle>
         <AskBar value={input} onChange={setInput} onSubmit={submit} disabled={working} />
         <S.MetaRow>
           {badge && <S.Badge>{badge}</S.Badge>}
@@ -356,8 +357,8 @@ function AskBar({ value, onChange, onSubmit, disabled, large, autoFocus }: {
 }) {
   return (
     <S.AskForm $large={large} onSubmit={onSubmit} role="search">
-      <S.AskInput value={value} onChange={(e) => onChange(e.target.value)} placeholder="Ask Cosmos"
-        aria-label="Ask Cosmos a question" autoFocus={autoFocus} maxLength={500} />
+      <S.AskInput value={value} onChange={(e) => onChange(e.target.value)} placeholder={ASK_ASSISTANT}
+        aria-label={`${ASK_ASSISTANT} a question`} autoFocus={autoFocus} maxLength={500} />
       <S.AskButton type="submit" disabled={disabled || !value.trim()}>Ask</S.AskButton>
     </S.AskForm>
   );
@@ -386,7 +387,7 @@ function OutOfScope({ message, onAsk }: { message: string | null; onAsk: (q: str
     <section style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: '78ch' }}>
       <S.SectionLabel>No matching circulars · no summary generated</S.SectionLabel>
       <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'var(--text-body)' }}>
-        {message ?? 'Cosmos covers GCN Circulars (1997 to today) and recent ATels, and found nothing for this question.'}
+        {message ?? `${ASSISTANT_NAME} covers GCN Circulars (1997 to today) and recent ATels, and found nothing for this question.`}
       </p>
       <S.Chips>
         {EXAMPLE_QUESTIONS.slice(0, 3).map((x) => (

@@ -1,5 +1,5 @@
 /* Figures and data files linked from an event's notices and circulars. Shared by the event
- * page and the Ask Cosmos fact sheet, so both find the same images. */
+ * page and the Ask Evren fact sheet, so both find the same images. */
 
 /* Circular urls occasionally point at finder charts and light-curve PNGs. Most events carry none. */
 export const IMAGE_EXTS = /\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?.*)?$/i;

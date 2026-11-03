@@ -42,7 +42,7 @@ const NovaTraceMicrofrontend: React.FC = () => {
       // FITS viewer, which the archive popup does not yet wire up.
       case '/novatrace/alerts-legacy':
         return <AlertsLevel />;
-      // Ask Cosmos replaced the old keyword event search here (the question is in ?q=).
+      // Ask Evren replaced the old keyword event search here (the question is in ?q=).
       case '/novatrace/search':
         return <AskPage />;
       default:

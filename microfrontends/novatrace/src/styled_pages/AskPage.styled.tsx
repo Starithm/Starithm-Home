@@ -1,7 +1,7 @@
 import styled, { css, keyframes } from 'styled-components';
 import { Page } from '@shared/components/ui/primitives';
 
-/* Ask Cosmos answer page — Claude Design direction 1a ("answer + source rail").
+/* Ask Evren answer page — Claude Design direction 1a ("answer + source rail").
  * Tokens only (CLAUDE.md): the design's hexes map 1:1 onto globals.css.
  * Type: Google Sans Code throughout, by the user's choice (2026-10-29). The summary and card
  * prose use TEXT_FONT, so moving them to var(--font-prose) is a one-line change. */

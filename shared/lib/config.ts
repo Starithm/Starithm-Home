@@ -1,3 +1,8 @@
+// The question-answering assistant's name, shown wherever it is named (navbar, Ask page, privacy
+// policy). The backend's copy is ASSISTANT_NAME in novatrace_microservice/service/ask.ts.
+export const ASSISTANT_NAME = 'Evren';
+export const ASK_ASSISTANT = `Ask ${ASSISTANT_NAME}`;
+
 // API Configuration
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
   (import.meta.env.PROD 

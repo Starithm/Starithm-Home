@@ -3,6 +3,7 @@ import { Activity, Home, Search, Menu } from "lucide-react";
 import { useLocation } from "wouter";
 import { SignInButton, UserButton, useAuth } from "@clerk/react";
 import { saveReturnUrl } from '@shared/lib/auth';
+import { ASK_ASSISTANT } from '@shared/lib/config';
 import { Sheet, SheetTrigger, SheetContent } from "@shared/components/ui/sheet";
 import {
   NavWrapper,
@@ -89,7 +90,7 @@ export function Navbar() {
 
         <RightActions>
           <NavTextLink onClick={navigateToEvents}>View events</NavTextLink>
-          <NavTextLink onClick={navigateToSearch}>Ask Cosmos</NavTextLink>
+          <NavTextLink onClick={navigateToSearch}>{ASK_ASSISTANT}</NavTextLink>
           <NavTextLink onClick={navigateToHome}>Home</NavTextLink>
           {!isSignedIn ? (
             <SignInButton mode="modal" forceRedirectUrl={typeof window !== 'undefined' ? window.location.href : '/'}>
@@ -123,7 +124,7 @@ export function Navbar() {
                 style={drawerBtnStyle}
               >
                 <Search size={16} style={{ flexShrink: 0 }} />
-                Ask Cosmos
+                {ASK_ASSISTANT}
               </button>
               <button
                 onClick={() => { setDrawerOpen(false); navigateToHome(); }}

@@ -1,4 +1,4 @@
-// Ask Cosmos client: the event stream from POST /api/ask (novatrace_microservice/service/ask.ts).
+// Ask Evren client: the event stream from POST /api/ask (novatrace_microservice/service/ask.ts).
 //
 // The answer arrives as server-sent events. EventSource cannot send the Clerk token, so the
 // stream is read with fetch() and parsed here. Event types mirror the backend's AskEvent and
@@ -7,7 +7,7 @@
 // Dev only: `?mock=<name>` replays a stream recorded from the real backend
 // (lib/askFixtures/*.json, with its original timing), so the page works without services.
 
-import { API_ENDPOINTS } from '@shared/lib/config';
+import { API_ENDPOINTS, ASSISTANT_NAME } from '@shared/lib/config';
 
 export type AskStep = 'understanding' | 'searching' | 'found' | 'writing' | 'checking';
 export type AskKind = 'event' | 'topic' | 'out_of_scope' | 'degraded' | 'limited' | 'error';
@@ -66,7 +66,7 @@ export async function streamAsk(
     signal: opts.signal,
   });
   if (!res.ok || !res.body) {
-    onEvent({ type: 'error', message: 'Cosmos could not answer right now. Please try again.' });
+    onEvent({ type: 'error', message: `${ASSISTANT_NAME} could not answer right now. Please try again.` });
     return;
   }
   const reader = res.body.getReader();
