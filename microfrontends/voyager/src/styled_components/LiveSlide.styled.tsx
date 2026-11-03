@@ -539,10 +539,10 @@ export const Hint = styled.div`
    through and only the spacecraft remains; a soft round mask hides the crop's edges. */
 export const CraftPhoto = styled.img`
   position: absolute;
-  left: -40px;
-  top: -40px;
-  width: 80px;
-  height: 80px;
+  left: -85px;
+  top: -85px;
+  width: 170px;
+  height: 170px;
   max-width: none; /* the global img max-width would collapse it: the marker is 0 px wide */
   mix-blend-mode: screen;
   mask-image: radial-gradient(circle, black 55%, transparent 72%);

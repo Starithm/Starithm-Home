@@ -156,6 +156,17 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
         ctx.lineTo(b.x, b.y);
         ctx.stroke();
       }
+      // at rest the spacecraft photo sits on Voyager inside the bit ring: stop the path at the ring's edge
+      const home = awayAt(wall, originRef.current) < 1 ? cam.project(v) : null;
+      if (home) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(home.x, home.y, 90, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
       // the flybys: Jupiter and Saturn where Voyager met them, while the camera retraces the path
       if (step === 'backTurn' || step === 'backFly') {
         for (const m of FLYBYS) {
