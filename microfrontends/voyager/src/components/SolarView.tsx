@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { rgba, token } from '../lib/canvas-color';
+import { R_OUT } from './BitRing';
 import { positionAt } from '../lib/ephemeris';
 import { bodiesAt, cameraAt, earthAt, earthOrbit, FLYBYS, pathUntil, voyagerAt, type Vec } from '../lib/solar-camera';
 import { awayAt, stepAt } from '../lib/solar-schedule';
@@ -162,7 +163,7 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
         ctx.save();
         ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
-        ctx.arc(home.x, home.y, 90, 0, Math.PI * 2);
+        ctx.arc(home.x, home.y, R_OUT, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
       }
