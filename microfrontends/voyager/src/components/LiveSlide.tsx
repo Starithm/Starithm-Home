@@ -1,5 +1,6 @@
-import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { forwardRef, lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { LAUNCH_UTC, ONE_LIGHT_DAY_UTC, positionAt } from '../lib/ephemeris';
+import { awayAt, tripNowOrigin } from '../lib/solar-schedule';
 import { virtualNow, type Clock } from '../lib/time-travel';
 import score from '../data/score-onsets.json';
 import { BitRing } from './BitRing';
@@ -20,6 +21,9 @@ import {
 const DAY = 86_400_000;
 const DOT_MS = 7_000; // the Pale Blue Dot holds for 7 s after the crossing
 const CELEBRATE_MS = 3_600_000; // then an hour of "24 hours" before counting up
+
+// the 3D view and its trajectory data download only when it is showing (not with ?view=sky)
+const SolarView = lazy(() => import('./SolarView').then((m) => ({ default: m.SolarView })));
 
 const p2 = (n: number) => String(n).padStart(2, '0');
 const plural = (n: number, w: string) => (n === 1 ? w : `${w}s`);
@@ -216,6 +220,10 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
   const showTrack = new URLSearchParams(window.location.search).get('track') !== '0';
   // what sits in the crosshair: the NASA render by default; ?craft=line (drawn) or ?craft=point
   const craft = new URLSearchParams(window.location.search).get('craft') ?? 'photo';
+  // Voyager's path through the solar system in 3D, resting 10 s between trips to Earth and back (E starts
+  // one now). ?view=sky shows the flat view instead: Voyager's path across our sky over ±40 days.
+  const solar = new URLSearchParams(window.location.search).get('view') !== 'sky';
+  const [tripOrigin, setTripOrigin] = useState(() => Date.now());
   const [fit, setFit] = useState({ scale: 1, x: 0, y: 0 });
   const ownFrame = useRef<HTMLElement | null>(null);
   const starsRef = useRef<HTMLCanvasElement>(null);
@@ -257,6 +265,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
       if (e.key === 'm' || e.key === 'M') setRipplesOn((on) => !on);
+      if (e.key === 'e' || e.key === 'E') setTripOrigin(tripNowOrigin(Date.now()));
       if (e.key === ' ' && !(e.target instanceof HTMLButtonElement)) {
         e.preventDefault();
         setCueAt((at) => (at == null ? Date.now() : null));
@@ -377,6 +386,13 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
         </Sky>
 
         <Layer>
+          {solar && (
+            <Suspense fallback={null}>
+              <SolarView at={t} origin={tripOrigin} />
+            </Suspense>
+          )}
+          {!solar && (
+          <>
           <svg viewBox={`0 0 ${STAGE_W} ${STAGE_H}`}>
             <path d={sky.d} fill="none" stroke="var(--starithm-golden-yellow)" strokeOpacity={0.55} strokeWidth={2} strokeDasharray="10 9" />
             {sky.ticks.map((k) => (
@@ -397,6 +413,11 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
               {k.label}
             </TickLabel>
           ))}
+          </>
+          )}
+
+          {/* the marker and note track sit on Voyager; they step aside while the 3D camera visits Earth */}
+          <div style={{ position: 'absolute', inset: 0, opacity: solar && awayAt(now, tripOrigin) > 0 ? 0 : 1, transition: 'opacity 0.8s' }}>
 
           <Marker style={{ left: vx, top: vy }} $gap={craft === 'photo' || craft === 'line' ? 44 : 20}>
             <Ripples>{ripples}</Ripples>
@@ -416,6 +437,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
             </MarkerLabel>
           </Marker>
           {showTrack && ripplesOn && phase !== 'crossing' && <NoteTrack origin={cueAt ?? loadedAt} vx={vx} vy={vy} />}
+          </div>
         </Layer>
 
         <SlideTitle>
@@ -491,7 +513,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
             <div>Greetings in 55 languages, and music from Bach to Chuck Berry, on board.</div>
           </div>
         </RecordCard>
-        <Credit>JPL Horizons · NASA DSN Now</Credit>
+        <Credit>JPL Horizons · NASA DSN Now{solar && " · planet photos: NASA"}</Credit>
 
         {phase === 'before' && rem <= 10 && (
           <FinalCount>

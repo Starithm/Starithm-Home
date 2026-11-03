@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import score from '../data/score-onsets.json';
+import { rgba, token } from '../lib/canvas-color';
 
 /* Each note of the piece travels home as light: it leaves Voyager, lands on a track below it just as
  * the piano plays it, then drifts left and fades, so the rests show as gaps. Timing only (gold marks
@@ -15,19 +16,6 @@ const SPEED = 0.036; // px per ms drifting left: about 17 s of music on the trac
 
 const onsets = score.onsets;
 const phraseFirst = onsets.map((at, i) => i === 0 || at - onsets[i - 1] > 2000);
-
-function token(el: Element, name: string, fallback: string) {
-  return getComputedStyle(el).getPropertyValue(name).trim() || fallback;
-}
-
-/** A token (hex or rgb()) at an alpha, in a form canvas accepts everywhere. */
-function rgba(color: string, a: number) {
-  const hex = color.match(/^#([0-9a-f]{6})/i);
-  const [r, g, b] = hex
-    ? [0, 2, 4].map((k) => parseInt(hex[1].slice(k, k + 2), 16))
-    : (color.match(/\d+(\.\d+)?/g) ?? ['255', '255', '255']).slice(0, 3).map(Number);
-  return `rgba(${r},${g},${b},${Math.max(0, Math.min(1, a))})`;
-}
 
 export function NoteTrack({ origin, vx, vy }: { origin: number; vx: number; vy: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
