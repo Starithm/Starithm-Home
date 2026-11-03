@@ -28,7 +28,7 @@ export default function PrivacyPolicy() {
           <p><strong style={STRONG}>Account information.</strong> When you sign in with GitHub, Google, or LinkedIn, we receive your name and email address from the OAuth provider. We store these in our database to identify your account.</p>
           <p><strong style={STRONG}>Profile information.</strong> You may optionally add your institution or ORCID iD to your profile.</p>
           <p><strong style={STRONG}>Comments and observations.</strong> Any comments or photometry data you submit on event pages are stored and displayed publicly alongside your display name and institution.</p>
-          <p><strong style={STRONG}>Ask Cosmos questions.</strong> When you ask Ask Cosmos a question, we store the question, the answer we gave, the circulars it cited, how long it took and what it cost, and any thumbs up or down or note you leave on the answer. If you are signed in, the record is linked to your account. If you are not, it is linked to a random identifier your browser keeps in local storage, which contains nothing about you. We use these records to limit how many questions can be asked and to improve search. We do not store your IP address or browser details with them.</p>
+          <p><strong style={STRONG}>Ask Evren questions.</strong> When you ask Ask Evren a question, we store the question, the answer we gave, the circulars it cited, how long it took and what it cost, and any thumbs up or down or note you leave on the answer. If you are signed in, the record is linked to your account. If you are not, it is linked to a random identifier your browser keeps in local storage, which contains nothing about you. We use these records to limit how many questions can be asked and to improve search. We do not store your IP address or browser details with them.</p>
           <p><strong style={STRONG}>Usage data.</strong> We collect standard server logs (IP address, browser, pages visited) for debugging and security purposes. We use Vercel Analytics for aggregate, anonymised traffic statistics.</p>
         </Section>
 
@@ -38,7 +38,7 @@ export default function PrivacyPolicy() {
             <li>To display your name and institution alongside your contributions</li>
             <li>To send transactional emails if you opt in to event alerts (future feature)</li>
             <li>To improve the platform through anonymised analytics</li>
-            <li>To answer Ask Cosmos questions, apply its daily question limits, and find where its answers fall short</li>
+            <li>To answer Ask Evren questions, apply its daily question limits, and find where its answers fall short</li>
           </ul>
           <p>We do not sell your data. We do not use your data for advertising.</p>
         </Section>
@@ -50,8 +50,8 @@ export default function PrivacyPolicy() {
             <li><strong style={STRONG}>CockroachDB</strong> — database hosting (cockroachlabs.com)</li>
             <li><strong style={STRONG}>Render</strong> — backend hosting (render.com)</li>
             <li><strong style={STRONG}>Vercel</strong> — frontend hosting and analytics (vercel.com)</li>
-            <li><strong style={STRONG}>Anthropic</strong> — AI-generated event summaries and Ask Cosmos answers; your question and the circulars retrieved for it are sent to Anthropic to write the answer (anthropic.com)</li>
-            <li><strong style={STRONG}>Featherless</strong> — the text of your Ask Cosmos question is sent to Featherless to turn it into a search vector and, for questions about a time period, into search filters (featherless.ai)</li>
+            <li><strong style={STRONG}>Anthropic</strong> — AI-generated event summaries and Ask Evren answers; your question and the circulars retrieved for it are sent to Anthropic to write the answer (anthropic.com)</li>
+            <li><strong style={STRONG}>Featherless</strong> — the text of your Ask Evren question is sent to Featherless to turn it into a search vector and, for questions about a time period, into search filters (featherless.ai)</li>
           </ul>
           <p>Each of these services has its own privacy policy governing how they handle data.</p>
         </Section>
@@ -61,7 +61,7 @@ export default function PrivacyPolicy() {
         </Section>
 
         <Section title="6. Data Retention">
-          <p>We retain your account information for as long as your account is active. If you delete your account, we delete your account record and all comments associated with it. Anonymised server logs may be retained for up to 90 days. Ask Cosmos questions and answers are kept to improve search; we will delete the ones linked to your account or browser identifier on request.</p>
+          <p>We retain your account information for as long as your account is active. If you delete your account, we delete your account record and all comments associated with it. Anonymised server logs may be retained for up to 90 days. Ask Evren questions and answers are kept to improve search; we will delete the ones linked to your account or browser identifier on request.</p>
         </Section>
 
         <Section title="7. Your Rights">
@@ -69,7 +69,7 @@ export default function PrivacyPolicy() {
         </Section>
 
         <Section title="8. Cookies">
-          <p>We use cookies only for authentication session management (via Clerk). We do not use tracking or advertising cookies. Ask Cosmos keeps a random identifier in your browser's local storage (not a cookie) so it can apply its question limit before you sign in.</p>
+          <p>We use cookies only for authentication session management (via Clerk). We do not use tracking or advertising cookies. Ask Evren keeps a random identifier in your browser's local storage (not a cookie) so it can apply its question limit before you sign in.</p>
         </Section>
 
         <Section title="9. Children's Privacy">

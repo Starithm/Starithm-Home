@@ -1,4 +1,4 @@
-// Ask Cosmos client: the event stream from POST /api/ask (novatrace_microservice/service/ask.ts).
+// Ask Evren client: the event stream from POST /api/ask (novatrace_microservice/service/ask.ts).
 //
 // The answer arrives as server-sent events. EventSource cannot send the Clerk token, so the
 // stream is read with fetch() and parsed here. Event types mirror the backend's AskEvent and
@@ -66,7 +66,7 @@ export async function streamAsk(
     signal: opts.signal,
   });
   if (!res.ok || !res.body) {
-    onEvent({ type: 'error', message: 'Cosmos could not answer right now. Please try again.' });
+    onEvent({ type: 'error', message: 'Evren could not answer right now. Please try again.' });
     return;
   }
   const reader = res.body.getReader();

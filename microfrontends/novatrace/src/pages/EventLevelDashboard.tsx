@@ -344,7 +344,7 @@ export default function EventLevel() {
     setFiltersModified(false);
   };
 
-  // The header bar is now Ask Cosmos: Enter opens the answer page with the question (it used to
+  // The header bar is now Ask Evren: Enter opens the answer page with the question (it used to
   // turn the question into event filters via /api/search/nl).
   const handleNLSearch = () => {
     const q = nlQuery.trim();
@@ -613,8 +613,8 @@ export default function EventLevel() {
             </HeaderLeft>
           <SearchBarWrapper>
             <SearchBarInput
-              placeholder="Ask Cosmos — e.g. kilonova candidates with a red near-infrared excess"
-              aria-label="Ask Cosmos a question"
+              placeholder="Ask Evren — e.g. kilonova candidates with a red near-infrared excess"
+              aria-label="Ask Evren a question"
               value={nlQuery}
               onChange={e => { setNlQuery(e.target.value); setNlError(null); }}
               onKeyDown={e => e.key === 'Enter' && handleNLSearch()}
@@ -622,7 +622,7 @@ export default function EventLevel() {
             <SearchBarSendButton
               onClick={handleNLSearch}
               disabled={!nlQuery.trim()}
-              title="Ask Cosmos"
+              title="Ask Evren"
             >
               <ArrowRight size={14} />
             </SearchBarSendButton>
