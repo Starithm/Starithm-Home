@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { rgba, token } from '../lib/canvas-color';
 import { positionAt } from '../lib/ephemeris';
-import { awayAt, bodiesAt, cameraAt, earthAt, earthOrbit, FLYBYS, pathUntil, stepAt, voyagerAt, type Vec } from '../lib/solar-camera';
+import { bodiesAt, cameraAt, earthAt, earthOrbit, FLYBYS, pathUntil, voyagerAt, type Vec } from '../lib/solar-camera';
+import { awayAt, stepAt } from '../lib/solar-schedule';
 
 /* Voyager 1 in the solar system, in 3D: its real path from launch (JPL Horizons), drawn side-on with
  * Voyager at the stage centre, where the slide's marker sits. Between rests the camera rides the signal

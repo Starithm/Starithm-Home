@@ -1,11 +1,10 @@
-import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { forwardRef, lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { LAUNCH_UTC, ONE_LIGHT_DAY_UTC, positionAt } from '../lib/ephemeris';
-import { awayAt, tripNowOrigin } from '../lib/solar-camera';
+import { awayAt, tripNowOrigin } from '../lib/solar-schedule';
 import { virtualNow, type Clock } from '../lib/time-travel';
 import score from '../data/score-onsets.json';
 import { BitRing } from './BitRing';
 import { NoteTrack } from './NoteTrack';
-import { SolarView } from './SolarView';
 import {
   BigUnit, Credit, Crossed, DotCredit, DotWords, FinalCount, Frame, Kicker, Layer, LeftCol, LiveRow,
   CraftLine, CraftPhoto, LiveTag, Marker, MarkerLabel, PaleBlueDot, Readout, RecordCard, RightCol, Ring, Ripples, STAGE_H, STAGE_W, Sky, Zone,
@@ -22,6 +21,9 @@ import {
 const DAY = 86_400_000;
 const DOT_MS = 7_000; // the Pale Blue Dot holds for 7 s after the crossing
 const CELEBRATE_MS = 3_600_000; // then an hour of "24 hours" before counting up
+
+// the 3D view and its trajectory data download only when ?view=3d asks for them
+const SolarView = lazy(() => import('./SolarView').then((m) => ({ default: m.SolarView })));
 
 const p2 = (n: number) => String(n).padStart(2, '0');
 const plural = (n: number, w: string) => (n === 1 ? w : `${w}s`);
@@ -383,7 +385,11 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
         </Sky>
 
         <Layer>
-          {solar && <SolarView at={t} origin={tripOrigin} />}
+          {solar && (
+            <Suspense fallback={null}>
+              <SolarView at={t} origin={tripOrigin} />
+            </Suspense>
+          )}
           {!solar && (
           <>
           <svg viewBox={`0 0 ${STAGE_W} ${STAGE_H}`}>

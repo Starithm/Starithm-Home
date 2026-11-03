@@ -1,4 +1,5 @@
 import trajectory from '../data/trajectory.json';
+import { smooth, stepAt } from './solar-schedule';
 
 /* The 3D solar view's camera. It rests on Voyager 1 for 10 s, then pulls back along the signal's path
  * to Earth, holds there, flies back, and repeats. The schedule is a pure function of wall-clock time, so
@@ -96,49 +97,6 @@ function pathAtArc(s: number, ms: number): { p: Vec; at: number } {
   const f = Math.min(1, Math.max(0, (s - arc[lo]) / (arc[hi] - arc[lo] || 1)));
   return { p: [A[1] + (B[1] - A[1]) * f, A[2] + (B[2] - A[2]) * f, A[3] + (B[3] - A[3]) * f], at: (A[0] + (B[0] - A[0]) * f) * 1000 };
 }
-
-/* The schedule, in seconds of each cycle. Resting on Voyager, then: turn towards Earth, ride the signal
- * home, ease back to see Earth and the Sun, hold, turn onto Voyager's path at launch, retrace it out to
- * Voyager, ease back to the resting view. */
-const STEPS = [
-  ['rest', 10],
-  ['outTurn', 2.5],
-  ['outFly', 5.5],
-  ['earthSettle', 2],
-  ['hold', 4],
-  ['backTurn', 3],
-  ['backFly', 7],
-  ['voyagerSettle', 2],
-] as const;
-export type Step = (typeof STEPS)[number][0];
-export const CYCLE_S = STEPS.reduce((n, [, d]) => n + d, 0);
-
-const smooth = (x: number) => {
-  const c = Math.min(1, Math.max(0, x));
-  return c * c * c * (c * (c * 6 - 15) + 10);
-};
-
-/** Where in the cycle the camera is: the step, and how far through it (0..1). */
-export function stepAt(wallMs: number, originMs: number): { step: Step; f: number } {
-  let s = ((((wallMs - originMs) / 1000) % CYCLE_S) + CYCLE_S) % CYCLE_S;
-  for (const [step, d] of STEPS) {
-    if (s < d) return { step, f: s / d };
-    s -= d;
-  }
-  return { step: 'rest', f: 0 };
-}
-
-/** How visible the trip's own marks are (planets, labels): 0 at rest, 1 once the camera has left. */
-export function awayAt(wallMs: number, originMs: number) {
-  const { step, f } = stepAt(wallMs, originMs);
-  if (step === 'rest') return 0;
-  if (step === 'outTurn') return smooth(f);
-  if (step === 'voyagerSettle') return 1 - smooth(f);
-  return 1;
-}
-
-/** The wall-clock origin that starts a trip to Earth right now. */
-export const tripNowOrigin = (wallMs: number) => wallMs - STEPS[0][1] * 1000;
 
 const sub = (a: Vec, b: Vec): Vec => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const add = (a: Vec, b: Vec, k = 1): Vec => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
