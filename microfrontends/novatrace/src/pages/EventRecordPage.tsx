@@ -333,7 +333,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
     });
   }, [event, circFilter]);
 
-  if (loading) return <Page><StarithmLoaderBlock tone="dark" message="Loading event…" delay={0} /></Page>;
+  if (loading) return <Page><StarithmLoaderBlock tone="dark" message="Loading event…" delay={0} fullscreen /></Page>;
   if (notFound || !event) return <Page><Empty style={{ padding: 40, textAlign: 'center' }}>Event not found.</Empty></Page>;
 
   const err = posErrorRadius(event.posErrorDeg);

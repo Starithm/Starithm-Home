@@ -6,7 +6,7 @@ import '../shared/styles/globals.css';
 import { getQueryClient } from '@shared/lib/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { saveReturnUrl, consumeReturnUrl } from '@shared/lib/auth';
-import { StarithmLoader } from '@shared/components/StarithmLoader';
+import { StarithmLoaderBlock } from '@shared/components/StarithmLoader';
 
 // Lazy load microfrontends
 const HomeMicrofrontend = lazy(() => import('./microfrontends/HomeMicrofrontend'));
@@ -68,8 +68,8 @@ function App() {
             fallback={
               /* Shown while a microfrontend chunk downloads — the first loading
                  state a visitor hits on a cold load. */
-              <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <StarithmLoader size={48} delay={0} />
+              <div style={{ minHeight: '60vh' }}>
+                <StarithmLoaderBlock size={48} delay={0} fullscreen />
               </div>
             }
           >
