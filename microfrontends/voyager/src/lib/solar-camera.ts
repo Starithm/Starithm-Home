@@ -63,22 +63,37 @@ export const FLYBYS = [
   { name: 'Saturn', at: Date.UTC(1980, 10, 12) },
 ].map((m) => ({ ...m, p: voyagerAt(m.at) }));
 
-/** The point on Voyager's path (up to `ms`) at distance `r` AU from the Sun, and when it was there.
- *  After launch the distance only grows, so it is a search. */
-function pathAtRadius(r: number, ms: number): { p: Vec; at: number } {
-  const radius = (row: Row) => Math.hypot(row[1], row[2], row[3]);
+// Distance travelled along the path, row by row: it only grows, unlike distance from the Sun, which
+// barely moves in the first months while Voyager runs alongside Earth's orbit.
+const arc: number[] = [0];
+for (let i = 1; i < voyagerRows.length; i++) {
+  const [, x0, y0, z0] = voyagerRows[i - 1];
+  const [, x1, y1, z1] = voyagerRows[i];
+  arc.push(arc[i - 1] + Math.hypot(x1 - x0, y1 - y0, z1 - z0));
+}
+
+/** How far Voyager had travelled along its path by `ms`, in AU. */
+function arcAt(ms: number) {
+  let i = 0;
+  while (i < voyagerRows.length - 1 && voyagerRows[i + 1][0] * 1000 <= ms) i++;
+  const [, x, y, z] = voyagerRows[i];
+  const now = voyagerAt(ms);
+  return arc[i] + Math.hypot(now[0] - x, now[1] - y, now[2] - z);
+}
+
+/** The point `s` AU along Voyager's path (capped at `ms`), and when Voyager was there. */
+function pathAtArc(s: number, ms: number): { p: Vec; at: number } {
+  if (s >= arcAt(ms)) return { p: voyagerAt(ms), at: ms };
   let lo = 0;
-  let hi = voyagerRows.length - 1;
-  while (hi > 0 && voyagerRows[hi][0] * 1000 > ms) hi--;
-  if (r >= radius(voyagerRows[hi])) return { p: voyagerAt(ms), at: ms };
+  let hi = arc.length - 1;
   while (hi - lo > 1) {
     const mid = (lo + hi) >> 1;
-    if (radius(voyagerRows[mid]) <= r) lo = mid;
+    if (arc[mid] <= s) lo = mid;
     else hi = mid;
   }
   const A = voyagerRows[lo];
   const B = voyagerRows[hi];
-  const f = Math.min(1, Math.max(0, (r - radius(A)) / (radius(B) - radius(A) || 1)));
+  const f = Math.min(1, Math.max(0, (s - arc[lo]) / (arc[hi] - arc[lo] || 1)));
   return { p: [A[1] + (B[1] - A[1]) * f, A[2] + (B[2] - A[2]) * f, A[3] + (B[3] - A[3]) * f], at: (A[0] + (B[0] - A[0]) * f) * 1000 };
 }
 
@@ -87,13 +102,13 @@ function pathAtRadius(r: number, ms: number): { p: Vec; at: number } {
  * Voyager, ease back to the resting view. */
 const STEPS = [
   ['rest', 10],
-  ['outTurn', 1.5],
+  ['outTurn', 2.5],
   ['outFly', 5.5],
-  ['earthSettle', 1.5],
+  ['earthSettle', 2],
   ['hold', 4],
-  ['backTurn', 1.5],
+  ['backTurn', 3],
   ['backFly', 7],
-  ['voyagerSettle', 1.5],
+  ['voyagerSettle', 2],
 ] as const;
 export type Step = (typeof STEPS)[number][0];
 export const CYCLE_S = STEPS.reduce((n, [, d]) => n + d, 0);
@@ -139,6 +154,13 @@ const norm = (a: Vec): Vec => {
 const NEAR_AU = 60; // camera distance resting on Voyager
 const EARTH_AU = 5.5; // and on Earth: its orbit and the Sun, clear of the readouts
 const ROLL = 0.42; // radians, resting views: Voyager's outward direction points up and to the right
+const STEER_WINDOW = 0.3; // of the path flight either side (about 2 s) that the camera's heading averages over
+const SPREAD = 8; // samples each side of that window
+const LEAN = 0.35; // how far the heading leans from the path's direction towards Voyager today
+const GAZE_AHEAD = 0.6; // how far past Voyager's past self the camera looks, in units of its scale
+// where the camera picks Voyager up: approaching Jupiter. Riding the 1977–78 arc out to it would add
+// another 90 degrees of turning for no flyby; that stretch is still drawn.
+const PICK_UP = Date.UTC(1978, 9, 1);
 
 /** Where the camera is and what it looks at. Poses blend, so every move is continuous. */
 interface Pose {
@@ -148,9 +170,25 @@ interface Pose {
   roll: number;
 }
 
+/** Turn unit vector `a` towards `b` by fraction `k` of the angle between them, at an even rate. */
+function slerp(a: Vec, b: Vec, k: number): Vec {
+  const c = Math.min(1, Math.max(-1, dot(a, b)));
+  const angle = Math.acos(c);
+  if (angle < 1e-4) return b;
+  const sa = Math.sin(angle);
+  return norm(add(add([0, 0, 0], a, Math.sin((1 - k) * angle) / sa), b, Math.sin(k * angle) / sa));
+}
+
+/** Between two poses: the eye slides, and the gaze turns evenly (sliding the target instead would bunch
+ *  the turn into the moment the nearer target takes over). */
 const blend = (a: Pose, b: Pose, f: number): Pose => {
-  const k = smooth(f);
-  return { eye: mix(a.eye, b.eye, k), target: mix(a.target, b.target, k), up: norm(mix(a.up, b.up, k)), roll: a.roll + (b.roll - a.roll) * k };
+  // a gentler ease than smooth(): the turn's peak rate is 20% lower
+  const c = Math.min(1, Math.max(0, f));
+  const k = c * c * (3 - 2 * c);
+  const eye = mix(a.eye, b.eye, k);
+  const gaze = slerp(norm(sub(a.target, a.eye)), norm(sub(b.target, b.eye)), k);
+  const reach = len(sub(a.target, a.eye)) * (1 - k) + len(sub(b.target, b.eye)) * k;
+  return { eye, target: add(eye, gaze, reach), up: slerp(a.up, b.up, k), roll: a.roll + (b.roll - a.roll) * k };
 };
 
 /**
@@ -203,15 +241,25 @@ export function cameraAt(wallMs: number, originMs: number, t: number, voyager: V
     const p = add(earth, home, -left);
     return { pose: chase(p, home, left, add(p, home, 0.7 * left)), p };
   };
-  // retracing Voyager's path: distance from the Sun grows in log steps, so the flybys get their time
-  const rNow = len(voyager);
+  // Retracing Voyager's path: distance travelled along it grows in log steps, so the flybys, early on,
+  // get their time. The early path curves through about 200 degrees (the arc out to Jupiter, then both
+  // flybys); steering by its direction at each instant would whip the camera round, so the heading is
+  // averaged over a wide stretch of the flight and turns slowly, while the bends sweep across the frame.
+  const sNow = arcAt(t);
+  const s0 = arcAt(PICK_UP);
+  const arcFor = (g: number) => Math.exp(Math.log(s0) + (Math.log(sNow) - Math.log(s0)) * smooth(g));
   const pathPose = (g: number) => {
-    const r = Math.exp(Math.log(1.02) + (Math.log(rNow) - Math.log(1.02)) * smooth(g));
-    const here = pathAtRadius(r, t);
-    const behind = pathAtRadius(r / 1.25, t).p;
-    const ahead = norm(sub(pathAtRadius(Math.min(rNow, r * 1.25), t).p, behind));
-    const look = pathAtRadius(Math.min(rNow, r * 2.2), t).p;
-    return { pose: chase(here.p, ahead, Math.max(1.5, r * 0.8), look), here };
+    const here = pathAtArc(arcFor(g), t);
+    let ahead: Vec = [0, 0, 0];
+    for (let i = -SPREAD; i <= SPREAD; i++) {
+      const si = arcFor(Math.min(1, Math.max(0, g + (i / SPREAD) * STEER_WINDOW)));
+      ahead = add(ahead, norm(sub(pathAtArc(si * 1.2, t).p, pathAtArc(si / 1.2, t).p)), Math.exp(-((i / SPREAD) ** 2) * 2));
+    }
+    // lean partly towards Voyager today: the camera turns less in all, and the gaze still holds the rider
+    const heading = norm(add(norm(ahead), norm(sub(voyager, here.p)), LEAN / (1 - LEAN)));
+    const scale = Math.max(1.5, 0.8 * len(here.p));
+    // gaze just ahead of Voyager's past self, so it stays in view and the bends sweep across the frame
+    return { pose: chase(here.p, heading, scale, add(here.p, heading, GAZE_AHEAD * scale)), here };
   };
 
   let pose: Pose = restV;

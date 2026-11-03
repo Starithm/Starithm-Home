@@ -14,7 +14,7 @@ const FOCAL = 1250;
 
 /* NASA photographs (public domain, via Wikimedia Commons): SDO (Sun), MESSENGER (Mercury), Mariner 10
  * (Venus), Apollo 17 (Earth), Viking (Mars), Hubble (Jupiter), Cassini (Saturn), Voyager 2 (Uranus,
- * Neptune). Each is a disc on black, so it is drawn with 'screen' and the black falls away. */
+ * Neptune). Each is a disc on black; on load the black is turned into transparency (see keyBlack). */
 const PHOTOS: Record<string, { src: string; scale: number; aspect?: number }> = {
   Sun: { src: 'sun', scale: 2.2 },
   Mercury: { src: 'mercury', scale: 0.6 },
@@ -27,6 +27,26 @@ const PHOTOS: Record<string, { src: string; scale: number; aspect?: number }> = 
   Neptune: { src: 'neptune', scale: 1.15 },
 };
 const PHOTO_K = 220; // px × AU: a planet's drawn size is this over its distance from the camera
+
+/** A copy of a photo on black with the black made transparent: alpha follows brightness up to a knee,
+ *  so dark limbs fade softly instead of leaving a box. The canvas here is transparent over the starfield,
+ *  so blend modes alone can't drop the black. */
+function keyBlack(img: HTMLImageElement) {
+  const c = document.createElement('canvas');
+  c.width = img.naturalWidth;
+  c.height = img.naturalHeight;
+  const g = c.getContext('2d');
+  if (!g) return null;
+  g.drawImage(img, 0, 0);
+  const px = g.getImageData(0, 0, c.width, c.height);
+  const d = px.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const v = Math.max(d[i], d[i + 1], d[i + 2]);
+    d[i + 3] = v < 14 ? 0 : Math.min(255, (v - 14) * 6);
+  }
+  g.putImageData(px, 0, 0);
+  return c;
+}
 
 export function SolarView({ at, origin }: { at: number; origin: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -45,23 +65,23 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
     const line = token(el, '--text-muted', 'rgb(169,159,178)');
     const glow = token(el, '--foreground', 'rgb(255,250,244)');
     const prose = token(el, '--font-prose', 'sans-serif');
-    const photos = Object.fromEntries(
-      Object.entries(PHOTOS).map(([name, ph]) => {
-        const img = new Image();
-        img.src = `/voyager/planets/${ph.src}.jpg`;
-        return [name, img];
-      }),
-    );
+    const photos: Record<string, HTMLCanvasElement | null> = {};
+    for (const [name, ph] of Object.entries(PHOTOS)) {
+      const img = new Image();
+      img.onload = () => {
+        photos[name] = keyBlack(img);
+      };
+      img.src = `/voyager/planets/${ph.src}.jpg`;
+    }
     /** A body's photograph at a projected point, sized by distance; false if it hasn't loaded. */
     const photo = (name: string, x: number, y: number, depth: number, a: number) => {
       const img = photos[name];
       const ph = PHOTOS[name];
-      if (!img?.complete || !img.naturalWidth || a <= 0.01) return false;
+      if (!img || a <= 0.01) return false;
       const h = ph.scale * Math.max(22, Math.min(120, PHOTO_K / depth));
       const w = h * (ph.aspect ?? 1);
       ctx.save();
       ctx.globalAlpha = a;
-      ctx.globalCompositeOperation = 'screen';
       ctx.drawImage(img, x - w / 2, y - h / 2, w, h);
       ctx.restore();
       return true;
