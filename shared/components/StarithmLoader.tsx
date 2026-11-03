@@ -76,14 +76,17 @@ export function StarithmLoader({
   );
 }
 
-/** Loader plus a caption, centred — the common full-panel case. */
+/** Loader plus a caption, centred — the common full-panel case. `fullscreen` centres it on the
+ *  viewport (fixed), for a page that has nothing else to show yet: centring in the page's own
+ *  box put it near the top, since that box starts under the navbar and has no height. */
 export function StarithmLoaderBlock({
   message,
   size = 56,
   tone = 'auto',
   speed = 900,
   delay = 300,
-}: StarithmLoaderProps & { message?: string }) {
+  fullscreen = false,
+}: StarithmLoaderProps & { message?: string; fullscreen?: boolean }) {
   const [shown, setShown] = useState(delay === 0);
 
   useEffect(() => {
@@ -99,6 +102,7 @@ export function StarithmLoaderBlock({
       style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center', gap: '1rem', padding: '2rem',
+        ...(fullscreen ? { position: 'fixed', inset: 0, pointerEvents: 'none' } : {}),
       }}
     >
       <StarithmLoader size={size} tone={tone} speed={speed} delay={0} />
