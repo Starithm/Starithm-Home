@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { rgba, token } from '../lib/canvas-color';
 import { positionAt } from '../lib/ephemeris';
-import { awayAt, bodiesAt, cameraAt, earthAt, earthOrbit, MILESTONES, pathUntil, stepAt, voyagerAt, type Vec } from '../lib/solar-camera';
+import { awayAt, bodiesAt, cameraAt, earthAt, earthOrbit, FLYBYS, pathUntil, stepAt, voyagerAt, type Vec } from '../lib/solar-camera';
 
 /* Voyager 1 in the solar system, in 3D: its real path from launch (JPL Horizons), drawn side-on with
  * Voyager at the stage centre, where the slide's marker sits. Between rests the camera rides the signal
@@ -11,6 +11,22 @@ import { awayAt, bodiesAt, cameraAt, earthAt, earthOrbit, MILESTONES, pathUntil,
 const W = 1920;
 const H = 1080;
 const FOCAL = 1250;
+
+/* NASA photographs (public domain, via Wikimedia Commons): SDO (Sun), MESSENGER (Mercury), Mariner 10
+ * (Venus), Apollo 17 (Earth), Viking (Mars), Hubble (Jupiter), Cassini (Saturn), Voyager 2 (Uranus,
+ * Neptune). Each is a disc on black, so it is drawn with 'screen' and the black falls away. */
+const PHOTOS: Record<string, { src: string; scale: number; aspect?: number }> = {
+  Sun: { src: 'sun', scale: 2.2 },
+  Mercury: { src: 'mercury', scale: 0.6 },
+  Venus: { src: 'venus', scale: 0.9 },
+  Earth: { src: 'earth', scale: 1 },
+  Mars: { src: 'mars', scale: 0.75 },
+  Jupiter: { src: 'jupiter', scale: 1.6 },
+  Saturn: { src: 'saturn', scale: 1.5, aspect: 250 / 121 },
+  Uranus: { src: 'uranus', scale: 1.15 },
+  Neptune: { src: 'neptune', scale: 1.15 },
+};
+const PHOTO_K = 220; // px × AU: a planet's drawn size is this over its distance from the camera
 
 export function SolarView({ at, origin }: { at: number; origin: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -29,6 +45,27 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
     const line = token(el, '--text-muted', 'rgb(169,159,178)');
     const glow = token(el, '--foreground', 'rgb(255,250,244)');
     const prose = token(el, '--font-prose', 'sans-serif');
+    const photos = Object.fromEntries(
+      Object.entries(PHOTOS).map(([name, ph]) => {
+        const img = new Image();
+        img.src = `/voyager/planets/${ph.src}.jpg`;
+        return [name, img];
+      }),
+    );
+    /** A body's photograph at a projected point, sized by distance; false if it hasn't loaded. */
+    const photo = (name: string, x: number, y: number, depth: number, a: number) => {
+      const img = photos[name];
+      const ph = PHOTOS[name];
+      if (!img?.complete || !img.naturalWidth || a <= 0.01) return false;
+      const h = ph.scale * Math.max(22, Math.min(120, PHOTO_K / depth));
+      const w = h * (ph.aspect ?? 1);
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.globalCompositeOperation = 'screen';
+      ctx.drawImage(img, x - w / 2, y - h / 2, w, h);
+      ctx.restore();
+      return true;
+    };
     let raf = 0;
     let pathAt = -1;
     let path: Vec[] = [];
@@ -81,7 +118,10 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
       }
       ctx.stroke();
       const sun = cam.project([0, 0, 0]);
-      if (sun) dot(sun.x, sun.y, Math.max(10, Math.min(70, 9000 / cam.sunDist)), gold, 1);
+      if (sun) {
+        dot(sun.x, sun.y, Math.max(10, Math.min(70, 9000 / cam.sunDist)), gold, 0.6);
+        photo('Sun', sun.x, sun.y, sun.depth, 1);
+      }
 
       // Voyager's path, brightening from launch to now
       ctx.lineWidth = 2;
@@ -95,13 +135,13 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
         ctx.lineTo(b.x, b.y);
         ctx.stroke();
       }
-      // the flybys, named while the camera retraces the path
+      // the flybys: Jupiter and Saturn where Voyager met them, while the camera retraces the path
       if (step === 'backTurn' || step === 'backFly') {
-        for (const m of MILESTONES) {
+        for (const m of FLYBYS) {
           const s = cam.project(m.p);
           if (!s) continue;
-          dot(s.x, s.y, 10, gold, away);
-          label(m.label, s.x + 16, s.y - 12, gold, away, 26);
+          if (!photo(m.name, s.x, s.y, s.depth, away)) dot(s.x, s.y, 12, glow, away);
+          label(m.name, s.x + 34, s.y - 18, line, away, 26);
         }
       }
 
@@ -116,10 +156,10 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
           const s = cam.project(b.p);
           if (!s || s.x < -50 || s.x > W + 50 || s.y < -50 || s.y > H + 50) continue;
           const craft = b.name === 'Voyager 2';
-          dot(s.x, s.y, craft ? 14 : 12, craft ? violet : glow, away);
+          if (craft || !photo(b.name, s.x, s.y, s.depth, away)) dot(s.x, s.y, craft ? 14 : 12, craft ? violet : glow, away);
           if (taken.some((o) => Math.abs(o.x - s.x) < 120 && Math.abs(o.y - s.y) < 34)) continue;
           taken.push({ x: s.x, y: s.y });
-          label(b.name, s.x + 16, s.y - 10, craft ? violet : line, away, 24);
+          label(b.name, s.x + 30, s.y - 16, craft ? violet : line, away, 24);
         }
       }
 
@@ -139,10 +179,10 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
       const was = cam.past && cam.project(cam.past.p);
       if (was) dot(was.x, was.y, 16, gold, 1);
       if (es) {
-        dot(es.x, es.y, 16, teal, 1);
+        if (!photo('Earth', es.x, es.y, es.depth, 1)) dot(es.x, es.y, 16, teal, 1);
         // from far out the two are one point of light: name them together
         const apart = sun ? Math.hypot(es.x - sun.x, es.y - sun.y) > 90 : true;
-        label(apart ? 'Earth' : 'Earth and Sun', es.x + 20, es.y - 14, teal, away, 30);
+        label(apart ? 'Earth' : 'Earth and Sun', es.x + 32, es.y - 20, teal, away, 30);
         if (apart && sun) label('Sun', sun.x + 24, sun.y + 40, gold, away);
       }
       if (vs) {

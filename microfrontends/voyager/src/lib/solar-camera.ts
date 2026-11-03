@@ -57,10 +57,10 @@ const bodyRows = Object.entries(trajectory.bodies as unknown as Record<string, R
 /** The other planets and Voyager 2, shown as points (no paths) while the camera is away. */
 export const bodiesAt = (ms: number) => bodyRows.map(([name, rows]) => ({ name, p: interp(rows, ms / 1000) }));
 
-/** Flyby points on Voyager 1's path, named while the camera retraces it. */
-export const MILESTONES = [
-  { label: 'Jupiter, 1979', at: Date.UTC(1979, 2, 5) },
-  { label: 'Saturn, 1980', at: Date.UTC(1980, 10, 12) },
+/** The flybys: where Voyager 1 met Jupiter and Saturn, shown there while the camera retraces its path. */
+export const FLYBYS = [
+  { name: 'Jupiter', at: Date.UTC(1979, 2, 5) },
+  { name: 'Saturn', at: Date.UTC(1980, 10, 12) },
 ].map((m) => ({ ...m, p: voyagerAt(m.at) }));
 
 /** The point on Voyager's path (up to `ms`) at distance `r` AU from the Sun, and when it was there.

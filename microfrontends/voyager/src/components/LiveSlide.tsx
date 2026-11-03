@@ -506,7 +506,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
             <div>Greetings in 55 languages, and music from Bach to Chuck Berry, on board.</div>
           </div>
         </RecordCard>
-        <Credit>JPL Horizons · NASA DSN Now</Credit>
+        <Credit>JPL Horizons · NASA DSN Now{solar && " · planet photos: NASA"}</Credit>
 
         {phase === 'before' && rem <= 10 && (
           <FinalCount>
