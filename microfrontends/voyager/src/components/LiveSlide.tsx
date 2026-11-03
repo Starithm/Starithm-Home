@@ -22,7 +22,7 @@ const DAY = 86_400_000;
 const DOT_MS = 7_000; // the Pale Blue Dot holds for 7 s after the crossing
 const CELEBRATE_MS = 3_600_000; // then an hour of "24 hours" before counting up
 
-// the 3D view and its trajectory data download only when ?view=3d asks for them
+// the 3D view and its trajectory data download only when it is showing (not with ?view=sky)
 const SolarView = lazy(() => import('./SolarView').then((m) => ({ default: m.SolarView })));
 
 const p2 = (n: number) => String(n).padStart(2, '0');
@@ -220,8 +220,9 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
   const showTrack = new URLSearchParams(window.location.search).get('track') !== '0';
   // what sits in the crosshair: the NASA render by default; ?craft=line (drawn) or ?craft=point
   const craft = new URLSearchParams(window.location.search).get('craft') ?? 'photo';
-  // ?view=3d: Voyager's path through the solar system, resting 10 s between trips to Earth and back (E starts one now)
-  const solar = new URLSearchParams(window.location.search).get('view') === '3d';
+  // Voyager's path through the solar system in 3D, resting 10 s between trips to Earth and back (E starts
+  // one now). ?view=sky shows the flat view instead: Voyager's path across our sky over ±40 days.
+  const solar = new URLSearchParams(window.location.search).get('view') !== 'sky';
   const [tripOrigin, setTripOrigin] = useState(() => Date.now());
   const [fit, setFit] = useState({ scale: 1, x: 0, y: 0 });
   const ownFrame = useRef<HTMLElement | null>(null);
