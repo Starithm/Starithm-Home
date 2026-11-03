@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { LAUNCH_UTC, ONE_LIGHT_DAY_UTC, positionAt } from '../lib/ephemeris';
-import { tripAt, tripNowOrigin } from '../lib/solar-camera';
+import { awayAt, tripNowOrigin } from '../lib/solar-camera';
 import { virtualNow, type Clock } from '../lib/time-travel';
 import score from '../data/score-onsets.json';
 import { BitRing } from './BitRing';
@@ -218,7 +218,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
   const showTrack = new URLSearchParams(window.location.search).get('track') !== '0';
   // what sits in the crosshair: the NASA render by default; ?craft=line (drawn) or ?craft=point
   const craft = new URLSearchParams(window.location.search).get('craft') ?? 'photo';
-  // ?view=3d: Voyager's path through the solar system, resting 10 s between trips to Earth (E starts one now)
+  // ?view=3d: Voyager's path through the solar system, resting 10 s between trips to Earth and back (E starts one now)
   const solar = new URLSearchParams(window.location.search).get('view') === '3d';
   const [tripOrigin, setTripOrigin] = useState(() => Date.now());
   const [fit, setFit] = useState({ scale: 1, x: 0, y: 0 });
@@ -410,7 +410,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
           )}
 
           {/* the marker and note track sit on Voyager; they step aside while the 3D camera visits Earth */}
-          <div style={{ position: 'absolute', inset: 0, opacity: solar && tripAt(now, tripOrigin) > 0 ? 0 : 1, transition: 'opacity 0.8s' }}>
+          <div style={{ position: 'absolute', inset: 0, opacity: solar && awayAt(now, tripOrigin) > 0 ? 0 : 1, transition: 'opacity 0.8s' }}>
 
           <Marker style={{ left: vx, top: vy }} $gap={craft === 'photo' || craft === 'line' ? 44 : 20}>
             <Ripples>{ripples}</Ripples>

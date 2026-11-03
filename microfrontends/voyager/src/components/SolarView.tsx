@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { rgba, token } from '../lib/canvas-color';
 import { positionAt } from '../lib/ephemeris';
-import { bodiesAt, cameraAt, earthAt, earthOrbit, pathUntil, tripAt, voyagerAt, type Vec } from '../lib/solar-camera';
+import { awayAt, bodiesAt, cameraAt, earthAt, earthOrbit, MILESTONES, pathUntil, stepAt, voyagerAt, type Vec } from '../lib/solar-camera';
 
 /* Voyager 1 in the solar system, in 3D: its real path from launch (JPL Horizons), drawn side-on with
- * Voyager at the stage centre, where the slide's marker sits. Every so often the camera pulls back
- * along the signal's path to Earth and returns (see solar-camera.ts). Only Voyager 1's path is drawn;
- * on the trip the other planets and Voyager 2 appear as named points. */
+ * Voyager at the stage centre, where the slide's marker sits. Between rests the camera rides the signal
+ * home to Earth and retraces Voyager's path back out (see solar-camera.ts). Only Voyager 1's path is
+ * drawn; on the trip the other planets and Voyager 2 appear as named points. */
 
 const W = 1920;
 const H = 1080;
@@ -61,9 +61,10 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
       }
       const v = voyagerAt(t);
       const e = earthAt(t);
-      const k = tripAt(wall, originRef.current);
-      const cam = cameraAt(k, v, e, wall, W / 2, H / 2, FOCAL);
-      const away = Math.min(1, k * 3);
+      const { step, f } = stepAt(wall, originRef.current);
+      const cam = cameraAt(wall, originRef.current, t, v, e, W / 2, H / 2, FOCAL);
+      const away = awayAt(wall, originRef.current);
+      const outbound = step === 'outTurn' || step === 'outFly' || step === 'earthSettle' || step === 'hold';
       ctx.clearRect(0, 0, W, H);
 
       // Earth's orbit, and the Sun
@@ -78,10 +79,9 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
         else ctx.moveTo(s.x, s.y);
         pen = true;
       }
-      ctx.closePath();
       ctx.stroke();
       const sun = cam.project([0, 0, 0]);
-      if (sun) dot(sun.x, sun.y, Math.max(10, Math.min(60, 9000 / cam.dist)), gold, 1);
+      if (sun) dot(sun.x, sun.y, Math.max(10, Math.min(70, 9000 / cam.sunDist)), gold, 1);
 
       // Voyager's path, brightening from launch to now
       ctx.lineWidth = 2;
@@ -95,13 +95,22 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
         ctx.lineTo(b.x, b.y);
         ctx.stroke();
       }
+      // the flybys, named while the camera retraces the path
+      if (step === 'backTurn' || step === 'backFly') {
+        for (const m of MILESTONES) {
+          const s = cam.project(m.p);
+          if (!s) continue;
+          dot(s.x, s.y, 10, gold, away);
+          label(m.label, s.x + 16, s.y - 12, gold, away, 26);
+        }
+      }
 
-      // the signal's way home: Voyager to Earth, with a pulse riding it out and back
       const vs = cam.project(v);
       const es = cam.project(e);
 
-      // the other planets and Voyager 2, as points; a name is dropped where it would crowd another
-      if (away > 0.01) {
+      // the other planets and Voyager 2, as points; a name is dropped where it would crowd another.
+      // Not while retracing the path: today's planets beside 1979's flybys would mislead.
+      if (away > 0.01 && step !== 'backTurn' && step !== 'backFly') {
         const taken = [vs, es, sun].filter((x) => x).map((x) => ({ x: x!.x, y: x!.y }));
         for (const b of bodiesAt(t)) {
           const s = cam.project(b.p);
@@ -113,7 +122,9 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
           label(b.name, s.x + 16, s.y - 10, craft ? violet : line, away, 24);
         }
       }
-      if (vs && es && k > 0) {
+
+      // the signal's way home, Voyager to Earth, and the pulse of light the camera rides on it
+      if (outbound && vs && es) {
         ctx.strokeStyle = rgba(violet, 0.55 * away);
         ctx.lineWidth = 1.5;
         ctx.setLineDash([3, 10]);
@@ -122,10 +133,11 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
         ctx.lineTo(es.x, es.y);
         ctx.stroke();
         ctx.setLineDash([]);
-        const px = vs.x + (es.x - vs.x) * k;
-        const py = vs.y + (es.y - vs.y) * k;
-        if (k < 0.98) dot(px, py, 14, violet, away);
       }
+      const ps = cam.pulse && cam.project(cam.pulse);
+      if (ps) dot(ps.x, ps.y, 18, violet, 1);
+      const was = cam.past && cam.project(cam.past.p);
+      if (was) dot(was.x, was.y, 16, gold, 1);
       if (es) {
         dot(es.x, es.y, 16, teal, 1);
         // from far out the two are one point of light: name them together
@@ -135,15 +147,19 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
       }
       if (vs) {
         dot(vs.x, vs.y, 14, violet, away);
-        label('Voyager 1', vs.x + 20, vs.y - 14, violet, k > 0.08 ? away : 0, 30);
+        label('Voyager 1', vs.x + 20, vs.y - 14, violet, away, 30);
       }
 
-      // on Earth: how long the light took
-      if (k > 0.85 && es) {
+      // what the trip is showing, low in the middle
+      const caption = (text: string, a: number) => label(text, W / 2, 880, line, a, 30, 'center');
+      if (step === 'outFly') caption("Riding Voyager's signal home", Math.min(1, f * 4, (1 - f) * 4));
+      if (step === 'earthSettle' || step === 'hold') {
         const lt = Math.floor(positionAt(t).lightSeconds);
         const hm = `${Math.floor(lt / 3600)} h ${String(Math.floor((lt % 3600) / 60)).padStart(2, '0')} min`;
-        const a = (k - 0.85) / 0.15;
-        label(`Voyager's signal takes ${hm} to get here`, W / 2, 880, line, a, 30, 'center');
+        caption(`Voyager's signal takes ${hm} to get here`, step === 'hold' ? Math.min(1, (1 - f) * 4) : f);
+      }
+      if (step === 'backFly' && cam.past) {
+        caption(`Back along Voyager's path · ${new Date(cam.past.at).getUTCFullYear()}`, Math.min(1, f * 4, (1 - f) * 4));
       }
 
       raf = requestAnimationFrame(draw);
