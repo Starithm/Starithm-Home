@@ -1,5 +1,6 @@
-// Regenerates src/data/trajectory.json from JPL Horizons: Voyager 1's path from launch, and Earth's
-// orbit, as heliocentric ecliptic positions in AU. Drawn by the 3D solar view (?view=3d).
+// Regenerates src/data/trajectory.json from JPL Horizons: Voyager 1's path from launch, Earth's orbit,
+// and where the other planets and Voyager 2 are (no paths drawn for those), as heliocentric ecliptic
+// positions in AU. Drawn by the 3D solar view (?view=3d).
 //   node microfrontends/voyager/scripts/fetch-trajectory.mjs
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +35,11 @@ async function vectors(command, start, stop, step) {
 // one at a time: Horizons rejects parallel requests. Ten-day steps keep the Jupiter and Saturn bends.
 const voyager = await vectors('-31', '1977-09-06', '2028-03-01', '10d');
 const earth = await vectors('399', '2026-08-01', '2027-08-01', '4d');
+const BODIES = {
+  Mercury: '199', Venus: '299', Mars: '499', Jupiter: '599', Saturn: '699', Uranus: '799', Neptune: '899', 'Voyager 2': '-32',
+};
+const bodies = {};
+for (const [name, id] of Object.entries(BODIES)) bodies[name] = await vectors(id, '2026-08-01', '2028-03-01', '4d');
 
 const out = {
   source: 'JPL Horizons; heliocentric (500@10), ecliptic J2000, AU',
@@ -41,7 +47,8 @@ const out = {
   columns: ['unixSeconds', 'x', 'y', 'z'],
   voyager,
   earth,
+  bodies,
 };
 const file = fileURLToPath(new URL('../src/data/trajectory.json', import.meta.url));
 writeFileSync(file, JSON.stringify(out));
-console.log(`wrote ${voyager.length} Voyager rows and ${earth.length} Earth rows to ${file}`);
+console.log(`wrote ${voyager.length} Voyager rows, ${earth.length} Earth rows and ${Object.keys(bodies).length} bodies to ${file}`);

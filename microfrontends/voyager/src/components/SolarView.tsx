@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { rgba, token } from '../lib/canvas-color';
 import { positionAt } from '../lib/ephemeris';
-import { cameraAt, earthAt, earthOrbit, pathUntil, tripAt, voyagerAt, type Vec } from '../lib/solar-camera';
+import { bodiesAt, cameraAt, earthAt, earthOrbit, pathUntil, tripAt, voyagerAt, type Vec } from '../lib/solar-camera';
 
 /* Voyager 1 in the solar system, in 3D: its real path from launch (JPL Horizons), drawn side-on with
- * Voyager at the stage centre, where the slide's marker sits. Once a minute the camera pulls back
- * along the signal's path to Earth and returns (see solar-camera.ts). Only Voyager 1's path is drawn. */
+ * Voyager at the stage centre, where the slide's marker sits. Every so often the camera pulls back
+ * along the signal's path to Earth and returns (see solar-camera.ts). Only Voyager 1's path is drawn;
+ * on the trip the other planets and Voyager 2 appear as named points. */
 
 const W = 1920;
 const H = 1080;
@@ -98,6 +99,20 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
       // the signal's way home: Voyager to Earth, with a pulse riding it out and back
       const vs = cam.project(v);
       const es = cam.project(e);
+
+      // the other planets and Voyager 2, as points; a name is dropped where it would crowd another
+      if (away > 0.01) {
+        const taken = [vs, es, sun].filter((x) => x).map((x) => ({ x: x!.x, y: x!.y }));
+        for (const b of bodiesAt(t)) {
+          const s = cam.project(b.p);
+          if (!s || s.x < -50 || s.x > W + 50 || s.y < -50 || s.y > H + 50) continue;
+          const craft = b.name === 'Voyager 2';
+          dot(s.x, s.y, craft ? 14 : 12, craft ? violet : glow, away);
+          if (taken.some((o) => Math.abs(o.x - s.x) < 120 && Math.abs(o.y - s.y) < 34)) continue;
+          taken.push({ x: s.x, y: s.y });
+          label(b.name, s.x + 16, s.y - 10, craft ? violet : line, away, 24);
+        }
+      }
       if (vs && es && k > 0) {
         ctx.strokeStyle = rgba(violet, 0.55 * away);
         ctx.lineWidth = 1.5;

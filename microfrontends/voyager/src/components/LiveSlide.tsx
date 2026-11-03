@@ -218,7 +218,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
   const showTrack = new URLSearchParams(window.location.search).get('track') !== '0';
   // what sits in the crosshair: the NASA render by default; ?craft=line (drawn) or ?craft=point
   const craft = new URLSearchParams(window.location.search).get('craft') ?? 'photo';
-  // ?view=3d: Voyager's path through the solar system, with a trip to Earth once a minute (E starts one now)
+  // ?view=3d: Voyager's path through the solar system, resting 10 s between trips to Earth (E starts one now)
   const solar = new URLSearchParams(window.location.search).get('view') === '3d';
   const [tripOrigin, setTripOrigin] = useState(() => Date.now());
   const [fit, setFit] = useState({ scale: 1, x: 0, y: 0 });

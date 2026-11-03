@@ -1,7 +1,7 @@
 import trajectory from '../data/trajectory.json';
 
-/* The 3D solar view's camera. It rests on Voyager 1, and once a minute pulls back along the signal's
- * path to Earth, holds there, then flies back. The schedule is a pure function of wall-clock time, so
+/* The 3D solar view's camera. It rests on Voyager 1 for 10 s, then pulls back along the signal's path
+ * to Earth, holds there, flies back, and repeats. The schedule is a pure function of wall-clock time, so
  * the canvas and the slide's overlays (which fade while the camera is away) always agree. */
 
 type Row = [number, number, number, number];
@@ -52,10 +52,15 @@ export function pathUntil(ms: number): Vec[] {
 
 export const earthOrbit: Vec[] = earthRows.map((r) => [r[1], r[2], r[3]]);
 
-/* The schedule, in seconds of a 60 s cycle: rest on Voyager, fly out to Earth, hold, fly back. */
-export const CYCLE_S = 60;
-const OUT = [38, 46] as const;
-const BACK = [52, 60] as const;
+const bodyRows = Object.entries(trajectory.bodies as unknown as Record<string, Row[]>);
+
+/** The other planets and Voyager 2, shown as points (no paths) while the camera is away. */
+export const bodiesAt = (ms: number) => bodyRows.map(([name, rows]) => ({ name, p: interp(rows, ms / 1000) }));
+
+/* The schedule, in seconds of each cycle: rest on Voyager, fly out to Earth, hold, fly back. */
+const OUT = [10, 16] as const;
+const BACK = [21, 27] as const;
+export const CYCLE_S = BACK[1];
 
 const smooth = (x: number) => {
   const c = Math.min(1, Math.max(0, x));
