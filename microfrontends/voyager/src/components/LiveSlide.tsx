@@ -1,9 +1,11 @@
 import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { LAUNCH_UTC, ONE_LIGHT_DAY_UTC, positionAt } from '../lib/ephemeris';
+import { tripAt, tripNowOrigin } from '../lib/solar-camera';
 import { virtualNow, type Clock } from '../lib/time-travel';
 import score from '../data/score-onsets.json';
 import { BitRing } from './BitRing';
 import { NoteTrack } from './NoteTrack';
+import { SolarView } from './SolarView';
 import {
   BigUnit, Credit, Crossed, DotCredit, DotWords, FinalCount, Frame, Kicker, Layer, LeftCol, LiveRow,
   CraftLine, CraftPhoto, LiveTag, Marker, MarkerLabel, PaleBlueDot, Readout, RecordCard, RightCol, Ring, Ripples, STAGE_H, STAGE_W, Sky, Zone,
@@ -216,6 +218,9 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
   const showTrack = new URLSearchParams(window.location.search).get('track') !== '0';
   // what sits in the crosshair: the NASA render by default; ?craft=line (drawn) or ?craft=point
   const craft = new URLSearchParams(window.location.search).get('craft') ?? 'photo';
+  // ?view=3d: Voyager's path through the solar system, with a trip to Earth once a minute (E starts one now)
+  const solar = new URLSearchParams(window.location.search).get('view') === '3d';
+  const [tripOrigin, setTripOrigin] = useState(() => Date.now());
   const [fit, setFit] = useState({ scale: 1, x: 0, y: 0 });
   const ownFrame = useRef<HTMLElement | null>(null);
   const starsRef = useRef<HTMLCanvasElement>(null);
@@ -257,6 +262,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
       if (e.key === 'm' || e.key === 'M') setRipplesOn((on) => !on);
+      if (e.key === 'e' || e.key === 'E') setTripOrigin(tripNowOrigin(Date.now()));
       if (e.key === ' ' && !(e.target instanceof HTMLButtonElement)) {
         e.preventDefault();
         setCueAt((at) => (at == null ? Date.now() : null));
@@ -377,6 +383,9 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
         </Sky>
 
         <Layer>
+          {solar && <SolarView at={t} origin={tripOrigin} />}
+          {!solar && (
+          <>
           <svg viewBox={`0 0 ${STAGE_W} ${STAGE_H}`}>
             <path d={sky.d} fill="none" stroke="var(--starithm-golden-yellow)" strokeOpacity={0.55} strokeWidth={2} strokeDasharray="10 9" />
             {sky.ticks.map((k) => (
@@ -397,6 +406,11 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
               {k.label}
             </TickLabel>
           ))}
+          </>
+          )}
+
+          {/* the marker and note track sit on Voyager; they step aside while the 3D camera visits Earth */}
+          <div style={{ position: 'absolute', inset: 0, opacity: solar && tripAt(now, tripOrigin) > 0 ? 0 : 1, transition: 'opacity 0.8s' }}>
 
           <Marker style={{ left: vx, top: vy }} $gap={craft === 'photo' || craft === 'line' ? 44 : 20}>
             <Ripples>{ripples}</Ripples>
@@ -416,6 +430,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
             </MarkerLabel>
           </Marker>
           {showTrack && ripplesOn && phase !== 'crossing' && <NoteTrack origin={cueAt ?? loadedAt} vx={vx} vy={vy} />}
+          </div>
         </Layer>
 
         <SlideTitle>
