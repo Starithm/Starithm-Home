@@ -419,7 +419,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
           {/* the marker and note track sit on Voyager; they step aside while the 3D camera visits Earth */}
           <div style={{ position: 'absolute', inset: 0, opacity: solar && awayAt(now, tripOrigin) > 0 ? 0 : 1, transition: 'opacity 0.8s' }}>
 
-          <Marker style={{ left: vx, top: vy }} $gap={craft === 'photo' || craft === 'line' ? 44 : 20}>
+          <Marker style={{ left: vx, top: vy }} $gap={craft === 'photo' || craft === 'line' ? 98 : 20}>
             <Ripples>{ripples}</Ripples>
             {showBits && ripplesOn && phase !== 'crossing' && <BitRing origin={cueAt ?? loadedAt} />}
             <i /><i /><i /><i />
@@ -430,8 +430,8 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
             ) : (
               <b />
             )}
-            {/* clear of the bit ring (outer radius 90) when it is showing */}
-            <MarkerLabel style={showBits ? { left: 108 } : undefined}>
+            {/* clear of the crosshair ticks, which sit outside the bit ring (outer radius 90) */}
+            <MarkerLabel style={showBits ? { left: 140 } : undefined}>
               <div>Voyager 1</div>
               <div>now, in Ophiuchus</div>
             </MarkerLabel>
@@ -499,10 +499,6 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
           <Readout $size={40}>
             <div>Distance from Earth</div>
             <div>{num.format(pos.earthKm)} km</div>
-          </Readout>
-          <Readout $size={40}>
-            <div>Distance from Sun</div>
-            <div>{num.format(pos.sunKm)} km</div>
           </Readout>
         </RightCol>
 
