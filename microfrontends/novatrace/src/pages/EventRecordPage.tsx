@@ -14,17 +14,18 @@ import {
   MetaRow, SigPill, Kind, Headline, SubMeta,
   Section, SectionHead, SectionTitle, SectionNote, Card, Prose,
   FieldGrid, Field, FieldLabel, FieldValue, FieldHint,
-  NarrowRow, NarrowBar, Muted, PositionSplit, Panel, PanelFoot,
+  Muted,
   Row, Stack, Topic, Phase, PayloadWrap, PayloadTable,
   Tabs, Tab, CircCard, CircHead, CircTop, CircSummary, Chip, CircBody,
   MeasureTable, ShowMore, MeasureNote, CircMeasures, TableWrap, Table, RawText, InlineActions,
   Cite, Empty, Figures, Figure,
   UrlList, UrlLink, MiniLabel, CircGrid, CircId, CircFacility, CircDate,
-  MetaLine, TableHead, Disclaimer, Chart, SIGNIFICANCE,
+  MetaLine, TableHead, Disclaimer, SIGNIFICANCE, LocBlock, LocRow, LocStar,
   RedshiftPill, RedshiftNote,
 } from '../styled_pages/EventRecord.styled';
 import { eventRedshifts, needsLabel, readRedshift } from '../utils/redshift';
 import { EventCounterparts, counterpartsCount, hasCounterparts, type Counterparts } from '../components/EventCounterparts';
+import { eventLocalisations, bestLocalisation, instrumentsSeen, type Localisation, type PositionRow, type PositionSource } from '../utils/localisations';
 
 /* Types mirror GET /api/public/events/:canonicalId exactly — no fields beyond it. */
 interface Notice {
@@ -43,13 +44,18 @@ interface Circular {
     telescopes?: { facilities?: string[]; telescopes?: string[]; instruments?: string[] };
     raw?: string;
     urls?: string[];
+    positions?: { version: number; rows: PositionRow[] };
   };
   tags?: string[];
 }
 interface PublicEvent {
   canonicalId: string; alertKind: string; sourceName: string | null; t0: string | null;
+  /* Absent until the API with circular positions (NovaTrace #105) is deployed. */
+  primaryName?: string | null;
   raDeg: number | null; decDeg: number | null;
   posErrorDeg: number | { radius?: number; type?: string } | null;
+  /* Where the event engine took the position from (notice or circular); null before re-materialising. */
+  positionSource?: PositionSource | null;
   noticeCount: number; circularCount: number;
   aiSummary: { headline: string; significance: string; details: string; generatedAt: string } | null;
   notices: Notice[];
@@ -107,6 +113,9 @@ function quality(deg: number | null): string {
 
 const fmtErr = (deg: number) =>
   deg < 0.02 ? `${(deg * 3600).toFixed(1)}″` : deg < 1 ? `${(deg * 60).toFixed(1)}′` : `${deg.toFixed(2)}°`;
+
+/* "gcn.classic.voevent.FERMI_GBM_FIN_POS" → "FERMI_GBM_FIN_POS". */
+const noticeTopic = (topic: string) => topic.replace(/^gcn\.(classic\.(voevent|text)\.|notices\.)/, '');
 
 /* Redshift is rendered on its own, in gold — keep it out of the generic chips so
    it is not shown twice. */
@@ -286,30 +295,39 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
   const goToDiscussion = () =>
     document.getElementById('discussion')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+  /* From the localisation table: show that circular's card, open, in place. */
+  const openCircular = (alertKey: string) => {
+    setCircFilter('all');
+    setOpenCirc(prev => new Set(prev).add(alertKey));
+    requestAnimationFrame(() =>
+      document.getElementById(`circ-${alertKey}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  };
+
   const copyLink = () => {
     navigator.clipboard?.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   };
 
-  /* How the localisation narrowed: notices that carry an error radius, in time order. */
-  const narrowing = useMemo(() => {
-    if (!event) return [];
-    return event.notices
-      .map(n => ({ n, err: posErrorRadius(n.posErrorDeg), at: n.producedAt || n.t0 }))
-      .filter((x): x is { n: Notice; err: number; at: string } => x.err != null && !!x.at)
-      .sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
-  }, [event]);
+  /* Every localisation reported, notices and circulars, oldest first (utils/localisations). */
+  const localisations = useMemo(
+    () => (event ? eventLocalisations(event.notices, event.circulars) : []),
+    [event],
+  );
+  const seen = useMemo(() => instrumentsSeen(localisations), [localisations]);
 
-  const worstErr = narrowing.length ? Math.max(...narrowing.map(x => x.err)) : 0;
-
+  /* Header: the instruments that localised the burst; the summariser's facility list only when
+     no circular or notice gave a position. */
   const facilities = useMemo(() => {
     if (!event) return [];
+    const localisers = seen.filter(x => x.role === 'event').map(x => x.instrument);
+    if (localisers.length) return localisers;
     const s = new Set<string>();
     if (event.sourceName) s.add(event.sourceName);
     event.circulars.forEach(c => (c.data?.telescopes?.facilities || []).forEach(f => s.add(f)));
     return Array.from(s).slice(0, 4);
-  }, [event]);
+  }, [event, seen]);
+  const afterglow = seen.filter(x => x.role === 'counterpart').map(x => x.instrument);
 
   const totalParsed = useMemo(
     () => (event?.circulars || []).reduce(
@@ -340,7 +358,16 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
   const sig = (event.aiSummary?.significance || 'medium').toLowerCase();
   const lastActivity = [...event.circulars.map(c => c.date), ...event.notices.map(n => n.producedAt || '')]
     .filter(Boolean).sort().pop() || null;
-  const bestNotice = narrowing.length ? narrowing[narrowing.length - 1] : null;
+  const best = bestLocalisation(localisations, event.positionSource, event.raDeg, event.decDeg);
+  /* The table: every circular position, and for notices only each instrument's tightest
+     (GBM alone sends ten per burst). */
+  const tightest = new Map<string, Localisation>();
+  localisations.forEach(l => {
+    if (l.from.kind !== 'notice' || l.errorDeg == null) return;
+    const cur = tightest.get(l.instrument);
+    if (!cur || l.errorDeg < cur.errorDeg!) tightest.set(l.instrument, l);
+  });
+  const locRows = localisations.filter(l => l.errorDeg != null && (l.from.kind === 'circular' || tightest.get(l.instrument) === l));
 
   const counterpartsData: Counterparts = { crossMatch: event.crossMatch ?? null, optical: event.optical ?? null, catalog: event.catalog ?? null };
   const counts: Record<string, number | undefined> = {
@@ -416,12 +443,13 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
               )}
               {facilities.length > 0 && <span>· {facilities.join(' · ')}</span>}
             </MetaRow>
-            <Headline>{event.aiSummary?.headline || event.canonicalId}</Headline>
+            <Headline>{event.aiSummary?.headline || event.primaryName || event.canonicalId}</Headline>
             <SubMeta>
               {event.t0 ? `T0 ${fmtDate(event.t0)}` : 'T0 unknown'} · {event.noticeCount} notices ·{' '}
               {event.circularCount} circulars
               {lastActivity && ` · last activity ${tPlus(event.t0, lastActivity)}`}
             </SubMeta>
+            {afterglow.length > 0 && <SubMeta>afterglow: {afterglow.join(' · ')}</SubMeta>}
           </header>
 
           <Section id="summary">
@@ -443,8 +471,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
             </SectionHead>
             <Card>
               {event.raDeg != null && event.decDeg != null ? (
-                <PositionSplit>
-                  <Panel>
+                <>
                   <FieldGrid>
                     <Field>
                       <FieldLabel>RA</FieldLabel>
@@ -474,64 +501,37 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                     </Field>
                   </FieldGrid>
 
-                  {bestNotice && (
-                    <PanelFoot>
-                      Tightest from <Muted>{bestNotice.n.topic}</Muted> at {tPlus(event.t0, bestNotice.at)}
-                    </PanelFoot>
+                  {locRows.length > 0 && (
+                    <LocBlock>
+                      <FieldLabel>Every localisation reported</FieldLabel>
+                      <TableWrap>
+                        <Table>
+                          <thead>
+                            <tr><th>Instrument</th><th>Of</th><th>Error</th><th>Reported</th><th>Source</th></tr>
+                          </thead>
+                          <tbody>
+                            {locRows.map((l, i) => (
+                              <LocRow key={i} $best={l === best} $tentative={l.tentative}
+                                title={l.quote ?? undefined}>
+                                <td>{l === best && <LocStar aria-label="event position">★</LocStar>}{l.instrument}</td>
+                                <td>{l.role === 'event' ? 'burst' : 'afterglow'}{l.tentative && ' (tentative)'}</td>
+                                <td>{fmtErr(l.errorDeg!)}{l.containment && <FieldHint>{l.containment}</FieldHint>}</td>
+                                <td>{event.t0 ? tPlus(event.t0, l.at) : l.at ? fmtDate(l.at) : '—'}</td>
+                                <td>
+                                  {l.from.kind === 'circular'
+                                    ? <UrlLink href={`#circ-${l.from.alertKey}`} onClick={ev => { ev.preventDefault(); openCircular((l.from as { alertKey: string }).alertKey); }}>
+                                        GCN {l.from.alertKey.replace(/^GCN-/, '')}
+                                      </UrlLink>
+                                    : <Muted>{noticeTopic(l.from.topic)}</Muted>}
+                                </td>
+                              </LocRow>
+                            ))}
+                          </tbody>
+                        </Table>
+                      </TableWrap>
+                    </LocBlock>
                   )}
-                  </Panel>
-
-                  <Panel>
-                    {narrowing.length > 1 ? (
-                      <>
-                        <FieldLabel>How it narrowed</FieldLabel>
-                        {(() => {
-                          /* Log y — error radii span arcseconds to tens of degrees, so a
-                             linear axis would flatten every refinement into one pixel. */
-                          const W = 300, H = 130, L = 34, R = 6, T = 8, B = 20;
-                          const t0ms = event.t0 ? new Date(event.t0).getTime() : 0;
-                          const pts = narrowing.map(({ n, err: e, at }) => ({
-                            id: n.id,
-                            h: Math.max(0, (new Date(at).getTime() - t0ms) / 3.6e6),
-                            e: Math.max(e, 1 / 3600),
-                            best: bestNotice != null && n.id === bestNotice.n.id,
-                          }));
-                          const maxH = Math.max(...pts.map(p => p.h), 0.1);
-                          const lo = Math.log10(Math.min(...pts.map(p => p.e)));
-                          const hi = Math.log10(Math.max(...pts.map(p => p.e)));
-                          const span = hi - lo || 1;
-                          const x = (h: number) => L + (maxH ? (h / maxH) : 0) * (W - L - R);
-                          const y = (e: number) => T + (1 - (Math.log10(e) - lo) / span) * (H - T - B);
-                          const path = pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.h).toFixed(1)},${y(p.e).toFixed(1)}`).join(' ');
-                          return (
-                            <Chart viewBox={`0 0 ${W} ${H}`} role="img"
-                              aria-label="Localisation error radius over time">
-                              {[0, 0.5, 1].map(f => {
-                                const yy = T + f * (H - T - B);
-                                const val = 10 ** (hi - f * span);
-                                return (
-                                  <g key={f}>
-                                    <line className="grid" x1={L} x2={W - R} y1={yy} y2={yy} />
-                                    <text className="axis" x={0} y={yy + 3}>{fmtErr(val)}</text>
-                                  </g>
-                                );
-                              })}
-                              <path className="track" d={path} />
-                              {pts.map(p => (
-                                <circle key={p.id} className={`dot${p.best ? ' dot--best' : ''}`}
-                                  cx={x(p.h)} cy={y(p.e)} r={p.best ? 4 : 3} />
-                              ))}
-                              <text className="lbl" x={L} y={H - 5}>T+0</text>
-                              <text className="lbl" x={W - R} y={H - 5} textAnchor="end">
-                                {maxH >= 24 ? `T+${(maxH / 24).toFixed(1)}d` : `T+${maxH.toFixed(1)}h`}
-                              </text>
-                            </Chart>
-                          );
-                        })()}
-                      </>
-                    ) : <Empty>Single localisation — no refinement history.</Empty>}
-                  </Panel>
-                </PositionSplit>
+                </>
               ) : <Empty>No position reported.</Empty>}
             </Card>
           </Section>
@@ -640,7 +640,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                 const figs = imageUrls(c.data?.urls);
                 const urls = (c.data?.urls || []).filter(u => typeof u === 'string' && /^https?:\/\//i.test(u));
                 return (
-                  <CircCard key={c.alertKey} $open={open}>
+                  <CircCard key={c.alertKey} id={`circ-${c.alertKey}`} $open={open}>
                     <CircHead onClick={() => toggle(openCirc, setOpenCirc)(c.alertKey)} aria-expanded={open}>
                       <CircGrid>
                         <CircId>{c.alertKey}</CircId>

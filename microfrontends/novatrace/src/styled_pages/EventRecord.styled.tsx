@@ -436,6 +436,24 @@ export const PanelFoot = styled.div`
   overflow-wrap: anywhere;
 `;
 
+/* "Every localisation reported" under the coordinates: one row per notice instrument's tightest
+   and per circular position; the row the event's position came from is marked. */
+export const LocBlock = styled.div`
+  margin-top: 18px;
+`;
+
+export const LocRow = styled.tr<{ $best: boolean; $tentative: boolean }>`
+  /* Cells only, and not their contents: inline children inherit the background here, so a
+     row-level tint stacked a second layer on every link and hint. */
+  ${p => p.$best && css`& > td { background: ${ARC(0.12)}; color: ${PLATINUM}; } & > td * { background: transparent; }`}
+  ${p => p.$tentative && css`& > td { color: ${line(0.42)}; }`}
+`;
+
+export const LocStar = styled.span`
+  color: ${GOLD};
+  margin-right: 6px;
+`;
+
 export const FieldGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
@@ -639,6 +657,7 @@ export const Tab = styled.button<{ $active: boolean }>`
    marker, active tabs). */
 export const CircCard = styled.div<{ $open?: boolean }>`
   overflow: hidden;
+  scroll-margin-top: 76px; /* clear the sticky top bar, as Section does (localisation table links) */
   position: relative;
   transition: box-shadow 0.15s;
   ${p => p.$open && css`
