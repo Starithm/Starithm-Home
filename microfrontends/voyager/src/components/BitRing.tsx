@@ -8,9 +8,9 @@ import { BEAT_MS, BITS_PER_NOTE } from '../lib/signal-music';
  * bits keep coming and the ring quietly empties. It shows how much Voyager sends, not what: the
  * bits themselves are not public, so no 0s and 1s are drawn. */
 
-const SIZE = 240; // canvas px, centred on Voyager
-const R_IN = 80;
-const R_OUT = 90;
+const SIZE = 400; // canvas px, centred on Voyager
+export const R_IN = 165; // just outside the spacecraft photo
+export const R_OUT = 180;
 const onsets = new Set(score.onsets);
 
 function token(el: Element, name: string, fallback: string) {

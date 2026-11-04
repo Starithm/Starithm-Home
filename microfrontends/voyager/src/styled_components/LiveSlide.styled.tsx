@@ -128,13 +128,16 @@ export const Marker = styled.div<{ $gap?: number }>`
   }
 `;
 
+/* centred under the marker, below the bottom crosshair tick: beside it, it would run into the readouts */
 export const MarkerLabel = styled.div`
   position: absolute;
-  left: calc(var(--gap) + 46px);
-  top: -40px;
+  left: 0;
+  top: calc(var(--gap) + 40px);
+  transform: translateX(-50%);
   white-space: nowrap;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2px;
 
   div:first-child {
@@ -539,10 +542,10 @@ export const Hint = styled.div`
    through and only the spacecraft remains; a soft round mask hides the crop's edges. */
 export const CraftPhoto = styled.img`
   position: absolute;
-  left: -85px;
-  top: -85px;
-  width: 170px;
-  height: 170px;
+  left: -170px;
+  top: -170px;
+  width: 340px;
+  height: 340px;
   max-width: none; /* the global img max-width would collapse it: the marker is 0 px wide */
   mix-blend-mode: screen;
   mask-image: radial-gradient(circle, black 55%, transparent 72%);
