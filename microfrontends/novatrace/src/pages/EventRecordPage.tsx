@@ -12,7 +12,7 @@ import {
   Shell, Rail, RailHead, RailLink, RailCount, RailFoot, RailFootHead, RailPrompt,
   RailPromptCta, Content,
   MetaRow, SigPill, Kind, Headline, SubMeta,
-  Section, SectionHead, SectionTitle, SectionNote, Card, Prose,
+  SectionHead, SectionNote, Card, Prose,
   FieldGrid, Field, FieldLabel, FieldValue, FieldHint,
   Muted,
   Row, Stack, Topic, Phase, PayloadWrap, PayloadTable,
@@ -26,6 +26,9 @@ import {
 import { eventRedshifts, needsLabel, readRedshift } from '../utils/redshift';
 import { EventCounterparts, counterpartsCount, hasCounterparts, type Counterparts } from '../components/EventCounterparts';
 import { eventLocalisations, bestLocalisation, instrumentsSeen, type Localisation, type PositionRow, type PositionSource } from '../utils/localisations';
+import { RecordSection, SectionToggle, SectionsProvider, useSections } from '../components/RecordSection';
+import { EventObservations } from '../components/EventObservations';
+import { shownObservations, type ObservationRow } from '../utils/observations';
 
 /* Types mirror GET /api/public/events/:canonicalId exactly — no fields beyond it. */
 interface Notice {
@@ -45,6 +48,7 @@ interface Circular {
     raw?: string;
     urls?: string[];
     positions?: { version: number; rows: PositionRow[] };
+    observations?: { version: number | null; rows?: ObservationRow[] };
   };
   tags?: string[];
 }
@@ -228,13 +232,19 @@ const toCsv = (rows: Array<Record<string, any>>) => {
 const SECTIONS = [
   { id: 'summary', label: 'Summary' },
   { id: 'position', label: 'Position' },
+  { id: 'observations', label: 'Observations' },
   { id: 'counterparts', label: 'Counterparts' },
   { id: 'notices', label: 'Notices' },
   { id: 'circulars', label: 'Circulars' },
   { id: 'cite', label: 'Cite' },
 ];
 
-export default function EventRecordPage({ canonicalId }: { canonicalId?: string }) {
+export default function EventRecordPage(props: { canonicalId?: string }) {
+  return <SectionsProvider><EventRecord {...props} /></SectionsProvider>;
+}
+
+function EventRecord({ canonicalId }: { canonicalId?: string }) {
+  const { expand } = useSections();
   const { isSignedIn } = useAuth();
   const [event, setEvent] = useState<PublicEvent | null>(null);
   const [loading, setLoading] = useState(true);
@@ -297,6 +307,7 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
 
   /* From the localisation table: show that circular's card, open, in place. */
   const openCircular = (alertKey: string) => {
+    expand('circulars');
     setCircFilter('all');
     setOpenCirc(prev => new Set(prev).add(alertKey));
     requestAnimationFrame(() =>
@@ -369,11 +380,13 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
   });
   const locRows = localisations.filter(l => l.errorDeg != null && (l.from.kind === 'circular' || tightest.get(l.instrument) === l));
 
+  const observationsCount = shownObservations(event.circulars).obs.length;
   const counterpartsData: Counterparts = { crossMatch: event.crossMatch ?? null, optical: event.optical ?? null, catalog: event.catalog ?? null };
   const counts: Record<string, number | undefined> = {
     notices: event.notices.length,
     circulars: event.circulars.length,
     counterparts: counterpartsCount(counterpartsData) || undefined,
+    observations: observationsCount || undefined,
   };
 
   return (
@@ -407,7 +420,10 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
             <RailLink
               key={s.id}
               $active={active === s.id}
-              onClick={() => document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              onClick={() => {
+                expand(s.id);
+                requestAnimationFrame(() => document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+              }}
             >
               {s.label}
               {counts[s.id] != null && <RailCount>{counts[s.id]}</RailCount>}
@@ -452,9 +468,9 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
             {afterglow.length > 0 && <SubMeta>afterglow: {afterglow.join(' · ')}</SubMeta>}
           </header>
 
-          <Section id="summary">
+          <RecordSection id="summary">
             <SectionHead>
-              <SectionTitle>Summary</SectionTitle>
+              <SectionToggle>Summary</SectionToggle>
               <SectionNote>Model-generated · unreviewed</SectionNote>
             </SectionHead>
             <Card>
@@ -462,11 +478,11 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                 ? <Prose>{event.aiSummary.details}</Prose>
                 : <Empty>No summary generated for this event yet.</Empty>}
             </Card>
-          </Section>
+          </RecordSection>
 
-          <Section id="position">
+          <RecordSection id="position">
             <SectionHead>
-              <SectionTitle>Position</SectionTitle>
+              <SectionToggle>Position</SectionToggle>
               {err != null && <SectionNote>{quality(err)} · ± {fmtErr(err)}</SectionNote>}
             </SectionHead>
             <Card>
@@ -534,14 +550,16 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                 </>
               ) : <Empty>No position reported.</Empty>}
             </Card>
-          </Section>
+          </RecordSection>
+
+          <EventObservations circulars={event.circulars} onOpenCircular={openCircular} />
 
           <EventCounterparts data={counterpartsData}
             position={event.raDeg != null && event.decDeg != null ? { raDeg: event.raDeg, decDeg: event.decDeg, errorDeg: err } : null} />
 
-          <Section id="notices">
+          <RecordSection id="notices">
             <SectionHead>
-              <SectionTitle>Notice timeline</SectionTitle>
+              <SectionToggle>Notice timeline</SectionToggle>
               <SectionNote>{event.notices.length} machine notices</SectionNote>
             </SectionHead>
             <Stack>
@@ -609,11 +627,11 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                 );
               })}
             </Stack>
-          </Section>
+          </RecordSection>
 
-          <Section id="circulars">
+          <RecordSection id="circulars">
             <SectionHead>
-              <SectionTitle>Circulars</SectionTitle>
+              <SectionToggle>Circulars</SectionToggle>
               <SectionNote>
                 {circulars.length} of {event.circulars.length}
                 {totalParsed > 0 && ` · ${totalParsed} values parsed from text`}
@@ -808,11 +826,11 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
                 );
               })}
             </Stack>
-          </Section>
+          </RecordSection>
 
-          <Section id="cite">
+          <RecordSection id="cite">
             <SectionHead>
-              <SectionTitle>Cite this event</SectionTitle>
+              <SectionToggle>Cite this event</SectionToggle>
               <SectionNote>Website reference · not a primary source</SectionNote>
             </SectionHead>
             <Cite>{`@misc{starithm_${event.canonicalId.toLowerCase().replace(/[^a-z0-9]/g, '_')},
@@ -822,14 +840,14 @@ export default function EventRecordPage({ canonicalId }: { canonicalId?: string 
   url     = {https://starithm.ai/novatrace/events/${event.canonicalId}},
   note    = {Real-time astronomical event monitoring, Starithm}
 }`}</Cite>
-          </Section>
+          </RecordSection>
 
-          <Section id="discussion">
+          <RecordSection id="discussion">
             <SectionHead>
-              <SectionTitle>Discussion</SectionTitle>
+              <SectionToggle>Discussion</SectionToggle>
             </SectionHead>
             <CommentThread canonicalId={event.canonicalId} />
-          </Section>
+          </RecordSection>
         </Content>
       </Shell>
     </Page>
