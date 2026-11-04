@@ -378,6 +378,18 @@ export const SectionTitle = styled.h2`
   color: ${GOLD};
 `;
 
+/* The title as the section's collapse control (components/RecordSection.tsx). */
+export const SectionToggleButton = styled.button`
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  svg { color: ${line(0.45)}; }
+  &:hover svg { color: ${GOLD}; }
+  &:focus-visible { outline: 1px solid ${ARC_OUTER}; outline-offset: 3px; }
+`;
+
 export const SectionNote = styled.span`
   font-size: ${fs(10)};
   letter-spacing: 0.1em;
@@ -434,6 +446,24 @@ export const PanelFoot = styled.div`
   font-size: ${fs(11)};
   color: ${line(0.5)};
   overflow-wrap: anywhere;
+`;
+
+/* "Every localisation reported" under the coordinates: one row per notice instrument's tightest
+   and per circular position; the row the event's position came from is marked. */
+export const LocBlock = styled.div`
+  margin-top: 18px;
+`;
+
+export const LocRow = styled.tr<{ $best: boolean; $tentative: boolean }>`
+  /* Cells only, and not their contents: inline children inherit the background here, so a
+     row-level tint stacked a second layer on every link and hint. */
+  ${p => p.$best && css`& > td { background: ${ARC(0.12)}; color: ${PLATINUM}; } & > td * { background: transparent; }`}
+  ${p => p.$tentative && css`& > td { color: ${line(0.42)}; }`}
+`;
+
+export const LocStar = styled.span`
+  color: ${GOLD};
+  margin-right: 6px;
 `;
 
 export const FieldGrid = styled.div`
@@ -639,6 +669,7 @@ export const Tab = styled.button<{ $active: boolean }>`
    marker, active tabs). */
 export const CircCard = styled.div<{ $open?: boolean }>`
   overflow: hidden;
+  scroll-margin-top: 76px; /* clear the sticky top bar, as Section does (localisation table links) */
   position: relative;
   transition: box-shadow 0.15s;
   ${p => p.$open && css`
@@ -1035,3 +1066,22 @@ export const Chart = styled.svg`
   .dot--best { fill: ${GOLD}; }
   .lbl { fill: ${line(0.5)}; font-size: ${fs(8.5)}; }
 `;
+
+/* Observations coverage: one lane per regime on a log time axis, detections filled, limits as
+   open down-triangles. A lane is a button for the table filter below it. */
+export const ObsChart = styled(Chart)`
+  height: auto;
+  margin-bottom: 12px;
+  .lane { cursor: pointer; }
+  .lane--dim { opacity: 0.3; }
+  .lane-rule { stroke: ${line(0.06)}; stroke-width: 1; }
+  .det { fill: var(--accent-text); }
+  .lim { fill: none; stroke: ${line(0.5)}; stroke-width: 1; }
+  .lane:focus-visible { outline: 1px solid ${ARC_OUTER}; }
+`;
+
+/* An upper limit: dimmer than a detection, so a column of limits doesn't read as data. */
+export const ObsRow = styled.tr<{ $limit: boolean }>`
+  ${p => p.$limit && css`& > td { color: ${line(0.5)}; }`}
+`;
+

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Section, SectionHead, SectionTitle, SectionNote, Card, Muted, TableWrap, Table, MiniLabel,
+  SectionHead, SectionNote, Card, Muted, TableWrap, Table, MiniLabel,
   Disclaimer,
 } from '../styled_pages/EventRecord.styled';
 import { EventSkyMap, type PointKind, type SkyPoint, type SkyRegion } from './EventSkyMap';
+import { RecordSection, SectionToggle } from './RecordSection';
 
 /* Everything NovaTrace found around an event, in one section: other events cross-match grouped
  * with it, optical candidates from the cone search (Lasair Rubin/ZTF, TNS) with the cross-match
@@ -152,9 +153,9 @@ export function EventCounterparts({ data, position }: {
   const points = position ? skyPoints(data) : [];
 
   return (
-    <Section id="counterparts">
+    <RecordSection id="counterparts">
       <SectionHead>
-        <SectionTitle>Counterparts</SectionTitle>
+        <SectionToggle>Counterparts</SectionToggle>
         <SectionNote>Candidates · not confirmed</SectionNote>
       </SectionHead>
       <Card>
@@ -224,6 +225,6 @@ export function EventCounterparts({ data, position }: {
           optical classes are model-generated.
         </Disclaimer>
       </Card>
-    </Section>
+    </RecordSection>
   );
 }
