@@ -29,6 +29,7 @@ import { eventLocalisations, bestLocalisation, instrumentsSeen, type Localisatio
 import { RecordSection, SectionToggle, SectionsProvider, useSections } from '../components/RecordSection';
 import { EventObservations } from '../components/EventObservations';
 import { shownObservations, type ObservationRow } from '../utils/observations';
+import { swiftLinks } from '../utils/swift';
 
 /* Types mirror GET /api/public/events/:canonicalId exactly — no fields beyond it. */
 interface Notice {
@@ -381,6 +382,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
   const locRows = localisations.filter(l => l.errorDeg != null && (l.from.kind === 'circular' || tightest.get(l.instrument) === l));
 
   const observationsCount = shownObservations(event.circulars).obs.length;
+  /* Swift's own pages (GRB table, UKSSDC XRT products) when Swift triggered on this burst. */
+  const swift = swiftLinks(event.circulars);
   const counterpartsData: Counterparts = { crossMatch: event.crossMatch ?? null, optical: event.optical ?? null, catalog: event.catalog ?? null };
   const counts: Record<string, number | undefined> = {
     notices: event.notices.length,
@@ -549,6 +552,18 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
                   )}
                 </>
               ) : <Empty>No position reported.</Empty>}
+
+              {swift && (
+                <LocBlock>
+                  <FieldLabel>Swift data · GRB {swift.name} · trigger {swift.trigger}</FieldLabel>
+                  {swift.links.map((l, i) => (
+                    <React.Fragment key={l.url}>
+                      {i > 0 && <Muted> · </Muted>}
+                      <UrlLink href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</UrlLink>
+                    </React.Fragment>
+                  ))}
+                </LocBlock>
+              )}
             </Card>
           </RecordSection>
 
