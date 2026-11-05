@@ -45,6 +45,10 @@ const NovaTraceMicrofrontend: React.FC = () => {
       // Ask Evren replaced the old keyword event search here (the question is in ?q=).
       case '/novatrace/search':
         return <AskPage />;
+      // The name people guess for Ask Evren, and a link that went out in outreach (2026-11-05).
+      // Redirect, keeping ?q=, so the page keeps one address.
+      case '/novatrace/ask':
+        return <Navigate to={`/novatrace/search${location.search}`} replace />;
       default:
         return <NotFound />;
     }
