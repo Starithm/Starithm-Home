@@ -28,7 +28,8 @@ import { EventCounterparts, counterpartsCount, hasCounterparts, type Counterpart
 import { eventLocalisations, bestLocalisation, instrumentsSeen, type Localisation, type PositionRow, type PositionSource } from '../utils/localisations';
 import { RecordSection, SectionToggle, SectionsProvider, useSections } from '../components/RecordSection';
 import { EventObservations } from '../components/EventObservations';
-import { shownObservations, type ObservationRow } from '../utils/observations';
+import { EventBurstProperties } from '../components/EventBurstProperties';
+import { shownObservations, burstProperties, type ObservationRow } from '../utils/observations';
 import { swiftLinks } from '../utils/swift';
 
 /* Types mirror GET /api/public/events/:canonicalId exactly — no fields beyond it. */
@@ -233,6 +234,7 @@ const toCsv = (rows: Array<Record<string, any>>) => {
 const SECTIONS = [
   { id: 'summary', label: 'Summary' },
   { id: 'position', label: 'Position' },
+  { id: 'burst', label: 'Burst properties' },
   { id: 'observations', label: 'Observations' },
   { id: 'counterparts', label: 'Counterparts' },
   { id: 'notices', label: 'Notices' },
@@ -382,6 +384,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
   const locRows = localisations.filter(l => l.errorDeg != null && (l.from.kind === 'circular' || tightest.get(l.instrument) === l));
 
   const observationsCount = shownObservations(event.circulars).obs.length;
+  const burstCount = burstProperties(event.circulars).length;
   /* Swift's own pages (GRB table, UKSSDC XRT products) when Swift triggered on this burst. */
   const swift = swiftLinks(event.circulars);
   const counterpartsData: Counterparts = { crossMatch: event.crossMatch ?? null, optical: event.optical ?? null, catalog: event.catalog ?? null };
@@ -390,6 +393,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
     circulars: event.circulars.length,
     counterparts: counterpartsCount(counterpartsData) || undefined,
     observations: observationsCount || undefined,
+    burst: burstCount || undefined,
   };
 
   return (
@@ -418,8 +422,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
       <Shell>
         <Rail>
           <RailHead>On this record</RailHead>
-          {/* Counterparts has no section when there is nothing to show, so no rail entry either. */}
-          {SECTIONS.filter(s => s.id !== 'counterparts' || hasCounterparts(counterpartsData)).map(s => (
+          {/* Counterparts and Burst properties have no section when there is nothing to show, so no rail entry either. */}
+          {SECTIONS.filter(s => (s.id !== 'counterparts' || hasCounterparts(counterpartsData)) && (s.id !== 'burst' || burstCount > 0)).map(s => (
             <RailLink
               key={s.id}
               $active={active === s.id}
@@ -566,6 +570,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
               )}
             </Card>
           </RecordSection>
+
+          <EventBurstProperties circulars={event.circulars} onOpenCircular={openCircular} />
 
           <EventObservations circulars={event.circulars} onOpenCircular={openCircular} />
 

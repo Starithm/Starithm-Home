@@ -8,9 +8,10 @@
  */
 
 export interface ObservationRow {
-  quantity: string | null;       // magnitude | flux | flux_density | count_rate | …
+  quantity: string | null;       // magnitude | flux | flux_density | count_rate | (prompt) duration | fluence | peak_flux | photon_index | epeak | …
   kind: 'detection' | 'upper_limit' | 'depth' | string | null;
-  object: 'counterpart' | 'host' | 'field_source' | 'comparison' | 'other' | string | null;
+  /** 'prompt' (v3): the burst's own emission as the triggering instrument saw it. */
+  object: 'counterpart' | 'prompt' | 'host' | 'field_source' | 'comparison' | 'other' | string | null;
   object_name?: string | null;
   value: number | null;
   unit: string | null;
@@ -24,6 +25,7 @@ export interface ObservationRow {
   time?: string | null;
   exposure_s?: number | null;
   analysis?: 'preliminary' | 'refined' | null;
+  spectral_model?: 'power_law' | 'cutoff_power_law' | 'band' | 'blackbody' | 'other' | null;
   quote: string | null;
 }
 
@@ -84,6 +86,27 @@ export function eventObservations(circulars: CircularLike[]): Observation[] {
   return out.sort((a, b) => t(a) - t(b) || Date.parse(a.date) - Date.parse(b.date));
 }
 
+/* Burst properties (v3 object "prompt"), in the order the Swift GRB table lists them. */
+export const PROMPT_PROPERTIES: { id: string; label: string }[] = [
+  { id: 'duration', label: 'Duration' },
+  { id: 'fluence', label: 'Fluence' },
+  { id: 'peak_flux', label: 'Peak flux' },
+  { id: 'photon_index', label: 'Photon index' },
+  { id: 'epeak', label: 'Epeak' },
+];
+
+export const SPECTRAL_MODEL_LABEL: Record<string, string> = {
+  power_law: 'PL', cutoff_power_law: 'CPL', band: 'Band', blackbody: 'BB', other: 'other',
+};
+
+/** The burst's own properties from its circulars, grouped by property in PROMPT_PROPERTIES order. */
+export function burstProperties(circulars: CircularLike[]): Observation[] {
+  const order = new Map(PROMPT_PROPERTIES.map((p, i) => [p.id, i]));
+  return eventObservations(circulars)
+    .filter(o => o.object === 'prompt' && order.has(o.quantity ?? ''))
+    .sort((a, b) => order.get(a.quantity!)! - order.get(b.quantity!)! || Date.parse(a.date) - Date.parse(b.date));
+}
+
 /* A time more than a year after the trigger is a misread date (GRB 260310A: "T+7344 d"), not a
    late observation. */
 const MAX_SINCE_S = 365 * 86400;
@@ -92,7 +115,8 @@ const MAX_SINCE_S = 365 * 86400;
 export function shownObservations(circulars: CircularLike[]): { obs: Observation[]; hidden: number } {
   const rows = eventObservations(circulars);
   const own = rows.filter(o => isEventLight(o) && (o.time_since_trigger_s == null || o.time_since_trigger_s <= MAX_SINCE_S));
-  return { obs: own, hidden: rows.filter(o => !isEventLight(o)).length };
+  // Hidden = other objects' light (hosts, field and comparison stars); burst properties have their own section.
+  return { obs: own, hidden: rows.filter(o => !isEventLight(o) && o.object !== 'prompt').length };
 }
 
 /** How many circulars of the event the observations backfill has reached. */
