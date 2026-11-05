@@ -5,7 +5,7 @@
  * (E_iso / redshift chosen per event, NovaTrace event_engine/lib/energetics.ts). Each keeps the
  * circular it came from. A fact the event does not have is left out, not shown as a dash.
  */
-import { burstProperties, fmtNormalised, fmtObservationValue, type Observation, type ObservationRow } from './observations';
+import { burstProperties, CATALOG_LABEL, fmtNormalised, fmtObservationValue, type CatalogValues, type Observation, type ObservationRow } from './observations';
 import type { RedshiftReport } from './redshift';
 
 export interface KeyFact {
@@ -43,9 +43,10 @@ const PROMPT_FACTS: { id: string; label: string }[] = [
 const factValue = (o: Observation) =>
   (/\d\s*e[-+]?\d|10\s*\^/i.test(o.unit ?? '') && fmtNormalised(o)) || fmtObservationValue(o);
 
-/** One value per property: a detection over a limit, a refined analysis over a first look, then the latest. */
+/** One value per property: a burst catalogue's (measured the same way for every burst) over a
+ *  circular's, a detection over a limit, a refined analysis over a first look, then the latest. */
 function pickProperty(rows: Observation[]): Observation | null {
-  const score = (o: Observation) => (o.kind === 'detection' ? 2 : 0) + (o.analysis === 'refined' ? 1 : 0);
+  const score = (o: Observation) => (o.source === 'catalog' ? 4 : 0) + (o.kind === 'detection' ? 2 : 0) + (o.analysis === 'refined' ? 1 : 0);
   return rows.reduce<Observation | null>((best, o) =>
     !best || score(o) > score(best) || (score(o) === score(best) && Date.parse(o.date) >= Date.parse(best.date)) ? o : best, null);
 }
@@ -56,8 +57,9 @@ const sci = (v: number) => {
   return `${(v / 10 ** e).toFixed(2)} × 10${String(e).replace(/./g, c => SUP[c] ?? c)}`;
 };
 
-export function keyFacts({ circulars, position, redshifts, energetics }: {
+export function keyFacts({ circulars, catalogs, position, redshifts, energetics }: {
   circulars: CircularLike[];
+  catalogs?: CatalogValues[];
   position: { text: string; by: string | null; alertKey: string | null } | null;
   redshifts: RedshiftReport[];
   energetics: Energetics | null | undefined;
@@ -65,12 +67,16 @@ export function keyFacts({ circulars, position, redshifts, energetics }: {
   const facts: KeyFact[] = [];
   if (position) facts.push({ id: 'position', label: 'Position', value: position.text, by: position.by, alertKey: position.alertKey, wide: true });
 
-  const props = burstProperties(circulars);
+  const props = burstProperties(circulars, catalogs);
   for (const p of PROMPT_FACTS) {
     // Epeak in the burst's rest frame is a different number; the observed one is what the instruments report.
     const rows = props.filter(o => o.quantity === p.id && (o as { frame?: string | null }).frame !== 'rest');
     const o = pickProperty(rows);
-    if (o) facts.push({ id: p.id, label: p.label, value: factValue(o), by: o.instrument || o.telescope, alertKey: o.alertKey, more: rows.length - 1 });
+    if (o) facts.push({
+      id: p.id, label: p.label, value: factValue(o),
+      by: o.source === 'catalog' ? CATALOG_LABEL[o.catalog ?? ''] ?? o.catalog : o.instrument || o.telescope,
+      alertKey: o.source === 'catalog' ? null : o.alertKey, more: rows.length - 1,
+    });
   }
 
   const z = energetics?.redshift;
