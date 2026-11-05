@@ -30,7 +30,7 @@ export function EventBurstProperties({ circulars, catalogs, onOpenCircular }: {
       <SectionHead>
         <SectionToggle>Burst properties</SectionToggle>
         <SectionNote>
-          {rows.length} values · {fromCatalog ? `${fromCatalog} from the GBM catalogue, ${rows.length - fromCatalog} from circulars` : 'as reported in circulars'}
+          {rows.length} values · {fromCatalog ? `${fromCatalog} from catalogues, ${rows.length - fromCatalog} from circulars` : 'as reported in circulars'}
         </SectionNote>
       </SectionHead>
       <Card>
@@ -65,7 +65,7 @@ export function EventBurstProperties({ circulars, catalogs, onOpenCircular }: {
         </TableWrap>
         <Disclaimer>
           Circular values are model-parsed from the circular text; hover a row for the sentence it came from.
-          {fromCatalog > 0 && ' Catalogue values are from the Fermi GBM Burst Catalog (HEASARC), measured the same way for every GBM burst.'}
+          {fromCatalog > 0 && ' Catalogue values are from the Fermi GBM Burst Catalog (HEASARC) and the Swift GRB table (GSFC), each measured the same way for every burst it lists; Swift\'s errors are 90%.'}
         </Disclaimer>
       </Card>
     </RecordSection>

@@ -38,10 +38,14 @@ export interface ObservationRow {
 /** The event's own values from burst catalogues (NovaTrace scripts/main/enrich/gbm-catalog.ts). */
 export interface CatalogValues { catalog: string; catalogId: string; matchedBy: string; fetchedAt: string; rows: ObservationRow[] }
 
-export const CATALOG_LABEL: Record<string, string> = { fermigbrst: 'GBM catalogue' };
+export const CATALOG_LABEL: Record<string, string> = { fermigbrst: 'GBM catalogue', swift_grb_table: 'Swift GRB table' };
 
-/** The catalogue's own page for the entry: GBM's per-burst data directory ("GRB261017670" → bn261017670). */
+/** The catalogue's own page for the entry: GBM's per-burst data directory ("GRB261017670" → bn261017670),
+ *  the Swift GRB table's page for the burst ("261017A"). */
 export function catalogUrl(o: ObservationRow): string | null {
+  if (o.catalog === 'swift_grb_table' && o.catalog_id) {
+    return `https://swift.gsfc.nasa.gov/archive/grb_table/fullview/${o.catalog_id}/`;
+  }
   if (o.catalog === 'fermigbrst' && o.catalog_id?.startsWith('GRB')) {
     const bn = o.catalog_id.slice(3);
     return `https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/bursts/20${bn.slice(0, 2)}/bn${bn}/`;
@@ -175,14 +179,25 @@ const pow10 = (e: number) => `10${String(e).replace(/./g, c => SUP[c] ?? c)}`;
 /** A catalogue value with its error, rounded the way a paper would print it: the error to 2
  *  significant figures, the value to the same decimal place ("0.704 ± 0.045 s", "6.90 ± 0.11 ×10⁻⁷").
  *  Catalogues store full float precision; circular values are shown exactly as written instead. */
-function fmtCatalogValue(o: ObservationRow): string {
+function fmtCatalogValue(row: ObservationRow): string {
+  // A unit carrying its own power of ten ("1e-7 erg/cm2", Swift's table) is folded into the number,
+  // using the normalised value: 14 ± 1 "1e-7 erg/cm2" → (1.40 ± 0.10) ×10⁻⁶ erg/cm2.
+  const n = row.norm;
+  const k0 = n?.value != null && row.value ? n.value / row.value : 1;
+  const o: ObservationRow = /\d\s*e[-+]?\d|10\s*\^/i.test(row.unit ?? '') && n?.unit && k0 !== 1 ? {
+    ...row, value: n.value!, unit: n.unit,
+    error: row.error != null ? row.error * k0 : null,
+    error_plus: row.error_plus != null ? row.error_plus * k0 : null,
+    error_minus: row.error_minus != null ? row.error_minus * k0 : null,
+  } : row;
   const v = o.value!;
   const errs = [o.error, o.error_plus, o.error_minus].filter((e): e is number => e != null && e > 0);
   const e = Math.floor(Math.log10(Math.abs(v)));
   const sci = Math.abs(v) >= 1e4 || (Math.abs(v) > 0 && Math.abs(v) < 1e-2);
   const k = sci ? 10 ** e : 1;                                    // shown as mantissa × 10^e
   const places = errs.length ? Math.max(0, 1 - Math.floor(Math.log10(Math.min(...errs) / k))) : 3;
-  const f = (x: number) => (x / k).toFixed(Math.min(places, 6));
+  // No error to round to: as stored, to 3 decimals at most ("89.36 s", not "89.360 s").
+  const f = (x: number) => (errs.length ? (x / k).toFixed(Math.min(places, 6)) : String(Number((x / k).toFixed(3))));
   const sym = o.error ?? (o.error_plus != null && o.error_plus === Math.abs(o.error_minus ?? NaN) ? o.error_plus : null);
   const err = sym != null ? ` ± ${f(sym)}`
     : o.error_plus != null && o.error_minus != null ? ` +${f(o.error_plus)}/−${f(Math.abs(o.error_minus))}` : '';
