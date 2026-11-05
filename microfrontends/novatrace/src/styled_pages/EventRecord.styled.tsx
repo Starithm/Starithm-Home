@@ -1119,6 +1119,75 @@ export const AssumptionNote = styled.div`
   white-space: normal;
 `;
 
+/* X-ray light curve (EventLightCurve): log-log flux vs time. XRT points in --chart-1, circular
+   values in --chart-2 (validated pair); limits open down-triangles as in ObsChart. The page is
+   dark whatever the site theme, so grounds and ink use this file's constants, not theme tokens. */
+/* On a phone the chart keeps a readable minimum width and scrolls sideways inside the card. */
+export const LcScroll = styled.div`
+  overflow-x: auto;
+`;
+
+export const LcWrap = styled.div`
+  position: relative;
+  min-width: 560px;
+`;
+
+/* Colour is the instrument (--c per group), shape the provenance: filled / open / limit. */
+const lcGroups = css`
+  .g-xrt { --c: var(--chart-1); }
+  .g-ep { --c: var(--chart-2); }
+  .g-xmm { --c: var(--chart-3); }
+  .g-other { --c: ${line(0.7)}; }
+`;
+
+export const LcChart = styled(Chart)`
+  height: auto;
+  ${lcGroups}
+  .axis-title { fill: ${line(0.5)}; font-size: ${fs(9)}; }
+  .filled { fill: var(--c); stroke: ${BG}; stroke-width: 0.8; }
+  .open { fill: ${BG}; stroke: var(--c); stroke-width: 1.4; }
+  /* Circular values are few: drawn larger, with a 2 px ground ring, so they read above the curve. */
+  .gcn.filled { stroke: ${BG}; stroke-width: 2; }
+  .gcn.open { stroke-width: 1.6; }
+  .lim { fill: none; stroke: var(--c); stroke-width: 1.3; }
+  .err line { stroke: var(--c); stroke-width: 1; opacity: 0.55; }
+  .err--gcn line { opacity: 0.85; }
+  .hover-ring { fill: none; stroke: ${PLATINUM}; stroke-width: 1.2; }
+`;
+
+export const LcTip = styled.div`
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid ${line(0.16)};
+  background: ${BG};
+  color: ${PLATINUM};
+  font-family: var(--font-mono);
+  font-size: ${fs(10)};
+  line-height: 1.45;
+  span { color: ${line(0.6)}; }
+`;
+
+export const LcLegend = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+  font-size: ${fs(10)};
+  color: ${line(0.6)};
+  ${lcGroups}
+  > div { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  span { display: inline-flex; align-items: center; gap: 6px; }
+  .filled { fill: var(--c); }
+  .open { fill: none; stroke: var(--c); stroke-width: 1.4; }
+  .lim { fill: none; stroke: var(--c); stroke-width: 1.3; }
+  /* The shape key is about shape, so it is drawn in neutral ink. */
+  .shapes { --c: ${line(0.7)}; }
+`;
+
 export const ObsRow = styled.tr<{ $limit: boolean }>`
   ${p => p.$limit && css`& > td { color: ${line(0.5)}; }`}
 `;

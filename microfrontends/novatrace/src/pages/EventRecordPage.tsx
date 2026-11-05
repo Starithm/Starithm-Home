@@ -28,6 +28,7 @@ import { EventCounterparts, counterpartsCount, hasCounterparts, type Counterpart
 import { eventLocalisations, bestLocalisation, instrumentsSeen, type Localisation, type PositionRow, type PositionSource } from '../utils/localisations';
 import { RecordSection, SectionToggle, SectionsProvider, useSections } from '../components/RecordSection';
 import { EventObservations } from '../components/EventObservations';
+import { EventLightCurve, type LightCurve } from '../components/EventLightCurve';
 import { EventBurstProperties } from '../components/EventBurstProperties';
 import { EventKeyFacts } from '../components/EventKeyFacts';
 import { keyFacts, type Energetics } from '../utils/keyFacts';
@@ -68,6 +69,7 @@ interface PublicEvent {
   energetics?: Energetics | null;
   /* The burst's own values from burst catalogues (GBM; NovaTrace #122); absent before that API. */
   catalogValues?: CatalogValues[];
+  lightCurves?: LightCurve[];
   noticeCount: number; circularCount: number;
   aiSummary: { headline: string; significance: string; details: string; generatedAt: string } | null;
   notices: Notice[];
@@ -592,6 +594,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
           </RecordSection>
 
           <EventBurstProperties circulars={event.circulars} catalogs={event.catalogValues} onOpenCircular={openCircular} />
+
+          <EventLightCurve curves={event.lightCurves} circulars={event.circulars} onOpenCircular={openCircular} />
 
           <EventObservations circulars={event.circulars} onOpenCircular={openCircular} />
 

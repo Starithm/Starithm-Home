@@ -48,6 +48,13 @@
   --starithm-link: #69acf4;
   /* nebula teal: [O III] at 500.7 nm, the glow of planetary nebulae. Voyager countdown. 12.0:1 on --background */
   --starithm-nebula-teal: #4FE0CF;
+  /* Chart series, one value for both themes. The three pass every pair (scatter rule) on #0E0B16 and
+     on white: lightness band, chroma, colour-blind ΔE, 3:1 contrast. No fourth hue does (blue is too
+     close to veronica, yellow/red to orange): fold more series into "Other". Series 1 is the brand
+     veronica; 2 a teal dark enough for white (nebula teal is too light on either); 3 orange. */
+  --chart-1: #A239CA;
+  --chart-2: #009688;
+  --chart-3: #D95926;
 
   /* React Day Picker Theme Variables - Light Mode */
   
