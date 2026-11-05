@@ -1081,6 +1081,14 @@ export const ObsChart = styled(Chart)`
 `;
 
 /* An upper limit: dimmer than a detection, so a column of limits doesn't read as data. */
+/* Under a normalised value: the assumptions its conversion made, in brackets. */
+export const AssumptionNote = styled.div`
+  font-size: ${fs(11)};
+  color: ${line(0.38)};
+  margin-top: 2px;
+  white-space: normal;
+`;
+
 export const ObsRow = styled.tr<{ $limit: boolean }>`
   ${p => p.$limit && css`& > td { color: ${line(0.5)}; }`}
 `;

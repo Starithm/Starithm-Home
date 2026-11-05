@@ -27,6 +27,24 @@ export interface ObservationRow {
   analysis?: 'preliminary' | 'refined' | null;
   spectral_model?: 'power_law' | 'cutoff_power_law' | 'band' | 'blackbody' | 'other' | null;
   quote: string | null;
+  /** Units, bands and magnitude systems on one footing (ml/units.py); the fields above stay as written. */
+  norm?: ObservationNorm | null;
+}
+
+/** `norm` beside each row: a flux density at one frequency when one can be derived, plus every
+ *  assumption made to get there. Absent on rows stored before the normaliser ran. */
+export interface ObservationNorm {
+  dim: string | null;           // flux_density | energy_flux | fluence | photon_flux | count_rate | magnitude | …
+  value?: number | null;
+  unit?: string | null;
+  system?: 'AB' | 'Vega' | null;
+  nu_hz?: number | null;
+  e_lo_kev?: number | null;
+  e_hi_kev?: number | null;
+  fnu_mjy?: number | null;
+  fnu_err_minus?: number | null;
+  fnu_err_plus?: number | null;
+  notes?: string[];
 }
 
 export type Regime = 'gamma' | 'xray' | 'uv' | 'optical' | 'nir' | 'radio' | 'other';
@@ -127,6 +145,9 @@ export function observationsCoverage(circulars: CircularLike[]): { parsed: numbe
   };
 }
 
+const SUP: Record<string, string> = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+const pow10 = (e: number) => `10${String(e).replace(/./g, c => SUP[c] ?? c)}`;
+
 /** "> 21.3 mag", "18.42 ± 0.05 mag", "1.2e-12 erg/cm²/s". A limit is the fainter/lower bound. */
 export function fmtObservationValue(o: ObservationRow): string {
   const v = o.value!;
@@ -135,7 +156,12 @@ export function fmtObservationValue(o: ObservationRow): string {
   const lim = o.kind === 'upper_limit' || o.kind === 'depth' ? (isMag ? '> ' : '< ') : '';
   const err = o.error != null ? ` ± ${o.error}`
     : o.error_plus != null && o.error_minus != null ? ` +${o.error_plus}/−${Math.abs(o.error_minus)}` : '';
-  return `${lim}${num}${err}${o.unit ? ` ${o.unit}` : ''}`;
+  // The model sometimes keeps the unit but drops the "x 10^-13" after the number; the normaliser reads
+  // it back from the circular's sentence (norm.notes "scale_from_quote"), so show it as written there.
+  const n = o.norm;
+  const recovered = n?.notes?.includes('scale_from_quote') && n.value && v ? Math.round(Math.log10(Math.abs(n.value / v))) : 0;
+  const scale = recovered ? ` ×${pow10(recovered)}` : '';
+  return `${lim}${num}${err}${scale}${o.unit ? ` ${o.unit}` : ''}`;
 }
 
 /** Seconds after trigger → "T+42 s", "T+3.2 h", "T+5.1 d". */
@@ -145,4 +171,74 @@ export function fmtSinceTrigger(s: number | null): string {
   if (s < 7200) return `T+${(s / 60).toFixed(0)} min`;
   if (s < 172800) return `T+${(s / 3600).toFixed(1)} h`;
   return `T+${(s / 86400).toFixed(1)} d`;
+}
+
+/* ── normalised values ─────────────────────────────────────────────────── */
+
+
+/** A flux density in the unit that keeps it readable: "7.52 mJy", "82 µJy", "3.5 nJy". */
+export function fmtFluxDensity(mjy: number, errMinus?: number | null, errPlus?: number | null): string {
+  const [scale, unit] = Math.abs(mjy) >= 1e3 ? [1e-3, 'Jy'] : Math.abs(mjy) >= 1 ? [1, 'mJy'] : Math.abs(mjy) >= 1e-3 ? [1e3, 'µJy'] : [1e6, 'nJy'];
+  const v = mjy * scale;
+  // The error takes the value's precision: "201 ± 7 µJy", not "201 ± 7.42 µJy".
+  const places = Math.abs(v) >= 100 ? 0 : Math.abs(v) >= 10 ? 1 : 2;
+  const digits = (x: number) => x.toFixed(places);
+  if (errMinus == null || errPlus == null) return `${digits(v)} ${unit}`;
+  const lo = errMinus * scale, hi = errPlus * scale;
+  return Math.abs(hi - lo) <= 0.05 * Math.max(hi, lo)
+    ? `${digits(v)} ± ${digits((lo + hi) / 2)} ${unit}`
+    : `${digits(v)} +${digits(hi)}/−${digits(lo)} ${unit}`;
+}
+
+/** Where on the spectrum: radio in GHz, optical/IR/UV as a wavelength, X-ray as an energy. */
+export function fmtFrequency(nu: number): string {
+  if (nu < 3e11) return nu >= 1e9 ? `${Number((nu / 1e9).toPrecision(3))} GHz` : `${Number((nu / 1e6).toPrecision(3))} MHz`;
+  if (nu < 3e16) {
+    const nm = 2.99792458e17 / nu;
+    return nm >= 1000 ? `${Number((nm / 1000).toPrecision(3))} µm` : `${Math.round(nm)} nm`;
+  }
+  const kev = nu / 2.417989e17;
+  return `${Number(kev.toPrecision(3))} keV`;
+}
+
+/** A normalised value as one string, or null when this row has none to show. */
+export function fmtNormalised(o: ObservationRow): string | null {
+  const n = o.norm;
+  if (!n) return null;
+  const lim = o.kind === 'upper_limit' || o.kind === 'depth' ? '< ' : '';
+  if (n.fnu_mjy != null) {
+    return `${lim}${fmtFluxDensity(n.fnu_mjy, lim ? null : n.fnu_err_minus, lim ? null : n.fnu_err_plus)}`;
+  }
+  if (n.value != null && n.unit) {
+    const e = Math.floor(Math.log10(Math.abs(n.value)));
+    const v = Math.abs(e) >= 3 ? `${(n.value / 10 ** e).toFixed(2)}×${pow10(e)}` : String(Number(n.value.toPrecision(3)));
+    return `${lim}${v} ${n.unit}`;
+  }
+  return null;
+}
+
+/** Where the normalised value sits, for the column beside it: "at 641 nm", "at 1 keV", "0.3–10 keV". */
+export function fmtNormalisedAt(o: ObservationRow): string | null {
+  const n = o.norm;
+  if (!n) return null;
+  if (n.fnu_mjy != null && n.nu_hz != null) return fmtFrequency(n.nu_hz);
+  if (n.e_lo_kev != null) return n.e_hi_kev != null ? `${n.e_lo_kev}–${n.e_hi_kev} keV` : `> ${n.e_lo_kev} keV`;
+  return null;
+}
+
+/** Plain-language versions of norm.notes, for the reader to weigh the conversion. */
+export function normAssumptions(o: ObservationRow): string[] {
+  const n = o.norm;
+  if (!n?.notes?.length) return [];
+  const out: string[] = [];
+  for (const note of n.notes) {
+    if (note === 'system_assumed') out.push(`${n.system ?? 'Vega'} system assumed`);
+    else if (note === 'unfiltered_as_R') out.push('unfiltered, treated as R');
+    else if (note === 'photographic_R') out.push('photographic R, treated as R');
+    else if (note === 'photon_index_assumed') out.push('photon index 2 assumed');
+    else if (note === 'scale_from_quote') out.push('power of ten read from the text');
+    else if (note === 'per_beam') out.push('per beam');
+    else if (note === 'log_assumed') out.push('read as a log');
+  }
+  return out;
 }
