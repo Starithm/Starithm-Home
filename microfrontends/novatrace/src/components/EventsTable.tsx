@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Event } from '@shared/types';
-import { kindColor } from '@shared/utils/eventColors';
+import { kindColor, kindLabel } from '@shared/utils/eventColors';
 import { getTimeAgo } from '../utils/duration';
 import { posErrorRadius as errorRadius, hasPosition } from '../utils/sky';
 import {
@@ -139,7 +139,7 @@ export function EventsTable({ events, selectedEvent, onSelect, onOpen }: Props) 
               title="Click to select · double-click to open the full record"
             >
               <IdCell>{e.canonicalId || e.id}</IdCell>
-              <KindChip $color={colour}>{e.alertKind}</KindChip>
+              <KindChip $color={colour}>{kindLabel(e.alertKind)}</KindChip>
               <DesktopCell $dim={0.7}>{e.sourceName || '—'}</DesktopCell>
               <DesktopCell $dim={0.78}>{fmtT0(e.t0)}</DesktopCell>
               <DesktopCell $dim={0.45}>{e.t0 ? getTimeAgo(new Date(e.t0)) : '—'}</DesktopCell>
