@@ -31,7 +31,7 @@ import { EventObservations } from '../components/EventObservations';
 import { EventBurstProperties } from '../components/EventBurstProperties';
 import { EventKeyFacts } from '../components/EventKeyFacts';
 import { keyFacts, type Energetics } from '../utils/keyFacts';
-import { shownObservations, burstProperties, type ObservationRow } from '../utils/observations';
+import { shownObservations, burstProperties, type CatalogValues, type ObservationRow } from '../utils/observations';
 import { swiftLinks } from '../utils/swift';
 
 /* Types mirror GET /api/public/events/:canonicalId exactly — no fields beyond it. */
@@ -66,6 +66,8 @@ interface PublicEvent {
   positionSource?: PositionSource | null;
   /* E_iso / redshift / rest-frame Epeak chosen per event (NovaTrace #116); absent before that API. */
   energetics?: Energetics | null;
+  /* The burst's own values from burst catalogues (GBM; NovaTrace #122); absent before that API. */
+  catalogValues?: CatalogValues[];
   noticeCount: number; circularCount: number;
   aiSummary: { headline: string; significance: string; details: string; generatedAt: string } | null;
   notices: Notice[];
@@ -388,9 +390,10 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
   const locRows = localisations.filter(l => l.errorDeg != null && (l.from.kind === 'circular' || tightest.get(l.instrument) === l));
 
   const observationsCount = shownObservations(event.circulars).obs.length;
-  const burstCount = burstProperties(event.circulars).length;
+  const burstCount = burstProperties(event.circulars, event.catalogValues).length;
   const facts = keyFacts({
     circulars: event.circulars,
+    catalogs: event.catalogValues,
     position: event.raDeg != null && event.decDeg != null ? {
       text: `${fmtCoord(event.raDeg, 'ra')}  ${fmtCoord(event.decDeg, 'dec')}${err != null ? ` ± ${fmtErr(err)}` : ''}`,
       by: best?.instrument ?? null,
@@ -588,7 +591,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
             </Card>
           </RecordSection>
 
-          <EventBurstProperties circulars={event.circulars} onOpenCircular={openCircular} />
+          <EventBurstProperties circulars={event.circulars} catalogs={event.catalogValues} onOpenCircular={openCircular} />
 
           <EventObservations circulars={event.circulars} onOpenCircular={openCircular} />
 

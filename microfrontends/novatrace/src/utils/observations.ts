@@ -29,6 +29,24 @@ export interface ObservationRow {
   quote: string | null;
   /** Units, bands and magnitude systems on one footing (ml/units.py); the fields above stay as written. */
   norm?: ObservationNorm | null;
+  /** 'catalog': from a burst catalogue (event.catalogValues), not a circular. */
+  source?: 'catalog' | null;
+  catalog?: string | null;
+  catalog_id?: string | null;
+}
+
+/** The event's own values from burst catalogues (NovaTrace scripts/main/enrich/gbm-catalog.ts). */
+export interface CatalogValues { catalog: string; catalogId: string; matchedBy: string; fetchedAt: string; rows: ObservationRow[] }
+
+export const CATALOG_LABEL: Record<string, string> = { fermigbrst: 'GBM catalogue' };
+
+/** The catalogue's own page for the entry: GBM's per-burst data directory ("GRB261017670" → bn261017670). */
+export function catalogUrl(o: ObservationRow): string | null {
+  if (o.catalog === 'fermigbrst' && o.catalog_id?.startsWith('GRB')) {
+    const bn = o.catalog_id.slice(3);
+    return `https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/bursts/20${bn.slice(0, 2)}/bn${bn}/`;
+  }
+  return null;
 }
 
 /** `norm` beside each row: a flux density at one frequency when one can be derived, plus every
@@ -117,12 +135,17 @@ export const SPECTRAL_MODEL_LABEL: Record<string, string> = {
   power_law: 'PL', cutoff_power_law: 'CPL', band: 'Band', blackbody: 'BB', other: 'other',
 };
 
-/** The burst's own properties from its circulars, grouped by property in PROMPT_PROPERTIES order. */
-export function burstProperties(circulars: CircularLike[]): Observation[] {
+/** The burst's own properties from its circulars and burst catalogues, grouped by property in
+ *  PROMPT_PROPERTIES order; within a property the catalogue value first, then circulars by date. */
+export function burstProperties(circulars: CircularLike[], catalogs: CatalogValues[] = []): Observation[] {
   const order = new Map(PROMPT_PROPERTIES.map((p, i) => [p.id, i]));
-  return eventObservations(circulars)
+  const fromCatalogs: Observation[] = catalogs.flatMap(c => c.rows.map(o => ({
+    ...o, source: 'catalog' as const, alertKey: '', date: c.fetchedAt, regime: regimeOf(o.band, o.unit),
+  })));
+  const rank = (o: Observation) => (o.source === 'catalog' ? 0 : 1);
+  return [...fromCatalogs, ...eventObservations(circulars)]
     .filter(o => o.object === 'prompt' && order.has(o.quantity ?? ''))
-    .sort((a, b) => order.get(a.quantity!)! - order.get(b.quantity!)! || Date.parse(a.date) - Date.parse(b.date));
+    .sort((a, b) => order.get(a.quantity!)! - order.get(b.quantity!)! || rank(a) - rank(b) || Date.parse(a.date) - Date.parse(b.date));
 }
 
 /* A time more than a year after the trigger is a misread date (GRB 260310A: "T+7344 d"), not a
@@ -149,7 +172,26 @@ const SUP: Record<string, string> = { '-': '⁻', '0': '⁰', '1': '¹', '2': '�
 const pow10 = (e: number) => `10${String(e).replace(/./g, c => SUP[c] ?? c)}`;
 
 /** "> 21.3 mag", "18.42 ± 0.05 mag", "1.2e-12 erg/cm²/s". A limit is the fainter/lower bound. */
+/** A catalogue value with its error, rounded the way a paper would print it: the error to 2
+ *  significant figures, the value to the same decimal place ("0.704 ± 0.045 s", "6.90 ± 0.11 ×10⁻⁷").
+ *  Catalogues store full float precision; circular values are shown exactly as written instead. */
+function fmtCatalogValue(o: ObservationRow): string {
+  const v = o.value!;
+  const errs = [o.error, o.error_plus, o.error_minus].filter((e): e is number => e != null && e > 0);
+  const e = Math.floor(Math.log10(Math.abs(v)));
+  const sci = Math.abs(v) >= 1e4 || (Math.abs(v) > 0 && Math.abs(v) < 1e-2);
+  const k = sci ? 10 ** e : 1;                                    // shown as mantissa × 10^e
+  const places = errs.length ? Math.max(0, 1 - Math.floor(Math.log10(Math.min(...errs) / k))) : 3;
+  const f = (x: number) => (x / k).toFixed(Math.min(places, 6));
+  const sym = o.error ?? (o.error_plus != null && o.error_plus === Math.abs(o.error_minus ?? NaN) ? o.error_plus : null);
+  const err = sym != null ? ` ± ${f(sym)}`
+    : o.error_plus != null && o.error_minus != null ? ` +${f(o.error_plus)}/−${f(Math.abs(o.error_minus))}` : '';
+  const body = err && sci ? `(${f(v)}${err})` : `${f(v)}${err}`;
+  return `${body}${sci ? ` ×${pow10(e)}` : ''}${o.unit ? ` ${o.unit}` : ''}`;
+}
+
 export function fmtObservationValue(o: ObservationRow): string {
+  if (o.source === 'catalog' && o.value != null) return fmtCatalogValue(o);
   const v = o.value!;
   const num = Math.abs(v) >= 1e4 || (Math.abs(v) > 0 && Math.abs(v) < 1e-2) ? v.toExponential(2) : String(Number(v.toFixed(3)));
   const isMag = o.quantity === 'magnitude' || /mag/i.test(o.unit ?? '');
