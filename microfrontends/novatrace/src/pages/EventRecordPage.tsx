@@ -12,7 +12,7 @@ import {
   Shell, Rail, RailHead, RailLink, RailCount, RailFoot, RailFootHead, RailPrompt,
   RailPromptCta, Content,
   MetaRow, SigPill, Kind, Headline, SubMeta,
-  SectionHead, SectionNote, Card, Prose,
+  SectionHead, SectionNote, Card, Prose, SummarySplit,
   FieldGrid, Field, FieldLabel, FieldValue, FieldHint,
   Muted,
   Row, Stack, Topic, Phase, PayloadWrap, PayloadTable,
@@ -29,6 +29,8 @@ import { eventLocalisations, bestLocalisation, instrumentsSeen, type Localisatio
 import { RecordSection, SectionToggle, SectionsProvider, useSections } from '../components/RecordSection';
 import { EventObservations } from '../components/EventObservations';
 import { EventBurstProperties } from '../components/EventBurstProperties';
+import { EventKeyFacts } from '../components/EventKeyFacts';
+import { keyFacts, type Energetics } from '../utils/keyFacts';
 import { shownObservations, burstProperties, type ObservationRow } from '../utils/observations';
 import { swiftLinks } from '../utils/swift';
 
@@ -62,6 +64,8 @@ interface PublicEvent {
   posErrorDeg: number | { radius?: number; type?: string } | null;
   /* Where the event engine took the position from (notice or circular); null before re-materialising. */
   positionSource?: PositionSource | null;
+  /* E_iso / redshift / rest-frame Epeak chosen per event (NovaTrace #116); absent before that API. */
+  energetics?: Energetics | null;
   noticeCount: number; circularCount: number;
   aiSummary: { headline: string; significance: string; details: string; generatedAt: string } | null;
   notices: Notice[];
@@ -385,6 +389,16 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
 
   const observationsCount = shownObservations(event.circulars).obs.length;
   const burstCount = burstProperties(event.circulars).length;
+  const facts = keyFacts({
+    circulars: event.circulars,
+    position: event.raDeg != null && event.decDeg != null ? {
+      text: `${fmtCoord(event.raDeg, 'ra')}  ${fmtCoord(event.decDeg, 'dec')}${err != null ? ` ± ${fmtErr(err)}` : ''}`,
+      by: best?.instrument ?? null,
+      alertKey: best?.from.kind === 'circular' ? best.from.alertKey : null,
+    } : null,
+    redshifts,
+    energetics: event.energetics,
+  });
   /* Swift's own pages (GRB table, UKSSDC XRT products) when Swift triggered on this burst. */
   const swift = swiftLinks(event.circulars);
   const counterpartsData: Counterparts = { crossMatch: event.crossMatch ?? null, optical: event.optical ?? null, catalog: event.catalog ?? null };
@@ -481,9 +495,12 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
               <SectionNote>Model-generated · unreviewed</SectionNote>
             </SectionHead>
             <Card>
-              {event.aiSummary?.details
-                ? <Prose>{event.aiSummary.details}</Prose>
-                : <Empty>No summary generated for this event yet.</Empty>}
+              <SummarySplit>
+                {event.aiSummary?.details
+                  ? <Prose>{event.aiSummary.details}</Prose>
+                  : <Empty>No summary generated for this event yet.</Empty>}
+                <EventKeyFacts facts={facts} onOpenCircular={openCircular} />
+              </SummarySplit>
             </Card>
           </RecordSection>
 

@@ -417,6 +417,35 @@ export const Prose = styled.p`
   font-style: italic;
 `;
 
+/* Summary prose at its readable measure, key facts in the space beside it; stacked on phones. */
+export const SummarySplit = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, var(--measure)) minmax(220px, 1fr);
+  gap: 40px;
+  align-items: start;
+  @media (max-width: 900px) { grid-template-columns: 1fr; gap: 20px; }
+`;
+
+export const KeyFactList = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  padding-left: 24px;
+  border-left: 1px solid var(--line-hairline);
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 18px;
+    padding: 16px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--line-hairline);
+  }
+`;
+
+export const KeyFactItem = styled.div<{ $wide: boolean }>`
+  min-width: 0;
+  @media (max-width: 900px) { ${p => p.$wide && css`grid-column: 1 / -1;`} }
+`;
+
 /* ── position ─────────────────────────────────────────────────────────── */
 
 /* Position and "how it narrowed" sit side by side, per the design's 1fr 1fr. */
