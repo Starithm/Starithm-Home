@@ -888,6 +888,23 @@ export const TableWrap = styled.div`
   &::-webkit-scrollbar-thumb { background: ${line(0.18)}; border-radius: 999px; }
 `;
 
+/* A long table in a fixed-height box (Burst properties: one row per value, 30+ on a well-observed
+   burst). Scrolls inside the card; the header row stays pinned, on an opaque ground so rows
+   don't show through it. */
+export const ScrollTableWrap = styled(TableWrap)`
+  max-height: 420px;
+  overflow-y: auto;
+  &::-webkit-scrollbar { width: 6px; }
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: ${BG};
+    box-shadow: inset 0 -1px 0 ${line(0.1)}, inset 0 0 0 999px ${line(0.03)};
+  }
+  &:focus-visible { outline: 1px solid ${ARC_OUTER}; outline-offset: 2px; }
+`;
+
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;

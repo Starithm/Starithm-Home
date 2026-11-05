@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import {
-  SectionHead, SectionNote, Card, FieldHint, Muted, TableWrap, Table, UrlLink, Disclaimer,
+  SectionHead, SectionNote, Card, FieldHint, Muted, ScrollTableWrap, Table, UrlLink, Disclaimer,
 } from '../styled_pages/EventRecord.styled';
 import {
   burstProperties, catalogUrl, fmtObservationValue, CATALOG_LABEL, PROMPT_PROPERTIES, SPECTRAL_MODEL_LABEL,
@@ -34,7 +34,7 @@ export function EventBurstProperties({ circulars, catalogs, onOpenCircular }: {
         </SectionNote>
       </SectionHead>
       <Card>
-        <TableWrap>
+        <ScrollTableWrap tabIndex={0} role="region" aria-label="Burst properties table">
           <Table>
             <thead>
               <tr><th>Property</th><th>Value</th><th>Band</th><th>Instrument</th><th>Model</th><th>Source</th></tr>
@@ -62,7 +62,7 @@ export function EventBurstProperties({ circulars, catalogs, onOpenCircular }: {
               ))}
             </tbody>
           </Table>
-        </TableWrap>
+        </ScrollTableWrap>
         <Disclaimer>
           Circular values are model-parsed from the circular text; hover a row for the sentence it came from.
           {fromCatalog > 0 && ' Catalogue values are from the Fermi GBM Burst Catalog (HEASARC) and the Swift GRB table (GSFC), each measured the same way for every burst it lists; Swift\'s errors are 90%.'}
