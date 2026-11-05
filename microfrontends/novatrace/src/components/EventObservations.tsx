@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 import {
   SectionHead, SectionNote, Card, Empty, FieldHint, Tabs, Tab,
-  TableWrap, Table, UrlLink, ShowMore, Disclaimer, ObsChart, ObsRow,
+  TableWrap, Table, UrlLink, ShowMore, Disclaimer, ObsChart, ObsRow, AssumptionNote,
 } from '../styled_pages/EventRecord.styled';
 import {
   shownObservations, observationsCoverage, fmtObservationValue, fmtSinceTrigger,
+  fmtNormalised, fmtNormalisedAt, normAssumptions,
   REGIMES, type Observation, type Regime, type ObservationRow,
 } from '../utils/observations';
 import { RecordSection, SectionToggle } from './RecordSection';
@@ -61,6 +62,24 @@ function Coverage({ obs, lanes, filter, onFilter }: {
   );
 }
 
+/** "As reported" beside "Normalised". Under the normalised value, in brackets, every assumption the
+ *  conversion made; a row that cannot be converted (counts, colours, unknown band) repeats its value. */
+function ValueCells({ o, normalised }: { o: Observation; normalised: boolean }) {
+  const limit = isLimit(o) && <FieldHint>limit</FieldHint>;
+  const norm = fmtNormalised(o);
+  const at = fmtNormalisedAt(o);
+  const assumed = normAssumptions(o);
+  return (
+    <>
+      <td>{fmtObservationValue(o)}{limit}</td>
+      {normalised && <td>
+        {norm ? <>{norm}{at && <FieldHint>{at}</FieldHint>}</> : <>{fmtObservationValue(o)}{limit}</>}
+        {norm && assumed.length > 0 && <AssumptionNote>({assumed.join('; ')})</AssumptionNote>}
+      </td>}
+    </>
+  );
+}
+
 export function EventObservations({ circulars, onOpenCircular }: {
   circulars: CircularLike[]; onOpenCircular: (alertKey: string) => void;
 }) {
@@ -74,6 +93,8 @@ export function EventObservations({ circulars, onOpenCircular }: {
   const shown = obs.filter(o => filter === 'all' || o.regime === filter);
   const rows = all ? shown : shown.slice(0, PREVIEW);
   const notYet = cov.parsed < cov.total;
+  // Rows stored before the normaliser ran have no norm; until some do, the column would only repeat.
+  const normalised = obs.some(o => o.norm);
 
   return (
     <RecordSection id="observations">
@@ -105,7 +126,7 @@ export function EventObservations({ circulars, onOpenCircular }: {
             <TableWrap>
               <Table>
                 <thead>
-                  <tr><th>Time</th>{filter === 'all' && <th>Regime</th>}<th>Band</th><th>Value</th><th>Telescope</th><th>Source</th></tr>
+                  <tr><th>Time</th>{filter === 'all' && <th>Regime</th>}<th>Band</th><th>As reported</th>{normalised && <th>Normalised</th>}<th>Telescope</th><th>Source</th></tr>
                 </thead>
                 <tbody>
                   {rows.map((o, i) => (
@@ -113,7 +134,7 @@ export function EventObservations({ circulars, onOpenCircular }: {
                       <td>{fmtSinceTrigger(o.time_since_trigger_s)}</td>
                       {filter === 'all' && <td>{REGIMES.find(r => r.id === o.regime)?.label}</td>}
                       <td>{o.band ?? '—'}</td>
-                      <td>{fmtObservationValue(o)}{isLimit(o) && <FieldHint>limit</FieldHint>}</td>
+                      <ValueCells o={o} normalised={normalised} />
                       <td style={{ whiteSpace: 'normal' }}>{o.telescope || o.instrument || '—'}</td>
                       <td>
                         <UrlLink href={`#circ-${o.alertKey}`} onClick={e => { e.preventDefault(); onOpenCircular(o.alertKey); }}>
@@ -128,7 +149,10 @@ export function EventObservations({ circulars, onOpenCircular }: {
             {shown.length > PREVIEW && (
               <ShowMore onClick={() => setAll(a => !a)}>{all ? 'Show fewer' : `Show all ${shown.length}`}</ShowMore>
             )}
-            <Disclaimer>Values are model-parsed from the circular text; hover a row for the sentence it came from.</Disclaimer>
+            <Disclaimer>
+              Values are model-parsed from the circular text; hover a row for the sentence it came from.
+              {normalised && ' Normalised: magnitudes and radio as flux density at the band\'s wavelength or frequency, X-ray as flux density at 1 keV. Galactic extinction is not corrected.'}
+            </Disclaimer>
           </>
         )}
       </Card>
