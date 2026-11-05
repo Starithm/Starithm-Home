@@ -274,6 +274,14 @@ export default function EventRecordPage(props: { canonicalId?: string }) {
 
 function EventRecord({ canonicalId }: { canonicalId?: string }) {
   const { expand } = useSections();
+  // The record is dark whatever the site theme; the page's own scrollbar belongs to <html>, which
+  // follows the theme, so it would be a light bar beside a dark page. Restored on leaving.
+  useEffect(() => {
+    const root = document.documentElement;
+    const before = root.style.colorScheme;
+    root.style.colorScheme = 'dark';
+    return () => { root.style.colorScheme = before; };
+  }, []);
   const { isSignedIn } = useAuth();
   const [event, setEvent] = useState<PublicEvent | null>(null);
   const [loading, setLoading] = useState(true);

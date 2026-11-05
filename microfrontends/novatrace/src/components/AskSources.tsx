@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { thinScrollbar } from '@shared/components/ui/primitives';
 import { type AskSource, circularUrl, digestLinkLabel, linkTarget, opensInPopup, sourceLabel } from '@novatrace/lib/askCosmos';
 import { Link, Mono, SectionLabel } from '@novatrace/styled_pages/AskPage.styled';
 
@@ -118,8 +119,7 @@ const Scroller = styled(List)`
   max-height: 720px;
   overflow-y: auto;
   padding-right: 4px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--line-control) transparent;
+  ${thinScrollbar}
   &:focus-visible { outline: 1px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
   @media (max-width: 860px) { max-height: none; overflow: visible; }
 `;

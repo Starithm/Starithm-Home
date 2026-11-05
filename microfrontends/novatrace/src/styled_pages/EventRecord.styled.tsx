@@ -52,8 +52,22 @@ const mono = css`
 const BUMP = 2;
 const fs = (px: number) => `${px + BUMP}px`;
 
+/* The page is dark whatever the site theme, so its scroll boxes use this file's ink, not the
+   theme-token thinScrollbar (@shared primitives). Both halves: Firefox reads only the standard
+   pair, Safari only ::-webkit-scrollbar; 6 px both ways so a box scrolling in two directions gets
+   two thin bars. */
+const darkScroll = css`
+  scrollbar-width: thin;
+  scrollbar-color: ${line(0.18)} transparent;
+  &::-webkit-scrollbar { width: 6px; height: 6px; }
+  &::-webkit-scrollbar-track, &::-webkit-scrollbar-corner { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: ${line(0.18)}; border-radius: 999px; }
+  &::-webkit-scrollbar-thumb:hover { background: ${line(0.32)}; }
+`;
+
 export const Page = styled.div`
   ${mono};
+  color-scheme: dark;   /* native controls and any unstyled scroll box stay dark under a light site theme */
   background: ${BG};
   color: ${PLATINUM};
   min-height: 100vh;
@@ -634,10 +648,7 @@ export const PayloadWrap = styled.div`
   max-height: 320px;
   overflow-y: auto;
   border-top: 1px solid ${line(0.06)};
-  scrollbar-width: thin;
-  scrollbar-color: ${line(0.18)} transparent;
-  &::-webkit-scrollbar { width: 6px; }
-  &::-webkit-scrollbar-thumb { background: ${line(0.18)}; border-radius: 999px; }
+  ${darkScroll}
 `;
 
 export const PayloadTable = styled.table`
@@ -896,10 +907,7 @@ export const TableWrap = styled.div`
   border: 1px solid ${line(0.1)};
   border-radius: 0;
   margin-bottom: 12px;
-  scrollbar-width: thin;
-  scrollbar-color: ${line(0.18)} transparent;
-  &::-webkit-scrollbar { height: 6px; }
-  &::-webkit-scrollbar-thumb { background: ${line(0.18)}; border-radius: 999px; }
+  ${darkScroll}
 `;
 
 /* A long table in a fixed-height box (Burst properties: one row per value, 30+ on a well-observed
@@ -908,7 +916,6 @@ export const TableWrap = styled.div`
 export const ScrollTableWrap = styled(TableWrap)`
   max-height: 420px;
   overflow-y: auto;
-  &::-webkit-scrollbar { width: 6px; }
   thead th {
     position: sticky;
     top: 0;
@@ -950,10 +957,7 @@ export const RawText = styled.pre`
   word-break: break-word;
   max-height: 460px;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: ${line(0.18)} transparent;
-  &::-webkit-scrollbar { width: 6px; }
-  &::-webkit-scrollbar-thumb { background: ${line(0.18)}; border-radius: 999px; }
+  ${darkScroll}
 `;
 
 export const InlineActions = styled.div`
@@ -974,10 +978,7 @@ export const Cite = styled.pre`
   border-radius: 0;
   padding: 14px 16px;
   overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: ${line(0.18)} transparent;
-  &::-webkit-scrollbar { height: 6px; }
-  &::-webkit-scrollbar-thumb { background: ${line(0.18)}; border-radius: 999px; }
+  ${darkScroll}
 `;
 
 export const Empty = styled.div`
@@ -1156,6 +1157,7 @@ export const AssumptionNote = styled.div`
 /* On a phone the chart keeps a readable minimum width and scrolls sideways inside the card. */
 export const LcScroll = styled.div`
   overflow-x: auto;
+  ${darkScroll}
 `;
 
 export const LcWrap = styled.div`

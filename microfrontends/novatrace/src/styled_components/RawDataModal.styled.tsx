@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { thinScrollbar } from '@shared/components/ui/primitives';
 import { getThemeValue } from '@shared/utils/themeUtils';
 
 export const Overlay = styled.div`
@@ -60,6 +61,7 @@ export const CodeWrapper = styled.div`
   border-radius: 0.5rem;
   height: 24rem; /* h-96 */
   overflow: auto;
+  ${thinScrollbar}
   background: #ffffff;
   color: #000000;
 `;

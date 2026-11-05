@@ -1,4 +1,5 @@
 import React from 'react';
+import { TableWrap } from '@shared/components/ui/primitives';
 
 interface MeasurementsDisplayProps {
   measurements: Record<string, any>;
@@ -13,7 +14,7 @@ function renderCell(cell: any): string {
 function ObjectTable({ label, rows }: { label: string; rows: any[] }) {
   const cols = Object.keys(rows[0]);
   return (
-    <div style={{ overflowX: 'auto', marginBottom: '0.5rem' }}>
+    <TableWrap style={{ marginBottom: '0.5rem' }}>
       <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '0.25rem', textTransform: 'capitalize' }}>{label}</div>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.72rem' }}>
         <thead>
@@ -37,7 +38,7 @@ function ObjectTable({ label, rows }: { label: string; rows: any[] }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </TableWrap>
   );
 }
 

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 /**
  * Shared layout primitives — design-library step 3.
@@ -107,12 +107,35 @@ export const Overlay = styled.div`
 `;
 
 /**
+ * A thin scrollbar on theme tokens, for any box with `overflow: auto`. Both halves are needed:
+ * Firefox reads only `scrollbar-width` / `scrollbar-color`; Safari reads only `::-webkit-scrollbar`;
+ * Chrome reads both and, since 121, prefers the standard pair. Without it a dark page gets the
+ * platform's thick light bar.
+ */
+export const thinScrollbar = css`
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-control) transparent;
+  &::-webkit-scrollbar { width: 6px; height: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: var(--line-control); border-radius: 999px; }
+  &::-webkit-scrollbar-thumb:hover { background: var(--line-hover); }
+  &::-webkit-scrollbar-corner { background: transparent; }
+`;
+
+/** No scrollbar at all (a row of tabs that scrolls by swipe or wheel), in every engine. */
+export const hiddenScrollbar = css`
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+`;
+
+/**
  * Horizontal scroll container for wide content.
  * Wide tables must scroll inside their own box — never let the page body scroll sideways.
  */
 export const TableWrap = styled.div`
   overflow-x: auto;
   max-width: 100%;
+  ${thinScrollbar}
 `;
 
 export const TabRow = styled.div`
