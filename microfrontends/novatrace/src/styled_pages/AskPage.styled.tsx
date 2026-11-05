@@ -1,5 +1,5 @@
 import styled, { css, keyframes } from 'styled-components';
-import { Page } from '@shared/components/ui/primitives';
+import { Page, thinScrollbar } from '@shared/components/ui/primitives';
 
 /* Ask Evren answer page — Claude Design direction 1a ("answer + source rail").
  * Tokens only (CLAUDE.md): the design's hexes map 1:1 onto globals.css.
@@ -50,6 +50,7 @@ export const AskInput = styled.textarea`
   align-self: center;
   resize: none;
   overflow-y: auto;
+  ${thinScrollbar}
   max-height: 40vh;
   padding: 6px 0;
   line-height: 1.45;

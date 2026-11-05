@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { thinScrollbar } from '@shared/components/ui/primitives';
 import { DIALOG_MAX_WIDTH } from '@novatrace/lib/circularArchive';
 
 /** Circular detail popup — design_handoff_gcn_archive §2. */
@@ -360,6 +361,7 @@ export const Thumb = styled.img`
 
 export const TableWrap = styled.div`
   overflow-x: auto;
+  ${thinScrollbar}
 `;
 
 export const MiniTable = styled.table`

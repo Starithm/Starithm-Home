@@ -1,4 +1,5 @@
 import styled, { css, keyframes } from 'styled-components';
+import { hiddenScrollbar } from '@shared/components/ui/primitives';
 import { Link } from 'react-router-dom';
 
 /* Ears to the Universe: a full-screen instrument.
@@ -204,7 +205,7 @@ export const TrackTabs = styled.div`
   gap: 4px;
   overflow-x: auto;
   min-width: 0;
-  scrollbar-width: none;
+  ${hiddenScrollbar}
 `;
 
 export const TrackTab = styled.button<{ $active: boolean }>`

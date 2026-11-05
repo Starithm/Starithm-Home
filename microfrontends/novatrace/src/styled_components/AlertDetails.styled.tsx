@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { thinScrollbar } from '@shared/components/ui/primitives';
 import { getThemeValue } from '@shared/utils/themeUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card';
 import { Dialog } from '@shared/components/ui/dialog';
@@ -751,6 +752,7 @@ export const AlertMeasurementTable = styled.table`
 `;
 export const AlertMeasurementTableWrapper = styled.div`
     overflow-x: auto;
+    ${thinScrollbar}
 `;
 export const AlertMeasurementGrid = styled.div`
     display: grid;

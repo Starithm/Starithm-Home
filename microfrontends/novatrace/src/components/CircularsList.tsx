@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { MeasurementsDisplay } from './MeasurementsDisplay';
+import styled from 'styled-components';
+import { thinScrollbar } from '@shared/components/ui/primitives';
+
+const RawScroll = styled.div`
+  overflow-y: auto;
+  padding: 1rem;
+  ${thinScrollbar}
+`;
 
 export interface Circular {
   alertKey: string;
@@ -180,7 +188,7 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
               <span style={{ color: '#aaa', fontSize: '0.8rem', fontFamily: 'monospace' }}>{rawModal.title}</span>
               <button onClick={() => setRawModal(null)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1 }}>✕</button>
             </div>
-            <div style={{ overflowY: 'auto', padding: '1rem' }}>
+            <RawScroll>
               {(() => {
                 const raw = rawModal.data.data?.raw;
                 if (!raw) return <span style={{ color: '#555', fontSize: '0.8rem' }}>No raw data</span>;
@@ -200,7 +208,7 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                   </table>
                 );
               })()}
-            </div>
+            </RawScroll>
           </div>
         </div>
       )}

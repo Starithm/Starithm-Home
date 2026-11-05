@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { thinScrollbar } from '@shared/components/ui/primitives';
 
 /* Mobile sheet height, in vh. Tall enough to reach the actions without
    scrolling on a typical phone, short enough to leave the globe usable. */
@@ -397,6 +398,7 @@ export const FloatingEventPanel = styled.div`
   display: flex;
   align-items: flex-end;
   overflow-y: auto;
+  ${thinScrollbar}
 
 `;
 
@@ -419,6 +421,7 @@ export const EventPanel = styled.div`
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    ${thinScrollbar}
     overscroll-behavior: contain;
   }
 `;

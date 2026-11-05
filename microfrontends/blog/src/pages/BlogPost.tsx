@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import { TableWrap } from '@shared/components/ui/primitives';
 import remarkGfm from 'remark-gfm';
 import { ArrowLeft, ArrowRight, Calendar, Clock, User, ExternalLink } from 'lucide-react';
 import { fetchPost, fetchPostList, Post, PostMeta } from '../lib/posts';
@@ -245,9 +246,9 @@ export default function BlogPost() {
               // with no cell padding at all, so a wide cell collides with its neighbour. Colours
               // are rgba rather than hex to keep the design ratchet clean.
               table: ({ children }) => (
-                <div style={{ overflowX: 'auto', margin: '1.5rem 0' }}>
+                <TableWrap style={{ margin: '1.5rem 0' }}>
                   <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '0.9rem' }}>{children}</table>
-                </div>
+                </TableWrap>
               ),
               th: ({ children }) => (
                 <th style={{ textAlign: 'left', padding: '0.5rem 0.9rem 0.5rem 0', whiteSpace: 'nowrap',

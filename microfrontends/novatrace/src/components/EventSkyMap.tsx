@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { thinScrollbar } from '@shared/components/ui/primitives';
 
 /* Sky map of an event's error region with a list beside it: hover a row or a marker to highlight
  * both, click either for a details card at the source. Drawn live from the event API's coordinates
@@ -264,8 +265,7 @@ const List = styled.div`
   max-height: ${SIZE - 20}px;
   overflow-y: auto;
   border-top: 1px solid var(--line-subtle);
-  scrollbar-width: thin;
-  scrollbar-color: var(--line-control) transparent;
+  ${thinScrollbar}
 `;
 const Item = styled.div<{ $on: boolean }>`
   display: flex;
