@@ -12,6 +12,7 @@ import {
   Shell, Rail, RailHead, RailLink, RailCount, RailFoot, RailFootHead, RailPrompt,
   RailPromptCta, Content,
   MetaRow, SigPill, Kind, Headline, SubMeta,
+  OriginNote,
   SectionHead, SectionNote, Card, Prose, SummarySplit,
   FieldGrid, Field, FieldLabel, FieldValue, FieldHint,
   Muted,
@@ -67,6 +68,9 @@ interface PublicEvent {
   positionSource?: PositionSource | null;
   /* E_iso / redshift / rest-frame Epeak chosen per event (NovaTrace #116); absent before that API. */
   energetics?: Energetics | null;
+  /** Not from space, per GBM's class of the trigger (NovaTrace event_engine/lib/origin.ts); null otherwise. */
+  origin?: Origin | null;
+  originEvidence?: { notice: string; topic: string | null; class: string; prob: number | null } | null;
   /* The burst's own values from burst catalogues (GBM; NovaTrace #122); absent before that API. */
   catalogValues?: CatalogValues[];
   lightCurves?: LightCurve[];
@@ -239,6 +243,16 @@ const toCsv = (rows: Array<Record<string, any>>) => {
   return [cols.join(','), ...rows.map(r => cols.map(c => esc(r[c])).join(','))].join('\n');
 };
 
+/* GBM classifies every trigger; some are not from space. Their GBM "position" points at nothing, so
+   the record shows no sky position or counterparts, and says why. */
+type Origin = 'terrestrial' | 'solar' | 'particles';
+const ORIGIN: Record<Origin, { kind: string; what: string }> = {
+  terrestrial: { kind: 'TGF', what: 'a terrestrial gamma-ray flash: gamma rays from a thunderstorm in Earth\'s atmosphere' },
+  solar: { kind: 'Solar flare', what: 'a solar flare' },
+  particles: { kind: 'Particles', what: 'charged particles around the spacecraft' },
+};
+const NO_SKY = new Set(['position', 'counterparts']);
+
 const SECTIONS = [
   { id: 'summary', label: 'Summary' },
   { id: 'position', label: 'Position' },
@@ -396,7 +410,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
   const facts = keyFacts({
     circulars: event.circulars,
     catalogs: event.catalogValues,
-    position: event.raDeg != null && event.decDeg != null ? {
+    position: !event.origin && event.raDeg != null && event.decDeg != null ? {
       text: `${fmtCoord(event.raDeg, 'ra')}  ${fmtCoord(event.decDeg, 'dec')}${err != null ? ` ± ${fmtErr(err)}` : ''}`,
       by: best?.instrument ?? null,
       alertKey: best?.from.kind === 'circular' ? best.from.alertKey : null,
@@ -442,7 +456,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
         <Rail>
           <RailHead>On this record</RailHead>
           {/* Counterparts and Burst properties have no section when there is nothing to show, so no rail entry either. */}
-          {SECTIONS.filter(s => (s.id !== 'counterparts' || hasCounterparts(counterpartsData)) && (s.id !== 'burst' || burstCount > 0)).map(s => (
+          {SECTIONS.filter(s => (s.id !== 'counterparts' || hasCounterparts(counterpartsData)) && (s.id !== 'burst' || burstCount > 0)
+            && !(event.origin && NO_SKY.has(s.id))).map(s => (
             <RailLink
               key={s.id}
               $active={active === s.id}
@@ -470,7 +485,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
           <header>
             <MetaRow>
               <SigPill $color={SIGNIFICANCE[sig] || '#888'}>{sig}</SigPill>
-              <Kind>{event.alertKind?.toUpperCase()}</Kind>
+              <Kind>{event.origin ? ORIGIN[event.origin].kind : event.alertKind?.toUpperCase()}</Kind>
               {redshifts.length > 0 && (
                 <RedshiftPill
                   title={
@@ -492,6 +507,13 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
               {lastActivity && ` · last activity ${tPlus(event.t0, lastActivity)}`}
             </SubMeta>
             {afterglow.length > 0 && <SubMeta>afterglow: {afterglow.join(' · ')}</SubMeta>}
+            {event.origin && (
+              <OriginNote>
+                <strong>Not from space.</strong> Fermi GBM classified this trigger as {ORIGIN[event.origin].what}
+                {event.originEvidence && <> ({event.originEvidence.class.replace(/_/g, ' ')}{event.originEvidence.prob != null ? `, ${event.originEvidence.prob}%` : ''})</>}.
+                There is no position on the sky and no counterpart to look for; the notices below are kept as received.
+              </OriginNote>
+            )}
           </header>
 
           <RecordSection id="summary">
@@ -509,7 +531,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
             </Card>
           </RecordSection>
 
-          <RecordSection id="position">
+          {!event.origin && <RecordSection id="position">
             <SectionHead>
               <SectionToggle>Position</SectionToggle>
               {err != null && <SectionNote>{quality(err)} · ± {fmtErr(err)}</SectionNote>}
@@ -591,7 +613,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
                 </LocBlock>
               )}
             </Card>
-          </RecordSection>
+          </RecordSection>}
 
           <EventBurstProperties circulars={event.circulars} catalogs={event.catalogValues} onOpenCircular={openCircular} />
 
@@ -599,8 +621,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
 
           <EventObservations circulars={event.circulars} onOpenCircular={openCircular} />
 
-          <EventCounterparts data={counterpartsData}
-            position={event.raDeg != null && event.decDeg != null ? { raDeg: event.raDeg, decDeg: event.decDeg, errorDeg: err } : null} />
+          {!event.origin && <EventCounterparts data={counterpartsData}
+            position={event.raDeg != null && event.decDeg != null ? { raDeg: event.raDeg, decDeg: event.decDeg, errorDeg: err } : null} />}
 
           <RecordSection id="notices">
             <SectionHead>
