@@ -5,7 +5,9 @@
  * missing cases for `xray` and `frb`, so both fell through to the default violet
  * and became indistinguishable from `gw`. Everything reads from here now.
  *
- * Kinds come from GET /api/filters: grb, gw, xray, neutrino, frb.
+ * Kinds come from GET /api/filters: grb, gw, xray, neutrino, frb, plus tgf / solar_flare / particles for
+ * GBM triggers classified as not from space (NovaTrace migration 035). Those have no colour here on
+ * purpose: they take the neutral fallback, so they never read as an astrophysical kind.
  */
 
 export const KIND_COLORS: Record<string, string> = {
@@ -31,6 +33,11 @@ const ALIASES: Record<string, string> = {
 export function kindKey(alertKind: string | null | undefined): string {
   const k = (alertKind || '').toLowerCase().trim();
   return ALIASES[k] || k;
+}
+
+/** The kind as shown: 'solar_flare' → 'solar flare'. */
+export function kindLabel(alertKind: string | null | undefined): string {
+  return (alertKind || '').replace(/_/g, ' ');
 }
 
 export function kindColor(alertKind: string | null | undefined): string {

@@ -33,7 +33,7 @@ import { EventsTable } from '../components/EventsTable';
 import { NearbyPanel } from '../components/NearbyPanel';
 import { ActivityRibbon } from '../components/ActivityRibbon';
 import { posErrorRadius, hasPosition } from '../utils/sky';
-import { kindColor, sigColor } from '@shared/utils/eventColors';
+import { kindColor, kindLabel, sigColor } from '@shared/utils/eventColors';
 import { ASK_ASSISTANT } from '@shared/lib/config';
 import {
   EventLevelContainer,
@@ -723,7 +723,7 @@ export default function EventLevel() {
                   <EventPanelLeft>
                     <EventTitle>{selectedEvent.canonicalId || selectedEvent.id}</EventTitle>
                     <KindChip $color={kindColor(selectedEvent.alertKind)}>
-                      {selectedEvent.alertKind}
+                      {kindLabel(selectedEvent.alertKind)}
                     </KindChip>
                   </EventPanelLeft>
                   {selectedEventDetail?.aiSummary?.significance && (
@@ -914,7 +914,7 @@ export default function EventLevel() {
               $selected={selectedAlertTypes.includes(kind)}
               onClick={() => toggleAlertType(kind)}
             >
-              {selectedAlertTypes.includes(kind) ? '✓ ' : '  '}{kind.toUpperCase()}
+              {selectedAlertTypes.includes(kind) ? '✓ ' : '  '}{kindLabel(kind).toUpperCase()}
             </PillDropdownItem>
           ))}
           {openPill === 'instruments' && displaySourceNames.map(src => (
