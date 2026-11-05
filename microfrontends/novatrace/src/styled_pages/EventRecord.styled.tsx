@@ -346,6 +346,20 @@ export const Headline = styled.h1`
   color: ${PLATINUM};
 `;
 
+/* A trigger GBM classified as not from space (TGF, solar flare, particles; NovaTrace migration 035).
+   Under the masthead, so it is read before the record is mistaken for a burst. */
+export const OriginNote = styled.p`
+  margin: 14px 0 0;
+  padding: 8px 12px;
+  max-width: var(--measure);
+  border-left: 2px solid ${GOLD};
+  background: ${goldA(0.06)};
+  font-size: ${fs(12)};
+  line-height: 1.6;
+  color: ${line(0.78)};
+  strong { color: ${PLATINUM}; font-weight: 600; }
+`;
+
 export const SubMeta = styled.div`
   margin-top: 12px;
   font-size: ${fs(11.5)};
