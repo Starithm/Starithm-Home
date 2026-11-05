@@ -355,10 +355,25 @@ function AskBar({ value, onChange, onSubmit, disabled, large, autoFocus }: {
   value: string; onChange: (v: string) => void; onSubmit: (e: React.FormEvent) => void;
   disabled?: boolean; large?: boolean; autoFocus?: boolean;
 }) {
+  // A textarea sized to its text, so a long question wraps instead of scrolling out of view.
+  // Enter asks; Shift+Enter is a new line.
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [value]);
   return (
     <S.AskForm $large={large} onSubmit={onSubmit} role="search">
-      <S.AskInput value={value} onChange={(e) => onChange(e.target.value)} placeholder={ASK_ASSISTANT}
-        aria-label={`${ASK_ASSISTANT} a question`} autoFocus={autoFocus} maxLength={500} />
+      <S.AskInput ref={ref} rows={1} value={value} onChange={(e) => onChange(e.target.value)} placeholder={ASK_ASSISTANT}
+        aria-label={`${ASK_ASSISTANT} a question`} autoFocus={autoFocus} maxLength={500}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+            e.preventDefault();
+            if (!disabled && value.trim()) e.currentTarget.form?.requestSubmit();
+          }
+        }} />
       <S.AskButton type="submit" disabled={disabled || !value.trim()}>Ask</S.AskButton>
     </S.AskForm>
   );

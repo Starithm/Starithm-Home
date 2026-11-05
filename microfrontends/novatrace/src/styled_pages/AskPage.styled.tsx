@@ -31,21 +31,28 @@ export const PageTitle = styled.h1`
   color: var(--text-body);
 `;
 
+/* Grows with the question: a long one wraps and stays fully visible and editable. */
 export const AskForm = styled.form<{ $large?: boolean }>`
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 12px;
-  height: ${(p) => (p.$large ? 56 : 50)}px;
-  padding: 0 8px 0 16px;
+  min-height: ${(p) => (p.$large ? 56 : 50)}px;
+  padding: ${(p) => (p.$large ? 10 : 7)}px 8px ${(p) => (p.$large ? 10 : 7)}px 16px;
   background: var(--surface-raised);
   border: 1px solid var(--line-subtle);
   border-radius: 8px;
   &:focus-within { border-color: var(--primary); }
 `;
 
-export const AskInput = styled.input`
+export const AskInput = styled.textarea`
   flex: 1;
   min-width: 0;
+  align-self: center;
+  resize: none;
+  overflow-y: auto;
+  max-height: 40vh;
+  padding: 6px 0;
+  line-height: 1.45;
   background: transparent;
   border: 0;
   outline: none;
