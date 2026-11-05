@@ -420,20 +420,21 @@ export const Prose = styled.p`
 /* Summary prose at its readable measure, key facts in the space beside it; stacked on phones. */
 export const SummarySplit = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, var(--measure)) minmax(220px, 1fr);
+  grid-template-columns: minmax(0, var(--measure)) minmax(340px, 1fr);
   gap: 40px;
   align-items: start;
   @media (max-width: 900px) { grid-template-columns: 1fr; gap: 20px; }
 `;
 
+/* Two-up everywhere, so up to seven facts stay about as tall as a short summary. */
 export const KeyFactList = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 22px;
+  align-content: start;
   padding-left: 24px;
   border-left: 1px solid var(--line-hairline);
   @media (max-width: 900px) {
-    grid-template-columns: 1fr 1fr;
     gap: 14px 18px;
     padding: 16px 0 0;
     border-left: 0;
@@ -443,7 +444,7 @@ export const KeyFactList = styled.div`
 
 export const KeyFactItem = styled.div<{ $wide: boolean }>`
   min-width: 0;
-  @media (max-width: 900px) { ${p => p.$wide && css`grid-column: 1 / -1;`} }
+  ${p => p.$wide && css`grid-column: 1 / -1;`}
 `;
 
 /* ── position ─────────────────────────────────────────────────────────── */
