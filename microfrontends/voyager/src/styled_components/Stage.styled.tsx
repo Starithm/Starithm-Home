@@ -167,12 +167,12 @@ export const ScaleLabel = styled.div<{ $tone?: 'gold' | 'accent' | 'muted'; $ali
 /* 16⅔ rpm: one turn in 3.6 s. The light stays put while the disc turns under it. */
 export const Disc = styled.div`
   position: absolute;
-  left: 236px;
-  top: 150px;
-  width: 540px;
-  height: 540px;
+  left: 291px;
+  top: 205px;
+  width: 430px;
+  height: 430px;
   border-radius: 50%;
-  box-shadow: 0 0 90px color-mix(in srgb, var(--starithm-golden-yellow) 28%, transparent);
+  box-shadow: 0 0 70px color-mix(in srgb, var(--starithm-golden-yellow) 24%, transparent);
 
   img {
     width: 100%;
