@@ -97,16 +97,6 @@ export const StationCard = styled.div<{ $on: boolean }>`
   }
 `;
 
-export const StreamLabel = styled.div`
-  ${prose};
-  position: absolute;
-  top: 296px;
-  transform: translateX(-50%);
-  font-size: 22px;
-  color: var(--accent-text);
-  white-space: nowrap;
-`;
-
 export const Caption = styled.div`
   position: absolute;
   left: 0;
