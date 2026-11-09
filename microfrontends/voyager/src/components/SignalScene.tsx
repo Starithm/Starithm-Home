@@ -110,25 +110,37 @@ function useWaterfall(ref: React.RefObject<HTMLCanvasElement>, origin: number) {
   }, [ref]);
 }
 
-/** The caption, typed out a letter at a time once the scene has settled. */
-function Typed({ text }: { text: string }) {
+/** The caption, typed out a letter at a time once the scene has settled. Odd-numbered parts are stressed. */
+function Typed({ parts }: { parts: string[] }) {
+  const total = parts.join('').length;
   const [n, setN] = useState(0);
   useEffect(() => {
     let id: ReturnType<typeof setInterval>;
     const start = setTimeout(() => {
-      id = setInterval(() => setN((k) => (k >= text.length ? k : k + 1)), 75);
+      id = setInterval(() => setN((k) => (k >= total ? k : k + 1)), 75);
     }, 1500);
     return () => {
       clearTimeout(start);
       clearInterval(id);
     };
-  }, [text.length]);
+  }, [total]);
+  let at = 0;
   return (
     <Caption>
-      {text.slice(0, n)}
-      <i />
-      {/* the untyped rest holds its place, so the line stays put as it types */}
-      <span style={{ visibility: 'hidden' }}>{text.slice(n)}</span>
+      {parts.map((part, i) => {
+        const shown = Math.max(0, Math.min(part.length, n - at));
+        const cursor = n >= at && (n < at + part.length || i === parts.length - 1) && n - at <= part.length;
+        at += part.length;
+        const Tag = i % 2 ? 'b' : 'span';
+        return (
+          <Tag key={i}>
+            {part.slice(0, shown)}
+            {cursor && <i />}
+            {/* the untyped rest holds its place, so the line stays put as it types */}
+            <span style={{ visibility: 'hidden' }}>{part.slice(shown)}</span>
+          </Tag>
+        );
+      })}
     </Caption>
   );
 }
@@ -191,7 +203,7 @@ export function SignalScene() {
           })}
         </StationRow>
 
-        <Typed text={`A 23-watt whisper, heard from ${(pos.earthKm / 1e9).toFixed(1)} billion km away.`} />
+        <Typed parts={['A 23-watt whisper, heard from ', `${(pos.earthKm / 1e9).toFixed(1)} billion`, ' km away.']} />
 
         <Scale viewBox={`0 0 ${W} 200`} aria-hidden="true">
           <line x1={SCALE_X0} y1={100} x2={SCALE_X1} y2={100} />

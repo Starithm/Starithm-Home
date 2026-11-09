@@ -113,6 +113,12 @@ export const Caption = styled.div`
   white-space: pre;
   text-shadow: 0 0 24px var(--surface-sunken), 0 2px 12px var(--surface-sunken);
 
+  b {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 54px;
+  }
+
   i {
     display: inline-block;
     width: 0.55em;
