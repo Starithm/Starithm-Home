@@ -113,6 +113,13 @@ export const Caption = styled.div`
   white-space: pre;
   text-shadow: 0 0 24px var(--surface-sunken), 0 2px 12px var(--surface-sunken);
 
+  b {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 54px;
+    color: var(--starithm-golden-yellow);
+  }
+
   i {
     display: inline-block;
     width: 0.55em;
@@ -167,12 +174,12 @@ export const ScaleLabel = styled.div<{ $tone?: 'gold' | 'accent' | 'muted'; $ali
 /* 16⅔ rpm: one turn in 3.6 s. The light stays put while the disc turns under it. */
 export const Disc = styled.div`
   position: absolute;
-  left: 236px;
-  top: 150px;
-  width: 540px;
-  height: 540px;
+  left: 291px;
+  top: 205px;
+  width: 430px;
+  height: 430px;
   border-radius: 50%;
-  box-shadow: 0 0 90px color-mix(in srgb, var(--starithm-golden-yellow) 28%, transparent);
+  box-shadow: 0 0 70px color-mix(in srgb, var(--starithm-golden-yellow) 24%, transparent);
 
   img {
     width: 100%;
@@ -223,27 +230,33 @@ export const Facts = styled.div`
   }
 `;
 
-export const Craft = styled.figure`
-  position: absolute;
-  right: 96px;
-  top: 150px;
-  width: 820px;
-  margin: 0;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 0 60px color-mix(in srgb, var(--accent-text) 18%, transparent);
+/* Voyager on its own, cut out of the NASA render onto transparency (scripts/cut-out-craft.py), so it sits
+   solid in front of the moving sky; drifting a little. Shown below its 745×840 size, so it stays sharp. */
+const float = keyframes`
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-10px, 12px) rotate(-1.5deg); }
+`;
 
-  img {
-    display: block;
-    width: 100%;
-    max-width: none;
+export const Craft = styled.img`
+  position: absolute;
+  left: 1150px;
+  top: 64px;
+  width: 550px;
+  height: 620px;
+  max-width: none;
+  background: none; /* a global rule grounds every img, which would box the cut-out */
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--accent-text) 45%, transparent));
+  animation: ${float} 14s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 `;
 
 export const Look = styled.div`
   position: absolute;
   right: 96px;
-  top: 650px;
+  top: 720px;
   width: 820px;
   display: flex;
   flex-direction: column;
