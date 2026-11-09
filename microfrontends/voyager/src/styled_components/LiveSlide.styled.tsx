@@ -566,9 +566,9 @@ export const CraftLine = styled.svg`
    on what it carries. */
 const spin = keyframes`to { transform: rotate(360deg); }`;
 
-export const RecordCard = styled.div`
+export const RecordCard = styled.div<{ $small?: boolean }>`
   position: absolute;
-  top: 822px;
+  top: ${(p) => (p.$small ? 846 : 822)}px;
   right: 96px;
   flex-direction: row-reverse;
   text-align: right;
@@ -579,8 +579,8 @@ export const RecordCard = styled.div`
   text-shadow: 0 2px 12px var(--surface-sunken);
 
   img {
-    width: 150px;
-    height: 150px;
+    width: ${(p) => (p.$small ? 112 : 150)}px;
+    height: ${(p) => (p.$small ? 112 : 150)}px;
     max-width: none;
     flex: none;
     border-radius: 50%;
@@ -593,9 +593,11 @@ export const RecordCard = styled.div`
     }
   }
 
+  ${(p) => p.$small && 'width: 440px;'}
+
   > div > div:first-child {
     font-family: var(--font-display);
-    font-size: 34px;
+    font-size: ${(p) => (p.$small ? 28 : 34)}px;
     line-height: 1.1;
     color: var(--starithm-golden-yellow);
   }
@@ -603,8 +605,27 @@ export const RecordCard = styled.div`
   > div > div:last-child {
     ${prose};
     margin-top: 6px;
-    font-size: 24px;
+    font-size: ${(p) => (p.$small ? 20 : 24)}px;
     line-height: 1.3;
     color: var(--slide-label);
   }
+`;
+
+/* Stage scene 1: the date row top-right, level with the title, and the readouts under the title, clear of
+   the signal's way home to Earth (down and to the left) */
+export const StageLive = styled(LiveRow)`
+  position: absolute;
+  right: 96px;
+  top: 58px;
+  text-shadow: 0 2px 12px var(--surface-sunken);
+`;
+
+export const StageReadouts = styled.div`
+  position: absolute;
+  left: 96px;
+  top: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  text-shadow: 0 2px 12px var(--surface-sunken);
 `;

@@ -1,6 +1,8 @@
-import { forwardRef, lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { forwardRef, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { LAUNCH_UTC, ONE_LIGHT_DAY_UTC, positionAt } from '../lib/ephemeris';
 import { awayAt, tripNowOrigin } from '../lib/solar-schedule';
+import { drawStars, useFlow } from '../lib/starfield';
+import { useStageFit } from '../lib/use-stage-fit';
 import { virtualNow, type Clock } from '../lib/time-travel';
 import score from '../data/score-onsets.json';
 import { BitRing } from './BitRing';
@@ -8,7 +10,7 @@ import { NoteTrack } from './NoteTrack';
 import {
   BigUnit, Credit, Crossed, DotCredit, DotWords, FinalCount, Frame, Kicker, Layer, LeftCol, LiveRow,
   CraftLine, CraftPhoto, LiveTag, Marker, MarkerLabel, PaleBlueDot, Readout, RecordCard, RightCol, Ring, Ripples, STAGE_H, STAGE_W, Sky, Zone,
-  SlideTitle, Stage, TickLabel,
+  SlideTitle, Stage, StageLive, StageReadouts, TickLabel,
 } from '../styled_components/LiveSlide.styled';
 
 /* The event screen: everything that matters on one 16:9 slide, built to be screen-shared or
@@ -29,119 +31,12 @@ const p2 = (n: number) => String(n).padStart(2, '0');
 const plural = (n: number, w: string) => (n === 1 ? w : `${w}s`);
 const num = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 
-function mulberry(seed: number) {
-  return () => {
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 /* Voyager's apparent position on the sky relative to `ref`, in degrees: east to the left,
  * north up, as on a star chart. The ±40-day path is the annual parallax wobble from the
  * Horizons table: Earth's own orbit, seen from 173 AU. */
 function skyOffset(t: number, ref: { raDeg: number; decDeg: number }) {
   const p = positionAt(t);
   return [-(p.raDeg - ref.raDeg) * Math.cos((ref.decDeg * Math.PI) / 180), -(p.decDeg - ref.decDeg)];
-}
-
-/* Static starfield, drawn once. Colours are literal because canvas can't read CSS tokens;
- * the ground is read from --surface-sunken so it matches the stage. */
-function drawStars(el: HTMLCanvasElement) {
-  const ctx = el.getContext('2d');
-  if (!ctx) return;
-  const rnd = mulberry(1977);
-  ctx.fillStyle = getComputedStyle(el).getPropertyValue('--surface-sunken').trim() || 'black';
-  ctx.fillRect(0, 0, STAGE_W, STAGE_H);
-  const tints = ['rgb(255,255,255)', 'rgb(255,241,220)', 'rgb(227,236,255)', 'rgb(231,223,221)'];
-  for (let i = 0; i < 2600; i++) {
-    const x = rnd() * STAGE_W;
-    const y = rnd() * STAGE_H;
-    const m = rnd() ** 4;
-    const r = 0.4 + m * 2.2;
-    ctx.globalAlpha = 0.2 + m * 0.8;
-    ctx.fillStyle = tints[Math.floor(rnd() * tints.length)];
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-    if (m > 0.75) {
-      const g = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
-      g.addColorStop(0, 'rgba(255,240,220,0.35)');
-      g.addColorStop(1, 'rgba(255,240,220,0)');
-      ctx.fillStyle = g;
-      ctx.globalAlpha = 1;
-      ctx.beginPath();
-      ctx.arc(x, y, r * 4, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-  // a few bright stars with soft diffraction spikes
-  for (const [x, y, s] of [[1700, 820, 1], [520, 980, 0.6], [1460, 210, 0.5]]) {
-    const g = ctx.createRadialGradient(x, y, 0, x, y, 70 * s);
-    g.addColorStop(0, 'rgba(255,236,205,0.95)');
-    g.addColorStop(0.15, 'rgba(255,220,180,0.35)');
-    g.addColorStop(1, 'rgba(255,220,180,0)');
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(x, y, 70 * s, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,236,205,0.35)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(x - 130 * s, y);
-    ctx.lineTo(x + 130 * s, y);
-    ctx.moveTo(x, y - 130 * s);
-    ctx.lineTo(x, y + 130 * s);
-    ctx.stroke();
-  }
-  ctx.globalAlpha = 1;
-}
-
-/* Stars streaming out of the centre: the sense of travel, not data. */
-function useFlow(ref: React.RefObject<HTMLCanvasElement>) {
-  useEffect(() => {
-    const el = ref.current;
-    const ctx = el?.getContext('2d');
-    if (!el || !ctx || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const VX = 960;
-    const VY = 500;
-    const spawn = (s: { x: number; y: number; z: number }) => {
-      s.x = -2.2 + Math.random() * 4.4;
-      s.y = -1.6 + Math.random() * 3.2;
-      return s;
-    };
-    const stars = Array.from({ length: 380 }, () => spawn({ x: 0, y: 0, z: Math.random() }));
-    let last = performance.now();
-    let raf = 0;
-    const loop = (ts: number) => {
-      const dt = Math.min(0.1, (ts - last) / 1000);
-      last = ts;
-      ctx.clearRect(0, 0, STAGE_W, STAGE_H);
-      for (const s of stars) {
-        s.z += 0.02 * dt;
-        if (s.z > 1) {
-          s.z = 0.02;
-          spawn(s);
-        }
-        const k = 1 / (0.15 + s.z * 2.2);
-        const px = VX + s.x * STAGE_W * 0.5 * k * 0.35;
-        const py = VY + s.y * STAGE_H * 0.5 * k * 0.35;
-        if (px < -10 || px > STAGE_W + 10 || py < -10 || py > STAGE_H + 10) continue;
-        const near = 1 - s.z;
-        ctx.globalAlpha = (0.12 + near * 0.6) * Math.min(1, s.z / 0.08);
-        ctx.fillStyle = near > 0.85 ? 'rgb(255,255,255)' : 'rgb(201,193,210)';
-        ctx.beginPath();
-        ctx.arc(px, py, 0.5 + near * 1.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, [ref]);
 }
 
 /* Voyager in a few strokes: the 3.7 m dish facing Earth, the bus behind it, the science boom
@@ -204,9 +99,12 @@ interface Props {
   clock: Clock | null;
   /** Overlays drawn on the frame, outside the scaled stage (the time-travel dock). */
   children?: ReactNode;
+  /** Scene 1 of the concert stage (/voyager-1/stage): no countdown, the readouts along the bottom, a smaller
+   *  Golden Record, and the piece's notes flying home to Earth. Full screen (F) is left to the stage page. */
+  stage?: boolean;
 }
 
-export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clock, children }, frameRef) {
+export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clock, children, stage = false }, frameRef) {
   const live = !clock;
 
   const [now, setNow] = useState(() => Date.now());
@@ -222,10 +120,9 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
   const craft = new URLSearchParams(window.location.search).get('craft') ?? 'photo';
   // Voyager's path through the solar system in 3D, resting 10 s between trips to Earth and back (E starts
   // one now). ?view=sky shows the flat view instead: Voyager's path across our sky over ±40 days.
-  const solar = new URLSearchParams(window.location.search).get('view') !== 'sky';
+  const solar = stage || new URLSearchParams(window.location.search).get('view') !== 'sky';
   const [tripOrigin, setTripOrigin] = useState(() => Date.now());
-  const [fit, setFit] = useState({ scale: 1, x: 0, y: 0 });
-  const ownFrame = useRef<HTMLElement | null>(null);
+  const { ref: ownFrame, transform } = useStageFit<HTMLElement>();
   const starsRef = useRef<HTMLCanvasElement>(null);
   const flowRef = useRef<HTMLCanvasElement>(null);
   useFlow(flowRef);
@@ -270,27 +167,14 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
         e.preventDefault();
         setCueAt((at) => (at == null ? Date.now() : null));
       }
-      if (e.key === 'f' || e.key === 'F') {
+      if (!stage && (e.key === 'f' || e.key === 'F')) {
         if (document.fullscreenElement) document.exitFullscreen();
         else ownFrame.current?.requestFullscreen?.();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
-  // scale the 1920×1080 stage to fit the frame, centred
-  useLayoutEffect(() => {
-    const el = ownFrame.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      const scale = Math.min(width / STAGE_W, height / STAGE_H) || 1;
-      setFit({ scale, x: (width - STAGE_W * scale) / 2, y: (height - STAGE_H * scale) / 2 });
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+  }, [stage]);
 
   const t = virtualNow(clock, now);
   const d = t - ONE_LIGHT_DAY_UTC;
@@ -379,7 +263,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
       }}
       aria-label="Voyager 1, live: one light-day from Earth"
     >
-      <Stage style={{ transform: `translate(${fit.x}px, ${fit.y}px) scale(${fit.scale})` }}>
+      <Stage style={{ transform }}>
         <Sky>
           <canvas ref={starsRef} width={STAGE_W} height={STAGE_H} />
           <canvas ref={flowRef} width={STAGE_W} height={STAGE_H} />
@@ -388,7 +272,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
         <Layer>
           {solar && (
             <Suspense fallback={null}>
-              <SolarView at={t} origin={tripOrigin} />
+              <SolarView at={t} origin={tripOrigin} notes={stage && ripplesOn ? cueAt ?? loadedAt : null} />
             </Suspense>
           )}
           {!solar && (
@@ -435,7 +319,7 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
               <div>now, in Ophiuchus</div>
             </MarkerLabel>
           </Marker>
-          {showTrack && ripplesOn && phase !== 'crossing' && <NoteTrack origin={cueAt ?? loadedAt} vx={vx} vy={vy} />}
+          {showTrack && !stage && ripplesOn && phase !== 'crossing' && <NoteTrack origin={cueAt ?? loadedAt} vx={vx} vy={vy} />}
           </div>
         </Layer>
 
@@ -443,74 +327,106 @@ export const LiveSlide = forwardRef<HTMLElement, Props>(function LiveSlide({ clo
           Voyager 1 <span>— One Light-Day from Earth</span>
         </SlideTitle>
 
-        <LeftCol>
-          {phase === 'before' && (
-            <>
-              <Kicker>Until one light-day</Kicker>
-              {countdown.map((c) => (
-                <BigUnit key={c.u}>
-                  <span>{c.n}</span>
-                  <span>{c.u}</span>
-                </BigUnit>
-              ))}
-            </>
-          )}
-          {phase === 'crossing' && (
-            <>
-              <Crossed>24 hours</Crossed>
-              <div>Voyager 1 is now one light-day away.</div>
-            </>
-          )}
-          {phase === 'after' && (
-            <>
-              <Kicker $gold>Beyond one light-day for</Kicker>
-              {beyond.map((c) => (
-                <BigUnit key={c.u} $gold>
-                  <span>{c.n}</span>
-                  <span>{c.u}</span>
-                </BigUnit>
-              ))}
-            </>
-          )}
-          <Readout $size={56} $top={44}>
-            <div>In flight</div>
-            <div>{num.format(days)}<small>days</small></div>
-            <div>{years} years · on its original 1977 hardware</div>
-          </Readout>
-        </LeftCol>
+        {stage ? (
+          <>
+            <StageLive>
+              <LiveTag $live={live}>{live ? 'LIVE' : 'PREVIEW'}</LiveTag>
+              <span>
+                {cur.getUTCDate()} {cur.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' })} {cur.getUTCFullYear()} ·{' '}
+                {p2(cur.getUTCHours())}:{p2(cur.getUTCMinutes())}:{p2(cur.getUTCSeconds())} UTC
+              </span>
+            </StageLive>
+            <StageReadouts>
+              <Readout $size={48}>
+                <div>Distance from Earth</div>
+                <div>{num.format(pos.earthKm)}<small>km</small></div>
+              </Readout>
+              <Readout $size={48}>
+                <div>In flight</div>
+                <div>{num.format(days)}<small>days</small></div>
+                <div>{years} years · on its original 1977 hardware</div>
+              </Readout>
+            </StageReadouts>
+            <RecordCard $small>
+              <img src="/voyager/golden-record-disc-pia14113.jpg" alt="The Golden Record carried by Voyager 1" />
+              <div>
+                <div>The Golden Record</div>
+                <div>Greetings in 55 languages, and music from Bach to Chuck Berry, on board.</div>
+              </div>
+            </RecordCard>
+          </>
+        ) : (
+          <>
+          <LeftCol>
+            {phase === 'before' && (
+              <>
+                <Kicker>Until one light-day</Kicker>
+                {countdown.map((c) => (
+                  <BigUnit key={c.u}>
+                    <span>{c.n}</span>
+                    <span>{c.u}</span>
+                  </BigUnit>
+                ))}
+              </>
+            )}
+            {phase === 'crossing' && (
+              <>
+                <Crossed>24 hours</Crossed>
+                <div>Voyager 1 is now one light-day away.</div>
+              </>
+            )}
+            {phase === 'after' && (
+              <>
+                <Kicker $gold>Beyond one light-day for</Kicker>
+                {beyond.map((c) => (
+                  <BigUnit key={c.u} $gold>
+                    <span>{c.n}</span>
+                    <span>{c.u}</span>
+                  </BigUnit>
+                ))}
+              </>
+            )}
+            <Readout $size={56} $top={44}>
+              <div>In flight</div>
+              <div>{num.format(days)}<small>days</small></div>
+              <div>{years} years · on its original 1977 hardware</div>
+            </Readout>
+          </LeftCol>
 
-        <RightCol>
-          <LiveRow>
-            <LiveTag $live={live}>{live ? 'LIVE' : 'PREVIEW'}</LiveTag>
-            <span>
-              {cur.getUTCDate()} {cur.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' })} {cur.getUTCFullYear()} ·{' '}
-              {p2(cur.getUTCHours())}:{p2(cur.getUTCMinutes())}:{p2(cur.getUTCSeconds())} UTC
-            </span>
-          </LiveRow>
-          <Readout>
-            <div>Signal's time to reach us</div>
-            <div>{p2(Math.floor(lt / 3600))}h {p2(Math.floor((lt % 3600) / 60))}m {p2(lt % 60)}s</div>
-          </Readout>
-          <Readout>
-            <div>Light left Voyager{zone && <Zone> · {zone}</Zone>}</div>
-            <div>{sentDay}, {sent.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-          </Readout>
-          <Readout $size={40}>
-            <div>Distance from Earth</div>
-            <div>{num.format(pos.earthKm)} km</div>
-          </Readout>
-        </RightCol>
+          <RightCol>
+            <LiveRow>
+              <LiveTag $live={live}>{live ? 'LIVE' : 'PREVIEW'}</LiveTag>
+              <span>
+                {cur.getUTCDate()} {cur.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' })} {cur.getUTCFullYear()} ·{' '}
+                {p2(cur.getUTCHours())}:{p2(cur.getUTCMinutes())}:{p2(cur.getUTCSeconds())} UTC
+              </span>
+            </LiveRow>
+            <Readout>
+              <div>Signal's time to reach us</div>
+              <div>{p2(Math.floor(lt / 3600))}h {p2(Math.floor((lt % 3600) / 60))}m {p2(lt % 60)}s</div>
+            </Readout>
+            <Readout>
+              <div>Light left Voyager{zone && <Zone> · {zone}</Zone>}</div>
+              <div>{sentDay}, {sent.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+            </Readout>
+            <Readout $size={40}>
+              <div>Distance from Earth</div>
+              <div>{num.format(pos.earthKm)} km</div>
+            </Readout>
+          </RightCol>
 
-        <RecordCard>
-          <img src="/voyager/golden-record-disc-pia14113.jpg" alt="The Golden Record carried by Voyager 1" />
-          <div>
-            <div>The Golden Record</div>
-            <div>Greetings in 55 languages, and music from Bach to Chuck Berry, on board.</div>
-          </div>
-        </RecordCard>
+          <RecordCard>
+            <img src="/voyager/golden-record-disc-pia14113.jpg" alt="The Golden Record carried by Voyager 1" />
+            <div>
+              <div>The Golden Record</div>
+              <div>Greetings in 55 languages, and music from Bach to Chuck Berry, on board.</div>
+            </div>
+          </RecordCard>
+          </>
+        )}
         <Credit>JPL Horizons · NASA DSN Now{solar && " · planet photos: NASA"}</Credit>
 
-        {phase === 'before' && rem <= 10 && (
+        {!stage && phase === 'before' && rem <= 10 && (
           <FinalCount>
             <div>Voyager 1 reaches one light-day in</div>
             <div>{rem}</div>

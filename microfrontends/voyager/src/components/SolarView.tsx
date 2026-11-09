@@ -4,6 +4,7 @@ import { R_OUT } from './BitRing';
 import { positionAt } from '../lib/ephemeris';
 import { bodiesAt, cameraAt, earthAt, earthOrbit, FLYBYS, pathUntil, voyagerAt, type Vec } from '../lib/solar-camera';
 import { awayAt, stepAt } from '../lib/solar-schedule';
+import score from '../data/score-onsets.json';
 
 /* Voyager 1 in the solar system, in 3D: its real path from launch (JPL Horizons), drawn side-on with
  * Voyager at the stage centre, where the slide's marker sits. Between rests the camera rides the signal
@@ -29,6 +30,12 @@ const PHOTOS: Record<string, { src: string; scale: number; aspect?: number }> = 
   Neptune: { src: 'neptune', scale: 1.15 },
 };
 const PHOTO_K = 220; // px × AU: a planet's drawn size is this over its distance from the camera
+/* The stage's notes: each leaves Voyager as the piano plays it and takes this long to fly home. Light takes
+ * a day; this is the piece's time, not the signal's. */
+const NOTE_FLIGHT_MS = 16_000;
+const onsets = score.onsets;
+const phraseFirst = onsets.map((at, i) => i === 0 || at - onsets[i - 1] > 2000);
+const lerp3 = (a: Vec, b: Vec, f: number): Vec => [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
 
 /** A copy of a photo on black with the black made transparent: alpha follows brightness up to a knee,
  *  so dark limbs fade softly instead of leaving a box. The canvas here is transparent over the starfield,
@@ -50,12 +57,15 @@ function keyBlack(img: HTMLImageElement) {
   return c;
 }
 
-export function SolarView({ at, origin }: { at: number; origin: number }) {
+/** `notes`: when set (the stage), the score's origin; its notes fly from Voyager to Earth. */
+export function SolarView({ at, origin, notes = null }: { at: number; origin: number; notes?: number | null }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const atRef = useRef(at);
   atRef.current = at;
   const originRef = useRef(origin);
   originRef.current = origin;
+  const notesRef = useRef(notes);
+  notesRef.current = notes;
 
   useEffect(() => {
     const el = ref.current;
@@ -206,6 +216,57 @@ export function SolarView({ at, origin }: { at: number; origin: number }) {
         ctx.lineTo(es.x, es.y);
         ctx.stroke();
         ctx.setLineDash([]);
+      }
+      // the stage: the piece's notes flying home along the signal's way to Earth
+      const no = notesRef.current;
+      const retracing = step === 'backTurn' || step === 'backFly';
+      if (no != null && vs && es && !retracing) {
+        if (!outbound) {
+          ctx.strokeStyle = rgba(violet, 0.35);
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([3, 10]);
+          ctx.beginPath();
+          ctx.moveTo(vs.x, vs.y);
+          ctx.lineTo(es.x, es.y);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+        const loop = Math.floor((wall - no) / score.lengthMs);
+        let landed = 0;
+        for (let c = loop - 1; c <= loop; c++) {
+          onsets.forEach((on, i) => {
+            const dep = no + c * score.lengthMs + on;
+            const age = wall - dep;
+            if (dep < no || age < 0 || age > NOTE_FLIGHT_MS) return;
+            const g = age / NOTE_FLIGHT_MS;
+            const head = cam.project(lerp3(v, e, g));
+            const tail = cam.project(lerp3(v, e, Math.max(0, g - 0.02)));
+            if (!head || !tail) return;
+            const col = phraseFirst[i] ? gold : violet;
+            const sg = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+            sg.addColorStop(0, rgba(col, 0));
+            sg.addColorStop(1, rgba(col, 0.9));
+            ctx.strokeStyle = sg;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(tail.x, tail.y);
+            ctx.lineTo(head.x, head.y);
+            ctx.stroke();
+            dot(head.x, head.y, phraseFirst[i] ? 16 : 12, col, 1);
+            if (g > 0.97) landed = Math.max(landed, (g - 0.97) / 0.03);
+          });
+        }
+        if (landed > 0) dot(es.x, es.y, 70, teal, 0.6 * (1 - landed));
+        // Earth is off the frame at rest: name the way home where the signal line leaves it
+        if (away < 0.5 && (es.x < 0 || es.x > W || es.y < 0 || es.y > H)) {
+          const m = 90;
+          const cut = (p: number, q: number, lo: number, hi: number) =>
+            q < lo ? (lo - p) / (q - p) : q > hi ? (hi - p) / (q - p) : 1;
+          const k = Math.min(cut(vs.x, es.x, m, W - m), cut(vs.y, es.y, m, H - m));
+          const x = vs.x + (es.x - vs.x) * k;
+          const y = vs.y + (es.y - vs.y) * k;
+          label('to Earth', x + (es.x < vs.x ? 24 : -24), y - 18, teal, 1 - 2 * away, 28, es.x < vs.x ? 'left' : 'right');
+        }
       }
       const ps = cam.pulse && cam.project(cam.pulse);
       if (ps) dot(ps.x, ps.y, 18, violet, 1);

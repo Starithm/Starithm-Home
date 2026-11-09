@@ -29,6 +29,7 @@
       { "source": "/ears-to-the-universe/(.*)", "destination": "/index.html" },
 
       { "source": "/voyager-1", "destination": "/index.html" },
+      { "source": "/voyager-1/stage", "destination": "/index.html" },
 
       { "source": "/sso-callback", "destination": "/index.html" },
       { "source": "/privacy", "destination": "/index.html" }
@@ -48,7 +49,7 @@
       ]
     },
     {
-      "source": "/voyager-1",
+      "source": "/voyager-1(/stage)?",
       "headers": [
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
