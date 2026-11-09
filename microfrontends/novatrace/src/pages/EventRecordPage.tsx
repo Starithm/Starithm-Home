@@ -62,6 +62,8 @@ interface PublicEvent {
   canonicalId: string; alertKind: string; sourceName: string | null; t0: string | null;
   /* Absent until the API with circular positions (NovaTrace #105) is deployed. */
   primaryName?: string | null;
+  /** The standard name (GRB 261017A), else a name-like alias, else the id (NovaTrace #140). */
+  name?: string;
   raDeg: number | null; decDeg: number | null;
   posErrorDeg: number | { radius?: number; type?: string } | null;
   /* Where the event engine took the position from (notice or circular); null before re-materialising. */
@@ -103,6 +105,11 @@ function fmtCoord(value: number, type: 'ra' | 'dec'): string {
   const d = Math.floor(a), m = Math.floor((a % 1) * 60), s = ((a % 1) * 60 - m) * 60;
   return `${sign}${d}° ${m}' ${s.toFixed(1)}"`;
 }
+
+/* Titled by its name, as researchers cite it (Pawan Tiwari, 2026-11-09: "GRB 261017A", not a
+ * generated headline). Before the API sends `name`, the old order: headline, then primary name. */
+const eventTitle = (e: { name?: string; primaryName?: string | null; canonicalId: string; aiSummary: { headline: string } | null }) =>
+  e.name || e.primaryName || e.aiSummary?.headline || e.canonicalId;
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleString('en-US', {
@@ -310,7 +317,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
 
   useEffect(() => {
     if (!event) return;
-    document.title = `${event.aiSummary?.headline || event.canonicalId} — Starithm`;
+    document.title = `${eventTitle(event)} — Starithm`;
   }, [event]);
 
   /* Rail marker follows whichever section is nearest the top of the viewport. */
@@ -430,6 +437,10 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
     } : null,
     redshifts,
     energetics: event.energetics,
+    t0: event.t0,
+    triggeredBy: event.sourceName ?? null,
+    kind: event.alertKind,
+    sky: !noSky,
   });
   /* Swift's own pages (GRB table, UKSSDC XRT products) when Swift triggered on this burst. */
   const swift = swiftLinks(event.circulars);
@@ -513,7 +524,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
               )}
               {facilities.length > 0 && <span>· {facilities.join(' · ')}</span>}
             </MetaRow>
-            <Headline>{event.aiSummary?.headline || event.primaryName || event.canonicalId}</Headline>
+            <Headline>{eventTitle(event)}</Headline>
+            {event.aiSummary?.headline && event.aiSummary.headline !== eventTitle(event) && <SubMeta>{event.aiSummary.headline}</SubMeta>}
             <SubMeta>
               {event.t0 ? `T0 ${fmtDate(event.t0)}` : 'T0 unknown'} · {event.noticeCount} notices ·{' '}
               {event.circularCount} circulars
@@ -639,7 +651,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
 
           <EventLightCurve curves={event.lightCurves} circulars={event.circulars} onOpenCircular={openCircular} />
 
-          <EventObservations circulars={event.circulars} onOpenCircular={openCircular} />
+          <EventObservations circulars={event.circulars} t0={event.t0} onOpenCircular={openCircular} />
 
           {!noSky && <EventCounterparts data={counterpartsData}
             position={event.raDeg != null && event.decDeg != null ? { raDeg: event.raDeg, decDeg: event.decDeg, errorDeg: err } : null} />}
@@ -921,7 +933,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
               <SectionNote>Website reference · not a primary source</SectionNote>
             </SectionHead>
             <Cite>{`@misc{starithm_${event.canonicalId.toLowerCase().replace(/[^a-z0-9]/g, '_')},
-  title   = {${event.aiSummary?.headline || event.canonicalId}},
+  title   = {${eventTitle(event)}},
   author  = {{Starithm Platform}},
   year    = {${event.t0 ? new Date(event.t0).getUTCFullYear() : new Date().getUTCFullYear()}},
   url     = {https://starithm.ai/novatrace/events/${event.canonicalId}},

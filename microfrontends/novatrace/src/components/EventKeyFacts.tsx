@@ -11,7 +11,10 @@ export function EventKeyFacts({ facts, onOpenCircular }: { facts: KeyFact[]; onO
       {facts.map(f => (
         <KeyFactItem key={f.id} $wide={!!f.wide}>
           <FieldLabel>{f.label}</FieldLabel>
-          <FieldValue>{f.value}</FieldValue>
+          <FieldValue>
+            {f.missing ? <FieldHint style={{ marginLeft: 0 }}>{f.value}</FieldHint> : f.value}
+            {f.band && <FieldHint style={{ whiteSpace: 'nowrap' }}>{f.band}</FieldHint>}
+          </FieldValue>
           <div>
             {f.by && <FieldHint style={{ marginLeft: 0 }}>{f.by}</FieldHint>}
             {f.alertKey && (
