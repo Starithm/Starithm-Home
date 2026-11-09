@@ -110,6 +110,29 @@ function useWaterfall(ref: React.RefObject<HTMLCanvasElement>, origin: number) {
   }, [ref]);
 }
 
+/** The caption, typed out a letter at a time once the scene has settled. */
+function Typed({ text }: { text: string }) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    let id: ReturnType<typeof setInterval>;
+    const start = setTimeout(() => {
+      id = setInterval(() => setN((k) => (k >= text.length ? k : k + 1)), 75);
+    }, 1500);
+    return () => {
+      clearTimeout(start);
+      clearInterval(id);
+    };
+  }, [text.length]);
+  return (
+    <Caption>
+      {text.slice(0, n)}
+      <i />
+      {/* the untyped rest holds its place, so the line stays put as it types */}
+      <span style={{ visibility: 'hidden' }}>{text.slice(n)}</span>
+    </Caption>
+  );
+}
+
 const SCALE_X0 = 140;
 const SCALE_X1 = 1780;
 const SCALE_AU = 180;
@@ -168,7 +191,7 @@ export function SignalScene() {
           })}
         </StationRow>
 
-        <Caption>A 23-watt whisper, heard from {(pos.earthKm / 1e9).toFixed(1)} billion km away.</Caption>
+        <Typed text={`A 23-watt whisper, heard from ${(pos.earthKm / 1e9).toFixed(1)} billion km away.`} />
 
         <Scale viewBox={`0 0 ${W} 200`} aria-hidden="true">
           <line x1={SCALE_X0} y1={100} x2={SCALE_X1} y2={100} />

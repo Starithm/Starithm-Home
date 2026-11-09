@@ -97,15 +97,31 @@ export const StationCard = styled.div<{ $on: boolean }>`
   }
 `;
 
+const blink = keyframes`50% { opacity: 0; }`;
+
+/* typed out in the middle of the falls, a monospace line with a blinking cursor */
 export const Caption = styled.div`
   position: absolute;
   left: 0;
   right: 0;
-  top: 842px;
+  top: 540px;
+  transform: translateY(-50%);
   text-align: center;
-  font-family: var(--font-display);
-  font-size: 44px;
-  text-shadow: 0 2px 16px var(--surface-sunken);
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 48px;
+  white-space: pre;
+  text-shadow: 0 0 24px var(--surface-sunken), 0 2px 12px var(--surface-sunken);
+
+  i {
+    display: inline-block;
+    width: 0.55em;
+    height: 1em;
+    margin: 0 -0.55em 0 0; /* the cursor takes no room: the line keeps its place */
+    vertical-align: -0.12em;
+    background: var(--starithm-nebula-teal);
+    animation: ${blink} 1s steps(1) infinite;
+  }
 `;
 
 export const Scale = styled.svg`
