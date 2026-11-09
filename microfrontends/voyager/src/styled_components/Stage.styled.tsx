@@ -117,6 +117,7 @@ export const Caption = styled.div`
     font-family: inherit;
     font-weight: 700;
     font-size: 54px;
+    color: var(--starithm-golden-yellow);
   }
 
   i {
