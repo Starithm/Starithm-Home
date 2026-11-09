@@ -3,7 +3,12 @@
  * Every fact is a value already on the page, taken from structured data, never from the summary text:
  * burst properties (observations v3, object "prompt"), the event's best position, and its energetics
  * (E_iso / redshift chosen per event, NovaTrace event_engine/lib/energetics.ts). Each keeps the
- * circular it came from. A fact the event does not have is left out, not shown as a dash.
+ * circular it came from.
+ *
+ * A GRB always shows the same rows, in the order Pawan Tiwari asked for (2026-11-09): trigger time,
+ * position, redshift, T90, fluence, peak flux, each with its energy band; a value nobody reported
+ * reads "not reported" instead of disappearing. Epeak and E_iso follow when reported. Other kinds
+ * show trigger time and position always, the rest when reported.
  */
 import { burstProperties, CATALOG_LABEL, fmtNormalised, fmtObservationValue, type CatalogValues, type Observation, type ObservationRow } from './observations';
 import type { RedshiftReport } from './redshift';
@@ -20,6 +25,10 @@ export interface KeyFact {
   more?: number;
   /** Long values (a position) take a whole row in the phone grid. */
   wide?: boolean;
+  /** Energy band or filter the value is for ("10-1000 keV"): GBM and BAT fluences differ by band. */
+  band?: string | null;
+  /** Nobody reported it; the row stays so its absence is explicit. */
+  missing?: boolean;
 }
 
 /** Chosen per event by the event engine; absent until the API with energetics is deployed. */
@@ -31,12 +40,17 @@ export interface Energetics {
 
 interface CircularLike { alertKey: string; date: string; data?: { observations?: { rows?: ObservationRow[] } } }
 
-const PROMPT_FACTS: { id: string; label: string }[] = [
-  { id: 'duration', label: 'T90' },
-  { id: 'fluence', label: 'Fluence' },
-  { id: 'epeak', label: 'Epeak' },
-  { id: 'peak_flux', label: 'Peak flux' },
+const PROMPT_FACTS: { id: string; label: string; grb: boolean }[] = [
+  { id: 'duration', label: 'T90', grb: true },
+  { id: 'fluence', label: 'Fluence', grb: true },
+  { id: 'peak_flux', label: 'Peak flux', grb: true },
+  { id: 'epeak', label: 'Epeak', grb: false },
 ];
+
+const missing = (id: string, label: string, wide = false): KeyFact => ({ id, label, value: 'not reported', missing: true, wide });
+
+/** "2026-10-17 16:05:05 UTC". */
+const fmtTrigger = (iso: string) => `${new Date(iso).toISOString().slice(0, 19).replace('T', ' ')} UTC`;
 
 /** A unit that carries its own power of ten ("1e-07 erg/cm^2") reads better normalised ("5.10 × 10⁻⁷ erg/cm2");
  *  otherwise the value as reported, with its error. */
@@ -57,27 +71,23 @@ const sci = (v: number) => {
   return `${(v / 10 ** e).toFixed(2)} × 10${String(e).replace(/./g, c => SUP[c] ?? c)}`;
 };
 
-export function keyFacts({ circulars, catalogs, position, redshifts, energetics }: {
+export function keyFacts({ circulars, catalogs, position, redshifts, energetics, t0, triggeredBy, kind, sky }: {
   circulars: CircularLike[];
   catalogs?: CatalogValues[];
   position: { text: string; by: string | null; alertKey: string | null } | null;
   redshifts: RedshiftReport[];
   energetics: Energetics | null | undefined;
+  t0: string | null;
+  triggeredBy: string | null;
+  kind: string;
+  /** False for triggers not from the sky (TGF, particles): no position to report. */
+  sky: boolean;
 }): KeyFact[] {
+  const grb = kind === 'grb';
   const facts: KeyFact[] = [];
-  if (position) facts.push({ id: 'position', label: 'Position', value: position.text, by: position.by, alertKey: position.alertKey, wide: true });
-
-  const props = burstProperties(circulars, catalogs);
-  for (const p of PROMPT_FACTS) {
-    // Epeak in the burst's rest frame is a different number; the observed one is what the instruments report.
-    const rows = props.filter(o => o.quantity === p.id && (o as { frame?: string | null }).frame !== 'rest');
-    const o = pickProperty(rows);
-    if (o) facts.push({
-      id: p.id, label: p.label, value: factValue(o),
-      by: o.source === 'catalog' ? CATALOG_LABEL[o.catalog ?? ''] ?? o.catalog : o.instrument || o.telescope,
-      alertKey: o.source === 'catalog' ? null : o.alertKey, more: rows.length - 1,
-    });
-  }
+  facts.push(t0 ? { id: 't0', label: 'Trigger time', value: fmtTrigger(t0), by: triggeredBy, wide: true } : missing('t0', 'Trigger time', true));
+  if (position) facts.push({ id: 'position', label: 'Position (J2000)', value: position.text, by: position.by, alertKey: position.alertKey, wide: true });
+  else if (sky) facts.push(missing('position', 'Position (J2000)', true));
 
   const z = energetics?.redshift;
   if (z) {
@@ -85,6 +95,21 @@ export function keyFacts({ circulars, catalogs, position, redshifts, energetics 
     facts.push({ id: 'redshift', label: 'Redshift', value, by: z.method === 'spectroscopic' ? 'spectroscopic' : z.method === 'photometric' ? 'photometric' : null, alertKey: z.alertKey });
   } else if (redshifts.length) {
     facts.push({ id: 'redshift', label: 'Redshift', value: redshifts[0].display, alertKey: redshifts[0].alertKey, more: redshifts.length - 1 });
+  } else if (grb) {
+    facts.push(missing('redshift', 'Redshift'));
+  }
+
+  const props = burstProperties(circulars, catalogs);
+  for (const p of PROMPT_FACTS) {
+    // Epeak in the burst's rest frame is a different number; the observed one is what the instruments report.
+    const rows = props.filter(o => o.quantity === p.id && (o as { frame?: string | null }).frame !== 'rest');
+    const o = pickProperty(rows);
+    if (o) facts.push({
+      id: p.id, label: p.label, value: factValue(o), band: o.band,
+      by: o.source === 'catalog' ? CATALOG_LABEL[o.catalog ?? ''] ?? o.catalog : o.instrument || o.telescope,
+      alertKey: o.source === 'catalog' ? null : o.alertKey, more: rows.length - 1,
+    });
+    else if (grb && p.grb) facts.push(missing(p.id, p.label));
   }
 
   const e = energetics?.eiso;

@@ -4,7 +4,7 @@ import {
   TableWrap, Table, UrlLink, ShowMore, Disclaimer, ObsChart, ObsRow, AssumptionNote,
 } from '../styled_pages/EventRecord.styled';
 import {
-  shownObservations, observationsCoverage, fmtObservationValue, fmtSinceTrigger,
+  shownObservations, observationsCoverage, fmtObservationValue, fmtSinceTrigger, fmtObservationUtc, fmtExposure,
   fmtNormalised, fmtNormalisedAt, normAssumptions,
   REGIMES, type Observation, type Regime, type ObservationRow,
 } from '../utils/observations';
@@ -80,8 +80,8 @@ function ValueCells({ o, normalised }: { o: Observation; normalised: boolean }) 
   );
 }
 
-export function EventObservations({ circulars, onOpenCircular }: {
-  circulars: CircularLike[]; onOpenCircular: (alertKey: string) => void;
+export function EventObservations({ circulars, t0, onOpenCircular }: {
+  circulars: CircularLike[]; t0: string | null; onOpenCircular: (alertKey: string) => void;
 }) {
   const [filter, setFilter] = useState<Regime | 'all'>('all');
   const [all, setAll] = useState(false);
@@ -95,6 +95,10 @@ export function EventObservations({ circulars, onOpenCircular }: {
   const notYet = cov.parsed < cov.total;
   // Rows stored before the normaliser ran have no norm; until some do, the column would only repeat.
   const normalised = obs.some(o => o.norm);
+  // Columns researchers asked for to rebuild light curves (Pawan Tiwari, 2026-11-09); shown once
+  // any row has them, so older events don't get empty columns.
+  const exposure = obs.some(o => o.exposure_s != null);
+  const instrument = obs.some(o => o.instrument);
 
   return (
     <RecordSection id="observations">
@@ -126,16 +130,25 @@ export function EventObservations({ circulars, onOpenCircular }: {
             <TableWrap>
               <Table>
                 <thead>
-                  <tr><th>Time</th>{filter === 'all' && <th>Regime</th>}<th>Band</th><th>As reported</th>{normalised && <th>Normalised</th>}<th>Telescope</th><th>Source</th></tr>
+                  <tr>
+                    <th>Time</th><th>UTC</th>{filter === 'all' && <th>Regime</th>}<th>Band</th><th>As reported</th>
+                    {normalised && <th>Normalised</th>}{exposure && <th>Exposure</th>}<th>Telescope</th>{instrument && <th>Instrument</th>}<th>Source</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {rows.map((o, i) => (
                     <ObsRow key={i} $limit={isLimit(o)} title={o.quote ?? undefined}>
                       <td>{fmtSinceTrigger(o.time_since_trigger_s)}</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>{fmtObservationUtc(t0, o.time_since_trigger_s)}</td>
                       {filter === 'all' && <td>{REGIMES.find(r => r.id === o.regime)?.label}</td>}
                       <td>{o.band ?? '—'}</td>
                       <ValueCells o={o} normalised={normalised} />
-                      <td style={{ whiteSpace: 'normal' }}>{o.telescope || o.instrument || '—'}</td>
+                      {exposure && <td>{fmtExposure(o.exposure_s)}</td>}
+                      <td style={{ whiteSpace: 'normal' }}>{o.telescope || (instrument ? '—' : o.instrument) || '—'}</td>
+                      {/* Written out in full it can be a sentence ("optical three-color (g', Rc, and Ic) CCD
+                          cameras"); one line, the rest on hover. */}
+                      {instrument && <td title={o.instrument ?? undefined}
+                        style={{ maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.instrument || '—'}</td>}
                       <td>
                         <UrlLink href={`#circ-${o.alertKey}`} onClick={e => { e.preventDefault(); onOpenCircular(o.alertKey); }}>
                           GCN {gcnNo(o.alertKey)}

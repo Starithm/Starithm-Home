@@ -230,6 +230,20 @@ export function fmtSinceTrigger(s: number | null): string {
   return `T+${(s / 86400).toFixed(1)} d`;
 }
 
+/** When the value was measured, in UTC: trigger time plus time since trigger, "2026-10-17 16:22".
+ *  The row's own `time` is the text as written (a start, a mid-point, a date), so it isn't used. */
+export function fmtObservationUtc(t0: string | null | undefined, s: number | null): string {
+  if (!t0 || s == null) return '—';
+  const d = new Date(new Date(t0).getTime() + s * 1000);
+  return Number.isNaN(d.getTime()) ? '—' : d.toISOString().slice(0, 16).replace('T', ' ');
+}
+
+/** Exposure as reported: "300 s", "1.2 ks". */
+export function fmtExposure(s: number | null | undefined): string {
+  if (s == null) return '—';
+  return s >= 1000 ? `${(s / 1000).toFixed(s >= 10000 ? 0 : 1)} ks` : `${Math.round(s)} s`;
+}
+
 /* ── normalised values ─────────────────────────────────────────────────── */
 
 
