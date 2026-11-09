@@ -53,7 +53,7 @@ export function RecordScene() {
           ))}
         </Facts>
 
-        <Craft src="/voyager/voyager-1-craft-pia17049.jpg" alt="Voyager 1 (NASA/JPL-Caltech render)" />
+        <Craft src="/voyager/voyager-1-cutout-pia17049.webp" alt="Voyager 1 (NASA/JPL-Caltech render)" />
 
         <Look>
           <div>Where to look tonight</div>

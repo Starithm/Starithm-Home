@@ -223,8 +223,8 @@ export const Facts = styled.div`
   }
 `;
 
-/* Voyager on its own, as on the slide: the NASA render on black, screened so the moving sky shows
-   through, and drifting a little */
+/* Voyager on its own, cut out of the NASA render onto transparency (scripts/cut-out-craft.py), so it sits
+   solid in front of the moving sky; drifting a little. Shown below its 745×840 size, so it stays sharp. */
 const float = keyframes`
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
   50% { transform: translate(-10px, 12px) rotate(-1.5deg); }
@@ -232,14 +232,13 @@ const float = keyframes`
 
 export const Craft = styled.img`
   position: absolute;
-  left: 1164px;
-  top: 110px;
-  width: 500px;
-  height: 500px;
+  left: 1150px;
+  top: 64px;
+  width: 550px;
+  height: 620px;
   max-width: none;
-  mix-blend-mode: screen;
-  mask-image: radial-gradient(circle, black 55%, transparent 72%);
-  filter: drop-shadow(0 0 14px var(--accent-text));
+  background: none; /* a global rule grounds every img, which would box the cut-out */
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--accent-text) 45%, transparent));
   animation: ${float} 14s ease-in-out infinite;
 
   @media (prefers-reduced-motion: reduce) {
@@ -250,7 +249,7 @@ export const Craft = styled.img`
 export const Look = styled.div`
   position: absolute;
   right: 96px;
-  top: 650px;
+  top: 720px;
   width: 820px;
   display: flex;
   flex-direction: column;
