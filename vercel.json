@@ -6,6 +6,10 @@
       { "source": "/assets/(.*)", "destination": "/assets/$1" },
 
       { "source": "/feed.xml", "destination": "/api/feed" },
+      { "source": "/sitemap.xml", "destination": "/api/sitemap?part=index" },
+      { "source": "/sitemaps/events-recent.xml", "destination": "/api/sitemap?part=recent" },
+      { "source": "/sitemaps/events.xml", "destination": "/api/sitemap?part=events" },
+      { "source": "/novatrace/feed.xml", "destination": "/api/novatrace-feed" },
       { "source": "/novatrace/events/:id", "destination": "/api/event-page" },
 
       { "source": "/novatrace", "destination": "/index.html" },
