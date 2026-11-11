@@ -13,8 +13,13 @@
 //     2026-09-16: Slack, Discord, Bluesky and Reddit all received the empty React
 //     shell, so a shared event link showed the generic site-wide card. Verified with
 //     `curl -A "Slackbot-LinkExpanding 1.0" -I` → x-starithm-prerender: spa.
+//   Added 2026-11-11, same reason (live fetches got the shell): Meta AI (Meta-ExternalAgent / -WebIndexer
+//     / -ExternalFetcher; facebookexternalhit is only its link preview), Mistral Le Chat (MistralAI-Index /
+//     -User / -Training), Amazon (Amzn-SearchBot / Amzn-User; "amazonbot" doesn't match them), xAI Grok,
+//     DeepSeek, DuckAssistBot, AI2 (AI2Bot, Ai2Bot-Dolma: open scientific corpora), Google-CloudVertexBot,
+//     Claude-Code.
 export const BOT_REGEX =
-  /googlebot|googleother|google-extended|google-inspectiontool|storebot-google|bingbot|slurp|duckduckbot|baiduspider|yandex|facebookexternalhit|facebookcatalog|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|slack-imgproxy|discordbot|redditbot|cardyb|bsky|mastodon|pleroma|misskey|pinterest|tumblr|flipboard|embedly|iframely|skypeuripreview|vkshare|nuzzel|snapchat|viber|line-podcast|opengraph|metainspector|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-user|claude-web|claude-searchbot|anthropic-ai|perplexitybot|perplexity-user|youbot|ccbot|cohere-ai|diffbot|bytespider|applebot|ia_archiver|amazonbot|brightbot|imagesiftbot/i;
+  /googlebot|googleother|google-extended|google-inspectiontool|storebot-google|bingbot|slurp|duckduckbot|baiduspider|yandex|facebookexternalhit|facebookcatalog|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|slack-imgproxy|discordbot|redditbot|cardyb|bsky|mastodon|pleroma|misskey|pinterest|tumblr|flipboard|embedly|iframely|skypeuripreview|vkshare|nuzzel|snapchat|viber|line-podcast|opengraph|metainspector|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-user|claude-web|claude-searchbot|anthropic-ai|perplexitybot|perplexity-user|youbot|ccbot|cohere-ai|diffbot|bytespider|applebot|ia_archiver|amazonbot|amzn-searchbot|amzn-user|brightbot|imagesiftbot|meta-externalagent|meta-webindexer|meta-externalfetcher|mistralai|xai-bot|xai-searchbot|deepseek|duckassistbot|ai2bot|google-cloudvertexbot|claude-code/i;
 
 // Diagnostic header so `curl -I` reveals what the edge function did, without fetching
 // the body. Values:
