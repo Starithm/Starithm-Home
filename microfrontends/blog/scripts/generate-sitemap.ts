@@ -1,3 +1,6 @@
+/* The pages sitemap (/sitemaps/pages.xml): blog and other static pages, written at build. Event pages are
+ * in the live sitemaps served by api/sitemap.ts, which /sitemap.xml indexes; they used to be listed here,
+ * so an event arriving after a deploy waited for the next one. */
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -5,8 +8,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const SITE_BASE = 'https://starithm.ai';
 const INDEX_URL = 'https://raw.githubusercontent.com/Starithm/starithm-blog-posts/main/posts/index.json';
-
-const NOVATRACE_API = 'https://novatrace-microservice.onrender.com';
 
 async function main() {
   console.log('Fetching post index from GitHub...');
@@ -18,16 +19,6 @@ async function main() {
     slug: e.slug,
     date: e.date || new Date().toISOString().slice(0, 10),
   }));
-
-  console.log('Fetching event list from Novatrace API...');
-  let events: Array<{ canonicalId: string; updatedAt: string }> = [];
-  try {
-    const evRes = await fetch(`${NOVATRACE_API}/api/public/events`);
-    if (evRes.ok) events = await evRes.json();
-    console.log(`  Found ${events.length} events`);
-  } catch (e) {
-    console.warn('  Could not fetch events (non-fatal):', e);
-  }
 
   const staticRoutes = [
     { url: `${SITE_BASE}/blog`, priority: '1.0', changefreq: 'daily' },
@@ -41,14 +32,7 @@ async function main() {
     changefreq: 'monthly',
   }));
 
-  const eventRoutes = events.map(e => ({
-    url: `${SITE_BASE}/novatrace/events/${e.canonicalId}`,
-    lastmod: e.updatedAt ? new Date(e.updatedAt).toISOString().slice(0, 10) : undefined,
-    priority: '0.8',
-    changefreq: 'weekly',
-  }));
-
-  const allRoutes = [...staticRoutes, ...eventRoutes, ...postRoutes];
+  const allRoutes = [...staticRoutes, ...postRoutes];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -62,8 +46,8 @@ ${allRoutes.map(r => `  <url>
 
   const publicDir = path.resolve(__dirname, '../public');
   if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
-  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), xml);
-  console.log(`✅ sitemap.xml generated with ${allRoutes.length} URLs`);
+  fs.writeFileSync(path.join(publicDir, 'sitemap-pages.xml'), xml);
+  console.log(`✅ sitemap-pages.xml generated with ${allRoutes.length} URLs`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

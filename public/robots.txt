@@ -49,6 +49,7 @@ Disallow: /private/
 Crawl-delay: 1
 
 Sitemap: https://starithm.ai/sitemap.xml
+Sitemap: https://starithm.ai/novatrace/feed.xml
 
 # Standard search engines
 User-agent: Googlebot

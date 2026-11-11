@@ -14,7 +14,7 @@
     "dev:shell": "vite --port 3000 --open",
     "install:all": "npm install && cd microfrontends/blog && npm install && cd ../../shared && npm install",
     "build:all": "npm run build && cd microfrontends/blog && npm install && NODE_ENV=production npm run build && cd ../.. && npm run copy-blog",
-    "copy-blog": "mkdir -p dist/blog && cp -r microfrontends/blog/dist/* dist/blog/ && cp microfrontends/blog/dist/sitemap.xml dist/sitemap.xml && echo 'Copy completed'"
+    "copy-blog": "mkdir -p dist/blog && cp -r microfrontends/blog/dist/* dist/blog/ && mkdir -p dist/sitemaps && cp microfrontends/blog/dist/sitemap-pages.xml dist/sitemaps/pages.xml && echo 'Copy completed'"
   },
   "dependencies": {
     "@clerk/react": "^6.11.3",
