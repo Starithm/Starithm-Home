@@ -79,13 +79,12 @@ export const NavButton = styled.button`
 `;
 
 /* ── shared section pieces ── */
-export const Section = styled.section<{ $alt?: boolean; $minH?: number }>`
-  min-height: ${p => (p.$minH ? `max(${Math.round(p.$minH * 0.82)}px, min(90vh, ${Math.round(p.$minH * 0.82) + 160}px))` : 'auto')};
-  display: flex; align-items: center;
+/* Sections size to their content; only the hero is screen-height. */
+export const Section = styled.section<{ $alt?: boolean }>`
   background: ${p => (p.$alt ? PANEL : 'transparent')};
   border-top: 1px solid ${line(0.07)};
   > div { padding-top: 67px; padding-bottom: 67px; }
-  @media (max-width: 760px) { min-height: 0; > div { padding-top: 49px; padding-bottom: 49px; } }
+  @media (max-width: 760px) { > div { padding-top: 49px; padding-bottom: 49px; } }
 `;
 export const Stack = styled.div<{ $gap?: number }>`
   display: flex; flex-direction: column; gap: ${p => p.$gap ?? 42}px;
@@ -148,6 +147,9 @@ export const Lede = styled.p`
 
 /* ── ask box ── */
 export const AskForm = styled.form`
+  /* Contains the visually hidden label: without it the label is placed against <html>, which then
+     scrolls on phones (body is the scroller there) and pushes the page out of view. */
+  position: relative;
   display: flex; align-items: center; gap: 9px;
   background: ${RAISED}; border: 1px solid rgba(154, 72, 255, 0.5); border-radius: 16px;
   padding: 9px 9px 9px 19px; max-width: 634px; width: 100%; box-sizing: border-box; text-align: left;

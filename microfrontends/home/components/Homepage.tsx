@@ -182,7 +182,7 @@ function ProblemCarousel() {
   const s = SLIDES[slide];
   const done = chars >= s.text.length;
   return (
-    <Section $alt $minH={598} aria-roledescription="carousel" aria-label="The problem">
+    <Section $alt aria-roledescription="carousel" aria-label="The problem">
       <Wrap>
         <Stack>
           <HeadRow style={{ alignItems: 'center' }}>
@@ -394,7 +394,7 @@ export function Homepage() {
 
       <ProblemCarousel />
 
-      <Section $minH={669}>
+      <Section>
         <Wrap>
           <Stack>
             <Stack $gap={12}>
@@ -437,7 +437,7 @@ export function Homepage() {
         </Wrap>
       </Section>
 
-      <Section $alt $minH={563}>
+      <Section $alt>
         <Wrap>
           <Stack $gap={49}>
             <HeadRow>
@@ -457,7 +457,7 @@ export function Homepage() {
         </Wrap>
       </Section>
 
-      <Section $minH={669}>
+      <Section>
         <Wrap>
           <Stack>
             <Stack $gap={12}>
@@ -489,7 +489,7 @@ export function Homepage() {
         </Wrap>
       </Section>
 
-      <Section $alt $minH={598} id="signin">
+      <Section $alt id="signin">
         <Wrap>
           <SplitRow>
             <Stack $gap={25}>
