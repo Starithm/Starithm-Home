@@ -65,7 +65,7 @@ Allow: /
 Crawl-delay: 2
 
 # AI crawlers — explicitly allowed.
-# Keep this list in sync with BOT_REGEX in api/event-page.ts (the edge function that
+# Keep this list in sync with BOT_REGEX in api/_shared/prerender.ts (the edge function that
 # serves prerendered HTML). Two purposes per vendor: (a) training/index crawlers and
 # (b) LIVE user-initiated retrieval agents that fetch when a user asks an assistant
 # about an event — the latter are the high-conversion path, so they MUST be allowed.
