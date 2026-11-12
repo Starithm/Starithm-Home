@@ -56,9 +56,7 @@ export const Wrap = styled.div<{ $narrow?: boolean }>`
 /* ── nav ── */
 export const Header = styled.header`
   position: sticky; top: 0; z-index: 10;
-  background: rgba(14, 11, 22, 0.85);
-  backdrop-filter: blur(9px);
-  border-bottom: 1px solid ${line(0.07)};
+  background: var(--starithm-rich-black);
 `;
 export const NavRow = styled.div`
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
@@ -157,9 +155,9 @@ export const AskForm = styled.form`
      scrolls on phones (body is the scroller there) and pushes the page out of view. */
   position: relative;
   display: flex; align-items: center; gap: 9px;
-  background: ${RAISED}; border: 1px solid rgba(154, 72, 255, 0.5); border-radius: 14px;
+  background: ${RAISED}; border: 1px solid rgba(154, 72, 255, 0.28); border-radius: 14px;
   padding: 6px 6px 6px 15px; max-width: 560px; width: 100%; box-sizing: border-box; text-align: left;
-  &:focus-within { border-color: ${VIOLET_D}; box-shadow: 0 0 0 4px rgba(141, 15, 245, 0.22); }
+  &:focus-within { border-color: rgba(154, 72, 255, 0.6); box-shadow: 0 0 0 3px rgba(141, 15, 245, 0.12); }
   svg { flex: none; }
   input {
     flex: 1 1 auto; min-width: 0; background: transparent; border: 0; color: ${PLATINUM};
@@ -217,7 +215,7 @@ export const CardRows = styled.div`
 export const CardRow = styled.div<{ $active?: boolean }>`
   display: grid; grid-template-columns: 50px minmax(0, 1fr) auto; gap: 10px; padding: 8px 18px;
   transition: background 0.4s;
-  background: ${p => (p.$active ? 'rgba(141, 15, 245, 0.16)' : 'transparent')};
+  background: ${p => (p.$active ? 'rgba(141, 15, 245, 0.08)' : 'transparent')};
   > span:first-child { color: ${line(0.6)}; }
   @media (max-width: 520px) { padding: 8px 12px; grid-template-columns: 44px minmax(0, 1fr) auto; }
 `;
@@ -352,8 +350,8 @@ export const DeckCard = styled.a<{ $pos: number; $out: boolean; $feature?: boole
   position: absolute; inset: 0; box-sizing: border-box;
   display: flex; flex-direction: column; justify-content: space-between; gap: 18px;
   padding: 28px; border-radius: 18px; text-decoration: none; color: ${PLATINUM} !important; text-align: left;
-  border: 1px solid ${p => (p.$feature && p.$pos === 0 ? 'rgba(154, 72, 255, 0.55)' : line(p.$pos === 0 ? 0.18 : 0.14))};
-  background: ${p => (p.$feature && p.$pos === 0 ? `linear-gradient(160deg, var(--accent-surface), ${PANEL})` : PANEL)};
+  border: 1px solid ${p => (p.$feature && p.$pos === 0 ? 'rgba(154, 72, 255, 0.3)' : line(p.$pos === 0 ? 0.18 : 0.14))};
+  background: ${p => (p.$feature && p.$pos === 0 ? `linear-gradient(160deg, rgba(32, 12, 53, 0.55), ${PANEL})` : PANEL)};
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
   transition: transform 0.7s cubic-bezier(.2, .7, .2, 1), opacity 0.7s, border-color 0.5s;
   /* !important: globals.css resets every element with "* { z-index: auto !important }" (as in Ears.styled.tsx). */
@@ -412,7 +410,7 @@ export const FlowFigure = styled.figure`
   margin: 0 auto; width: 100%; max-width: 640px;
   svg { display: block; width: 100%; height: auto; overflow: visible; }
   .node rect { fill: ${PANEL}; stroke: ${line(0.14)}; stroke-width: 1; transition: fill 0.4s, stroke 0.4s; }
-  .node.on rect { fill: rgba(141, 15, 245, 0.16); stroke: rgba(154, 72, 255, 0.75); }
+  .node.on rect { fill: rgba(141, 15, 245, 0.08); stroke: rgba(154, 72, 255, 0.4); }
   .node .n { fill: ${line(0.5)}; font-family: var(--font-mono); font-size: 11px; }
   .node .name { fill: ${PLATINUM}; font-family: var(--font-mono); font-size: 16px; font-weight: 600; }
   .node .desc { fill: ${line(0.68)}; font-family: var(--font-prose); font-size: 13px; }
@@ -421,9 +419,9 @@ export const FlowFigure = styled.figure`
   .loop-label { fill: ${line(0.6)}; font-family: var(--font-prose); font-size: 12px; }
   .arrow { fill: ${line(0.4)}; }
   .link, .loop, .arrow { transition: stroke 0.25s, fill 0.25s, filter 0.25s; }
-  .link.on, .loop.on { stroke: var(--accent-text); stroke-width: 2.5; filter: drop-shadow(0 0 6px var(--primary)); }
+  .link.on, .loop.on { stroke: rgba(202, 144, 250, 0.7); stroke-width: 2; filter: drop-shadow(0 0 3px rgba(141, 15, 245, 0.5)); }
   .loop.on { stroke-dasharray: none; }
-  .arrow.on { fill: var(--accent-text); filter: drop-shadow(0 0 6px var(--primary)); }
+  .arrow.on { fill: rgba(202, 144, 250, 0.8); filter: drop-shadow(0 0 3px rgba(141, 15, 245, 0.5)); }
 `;
 
 

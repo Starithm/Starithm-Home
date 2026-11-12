@@ -15,13 +15,13 @@ const Ground = styled.svg`
   position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 150px; display: block;
   @media (max-width: 760px) { height: 96px; }
 `;
-const Orbiter = styled.svg<{ $top: string; $left: string; $size: number }>`
+const Orbiter = styled.svg<{ $top: string; $left: string; $size: number; $wideOnly?: boolean }>`
   position: absolute; top: ${p => p.$top}; left: ${p => p.$left}; width: ${p => p.$size}px; height: auto; opacity: 0.5;
-  @media (max-width: 760px) { display: none; }
+  @media (max-width: ${p => (p.$wideOnly ? 1180 : 760)}px) { display: none; }
 `;
 
 const STARS = 260;
-const SPEED = 0.0016; // depth units per frame: slow
+const SPEED = 0.001; // depth units per frame: slow (a star takes ~16 s to cross)
 
 function Starfield() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -109,7 +109,7 @@ export function HeroSky() {
     <Layer aria-hidden="true">
       <Starfield />
       <Orbiter $top="7%" $left="90%" $size={52} viewBox="0 -12 60 48"><SpaceTelescope /></Orbiter>
-      <Orbiter $top="70%" $left="6%" $size={40} viewBox="0 -12 60 48" style={{ transform: 'rotate(-18deg)' }}><SpaceTelescope /></Orbiter>
+      <Orbiter $top="72%" $left="47%" $size={40} $wideOnly viewBox="0 -12 60 48" style={{ transform: 'rotate(-18deg)' }}><SpaceTelescope /></Orbiter>
       <Ground viewBox={`0 0 ${VW} ${VH}`} preserveAspectRatio="xMidYMax slice">
         <defs>
           <linearGradient id="hero-atmo" x1="0" y1="0" x2="0" y2="1">
