@@ -9,9 +9,9 @@ import {
   CardSlot, EventCard, CardHead, CardStats, CardRows, CardRow, CardFoot,
   Ticker, TickerLabel, TickerTrack, TickerRun, TickerDot,
   Typed, Caret, Sub, Dots, DotBar, HeadRow,
-  DeckRow, Deck, DeckCard, DeckTitle, DeckBody, DeckNav,
-  Bars, BarRow, BarLabel, BarTrack, BarFill, BarValue,
-  Flow, FlowNode, FlowLink,
+  DeckRow, Deck, DeckCard, DeckFace, DeckTitle, DeckBody, DeckNav,
+  Graph, GraphNotes,
+  FlowFigure,
   SplitRow, Providers, ErrorNote, FormCard, FormTitle, FakeField, FieldRow,
   Closing, Contact, Footer, FooterCols, line,
 } from '../styled_components/HomepageV3.styled';
@@ -77,11 +77,11 @@ const FEATURES: { label: string; color: string; title: string; body: string; hre
 ];
 
 /* Accuracy against independent catalogues (blog: how-accurate-is-starithm-extraction, 2026-11-12). */
-const ACCURACY: { label: string; note: string; value: number; muted?: boolean }[] = [
-  { label: 'Redshift', note: 'vs GRBweb · 327 of 346 bursts · Δz ≤ 0.01', value: 94.5 },
-  { label: 'T90', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 92.2 },
-  { label: 'Fluence', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 94.5 },
-  { label: 'Redshift shown on the event page', note: 'telling a burst’s redshift from a host’s or a limit: work in progress', value: 86.0, muted: true },
+const ACCURACY: { label: string; short: string; note: string; value: number; muted?: boolean }[] = [
+  { label: 'Redshift', short: 'Redshift', note: 'vs GRBweb · 327 of 346 bursts · Δz ≤ 0.01', value: 94.5 },
+  { label: 'T90', short: 'T90', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 92.2 },
+  { label: 'Fluence', short: 'Fluence', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 94.5 },
+  { label: 'Redshift shown on the event page', short: 'Event-page z', note: 'redshift shown on the event page; telling a burst’s redshift from a host’s or a limit: work in progress', value: 86.0, muted: true },
 ];
 
 const reducedMotion = () =>
@@ -237,19 +237,70 @@ function ProblemCarousel() {
   );
 }
 
+/* Vertical flow chart. One dot runs down through the stages and back up the update loop (a new notice or
+   circular for an event goes through again and the page updates); the stage it is in lights up. Extract
+   carries its own loop: an unreadable answer is retried by a second model. */
+const FW = 640, NODE_W = 360, NODE_H = 70, GAP = 44, TOP = 10;
+const NX = (FW - NODE_W) / 2;
+const nodeY = (i: number) => TOP + i * (NODE_H + GAP);
 function FlowChart() {
-  const t = useTick(1600);
+  const pathRef = useRef<SVGPathElement>(null);
+  const [dot, setDot] = useState<{ x: number; y: number } | null>(null);
+  const cx = FW / 2, last = STEPS.length - 1;
+  const bottom = nodeY(last) + NODE_H, rightX = NX + NODE_W;
+  // Down the middle from Ingest to Publish, out of Publish's right side, up the loop, into Ingest's right side.
+  const route = `M ${cx} ${nodeY(0) + NODE_H / 2} L ${cx} ${nodeY(last) + NODE_H / 2} L ${rightX} ${nodeY(last) + NODE_H / 2}`
+    + ` C ${rightX + 90} ${nodeY(last) + NODE_H / 2}, ${rightX + 90} ${nodeY(0) + NODE_H / 2}, ${rightX} ${nodeY(0) + NODE_H / 2} L ${cx} ${nodeY(0) + NODE_H / 2}`;
+  useEffect(() => {
+    if (reducedMotion()) return;
+    const path = pathRef.current;
+    if (!path) return;
+    const len = path.getTotalLength();
+    let raf = 0;
+    const start = performance.now();
+    const frame = (now: number) => {
+      const p = ((now - start) % 11000) / 11000;
+      const pt = path.getPointAtLength(p * len);
+      setDot({ x: pt.x, y: pt.y });
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  const active = dot && Math.abs(dot.x - cx) < 1 ? STEPS.findIndex((_, i) => dot.y >= nodeY(i) && dot.y <= nodeY(i) + NODE_H) : -1;
+  const ext = 2; // Extract
   return (
-    <Flow aria-label="How it works">
-      {STEPS.map(([n, name, desc], i) => (
-        <React.Fragment key={n}>
-          {i > 0 && <FlowLink aria-hidden="true"><i /><i /><i /></FlowLink>}
-          <FlowNode $on={!reducedMotion() && i === t % STEPS.length}>
-            <small>{n}</small><strong>{name}</strong><span>{desc}</span>
-          </FlowNode>
-        </React.Fragment>
-      ))}
-    </Flow>
+    <FlowFigure>
+      <svg viewBox={`0 0 ${FW} ${bottom + 12}`} role="img"
+        aria-label={`How it works: ${STEPS.map(([, n, d]) => `${n}, ${d}`).join(' Then ')} New notices and circulars go through again and update the page; an unreadable extraction is retried by a second model.`}>
+        <path ref={pathRef} d={route} fill="none" stroke="none" />
+        {STEPS.slice(0, -1).map((_, i) => (
+          <g key={i}>
+            <line className="link" x1={cx} x2={cx} y1={nodeY(i) + NODE_H} y2={nodeY(i + 1) - 6} />
+            <path className="arrow" d={`M ${cx - 4} ${nodeY(i + 1) - 8} L ${cx + 4} ${nodeY(i + 1) - 8} L ${cx} ${nodeY(i + 1) - 1} Z`} />
+          </g>
+        ))}
+        {/* update loop: Publish back to Ingest */}
+        <path className="loop" d={`M ${rightX} ${nodeY(last) + NODE_H / 2} C ${rightX + 90} ${nodeY(last) + NODE_H / 2}, ${rightX + 90} ${nodeY(0) + NODE_H / 2}, ${rightX + 6} ${nodeY(0) + NODE_H / 2}`} />
+        <path className="arrow" d={`M ${rightX + 9} ${nodeY(0) + NODE_H / 2 - 4} L ${rightX + 9} ${nodeY(0) + NODE_H / 2 + 4} L ${rightX + 1} ${nodeY(0) + NODE_H / 2} Z`} />
+        <text className="loop-label" x={rightX + 74} y={(nodeY(0) + bottom) / 2 - 8} textAnchor="start">new notices</text>
+        <text className="loop-label" x={rightX + 74} y={(nodeY(0) + bottom) / 2 + 8} textAnchor="start">and circulars</text>
+        {/* retry loop on Extract */}
+        <path className="loop" d={`M ${NX} ${nodeY(ext) + 18} C ${NX - 60} ${nodeY(ext) + 8}, ${NX - 60} ${nodeY(ext) + NODE_H - 8}, ${NX - 6} ${nodeY(ext) + NODE_H - 18}`} />
+        <path className="arrow" d={`M ${NX - 9} ${nodeY(ext) + NODE_H - 22} L ${NX - 9} ${nodeY(ext) + NODE_H - 14} L ${NX - 1} ${nodeY(ext) + NODE_H - 18} Z`} />
+        <text className="loop-label" x={NX - 58} y={nodeY(ext) + NODE_H / 2 - 4} textAnchor="end">retried by a</text>
+        <text className="loop-label" x={NX - 58} y={nodeY(ext) + NODE_H / 2 + 12} textAnchor="end">second model</text>
+        {STEPS.map(([n, name, desc], i) => (
+          <g key={n} className={`node${i === active ? ' on' : ''}`}>
+            <rect x={NX} y={nodeY(i)} width={NODE_W} height={NODE_H} rx={14} />
+            <text className="n" x={NX + 18} y={nodeY(i) + 24}>{n}</text>
+            <text className="name" x={NX + 46} y={nodeY(i) + 26}>{name}</text>
+            <text className="desc" x={NX + 18} y={nodeY(i) + 50}>{desc}</text>
+          </g>
+        ))}
+        {dot && <circle className="dot" cx={dot.x} cy={dot.y} r={6} />}
+      </svg>
+    </FlowFigure>
   );
 }
 
@@ -262,20 +313,11 @@ function FeatureDeck() {
   const go = (i: number) => setTop(((i % n) + n) % n);
   return (
     <DeckRow>
-      <Stack $gap={18}>
+      <Stack $gap={14} style={{ alignItems: 'center' }}>
         <H2>One page per event. A source on every value.</H2>
-        <Muted $size={15} style={{ maxWidth: 440 }}>
+        <Muted $size={15} style={{ maxWidth: 520 }}>
           Every notice and circular about an event, read, linked and kept in one record you can search, open and cite.
         </Muted>
-        <DeckNav>
-          <button type="button" className="arrow" aria-label="Previous feature" onClick={() => go(top - 1)}>←</button>
-          {FEATURES.map((f, i) => (
-            <button key={f.label} type="button" className="dot" aria-label={`Show ${f.label.toLowerCase()}`} onClick={() => go(i)}>
-              <DotBar $on={i === top} />
-            </button>
-          ))}
-          <button type="button" className="arrow" aria-label="Next feature" onClick={() => go(top + 1)}>→</button>
-        </DeckNav>
       </Stack>
       <Deck onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)} onFocus={() => setHold(true)} onBlur={() => setHold(false)}
         aria-roledescription="carousel" aria-label="What it does">
@@ -284,53 +326,101 @@ function FeatureDeck() {
           return (
             <DeckCard key={f.label} as={f.href ? 'a' : 'div'} href={f.href} $pos={pos} $out={pos === n - 1} $feature={f.feature}
               aria-hidden={pos !== 0} tabIndex={pos === 0 ? 0 : -1}>
-              <Stack $gap={12}>
-                <Kicker $color={f.color}>{f.label}</Kicker>
-                <DeckTitle>{f.title}</DeckTitle>
-              </Stack>
-              <Stack $gap={14}>
-                <DeckBody>{f.body}</DeckBody>
-                {f.cta && <Muted $size={13} style={{ color: 'var(--accent-text)' }}>{f.cta}</Muted>}
-              </Stack>
+              <DeckFace $front={pos === 0}>
+                <Stack $gap={14}>
+                  <Kicker $color={f.color}>{f.label}</Kicker>
+                  <DeckTitle>{f.title}</DeckTitle>
+                </Stack>
+                <Stack $gap={14}>
+                  <DeckBody>{f.body}</DeckBody>
+                  {f.cta && <Muted $size={13} style={{ color: 'var(--accent-text)' }}>{f.cta}</Muted>}
+                </Stack>
+              </DeckFace>
             </DeckCard>
           );
         })}
       </Deck>
+      <DeckNav>
+        <button type="button" className="arrow" aria-label="Previous feature" onClick={() => go(top - 1)}>←</button>
+        {FEATURES.map((f, i) => (
+          <button key={f.label} type="button" className="dot" aria-label={`Show ${f.label.toLowerCase()}`} onClick={() => go(i)}>
+            <DotBar $on={i === top} />
+          </button>
+        ))}
+        <button type="button" className="arrow" aria-label="Next feature" onClick={() => go(top + 1)}>→</button>
+      </DeckNav>
     </DeckRow>
   );
 }
 
-/* Bars fill to their value, and the number counts up, once the block scrolls into view. */
-function AccuracyBars() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(reducedMotion());
-  const [k, setK] = useState(reducedMotion() ? 1 : 0);
+/* A grid graph drawn by one dot: it traces a neon line through the four values, and as it reaches each one
+   a stem drops to the baseline so the value still reads on its own (they are separate measurements, not a
+   series). The axis starts at 0 so heights compare honestly. Drawn once, when the block scrolls into view. */
+const GW = 1100, GH = 300, PAD_L = 44, PAD_B = 34, PAD_T = 34;
+const DRAW_MS = 2600;
+function AccuracyGraph() {
+  const ref = useRef<HTMLElement>(null);
+  const lineRef = useRef<SVGPathElement>(null);
+  const [p, setP] = useState(reducedMotion() ? 1 : 0);
+  const [go, setGo] = useState(false);
   useEffect(() => {
     const el = ref.current;
-    if (!el || shown) return;
-    if (typeof IntersectionObserver === 'undefined') { setShown(true); setK(1); return; }
-    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { setShown(true); io.disconnect(); } }, { threshold: 0.3 });
+    if (!el || p >= 1) return;
+    if (typeof IntersectionObserver === 'undefined') { setP(1); return; }
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { setGo(true); io.disconnect(); } }, { threshold: 0.35 });
     io.observe(el);
     return () => io.disconnect();
-  }, [shown]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!shown || k >= 1) return;
-    const start = performance.now();
+    if (!go) return;
     let raf = 0;
-    const step = (now: number) => { const x = Math.min(1, (now - start) / 1600); setK(1 - (1 - x) ** 3); if (x < 1) raf = requestAnimationFrame(step); };
-    raf = requestAnimationFrame(step);
+    const start = performance.now();
+    const frame = (now: number) => { const x = Math.min(1, (now - start) / DRAW_MS); setP(x); if (x < 1) raf = requestAnimationFrame(frame); };
+    raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);
-  }, [shown]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [go]);
+  const plotH = GH - PAD_B - PAD_T, plotW = GW - PAD_L;
+  const y = (v: number) => PAD_T + plotH * (1 - v / 100);
+  const slot = plotW / ACCURACY.length;
+  const pts = ACCURACY.map((a, i) => ({ ...a, x: PAD_L + slot * (i + 0.5), y: y(a.value) }));
+  const d = pts.map((q, i) => `${i ? 'L' : 'M'} ${q.x} ${q.y}`).join(' ');
+  // Share of the line's length at which the dot reaches each point.
+  const seg = pts.slice(1).map((q, i) => Math.hypot(q.x - pts[i].x, q.y - pts[i].y));
+  const total = seg.reduce((n, x) => n + x, 0);
+  const at = pts.map((_, i) => seg.slice(0, i).reduce((n, x) => n + x, 0) / total);
+  const len = lineRef.current?.getTotalLength() ?? total;
+  const dot = lineRef.current && p > 0 && p < 1 ? lineRef.current.getPointAtLength(p * len) : null;
   return (
-    <Bars ref={ref}>
-      {ACCURACY.map(a => (
-        <BarRow key={a.label}>
-          <BarLabel>{a.label}<small>{a.note}</small></BarLabel>
-          <BarTrack><BarFill $pct={shown ? a.value : 0} $muted={a.muted} /></BarTrack>
-          <BarValue $muted={a.muted}>{(a.value * k).toFixed(1)}%</BarValue>
-        </BarRow>
-      ))}
-    </Bars>
+    <Graph ref={ref as React.RefObject<HTMLElement>}>
+      <svg viewBox={`0 0 ${GW} ${GH}`} role="img"
+        aria-label={ACCURACY.map(a => `${a.label}: ${a.value.toFixed(1)}%`).join('; ')}>
+        <g className="grid">
+          {[0, 20, 40, 60, 80, 100].map(v => (
+            <g key={v}>
+              <line x1={PAD_L} x2={GW} y1={y(v)} y2={y(v)} className={v === 0 ? 'base' : undefined} />
+              <text className="tick" x={PAD_L - 10} y={y(v) + 4} textAnchor="end">{v}%</text>
+            </g>
+          ))}
+          {pts.map((_, i) => <line key={i} x1={PAD_L + slot * (i + 1)} x2={PAD_L + slot * (i + 1)} y1={PAD_T} y2={y(0)} />)}
+        </g>
+        <path ref={lineRef} className="trace" d={d} style={{ strokeDasharray: total, strokeDashoffset: total * (1 - p) }} />
+        {pts.map((q, i) => {
+          const reached = p >= at[i] - 1e-6;
+          return (
+            <g key={q.label} className={`pt${reached ? ' on' : ''}`}>
+              <line className={`stem${q.muted ? ' muted' : ''}`} x1={q.x} x2={q.x} y1={q.y} y2={y(0)} />
+              <circle className={`mark${q.muted ? ' muted' : ''}`} cx={q.x} cy={q.y} r={6} />
+              <text className={`val${q.muted ? ' muted' : ''}`} x={q.x} y={q.y - 16} textAnchor="middle">{q.value.toFixed(1)}%</text>
+              <text className="xlab" x={q.x} y={GH - 10} textAnchor="middle">{q.short}</text>
+            </g>
+          );
+        })}
+        {dot && <circle className="pen" cx={dot.x} cy={dot.y} r={7} />}
+      </svg>
+      <GraphNotes>
+        {ACCURACY.map(a => <li key={a.label}><b>{a.short}</b>{a.note}</li>)}
+      </GraphNotes>
+    </Graph>
   );
 }
 
@@ -476,7 +566,7 @@ export function Homepage() {
               <H2>Measured, not claimed.</H2>
               <GhostButton href="/blog/how-accurate-is-starithm-extraction">How we measured →</GhostButton>
             </HeadRow>
-            <AccuracyBars />
+            <AccuracyGraph />
           </Stack>
         </Wrap>
       </Section>

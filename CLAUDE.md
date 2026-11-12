@@ -54,7 +54,7 @@ cannot consume tokens. `npm run check:tokens` fails if the two disagree.
   anything that must align. Has tabular figures.
 - `var(--font-prose)` — **Andika**. Multi-sentence text: AI summaries, circular body copy.
   Weights 400/700 only, **no medium**. No tabular figures — never use it on numeric columns.
-- `var(--font-display)` — Newsreader, serif. Homepage hero only.
+- `var(--font-display)` — Newsreader, serif. Homepage titles only (hero and section headings).
 
 Prose gets `max-width: var(--measure)` (60ch). **`ch` is the advance of "0", not the average
 character** — in a monospace those are identical, but in Andika "0" is 0.586em against a

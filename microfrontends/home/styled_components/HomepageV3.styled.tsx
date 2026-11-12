@@ -21,8 +21,8 @@ const TEAL = 'var(--starithm-nebula-teal)';
 export const line = (a: number) => `rgba(231, 223, 221, ${a})`;
 
 const serif = css`font-family: var(--font-display); font-weight: 400;`;
-/* NovaTrace's faces (CLAUDE.md): Newsreader is for the homepage hero title only; headings, numbers and
-   labels are Google Sans Code; multi-sentence text is Andika. */
+/* NovaTrace's faces (CLAUDE.md): Newsreader for homepage titles; numbers and labels in Google Sans Code;
+   multi-sentence text in Andika. */
 const heading = css`font-family: var(--font-mono); font-weight: 600; letter-spacing: -0.01em;`;
 const prose = css`font-family: var(--font-prose);`;
 
@@ -97,9 +97,9 @@ export const Kicker = styled.div<{ $color?: string }>`
   font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: ${p => p.$color ?? GOLD};
 `;
 export const H2 = styled.h2<{ $size?: number }>`
-  ${heading};
-  margin: 0; font-size: ${p => p.$size ?? 32}px; line-height: 1.15;
-  @media (max-width: 760px) { font-size: 24px; }
+  ${serif};
+  margin: 0; font-size: ${p => p.$size ?? 42}px; line-height: 1.1; letter-spacing: -0.01em;
+  @media (max-width: 760px) { font-size: 30px; }
 `;
 export const Muted = styled.div<{ $size?: number }>`
   ${prose}; font-size: ${p => p.$size ?? 13}px; color: ${line(0.68)};
@@ -253,11 +253,11 @@ export const TickerDot = styled.span<{ $color: string }>`
 
 /* ── problem carousel ── */
 export const Typed = styled.div<{ $accent?: boolean }>`
-  ${heading}; font-weight: 500;
-  font-size: 44px; line-height: 1.15; letter-spacing: -0.02em; max-width: 1000px; margin: 0 auto; text-align: center;
+  ${serif};
+  font-size: 56px; line-height: 1.1; letter-spacing: -0.02em; max-width: 1000px; margin: 0 auto; text-align: center;
   color: ${p => (p.$accent ? LILAC : PLATINUM)};
   min-height: 2.08em;
-  @media (max-width: 760px) { font-size: 28px; }
+  @media (max-width: 760px) { font-size: 34px; }
 `;
 export const Caret = styled.span`
   color: ${LILAC}; font-weight: 300; animation: ${blink} 1s step-end infinite; ${still}
@@ -320,7 +320,7 @@ export const FormCard = styled.div`
   }
   > div:last-child { padding: 23px; display: flex; flex-direction: column; gap: 12px; }
 `;
-export const FormTitle = styled.div`${heading}; font-size: 16px;`;
+export const FormTitle = styled.div`${serif}; font-size: 21px;`;
 export const FakeField = styled.div<{ $tall?: boolean }>`
   border: 1px solid ${line(0.14)}; border-radius: 9px; padding: 12px; font-size: 11px; color: ${line(0.6)};
   min-height: ${p => (p.$tall ? 80 : 0)}px; box-sizing: border-box;
@@ -357,32 +357,37 @@ export const FooterCols = styled.div`
 
 /* ── what it does: a deck of cards that deals itself ── */
 export const DeckRow = styled.div`
-  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center;
-  @media (max-width: 860px) { grid-template-columns: 1fr; gap: 32px; }
+  display: flex; flex-direction: column; align-items: center; gap: 34px; text-align: center;
 `;
+/* Portrait cards; the ones behind fan out to the right with only their borders showing. */
 export const Deck = styled.div`
-  position: relative; height: 300px;
-  @media (max-width: 520px) { height: 340px; }
+  position: relative; width: min(340px, 100%); height: 430px; margin-right: 48px;
+  @media (max-width: 520px) { margin-right: 36px; height: 410px; }
 `;
 export const DeckCard = styled.a<{ $pos: number; $out: boolean; $feature?: boolean }>`
   position: absolute; inset: 0; box-sizing: border-box;
   display: flex; flex-direction: column; justify-content: space-between; gap: 18px;
-  padding: 30px; border-radius: 18px; text-decoration: none; color: ${PLATINUM} !important;
-  border: 1px solid ${p => (p.$feature ? 'rgba(154, 72, 255, 0.45)' : line(0.14))};
-  background: ${p => (p.$feature ? `linear-gradient(135deg, var(--accent-surface), ${PANEL})` : PANEL)};
+  padding: 28px; border-radius: 18px; text-decoration: none; color: ${PLATINUM} !important; text-align: left;
+  border: 1px solid ${p => (p.$feature && p.$pos === 0 ? 'rgba(154, 72, 255, 0.55)' : line(p.$pos === 0 ? 0.18 : 0.14))};
+  background: ${p => (p.$feature && p.$pos === 0 ? `linear-gradient(160deg, var(--accent-surface), ${PANEL})` : PANEL)};
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-  transition: transform 0.7s cubic-bezier(.2, .7, .2, 1), opacity 0.7s;
+  transition: transform 0.7s cubic-bezier(.2, .7, .2, 1), opacity 0.7s, border-color 0.5s;
   /* !important: globals.css resets every element with "* { z-index: auto !important }" (as in Ears.styled.tsx). */
   z-index: ${p => (p.$out ? 6 : 5 - p.$pos)} !important;
-  transform: ${p => (p.$out ? 'translateX(-115%) rotate(-7deg)' : `translateY(${p.$pos * 14}px) scale(${1 - p.$pos * 0.04})`)};
-  opacity: ${p => (p.$out ? 0 : p.$pos > 2 ? 0 : 1 - p.$pos * 0.28)};
+  transform: ${p => (p.$out ? 'translateX(-130%) rotate(-9deg)' : `translate(${p.$pos * 16}px, ${p.$pos * 6}px) scale(${1 - p.$pos * 0.035})`)};
+  opacity: ${p => (p.$out ? 0 : p.$pos > 3 ? 0 : 1)};
   pointer-events: ${p => (p.$pos === 0 && !p.$out ? 'auto' : 'none')};
   @media (prefers-reduced-motion: reduce) { transition: none; }
 `;
-export const DeckTitle = styled.div`${heading}; font-size: 22px; line-height: 1.3;`;
+/* A card's content shows only while it is in front. */
+export const DeckFace = styled.div<{ $front: boolean }>`
+  display: flex; flex-direction: column; justify-content: space-between; gap: 18px; height: 100%;
+  opacity: ${p => (p.$front ? 1 : 0)}; transition: opacity 0.45s ${p => (p.$front ? '0.25s' : '0s')};
+`;
+export const DeckTitle = styled.div`${serif}; font-size: 28px; line-height: 1.15;`;
 export const DeckBody = styled.div`${prose}; font-size: 14px; line-height: 1.7; color: ${line(0.72)}; max-width: 60ch;`;
 export const DeckNav = styled.div`
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
   button.arrow {
     width: 38px; height: 38px; border-radius: 999px; border: 1px solid ${line(0.2)}; background: transparent;
     color: ${line(0.8)}; cursor: pointer; font: inherit; font-size: 14px;
@@ -391,58 +396,46 @@ export const DeckNav = styled.div`
   button.dot { background: transparent; border: 0; padding: 14px 0; cursor: pointer; width: 34px; }
 `;
 
-/* ── accuracy: bars that fill to their value ── */
-export const Bars = styled.div`display: flex; flex-direction: column; gap: 22px;`;
-export const BarRow = styled.div`
-  display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr) 88px; gap: 20px; align-items: center;
-  @media (max-width: 760px) { grid-template-columns: 1fr 72px; > div:nth-child(2) { grid-column: 1 / -1; grid-row: 2; } }
+/* ── accuracy: a grid graph whose columns rise to their value ── */
+export const Graph = styled.figure`
+  margin: 0; display: flex; flex-direction: column; gap: 18px;
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .grid line { stroke: ${line(0.09)}; stroke-width: 1; }
+  .grid line.base { stroke: ${line(0.3)}; }
+  .tick { fill: ${line(0.5)}; font-family: var(--font-mono); font-size: 11px; }
+  .xlab { fill: ${line(0.85)}; font-family: var(--font-mono); font-size: 12px; }
+  .val { fill: ${PLATINUM}; font-family: var(--font-mono); font-size: 15px; font-weight: 600; }
+  .val.muted { fill: ${line(0.6)}; }
+  .trace { fill: none; stroke: ${TEAL}; stroke-width: 2.5; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(79, 224, 207, 0.5)); }
+  .pt .stem, .pt .mark, .pt .val { opacity: 0; transition: opacity 0.5s; }
+  .pt.on .stem, .pt.on .mark, .pt.on .val { opacity: 1; }
+  .stem { stroke: rgba(79, 224, 207, 0.35); stroke-width: 1.5; stroke-dasharray: 3 4; }
+  .stem.muted { stroke: ${line(0.25)}; }
+  .mark { fill: ${TEAL}; stroke: ${PANEL}; stroke-width: 2; }
+  .mark.muted { fill: ${line(0.45)}; }
+  .pen { fill: ${PLATINUM}; filter: drop-shadow(0 0 10px rgba(79, 224, 207, 0.9)); }
+  @media (prefers-reduced-motion: reduce) { .pt .stem, .pt .mark, .pt .val { transition: none; } }
 `;
-export const BarLabel = styled.div`
-  font-size: 13px; color: ${line(0.85)};
-  small { display: block; ${prose}; font-size: 12px; color: ${line(0.55)}; margin-top: 2px; }
-`;
-export const BarTrack = styled.div`
-  position: relative; height: 10px; border-radius: 999px; background: ${line(0.08)}; overflow: hidden;
-`;
-export const BarFill = styled.div<{ $pct: number; $muted?: boolean }>`
-  position: absolute; inset: 0 auto 0 0; width: ${p => p.$pct}%; border-radius: 999px;
-  background: ${p => (p.$muted ? line(0.35) : `linear-gradient(90deg, ${VIOLET}, var(--starithm-veronica-dark))`)};
-  transition: width 1.6s cubic-bezier(.2, .7, .2, 1);
-  @media (prefers-reduced-motion: reduce) { transition: none; }
-`;
-export const BarValue = styled.div<{ $muted?: boolean }>`
-  ${heading}; font-size: 26px; text-align: right; font-variant-numeric: tabular-nums;
-  color: ${p => (p.$muted ? line(0.6) : PLATINUM)};
+export const GraphNotes = styled.ul`
+  list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px 24px;
+  li { ${prose}; font-size: 12.5px; line-height: 1.6; color: ${line(0.6)}; }
+  b { font-family: var(--font-mono); font-weight: 600; color: ${line(0.85)}; margin-right: 6px; }
 `;
 
-/* ── how it works: a flow chart with pulses running along it ── */
-const flow = keyframes`from { left: -6%; } to { left: 100%; }`;
-const flowDown = keyframes`from { top: -6%; } to { top: 100%; }`;
-export const Flow = styled.ol`
-  list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch;
-  @media (max-width: 860px) { flex-direction: column; }
-`;
-export const FlowNode = styled.li<{ $on: boolean }>`
-  flex: 1 1 0; min-width: 0; box-sizing: border-box; padding: 20px; border-radius: 16px;
-  display: flex; flex-direction: column; gap: 6px;
-  border: 1px solid ${p => (p.$on ? 'rgba(154, 72, 255, 0.7)' : line(0.12))};
-  background: ${p => (p.$on ? 'rgba(141, 15, 245, 0.14)' : PANEL)};
-  transition: border-color 0.5s, background 0.5s;
-  small { font-size: 11px; color: ${line(0.55)}; }
-  strong { ${heading}; font-size: 17px; }
-  span { ${prose}; font-size: 13px; line-height: 1.55; color: ${line(0.7)}; }
-`;
-export const FlowLink = styled.li`
-  flex: 0 0 48px; position: relative; align-self: center; height: 2px; background: ${line(0.12)}; overflow: hidden;
-  i {
-    position: absolute; top: -2px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-text);
-    box-shadow: 0 0 10px var(--primary); animation: ${flow} 1.8s linear infinite;
-  }
-  i:nth-child(2) { animation-delay: 0.6s; }
-  i:nth-child(3) { animation-delay: 1.2s; }
-  @media (max-width: 860px) {
-    flex: 0 0 32px; width: 2px; height: auto; align-self: center;
-    i { top: auto; left: -2px; animation-name: ${flowDown}; }
-  }
-  @media (prefers-reduced-motion: reduce) { i { display: none; } }
+
+/* ── how it works: a vertical flow chart, one dot travelling through it and round the update loop ── */
+export const FlowFigure = styled.figure`
+  margin: 0 auto; width: 100%; max-width: 640px;
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .node rect { fill: ${PANEL}; stroke: ${line(0.14)}; stroke-width: 1; transition: fill 0.4s, stroke 0.4s; }
+  .node.on rect { fill: rgba(141, 15, 245, 0.16); stroke: rgba(154, 72, 255, 0.75); }
+  .node .n { fill: ${line(0.5)}; font-family: var(--font-mono); font-size: 11px; }
+  .node .name { fill: ${PLATINUM}; font-family: var(--font-mono); font-size: 16px; font-weight: 600; }
+  .node .desc { fill: ${line(0.68)}; font-family: var(--font-prose); font-size: 13px; }
+  .link { stroke: ${line(0.22)}; stroke-width: 1.5; fill: none; }
+  .loop { stroke: ${line(0.3)}; stroke-width: 1.5; fill: none; stroke-dasharray: 5 6; }
+  .loop-label { fill: ${line(0.6)}; font-family: var(--font-prose); font-size: 12px; }
+  .arrow { fill: ${line(0.4)}; }
+  .dot { fill: var(--accent-text); filter: drop-shadow(0 0 8px var(--primary)); }
+  @media (prefers-reduced-motion: reduce) { .dot { display: none; } }
 `;
