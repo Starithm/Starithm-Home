@@ -138,7 +138,26 @@ function catalogNote(cat: Counterparts['catalog']): React.ReactNode {
     }
     return m.total != null && m.kept < m.total ? `${n}: ${m.kept} brightest of ${m.total.toLocaleString()}` : null;
   }).filter(Boolean);
-  return `Known sources from HEASARC${region}.${parts.length ? ` ${parts.join(' · ')}.` : ''}${xray}`;
+  return `Known sources from HEASARC${region}.${parts.length ? ` ${parts.join(' · ')}.` : ''}${xray}${pointingNote(cat.sources)}`;
+}
+
+/* X-ray sources sharing one observation (same start time), 5 or more, are one archival pointing's
+ * field: faint background sources that show where the telescope looked, not candidates
+ * (IceCube-261020A: 21 XMM sources from a 2017 observation at the edge of the region). Same rule as
+ * NovaTrace's event-html-generator splitPointings. */
+function pointingNote(sources: CatalogSource[]): string {
+  const groups = new Map<string, CatalogSource[]>();
+  for (const s of sources) {
+    const t = s.extra?.first_mjd;
+    if ((s.catalog === 'XMM' || s.catalog === '2SXPS') && typeof t === 'number') {
+      const k = `${s.catalog}|${t}`;
+      groups.set(k, [...(groups.get(k) ?? []), s]);
+    }
+  }
+  return [...groups.values()].filter(g => g.length >= 5).map(g => {
+    const date = new Date(((g[0].extra!.first_mjd as number) - 40587) * 86400000).toISOString().slice(0, 10);
+    return ` ${g.length} ${g[0].catalog} sources come from one archival observation (${date}): a deep X-ray image holds many faint background sources wherever it points.`;
+  }).join('');
 }
 
 /* Only blocks with something in them render; with nothing at all, neither does the section (the
