@@ -93,7 +93,7 @@ function HeroCard() {
   return (
     <EventCard href={`/novatrace/events/${HERO_EVENT.id}`} aria-label={`Open the ${HERO_EVENT.name} event page`}>
       <CardHead>
-        <span><LiveDot $size={9} $still />{HERO_EVENT.name}</span>
+        <span><LiveDot $size={8} $still />{HERO_EVENT.name}</span>
         <span>● SIGNIFICANCE HIGH</span>
       </CardHead>
       <CardStats>
@@ -158,7 +158,7 @@ function JustIn() {
   ));
   return (
     <Ticker aria-label="Latest circulars">
-      <TickerLabel href="/novatrace/events"><LiveDot $size={7} />JUST IN</TickerLabel>
+      <TickerLabel href="/novatrace/events"><LiveDot $size={6} />JUST IN</TickerLabel>
       <TickerTrack>
         <TickerRun $seconds={Math.max(40, items.length * 7)}>{run}<span aria-hidden="true" style={{ display: 'contents' }}>{run}</span></TickerRun>
       </TickerTrack>
@@ -182,14 +182,14 @@ function ProblemCarousel() {
   const s = SLIDES[slide];
   const done = chars >= s.text.length;
   return (
-    <Section $alt $minH={680} aria-roledescription="carousel" aria-label="The problem">
+    <Section $alt $minH={598} aria-roledescription="carousel" aria-label="The problem">
       <Wrap>
         <Stack>
           <HeadRow style={{ alignItems: 'center' }}>
             <Kicker>01 / The problem</Kicker>
-            <Muted $size={13}>{slide + 1} / {SLIDES.length}</Muted>
+            <Muted $size={11}>{slide + 1} / {SLIDES.length}</Muted>
           </HeadRow>
-          <Stack $gap={22} style={{ minHeight: 240, justifyContent: 'center' }}>
+          <Stack $gap={19} style={{ minHeight: 211, justifyContent: 'center' }}>
             <Typed $accent={slide === SLIDES.length - 1} aria-live="polite">
               {s.text.slice(0, chars)}<Caret aria-hidden="true">|</Caret>
             </Typed>
@@ -347,7 +347,7 @@ export function Homepage() {
         <Wrap>
           <NavRow>
             <Brand href="/">
-              <img src="/logo_without_name.png" alt="" width={26} height={26} />
+              <img src="/logo_without_name.png" alt="" width={23} height={23} />
               <span>STARITHM</span>
             </Brand>
             <NavLinks aria-label="Main">
@@ -365,7 +365,7 @@ export function Homepage() {
         <Wrap>
           <HeroRow>
             <HeroCopy>
-              <Stack $gap={18}>
+              <Stack $gap={16}>
                 <Kicker>An operating system for observational astronomy</Kicker>
                 <H1>Astronomy&rsquo;s <em>memory</em> layer.</H1>
                 <Lede>
@@ -373,15 +373,15 @@ export function Homepage() {
                   arc, machine notice &rarr; final measurement, as one structured record you can open, cite and follow.
                 </Lede>
               </Stack>
-              <Stack $gap={14} style={{ maxWidth: 640 }}>
+              <Stack $gap={12} style={{ maxWidth: 563 }}>
                 <AskBox id="ask" icon placeholder={`${ASK_ASSISTANT}: what redshift was measured for GRB 221009A?`} />
                 <Chips>{ASK_EXAMPLES.map(([q, label]) => <a key={q} href={askHref(q)}>{label}</a>)}</Chips>
               </Stack>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                 <PrimaryButton href="/novatrace/events">Open NovaTrace <span aria-hidden="true">→</span></PrimaryButton>
                 {!isSignedIn && <GhostButton href="#signin">Join early</GhostButton>}
               </div>
-              <Muted $size={13} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Muted $size={11} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                 <LiveDot />Live · new circulars are read within minutes of publication
               </Muted>
             </HeroCopy>
@@ -394,28 +394,28 @@ export function Homepage() {
 
       <ProblemCarousel />
 
-      <Section $minH={760}>
+      <Section $minH={669}>
         <Wrap>
           <Stack>
-            <Stack $gap={14}>
+            <Stack $gap={12}>
               <Kicker>02 / What it does</Kicker>
               <H2>One page per event. A source on every value.</H2>
             </Stack>
             <Bento>
-              <Panel href={ASK_URL} $span={4} $feature $minH={280}>
-                <Stack $gap={10}>
+              <Panel href={ASK_URL} $span={4} $feature $minH={246}>
+                <Stack $gap={9}>
                   <PanelLabel $color="var(--accent-text)">{ASK_ASSISTANT.toUpperCase()}</PanelLabel>
-                  <PanelTitle $size={32}>Ask in plain English. Every sentence cites a circular.</PanelTitle>
+                  <PanelTitle $size={28}>Ask in plain English. Every sentence cites a circular.</PanelTitle>
                 </Stack>
-                <Stack $gap={10}>
+                <Stack $gap={9}>
                   <Bubble>Which telescopes observed S250818k?</Bubble>
                   <Muted>Answers from ~45,000 GCN Circulars since 1997 <span style={{ color: 'var(--accent-text)' }}>· Try it →</span></Muted>
                 </Stack>
               </Panel>
-              <Panel href="/novatrace/events" $span={2} $minH={280}>
+              <Panel href="/novatrace/events" $span={2} $minH={246}>
                 <PanelLabel $color="var(--starithm-nebula-teal)">EVENT PAGES</PanelLabel>
-                <Stack $gap={10}>
-                  <PanelTitle $size={24}>Timeline, position, key facts, sky map, citation.</PanelTitle>
+                <Stack $gap={9}>
+                  <PanelTitle $size={21}>Timeline, position, key facts, sky map, citation.</PanelTitle>
                   <Muted style={{ color: 'var(--accent-text)' }}>Browse events →</Muted>
                 </Stack>
               </Panel>
@@ -428,39 +428,39 @@ export function Homepage() {
                 <PanelTitle>Matched by time and position, with a false-alarm check.</PanelTitle>
               </Panel>
               <Panel as="div" $span={2}>
-                <PanelLabel $color="var(--starithm-nebula-teal)"><LiveDot $size={7} />LIVE</PanelLabel>
+                <PanelLabel $color="var(--starithm-nebula-teal)"><LiveDot $size={6} />LIVE</PanelLabel>
                 <PanelTitle>New circulars appear within minutes.</PanelTitle>
               </Panel>
             </Bento>
-            <Muted $size={13}>Fermi · Swift · Einstein Probe · SVOM · LIGO/Virgo/KAGRA · IceCube · CHIME · MAXI · and more, in one schema</Muted>
+            <Muted $size={11}>Fermi · Swift · Einstein Probe · SVOM · LIGO/Virgo/KAGRA · IceCube · CHIME · MAXI · and more, in one schema</Muted>
           </Stack>
         </Wrap>
       </Section>
 
-      <Section $alt $minH={640}>
+      <Section $alt $minH={563}>
         <Wrap>
-          <Stack $gap={56}>
+          <Stack $gap={49}>
             <HeadRow>
-              <Stack $gap={14}>
+              <Stack $gap={12}>
                 <Kicker>03 / Accuracy</Kicker>
                 <H2>Measured, not claimed.</H2>
               </Stack>
               <GhostButton href="/blog/how-accurate-is-starithm-extraction">How we measured →</GhostButton>
             </HeadRow>
             <Stats>
-              <div><Big>94.5<span>%</span></Big><Muted $size={15}>Redshift vs GRBweb (327 / 346 bursts, Δz ≤ 0.01)</Muted></div>
-              <div><Big>92.2<span>%</span></Big><Muted $size={15}>Swift-BAT T90 within 10%</Muted></div>
-              <div><Big>94.5<span>%</span></Big><Muted $size={15}>Swift-BAT fluence within 10%</Muted></div>
+              <div><Big>94.5<span>%</span></Big><Muted $size={13}>Redshift vs GRBweb (327 / 346 bursts, Δz ≤ 0.01)</Muted></div>
+              <div><Big>92.2<span>%</span></Big><Muted $size={13}>Swift-BAT T90 within 10%</Muted></div>
+              <div><Big>94.5<span>%</span></Big><Muted $size={13}>Swift-BAT fluence within 10%</Muted></div>
             </Stats>
             <Muted>Event-page redshift agrees for 86.0%. Telling a burst&rsquo;s redshift from a host&rsquo;s or a limit is work in progress.</Muted>
           </Stack>
         </Wrap>
       </Section>
 
-      <Section $minH={760}>
+      <Section $minH={669}>
         <Wrap>
           <Stack>
-            <Stack $gap={14}>
+            <Stack $gap={12}>
               <Kicker>04 / How it works</Kicker>
               <H2>From alert to event page.</H2>
             </Stack>
@@ -489,13 +489,13 @@ export function Homepage() {
         </Wrap>
       </Section>
 
-      <Section $alt $minH={680} id="signin">
+      <Section $alt $minH={598} id="signin">
         <Wrap>
           <SplitRow>
-            <Stack $gap={28}>
+            <Stack $gap={25}>
               <Kicker>05 / Join early</Kicker>
-              <H2 $size={56}>The record is being written now.</H2>
-              <Muted $size={17} style={{ maxWidth: 500 }}>
+              <H2 $size={49}>The record is being written now.</H2>
+              <Muted $size={15} style={{ maxWidth: 440 }}>
                 Every new event starts its page the moment the first notice lands. Sign in to add what you saw,
                 or correct what we got wrong, while the record is still taking shape.
               </Muted>
@@ -514,7 +514,7 @@ export function Homepage() {
                   {authError && <ErrorNote role="alert" $color={TYPE_GRB}>{authError}</ErrorNote>}
                 </>
               )}
-              <Muted $size={13}>Read anything. Sign in to weigh in. Free.</Muted>
+              <Muted $size={11}>Read anything. Sign in to weigh in. Free.</Muted>
             </Stack>
             <div>
               <FormCard aria-hidden="true">
@@ -523,7 +523,7 @@ export function Homepage() {
                   <FormTitle>Add an observation or a correction</FormTitle>
                   <FieldRow><FakeField>Telescope</FakeField><FakeField>Filter · magnitude</FakeField></FieldRow>
                   <FakeField $tall>Source and a note</FakeField>
-                  <PrimaryButton as="span" style={{ alignSelf: 'flex-end', minHeight: 48, padding: '0 20px', fontSize: 14 }}>Sign in to post</PrimaryButton>
+                  <PrimaryButton as="span" style={{ alignSelf: 'flex-end', minHeight: 42, padding: '0 18px', fontSize: 12 }}>Sign in to post</PrimaryButton>
                 </div>
               </FormCard>
             </div>
@@ -533,11 +533,11 @@ export function Homepage() {
 
       <Closing>
         <Wrap $narrow>
-          <H2 $size={56}>Start with a question.</H2>
+          <H2 $size={49}>Start with a question.</H2>
           <AskBox id="ask2" placeholder="Which telescopes observed S250818k?" />
           <Contact>
             <Kicker>Built with astronomers</Kicker>
-            <Muted $size={15}>
+            <Muted $size={13}>
               Values are extracted by language models, and each links to its circular. Spot an error, or want to
               collaborate? We&rsquo;d like to hear from you.
             </Muted>
@@ -551,9 +551,9 @@ export function Homepage() {
 
       <Footer>
         <Wrap>
-          <Stack $gap={10}>
-            <Brand href="/"><img src="/logo_without_name.png" alt="" width={22} height={22} /><span>STARITHM</span></Brand>
-            <Muted $size={13}>Built on public GCN data. © {new Date().getFullYear()}</Muted>
+          <Stack $gap={9}>
+            <Brand href="/"><img src="/logo_without_name.png" alt="" width={19} height={19} /><span>STARITHM</span></Brand>
+            <Muted $size={11}>Built on public GCN data. © {new Date().getFullYear()}</Muted>
           </Stack>
           <FooterCols>
             <div><span>Product</span><a href="/novatrace/events">NovaTrace</a><a href="/ears-to-the-universe">Ears to the Universe</a><a href="/novatrace/status">Status</a></div>
