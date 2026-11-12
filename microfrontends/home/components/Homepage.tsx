@@ -8,7 +8,7 @@ import {
   Hero, HeroRow, HeroCopy, H1, Lede, AskForm, VisuallyHidden, Chips,
   CardSlot, EventCard, CardHead, CardStats, CardRows, CardRow, CardFoot,
   Ticker, TickerLabel, TickerTrack, TickerRun, TickerDot,
-  Typed, Caret, Sub, Dots, DotBar, HeadRow,
+  DotBar, HeadRow, ProblemGrid, Resolve,
   DeckRow, Deck, DeckCard, DeckFace, DeckTitle, DeckBody, DeckNav,
   Graph, GraphNotes,
   FlowFigure,
@@ -179,58 +179,33 @@ function JustIn() {
   const run = items.map(k => (
     <a key={k.alertKey} href={k.canonicalId ? `/novatrace/events/${encodeURIComponent(k.canonicalId)}` : '/novatrace/events'}>
       <TickerDot $color={eventColor(k.event)} />
-      {named(k.event) && <span style={{ color: line(0.6) }}>{named(k.event)}</span>}
-      <span>{k.label} · {k.what}</span>
-      <span style={{ color: line(0.45) }}>{ago(k.date)}</span>
+      {named(k.event) && <span className="ev">{named(k.event)}</span>}
+      <span className="what">{k.label} · {k.what}</span>
+      <span className="ago">{ago(k.date)}</span>
     </a>
   ));
   return (
     <Ticker aria-label="Latest circulars">
       <TickerLabel href="/novatrace/events"><LiveDot $size={6} />JUST IN</TickerLabel>
       <TickerTrack>
-        <TickerRun $seconds={Math.max(40, items.length * 7)}>{run}<span aria-hidden="true" style={{ display: 'contents' }}>{run}</span></TickerRun>
+        <TickerRun $seconds={Math.max(90, items.length * 14)}>{run}<span aria-hidden="true" style={{ display: 'contents' }}>{run}</span></TickerRun>
       </TickerTrack>
     </Ticker>
   );
 }
 
-function ProblemCarousel() {
-  const [slide, setSlide] = useState(0);
-  const [chars, setChars] = useState(reducedMotion() ? 999 : 0);
-  const [paused, setPaused] = useState(false);
-  const hold = useRef(0);
-  const t = useTick(50, paused);
-  useEffect(() => {
-    if (t === 0) return;
-    const len = SLIDES[slide].text.length;
-    if (chars < len) setChars(c => c + 1);
-    else if (hold.current < 60) hold.current += 1;
-    else { hold.current = 0; setSlide(s => (s + 1) % SLIDES.length); setChars(0); }
-  }, [t]); // eslint-disable-line react-hooks/exhaustive-deps
-  const s = SLIDES[slide];
-  const done = chars >= s.text.length;
+function Problem() {
   return (
-    <Section $alt aria-roledescription="carousel" aria-label="The problem">
+    <Section $alt aria-label="The problem">
       <Wrap>
-        <Stack>
-          <Stack $gap={19} style={{ minHeight: 211, justifyContent: 'center' }}>
-            <Typed $accent={slide === SLIDES.length - 1} aria-live="polite">
-              {s.text.slice(0, chars)}<Caret aria-hidden="true">|</Caret>
-            </Typed>
-            {done && <Sub key={slide}>{s.sub}</Sub>}
-          </Stack>
-          <Dots>
-            {SLIDES.map((x, i) => (
-              <button key={x.text} type="button" className="dot" aria-label={`Show slide ${i + 1}`}
-                onClick={() => { setSlide(i); setChars(paused || reducedMotion() ? 999 : 0); hold.current = 0; }}>
-                <DotBar $on={i === slide} />
-              </button>
-            ))}
-            <button type="button" className="pause" aria-label={paused ? 'Play carousel' : 'Pause carousel'}
-              onClick={() => { setPaused(p => !p); setChars(999); }}>
-              {paused ? '▶' : '❚❚'}
-            </button>
-          </Dots>
+        <Stack $gap={30}>
+          <ProblemGrid>
+            {SLIDES.slice(0, -1).map(x => <div key={x.text}><strong>{x.text}</strong><span>{x.sub}</span></div>)}
+          </ProblemGrid>
+          <Resolve>
+            <em>{SLIDES[SLIDES.length - 1].text}</em>
+            <small>{SLIDES[SLIDES.length - 1].sub}</small>
+          </Resolve>
         </Stack>
       </Wrap>
     </Section>
@@ -554,7 +529,7 @@ export function Homepage() {
 
       <JustIn />
 
-      <ProblemCarousel />
+      <Problem />
 
       <Section>
         <Wrap>

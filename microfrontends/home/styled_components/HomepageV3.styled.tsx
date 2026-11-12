@@ -27,7 +27,6 @@ const heading = css`font-family: var(--font-mono); font-weight: 600; letter-spac
 const prose = css`font-family: var(--font-prose);`;
 
 const floaty = keyframes`0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-18px) rotate(0.5deg)}`;
-const blink = keyframes`0%,49%{opacity:1}50%,100%{opacity:0}`;
 const ping = keyframes`0%{box-shadow:0 0 0 0 rgba(78,205,196,0.6)}100%{box-shadow:0 0 0 10px rgba(78,205,196,0)}`;
 const fadeup = keyframes`from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}`;
 const marquee = keyframes`from{transform:translateX(0)}to{transform:translateX(-50%)}`;
@@ -240,40 +239,22 @@ export const TickerTrack = styled.div`
   flex: 1 1 auto; min-width: 0; overflow: hidden;
   &:hover > div { animation-play-state: paused; }
 `;
+/* Scrolls slowly (about 14 s per item); pauses on hover; still under reduced motion. */
 export const TickerRun = styled.div<{ $seconds: number }>`
-  display: flex; gap: 42px; width: max-content; font-size: 12px; white-space: nowrap; padding-left: 21px;
+  display: flex; gap: 48px; width: max-content; font-size: 12.5px; white-space: nowrap; padding-left: 24px;
   animation: ${marquee} ${p => p.$seconds}s linear infinite;
-  @media (prefers-reduced-motion: reduce) { animation: none; overflow-x: auto; }
-  a { display: inline-flex; gap: 9px; align-items: center; color: ${PLATINUM}; text-decoration: none; }
-  a:hover span:last-child { text-decoration: underline; }
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+  a { display: inline-flex; gap: 10px; align-items: center; color: ${PLATINUM}; text-decoration: none; }
+  .ev { color: ${line(0.6)}; }
+  .ago { color: ${line(0.45)}; }
+  a:hover .what { text-decoration: underline; }
 `;
 export const TickerDot = styled.span<{ $color: string }>`
   width: 5px; height: 5px; border-radius: 50%; background: ${p => p.$color}; flex: none;
 `;
 
 /* ── problem carousel ── */
-export const Typed = styled.div<{ $accent?: boolean }>`
-  ${serif};
-  font-size: 56px; line-height: 1.1; letter-spacing: -0.02em; max-width: 1000px; margin: 0 auto; text-align: center;
-  color: ${p => (p.$accent ? LILAC : PLATINUM)};
-  min-height: 2.08em;
-  @media (max-width: 760px) { font-size: 34px; }
-`;
-export const Caret = styled.span`
-  color: ${LILAC}; font-weight: 300; animation: ${blink} 1s step-end infinite; ${still}
-`;
-export const Sub = styled.div`
-  ${prose}; font-size: 16px; color: ${line(0.72)}; max-width: 563px; margin: 0 auto; text-align: center; animation: ${fadeup} 0.6s ease-out both; ${still}
-`;
-export const Dots = styled.div`
-  display: flex; align-items: center; justify-content: center; gap: 11px; flex-wrap: wrap;
-  > button.dot { background: transparent; border: 0; padding: 16px 0; cursor: pointer; width: 84px; }
-  > button.pause {
-    margin-left: 7px; background: transparent; color: ${line(0.7)}; border: 1px solid ${line(0.2)};
-    border-radius: 879px; width: 39px; height: 39px; cursor: pointer; font: inherit; font-size: 11px;
-  }
-  @media (max-width: 520px) { > button.dot { width: 49px; } }
-`;
+
 export const DotBar = styled.span<{ $on: boolean }>`
   display: block; height: 3px; border-radius: 2px; background: ${p => (p.$on ? 'var(--starithm-veronica-dark)' : line(0.2))};
 `;
@@ -440,4 +421,23 @@ export const FlowFigure = styled.figure`
   .link.on, .loop.on { stroke: var(--accent-text); stroke-width: 2.5; filter: drop-shadow(0 0 6px var(--primary)); }
   .loop.on { stroke-dasharray: none; }
   .arrow.on { fill: var(--accent-text); filter: drop-shadow(0 0 6px var(--primary)); }
+`;
+
+
+/* ── the problem: three static blocks ── */
+export const ProblemGrid = styled.div`
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px;
+  @media (max-width: 860px) { grid-template-columns: 1fr; }
+  > div {
+    border: 1px solid ${line(0.12)}; border-radius: 16px; padding: 24px; background: ${BLACK};
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  strong { ${serif}; font-size: 24px; line-height: 1.2; }
+  span { ${prose}; font-size: 14px; line-height: 1.65; color: ${line(0.66)}; }
+`;
+export const Resolve = styled.div`
+  text-align: center; ${serif}; font-size: 30px; line-height: 1.25;
+  em { ${serif}; color: ${LILAC}; font-style: normal; }
+  small { display: block; ${prose}; font-size: 14px; color: ${line(0.66)}; margin-top: 8px; }
+  @media (max-width: 760px) { font-size: 24px; }
 `;
