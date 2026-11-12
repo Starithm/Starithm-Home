@@ -49,7 +49,7 @@ export function htmlResponse(body: string, prerenderState: string): Response {
   return new Response(body, {
     headers: {
       'content-type': 'text/html; charset=utf-8',
-      'vary': 'User-Agent',
+      'vary': 'User-Agent, Signature-Agent',
       [PRERENDER_HEADER]: prerenderState,
     },
   });
