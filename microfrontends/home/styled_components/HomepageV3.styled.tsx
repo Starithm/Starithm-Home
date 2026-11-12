@@ -436,6 +436,8 @@ export const FlowFigure = styled.figure`
   .loop { stroke: ${line(0.3)}; stroke-width: 1.5; fill: none; stroke-dasharray: 5 6; }
   .loop-label { fill: ${line(0.6)}; font-family: var(--font-prose); font-size: 12px; }
   .arrow { fill: ${line(0.4)}; }
-  .dot { fill: var(--accent-text); filter: drop-shadow(0 0 8px var(--primary)); }
-  @media (prefers-reduced-motion: reduce) { .dot { display: none; } }
+  .link, .loop, .arrow { transition: stroke 0.25s, fill 0.25s, filter 0.25s; }
+  .link.on, .loop.on { stroke: var(--accent-text); stroke-width: 2.5; filter: drop-shadow(0 0 6px var(--primary)); }
+  .loop.on { stroke-dasharray: none; }
+  .arrow.on { fill: var(--accent-text); filter: drop-shadow(0 0 6px var(--primary)); }
 `;

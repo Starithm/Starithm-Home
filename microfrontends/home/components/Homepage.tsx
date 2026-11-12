@@ -237,15 +237,15 @@ function ProblemCarousel() {
   );
 }
 
-/* Vertical flow chart. One dot runs down through the stages and back up the update loop (a new notice or
-   circular for an event goes through again and the page updates); the stage it is in lights up. Extract
+/* Vertical flow chart. The flow runs down through the stages and back up the update loop (a new notice or
+   circular for an event goes through again and the page updates): the stage or arrow it is in glows. Extract
    carries its own loop: an unreadable answer is retried by a second model. */
 const FW = 640, NODE_W = 360, NODE_H = 70, GAP = 44, TOP = 10;
 const NX = (FW - NODE_W) / 2;
 const nodeY = (i: number) => TOP + i * (NODE_H + GAP);
 function FlowChart() {
   const pathRef = useRef<SVGPathElement>(null);
-  const [dot, setDot] = useState<{ x: number; y: number } | null>(null);
+  const [dot, setDot] = useState<{ x: number; y: number } | null>(null); // where the flow is (not drawn)
   const cx = FW / 2, last = STEPS.length - 1;
   const bottom = nodeY(last) + NODE_H, rightX = NX + NODE_W;
   // Down the middle from Ingest to Publish, out of Publish's right side, up the loop, into Ingest's right side.
@@ -267,7 +267,11 @@ function FlowChart() {
     raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);
   }, []);
-  const active = dot && Math.abs(dot.x - cx) < 1 ? STEPS.findIndex((_, i) => dot.y >= nodeY(i) && dot.y <= nodeY(i) + NODE_H) : -1;
+  const onCentre = !!dot && Math.abs(dot.x - cx) < 1;
+  const active = onCentre ? STEPS.findIndex((_, i) => dot!.y >= nodeY(i) && dot!.y <= nodeY(i) + NODE_H) : -1;
+  // The arrow the flow is passing through glows: a link between two stages, or the update loop.
+  const linkOn = onCentre ? STEPS.findIndex((_, i) => i < last && dot!.y > nodeY(i) + NODE_H && dot!.y < nodeY(i + 1)) : -1;
+  const loopOn = !!dot && dot.x > rightX + 1;
   const ext = 2; // Extract
   return (
     <FlowFigure>
@@ -276,13 +280,13 @@ function FlowChart() {
         <path ref={pathRef} d={route} fill="none" stroke="none" />
         {STEPS.slice(0, -1).map((_, i) => (
           <g key={i}>
-            <line className="link" x1={cx} x2={cx} y1={nodeY(i) + NODE_H} y2={nodeY(i + 1) - 6} />
-            <path className="arrow" d={`M ${cx - 4} ${nodeY(i + 1) - 8} L ${cx + 4} ${nodeY(i + 1) - 8} L ${cx} ${nodeY(i + 1) - 1} Z`} />
+            <line className={`link${i === linkOn ? ' on' : ''}`} x1={cx} x2={cx} y1={nodeY(i) + NODE_H} y2={nodeY(i + 1) - 6} />
+            <path className={`arrow${i === linkOn ? ' on' : ''}`} d={`M ${cx - 4} ${nodeY(i + 1) - 8} L ${cx + 4} ${nodeY(i + 1) - 8} L ${cx} ${nodeY(i + 1) - 1} Z`} />
           </g>
         ))}
         {/* update loop: Publish back to Ingest */}
-        <path className="loop" d={`M ${rightX} ${nodeY(last) + NODE_H / 2} C ${rightX + 90} ${nodeY(last) + NODE_H / 2}, ${rightX + 90} ${nodeY(0) + NODE_H / 2}, ${rightX + 6} ${nodeY(0) + NODE_H / 2}`} />
-        <path className="arrow" d={`M ${rightX + 9} ${nodeY(0) + NODE_H / 2 - 4} L ${rightX + 9} ${nodeY(0) + NODE_H / 2 + 4} L ${rightX + 1} ${nodeY(0) + NODE_H / 2} Z`} />
+        <path className={`loop${loopOn ? ' on' : ''}`} d={`M ${rightX} ${nodeY(last) + NODE_H / 2} C ${rightX + 90} ${nodeY(last) + NODE_H / 2}, ${rightX + 90} ${nodeY(0) + NODE_H / 2}, ${rightX + 6} ${nodeY(0) + NODE_H / 2}`} />
+        <path className={`arrow${loopOn ? ' on' : ''}`} d={`M ${rightX + 9} ${nodeY(0) + NODE_H / 2 - 4} L ${rightX + 9} ${nodeY(0) + NODE_H / 2 + 4} L ${rightX + 1} ${nodeY(0) + NODE_H / 2} Z`} />
         <text className="loop-label" x={rightX + 74} y={(nodeY(0) + bottom) / 2 - 8} textAnchor="start">new notices</text>
         <text className="loop-label" x={rightX + 74} y={(nodeY(0) + bottom) / 2 + 8} textAnchor="start">and circulars</text>
         {/* retry loop on Extract */}
@@ -298,7 +302,6 @@ function FlowChart() {
             <text className="desc" x={NX + 18} y={nodeY(i) + 50}>{desc}</text>
           </g>
         ))}
-        {dot && <circle className="dot" cx={dot.x} cy={dot.y} r={6} />}
       </svg>
     </FlowFigure>
   );
