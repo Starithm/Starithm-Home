@@ -86,7 +86,7 @@ function Dish({ x, scale = 1 }: { x: number; scale?: number }) {
       <rect x={-2} y={-16} width={4} height={17} />
       <path d="M -6 0 L 0 -14 L 6 0 Z" />
       <path d="M -19 -32 Q -4 -6 16 -22 Z" />
-      <line x1={-2} y1={-21} x2={-14} y2={-38} stroke="var(--surface-sunken)" strokeWidth={1.5} />
+      <line x1={-2} y1={-21} x2={-14} y2={-38} stroke="var(--starithm-rich-black)" strokeWidth={1.5} />
     </g>
   );
 }
@@ -119,7 +119,7 @@ export function HeroSky() {
         </defs>
         {/* atmosphere: a soft band just above the limb */}
         <path d={`M 0 ${limbY(0) - 14} A ${R} ${R} 0 0 1 ${VW} ${limbY(VW) - 14} L ${VW} ${limbY(VW)} A ${R} ${R} 0 0 0 0 ${limbY(0)} Z`} fill="url(#hero-atmo)" />
-        <g fill="var(--surface-sunken)">
+        <g fill="var(--starithm-rich-black)">
           <path d={`M 0 ${VH} L 0 ${limbY(0)} A ${R} ${R} 0 0 1 ${VW} ${limbY(VW)} L ${VW} ${VH} Z`} />
           <Dome x={290} scale={1.7} />
           <Dome x={370} scale={1.15} />

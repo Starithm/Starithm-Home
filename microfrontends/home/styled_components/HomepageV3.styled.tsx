@@ -11,7 +11,8 @@ const VIOLET_D = 'var(--starithm-electric-violet-dark)';
 const LILAC = 'var(--accent-text)';
 const GOLD = 'var(--starithm-golden-yellow)';
 const PLATINUM = 'var(--foreground)';
-const BLACK = 'var(--background)';
+/* trial 2026-11-12: page background --surface-sunken (was --background) */
+const BLACK = 'var(--surface-sunken)';
 const PANEL = 'var(--surface)';
 const RAISED = 'var(--surface-raised)';
 const SUNKEN = 'var(--surface-sunken)';
@@ -56,7 +57,7 @@ export const Wrap = styled.div<{ $narrow?: boolean }>`
 /* ── nav ── */
 export const Header = styled.header`
   position: sticky; top: 0; z-index: 10;
-  background: var(--starithm-rich-black);
+  background: ${BLACK};
 `;
 export const NavRow = styled.div`
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
@@ -82,7 +83,7 @@ export const NavButton = styled.button`
 /* ── shared section pieces ── */
 /* Sections size to their content; only the hero is screen-height. */
 export const Section = styled.section<{ $alt?: boolean }>`
-  background: ${p => (p.$alt ? PANEL : 'transparent')};
+  background: ${BLACK}; /* trial 2026-11-12: all-black page; was $alt ? PANEL : transparent */
   border-top: 1px solid ${line(0.07)};
   > div { padding-top: 67px; padding-bottom: 67px; }
   @media (max-width: 760px) { > div { padding-top: 49px; padding-bottom: 49px; } }
@@ -126,7 +127,7 @@ export const Hero = styled.section`
   position: relative; overflow: hidden;
   min-height: max(560px, min(86vh, 740px));
   display: flex; align-items: center;
-  background: var(--starithm-rich-black);
+  background: ${BLACK};
   /* content after the sky layer, positioned so it paints over it (z-index is reset globally) */
   > div:last-child { position: relative; }
   @media (max-width: 760px) { min-height: 0; }
@@ -188,12 +189,13 @@ export const Chips = styled.div`
 export const CardSlot = styled.div`
   flex: 1 1 400px; min-width: 0; display: flex; justify-content: center;
 `;
+/* Dark panel with a teal border that echoes Earth's atmosphere rim below (chosen 2026-11-12). */
 export const EventCard = styled.a`
   width: 100%; max-width: 470px; display: block; text-decoration: none; color: ${PLATINUM} !important;
-  background: linear-gradient(180deg, ${RAISED}, ${PANEL}); border: 1px solid ${line(0.14)}; border-radius: 14px;
+  background: ${PANEL}; border: 1px solid rgba(79, 224, 207, 0.35); border-radius: 14px;
   overflow: hidden; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
   animation: ${floaty} 6s ease-in-out infinite; ${still}
-  &:hover { border-color: rgba(154, 72, 255, 0.5); }
+  &:hover { border-color: rgba(79, 224, 207, 0.6); }
 `;
 export const CardHead = styled.div`
   display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 18px;
@@ -228,13 +230,13 @@ export const CardFoot = styled.div`
 
 /* ── just-in ticker ── */
 export const Ticker = styled.div`
-  display: flex; align-items: center; border-top: 1px solid ${line(0.07)}; background: ${SUNKEN};
+  display: flex; align-items: center; border-top: 1px solid ${line(0.07)}; background: ${BLACK};
   overflow: hidden; min-height: 49px;
 `;
 export const TickerLabel = styled.a`
   flex: none; align-self: stretch; display: flex; align-items: center; gap: 9px; padding: 0 21px;
   font-size: 10px; letter-spacing: 0.16em; color: ${TEAL} !important; text-decoration: none;
-  background: ${SUNKEN}; position: relative; z-index: 1; border-right: 1px solid ${line(0.08)};
+  background: ${BLACK}; position: relative; z-index: 1; border-right: 1px solid ${line(0.08)};
 `;
 export const TickerTrack = styled.div`
   flex: 1 1 auto; min-width: 0; overflow: hidden;
@@ -256,9 +258,6 @@ export const TickerDot = styled.span<{ $color: string }>`
 
 /* ── problem carousel ── */
 
-export const DotBar = styled.span<{ $on: boolean }>`
-  display: block; height: 3px; border-radius: 2px; background: ${p => (p.$on ? 'var(--starithm-veronica-dark)' : line(0.2))};
-`;
 
 /* ── what it does: bento ── */
 
@@ -314,7 +313,7 @@ export const FieldRow = styled.div`
 /* ── closing ── */
 export const Closing = styled.section`
   border-top: 1px solid ${line(0.07)};
-  background: var(--starithm-rich-black);
+  background: ${BLACK};
   > div { padding-top: 67px; padding-bottom: 67px; display: flex; flex-direction: column; align-items: center; gap: 25px; text-align: center; }
 `;
 export const Contact = styled.div`
@@ -337,46 +336,15 @@ export const FooterCols = styled.div`
 `;
 
 
-/* ── what it does: a deck of cards that deals itself ── */
+/* ── what it does ── */
 export const DeckRow = styled.div`
   display: flex; flex-direction: column; align-items: center; gap: 34px; text-align: center;
 `;
-/* Portrait cards; the ones behind fan out to the right with only their borders showing. */
-export const Deck = styled.div`
-  position: relative; width: min(340px, 100%); height: 430px; margin-right: 48px;
-  @media (max-width: 520px) { margin-right: 36px; height: 410px; }
-`;
-export const DeckCard = styled.a<{ $pos: number; $out: boolean; $feature?: boolean }>`
-  position: absolute; inset: 0; box-sizing: border-box;
-  display: flex; flex-direction: column; justify-content: space-between; gap: 18px;
-  padding: 28px; border-radius: 18px; text-decoration: none; color: ${PLATINUM} !important; text-align: left;
-  border: 1px solid ${p => (p.$feature && p.$pos === 0 ? 'rgba(154, 72, 255, 0.3)' : line(p.$pos === 0 ? 0.18 : 0.14))};
-  background: ${p => (p.$feature && p.$pos === 0 ? `linear-gradient(160deg, rgba(32, 12, 53, 0.55), ${PANEL})` : PANEL)};
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-  transition: transform 0.7s cubic-bezier(.2, .7, .2, 1), opacity 0.7s, border-color 0.5s;
-  /* !important: globals.css resets every element with "* { z-index: auto !important }" (as in Ears.styled.tsx). */
-  z-index: ${p => (p.$out ? 6 : 5 - p.$pos)} !important;
-  transform: ${p => (p.$out ? 'translateX(-130%) rotate(-9deg)' : `translate(${p.$pos * 16}px, ${p.$pos * 6}px) scale(${1 - p.$pos * 0.035})`)};
-  opacity: ${p => (p.$out ? 0 : p.$pos > 3 ? 0 : 1)};
-  pointer-events: ${p => (p.$pos === 0 && !p.$out ? 'auto' : 'none')};
-  @media (prefers-reduced-motion: reduce) { transition: none; }
-`;
-/* A card's content shows only while it is in front. */
-export const DeckFace = styled.div<{ $front: boolean }>`
-  display: flex; flex-direction: column; justify-content: space-between; gap: 18px; height: 100%;
-  opacity: ${p => (p.$front ? 1 : 0)}; transition: opacity 0.45s ${p => (p.$front ? '0.25s' : '0s')};
-`;
+
+
 export const DeckTitle = styled.div`${serif}; font-size: 28px; line-height: 1.15;`;
 export const DeckBody = styled.div`${prose}; font-size: 14px; line-height: 1.7; color: ${line(0.72)}; max-width: 60ch;`;
-export const DeckNav = styled.div`
-  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
-  button.arrow {
-    width: 38px; height: 38px; border-radius: 999px; border: 1px solid ${line(0.2)}; background: transparent;
-    color: ${line(0.8)}; cursor: pointer; font: inherit; font-size: 14px;
-  }
-  button.arrow:hover { border-color: ${VIOLET_D}; color: ${PLATINUM}; }
-  button.dot { background: transparent; border: 0; padding: 14px 0; cursor: pointer; width: 34px; }
-`;
+
 
 /* ── accuracy: a grid graph whose columns rise to their value ── */
 export const Graph = styled.figure`
@@ -441,4 +409,61 @@ export const Resolve = styled.div`
   em { ${serif}; color: ${LILAC}; font-style: normal; }
   small { display: block; ${prose}; font-size: 14px; color: ${line(0.66)}; margin-top: 8px; }
   @media (max-width: 760px) { font-size: 24px; }
+`;
+
+
+/* ── what it does: tabs on the left, the current feature on the right ── */
+export const TabsRow = styled.div`
+  display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 28px; width: 100%; text-align: left;
+  @media (max-width: 860px) { grid-template-columns: 1fr; }
+`;
+export const TabList = styled.div`display: flex; flex-direction: column; gap: 6px;`;
+export const TabItem = styled.button<{ $on: boolean }>`
+  all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 12px;
+  background: ${p => (p.$on ? PANEL : 'transparent')}; border: 1px solid ${p => (p.$on ? line(0.14) : 'transparent')};
+  span.t { ${heading}; font-size: 14px; color: ${p => (p.$on ? PLATINUM : line(0.62))}; }
+  &:hover span.t { color: ${PLATINUM}; }
+  &:focus-visible { outline: 2px solid var(--primary); }
+`;
+const grow = keyframes`from { width: 0%; } to { width: 100%; }`;
+export const TabProgress = styled.span<{ $on: boolean; $ms: number; $paused: boolean }>`
+  display: block; height: 2px; border-radius: 2px; background: ${line(0.1)}; overflow: hidden;
+  &::after { content: ''; display: block; height: 100%; width: 0; background: var(--accent-text);
+    ${p => p.$on && css`animation: ${grow} ${p.$ms}ms linear forwards; animation-play-state: ${p.$paused ? 'paused' : 'running'};`} }
+  @media (prefers-reduced-motion: reduce) { &::after { animation: none; width: ${p => (p.$on ? '100%' : '0')}; } }
+`;
+export const ShowPanel = styled.a`
+  display: flex; flex-direction: column; justify-content: space-between; gap: 22px; min-height: 300px; box-sizing: border-box;
+  padding: 34px; border-radius: 18px; text-decoration: none; color: ${PLATINUM} !important;
+  border: 1px solid rgba(154, 72, 255, 0.3);
+  background: linear-gradient(160deg, rgba(32, 12, 53, 0.9), rgba(32, 12, 53, 0)) ${PANEL};
+`;
+
+
+
+/* ── previews inside the feature panel: real data from GRB 260924A ── */
+export const Preview = styled.div`
+  flex: 1 1 auto; display: flex; align-items: center; justify-content: center; min-height: 150px;
+  > div { width: 100%; max-width: 520px; }
+`;
+export const PreviewBox = styled.div`
+  border: 1px solid ${line(0.12)}; border-radius: 12px; background: ${line(0.03)}; padding: 14px 16px;
+  font-size: 12.5px; display: flex; flex-direction: column; gap: 10px;
+  .q { align-self: flex-end; background: ${line(0.08)}; border-radius: 12px 12px 4px 12px; padding: 8px 12px; }
+  .a { ${prose}; font-size: 13.5px; line-height: 1.6; color: ${line(0.85)}; }
+  .cite { font-family: var(--font-mono); font-size: 11px; color: var(--accent-text); border: 1px solid rgba(154, 72, 255, 0.35);
+    border-radius: 6px; padding: 1px 6px; margin-left: 6px; white-space: nowrap; }
+  .note { font-size: 10.5px; color: ${line(0.45)}; }
+  .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+  .facts small { display: block; font-size: 10px; color: ${line(0.5)}; letter-spacing: 0.08em; }
+  .facts b { font-weight: 500; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th { text-align: left; font-weight: 500; font-size: 10.5px; color: ${line(0.5)}; padding: 0 8px 6px 0; }
+  td { padding: 5px 8px 5px 0; border-top: 1px solid ${line(0.07)}; }
+  .quote { ${prose}; font-size: 12px; color: ${line(0.6)}; border-left: 2px solid rgba(255, 195, 50, 0.5); padding-left: 10px; }
+  .live { display: flex; flex-direction: column; gap: 8px; }
+  .live a { display: flex; gap: 8px; align-items: baseline; color: ${PLATINUM}; text-decoration: none; min-width: 0; }
+  .live .what { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .live .ago { flex: none; color: ${line(0.45)}; font-size: 11px; margin-left: auto; }
+  svg text { font-family: var(--font-mono); font-size: 10.5px; fill: ${line(0.65)}; }
 `;

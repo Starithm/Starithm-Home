@@ -9,8 +9,9 @@ import {
   Hero, HeroRow, HeroCopy, H1, Lede, AskForm, VisuallyHidden, Chips,
   CardSlot, EventCard, CardHead, CardStats, CardRows, CardRow, CardFoot,
   Ticker, TickerLabel, TickerTrack, TickerRun, TickerDot,
-  DotBar, HeadRow, ProblemGrid, Resolve,
-  DeckRow, Deck, DeckCard, DeckFace, DeckTitle, DeckBody, DeckNav,
+  HeadRow, ProblemGrid, Resolve,
+  DeckRow, DeckTitle, DeckBody,
+  TabsRow, TabList, TabItem, TabProgress, ShowPanel, Preview, PreviewBox,
   Graph, GraphNotes,
   FlowFigure,
   SplitRow, Providers, ErrorNote, FormCard, FormTitle, FakeField, FieldRow,
@@ -152,7 +153,7 @@ const ago = (iso: string) => {
   return m < 60 ? `${m} min ago` : m < 48 * 60 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} d ago`;
 };
 
-function JustIn() {
+function useLatest() {
   const [items, setItems] = useState<Latest[] | null>(null);
   useEffect(() => {
     let off = false;
@@ -173,6 +174,11 @@ function JustIn() {
     load().then(x => { if (!off && x?.length) setItems(x); });
     return () => { off = true; };
   }, []);
+  return items;
+}
+
+function JustIn() {
+  const items = useLatest();
   if (!items) return null;
   /* Old rows can hold a circular's subject as their "event" ("The EP-WXT trigger … is likely a flare");
      a name is at most 3 words and 40 characters (NovaTrace normaliser isSpecificEventName). */
@@ -283,54 +289,128 @@ function FlowChart() {
   );
 }
 
-function FeatureDeck() {
+/* What it does: features listed on the left, the current one shown on the right with a preview; it
+   advances every few seconds (paused on hover). Chosen 2026-11-12 over a card deck, an expanding row and a
+   peek carousel. */
+const DEAL_MS = 4500;
+function useDeal(paused: boolean) {
   const [top, setTop] = useState(0);
-  const [hold, setHold] = useState(false);
-  const t = useTick(4500, hold);
+  const t = useTick(DEAL_MS, paused);
   useEffect(() => { if (t > 0) setTop(x => (x + 1) % FEATURES.length); }, [t]);
-  const n = FEATURES.length;
-  const go = (i: number) => setTop(((i % n) + n) % n);
+  return [top, setTop] as const;
+}
+const featureHead = (
+  <Stack $gap={14} style={{ alignItems: 'center' }}>
+    <H2>One page per event. A source on every value.</H2>
+    <Muted $size={15} style={{ maxWidth: 520 }}>
+      Every notice and circular about an event, read, linked and kept in one record you can search, open and cite.
+    </Muted>
+  </Stack>
+);
+/* What each feature looks like, with real data: GRB 260924A (canonical 811905208) as stored on
+   2026-11-12, and the live circular feed. The Ask Evren answer is written from GCN 45740 and labelled as
+   an example, not shown as a live answer. */
+function FeaturePreview({ label }: { label: string }) {
+  const latest = useLatest();
+  if (label === 'EVENT PAGES') return (
+    <PreviewBox>
+      <div className="facts">
+        <div><small>EVENT</small><b>GRB 260924A</b></div>
+        <div><small>TRIGGER</small><b>2026-09-24 01:13:23 UTC</b></div>
+        <div><small>BEST POSITION · SWIFT-XRT, GCN 45715</small><b>RA 133.7628° Dec +12.0433° ±2.1″</b></div>
+        <div><small>REDSHIFT · GCN 45740</small><b>z = 3.51</b></div>
+      </div>
+      <div className="note">29 circulars · 10 notices · every value links to its source</div>
+    </PreviewBox>
+  );
+  if (label === 'VALUES AS DATA') return (
+    <PreviewBox>
+      <table>
+        <thead><tr><th>Band</th><th>Magnitude</th><th>Time</th><th>Telescope</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>white</td><td>14.68 ± 0.02</td><td>T+158 s</td><td>Swift/UVOT</td><td>GCN 45735</td></tr>
+          <tr><td>u</td><td>17.33 ± 0.24</td><td>T+334 s</td><td>Swift/UVOT</td><td>GCN 45735</td></tr>
+          <tr><td>b</td><td>15.71 ± 0.03</td><td>T+3637 s</td><td>Swift/UVOT</td><td>GCN 45735</td></tr>
+        </tbody>
+      </table>
+      <div className="quote">“white 158 308 147 14.68 +/- 0.02”, the line each value is read from</div>
+    </PreviewBox>
+  );
+  if (label === 'COUNTERPARTS') return (
+    <PreviewBox>
+      <svg viewBox="0 0 520 150" role="img" aria-label="GRB 260924A localisation narrowing from the Fermi GBM circle to the Swift-XRT position and the optical afterglow">
+        <circle cx={150} cy={75} r={66} fill="none" stroke="rgba(255, 107, 107, 0.6)" strokeDasharray="4 4" />
+        <circle cx={150} cy={75} r={9} fill="none" stroke="var(--starithm-nebula-teal)" />
+        <circle cx={150} cy={75} r={2.5} fill="var(--accent-text)" />
+        <line x1={150} y1={75} x2={240} y2={75} stroke="rgba(231, 223, 221, 0.2)" />
+        <text x={248} y={42}>Fermi GBM · 1.6° (T+9 min)</text>
+        <text x={248} y={79}>Swift-XRT · 2.1″ (GCN 45715)</text>
+        <text x={248} y={116}>optical afterglow (GCN 45717)</text>
+        <circle cx={240} cy={38} r={3} fill="rgba(255, 107, 107, 0.8)" />
+        <circle cx={240} cy={75} r={3} fill="var(--starithm-nebula-teal)" />
+        <circle cx={240} cy={112} r={3} fill="var(--accent-text)" />
+      </svg>
+      <div className="note">GRB 260924A: the error region narrowing as reports arrive (not to scale)</div>
+    </PreviewBox>
+  );
+  if (label === 'LIVE') return (
+    <PreviewBox>
+      <div className="live">
+        {(latest ?? []).slice(0, 4).map(k => (
+          <a key={k.alertKey} href={k.canonicalId ? `/novatrace/events/${encodeURIComponent(k.canonicalId)}` : '/novatrace/events'}>
+            <TickerDot $color={eventColor(k.event)} />
+            <span className="what">{k.label} · {k.what}</span>
+            <span className="ago">{ago(k.date)}</span>
+          </a>
+        ))}
+        {!latest && <span className="note">Loading the latest circulars…</span>}
+      </div>
+    </PreviewBox>
+  );
+  return (
+    <PreviewBox>
+      <div className="q">What redshift was measured for GRB 260924A?</div>
+      <div className="a">
+        A spectroscopic redshift of z = 3.51 ± 0.10 was measured with the CAHA 2.2 m telescope.<span className="cite">GCN 45740</span>
+      </div>
+      <div className="note">Example answer, written from GCN 45740</div>
+    </PreviewBox>
+  );
+}
+
+function FeatureTabs() {
+  const [hold, setHold] = useState(false);
+  const [top, setTop] = useDeal(hold);
+  const f = FEATURES[top];
   return (
     <DeckRow>
-      <Stack $gap={14} style={{ alignItems: 'center' }}>
-        <H2>One page per event. A source on every value.</H2>
-        <Muted $size={15} style={{ maxWidth: 520 }}>
-          Every notice and circular about an event, read, linked and kept in one record you can search, open and cite.
-        </Muted>
-      </Stack>
-      <Deck onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)} onFocus={() => setHold(true)} onBlur={() => setHold(false)}
-        aria-roledescription="carousel" aria-label="What it does">
-        {FEATURES.map((f, i) => {
-          const pos = (i - top + n) % n;
-          return (
-            <DeckCard key={f.label} as={f.href ? 'a' : 'div'} href={f.href} $pos={pos} $out={pos === n - 1} $feature={f.feature}
-              aria-hidden={pos !== 0} tabIndex={pos === 0 ? 0 : -1}>
-              <DeckFace $front={pos === 0}>
-                <Stack $gap={14}>
-                  <Kicker $color={f.color}>{f.label}</Kicker>
-                  <DeckTitle>{f.title}</DeckTitle>
-                </Stack>
-                <Stack $gap={14}>
-                  <DeckBody>{f.body}</DeckBody>
-                  {f.cta && <Muted $size={13} style={{ color: 'var(--accent-text)' }}>{f.cta}</Muted>}
-                </Stack>
-              </DeckFace>
-            </DeckCard>
-          );
-        })}
-      </Deck>
-      <DeckNav>
-        <button type="button" className="arrow" aria-label="Previous feature" onClick={() => go(top - 1)}>←</button>
-        {FEATURES.map((f, i) => (
-          <button key={f.label} type="button" className="dot" aria-label={`Show ${f.label.toLowerCase()}`} onClick={() => go(i)}>
-            <DotBar $on={i === top} />
-          </button>
-        ))}
-        <button type="button" className="arrow" aria-label="Next feature" onClick={() => go(top + 1)}>→</button>
-      </DeckNav>
+      {featureHead}
+      <TabsRow onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}>
+        <TabList role="tablist" aria-label="What it does">
+          {FEATURES.map((x, i) => (
+            <TabItem key={x.label} $on={i === top} role="tab" aria-selected={i === top} onClick={() => setTop(i)}>
+              <Kicker $color={x.color}>{x.label}</Kicker>
+              <span className="t">{x.title}</span>
+              <TabProgress key={`${i}-${top}`} $on={i === top} $ms={DEAL_MS} $paused={hold} />
+            </TabItem>
+          ))}
+        </TabList>
+        <ShowPanel as={f.href ? 'a' : 'div'} href={f.href} role="tabpanel">
+          <Stack $gap={14}>
+            <Kicker $color={f.color}>{f.label}</Kicker>
+            <DeckTitle style={{ fontSize: 30 }}>{f.title}</DeckTitle>
+          </Stack>
+          <Preview><FeaturePreview label={f.label} /></Preview>
+          <Stack $gap={12}>
+            <DeckBody>{f.body}</DeckBody>
+            {f.cta && <Muted $size={13} style={{ color: 'var(--accent-text)' }}>{f.cta}</Muted>}
+          </Stack>
+        </ShowPanel>
+      </TabsRow>
     </DeckRow>
   );
 }
+
 
 /* A grid graph drawn by one dot: it traces a neon line through the four values, and as it reaches each one
    a stem drops to the baseline so the value still reads on its own (they are separate measurements, not a
@@ -535,7 +615,7 @@ export function Homepage() {
 
       <Section>
         <Wrap>
-          <FeatureDeck />
+          <FeatureTabs />
         </Wrap>
       </Section>
 
@@ -604,13 +684,11 @@ export function Homepage() {
 
       <Closing>
         <Wrap $narrow>
-          <H2 $size={36}>Start with a question.</H2>
-          <AskBox id="ask2" placeholder="Which telescopes observed S250818k?" />
-          <Contact>
-            <Kicker>Built for astronomers</Kicker>
-            <Muted $size={13}>
-              Values are extracted by language models, and each links to its circular. Spot an error, or want to
-              collaborate? We&rsquo;d like to hear from you.
+          <H2 $size={36}>Built for astronomers.</H2>
+          <Contact style={{ marginTop: 0 }}>
+            <Muted $size={15}>
+              Values are extracted by language models, and each links to its circular. If you spot an error, have
+              observations or data to add, or want to help shape what we build, we&rsquo;d like to hear from you.
             </Muted>
             <div>
               <GhostButton href="mailto:contact.starithm@gmail.com" aria-label="Email contact.starithm@gmail.com">Email</GhostButton>
