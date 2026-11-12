@@ -153,17 +153,21 @@ const ago = (iso: string) => {
   return m < 60 ? `${m} min ago` : m < 48 * 60 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} d ago`;
 };
 
-function useLatest() {
-  const [items, setItems] = useState<Latest[] | null>(null);
+/* The newest circulars, or null while loading, or 'failed'. Never throws: the homepage renders without it.
+   Times out after 8 s, and drops malformed items (no key or no valid date). */
+function useLatest(): Latest[] | null | 'failed' {
+  const [items, setItems] = useState<Latest[] | null | 'failed'>(null);
   useEffect(() => {
     let off = false;
-    const load = async () => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const load = async (): Promise<Latest[] | null> => {
       try {
-        const r = await fetch(API_ENDPOINTS.publicLatest);
+        const r = await fetch(API_ENDPOINTS.publicLatest, { signal: ctrl.signal });
         if (r.ok) return (await r.json()) as Latest[];
         // Until the endpoint is deployed, the dev server reads the heavy /api/alerts instead.
         if (!import.meta.env.DEV) return null;
-        const all = await (await fetch(`${API_ENDPOINTS.alerts}?limit=12`)).json();
+        const all = await (await fetch(`${API_ENDPOINTS.alerts}?limit=12`, { signal: ctrl.signal })).json();
         return all.map((a: any) => {
           const subject = (String(a.data?.raw ?? '').match(/^SUBJECT:\s*(.+)$/m)?.[1] ?? '').trim();
           return { alertKey: a.alertKey, label: String(a.alertKey).replace(/^GCN-/, 'GCN '), event: a.event,
@@ -171,14 +175,20 @@ function useLatest() {
         });
       } catch { return null; }
     };
-    load().then(x => { if (!off && x?.length) setItems(x); });
-    return () => { off = true; };
+    load().then(x => {
+      clearTimeout(timer);
+      if (off) return;
+      const ok = Array.isArray(x) ? x.filter(k => k && k.alertKey && Number.isFinite(Date.parse(k.date))) : [];
+      setItems(ok.length ? ok : 'failed');
+    });
+    return () => { off = true; clearTimeout(timer); ctrl.abort(); };
   }, []);
   return items;
 }
 
 function JustIn() {
-  const items = useLatest();
+  const latest = useLatest();
+  const items = Array.isArray(latest) ? latest : null;
   if (!items) return null;
   /* Old rows can hold a circular's subject as their "event" ("The EP-WXT trigger … is likely a flare");
      a name is at most 3 words and 40 characters (NovaTrace normaliser isSpecificEventName). */
@@ -356,14 +366,15 @@ function FeaturePreview({ label }: { label: string }) {
   if (label === 'LIVE') return (
     <PreviewBox>
       <div className="live">
-        {(latest ?? []).slice(0, 4).map(k => (
+        {(Array.isArray(latest) ? latest : []).slice(0, 4).map(k => (
           <a key={k.alertKey} href={k.canonicalId ? `/novatrace/events/${encodeURIComponent(k.canonicalId)}` : '/novatrace/events'}>
             <TickerDot $color={eventColor(k.event)} />
             <span className="what">{k.label} · {k.what}</span>
             <span className="ago">{ago(k.date)}</span>
           </a>
         ))}
-        {!latest && <span className="note">Loading the latest circulars…</span>}
+        {latest === null && <span className="note">Loading the latest circulars…</span>}
+        {latest === 'failed' && <span className="note">The latest circulars are on the <a href="/novatrace/events" style={{ display: 'inline', color: 'var(--accent-text)' }}>events page →</a></span>}
       </div>
     </PreviewBox>
   );
