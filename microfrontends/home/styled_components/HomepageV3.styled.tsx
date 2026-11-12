@@ -125,15 +125,18 @@ export const GhostButton = styled.a`
 
 /* ── hero ── */
 export const Hero = styled.section`
-  min-height: max(500px, min(80vh, 660px));
+  position: relative; overflow: hidden;
+  min-height: max(560px, min(86vh, 740px));
   display: flex; align-items: center;
-  background: radial-gradient(1100px 600px at 78% 45%, rgba(141, 15, 245, 0.16), rgba(14, 11, 22, 0) 70%);
+  background: var(--starithm-rich-black);
+  /* content after the sky layer, positioned so it paints over it (z-index is reset globally) */
+  > div:last-child { position: relative; }
   @media (max-width: 760px) { min-height: 0; }
 `;
 export const HeroRow = styled.div`
   display: flex; flex-wrap: wrap; gap: 48px; align-items: center;
-  padding-top: 48px; padding-bottom: 56px;
-  @media (max-width: 760px) { gap: 32px; padding-top: 32px; padding-bottom: 40px; }
+  padding-top: 40px; padding-bottom: 150px;
+  @media (max-width: 760px) { gap: 32px; padding-top: 32px; padding-bottom: 100px; }
 `;
 export const HeroCopy = styled.div`
   flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 22px;
@@ -190,7 +193,7 @@ export const CardSlot = styled.div`
 export const EventCard = styled.a`
   width: 100%; max-width: 470px; display: block; text-decoration: none; color: ${PLATINUM} !important;
   background: linear-gradient(180deg, ${RAISED}, ${PANEL}); border: 1px solid ${line(0.14)}; border-radius: 14px;
-  overflow: hidden; box-shadow: 0 30px 90px rgba(141, 15, 245, 0.25);
+  overflow: hidden; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
   animation: ${floaty} 6s ease-in-out infinite; ${still}
   &:hover { border-color: rgba(154, 72, 255, 0.5); }
 `;
@@ -313,7 +316,7 @@ export const FieldRow = styled.div`
 /* ── closing ── */
 export const Closing = styled.section`
   border-top: 1px solid ${line(0.07)};
-  background: radial-gradient(900px 500px at 50% 40%, rgba(141, 15, 245, 0.14), rgba(14, 11, 22, 0) 70%);
+  background: var(--starithm-rich-black);
   > div { padding-top: 67px; padding-bottom: 67px; display: flex; flex-direction: column; align-items: center; gap: 25px; text-align: center; }
 `;
 export const Contact = styled.div`

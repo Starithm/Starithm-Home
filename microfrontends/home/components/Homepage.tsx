@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSignIn, useAuth, useClerk, UserButton } from '@clerk/react';
 import { saveReturnUrl } from '../../../shared/lib/auth';
 import { API_ENDPOINTS, ASK_ASSISTANT } from '../../../shared/lib/config';
+import { HeroSky } from './HeroSky';
 import {
   Page, Wrap, Header, NavRow, Brand, NavLinks, NavButton,
   Section, Stack, Kicker, H2, Muted, LiveDot, PrimaryButton, GhostButton,
@@ -499,6 +500,7 @@ export function Homepage() {
       </Header>
 
       <Hero>
+        <HeroSky />
         <Wrap>
           <HeroRow>
             <HeroCopy>
