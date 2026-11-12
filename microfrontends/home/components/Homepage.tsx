@@ -189,7 +189,7 @@ function ProblemCarousel() {
             <Kicker>01 / The problem</Kicker>
             <Muted $size={13}>{slide + 1} / {SLIDES.length}</Muted>
           </HeadRow>
-          <Stack $gap={28} style={{ minHeight: 300, justifyContent: 'center' }}>
+          <Stack $gap={22} style={{ minHeight: 240, justifyContent: 'center' }}>
             <Typed $accent={slide === SLIDES.length - 1} aria-live="polite">
               {s.text.slice(0, chars)}<Caret aria-hidden="true">|</Caret>
             </Typed>
@@ -402,20 +402,20 @@ export function Homepage() {
               <H2>One page per event. A source on every value.</H2>
             </Stack>
             <Bento>
-              <Panel href={ASK_URL} $span={4} $feature $minH={340}>
+              <Panel href={ASK_URL} $span={4} $feature $minH={280}>
                 <Stack $gap={10}>
                   <PanelLabel $color="var(--accent-text)">{ASK_ASSISTANT.toUpperCase()}</PanelLabel>
-                  <PanelTitle $size={40}>Ask in plain English. Every sentence cites a circular.</PanelTitle>
+                  <PanelTitle $size={32}>Ask in plain English. Every sentence cites a circular.</PanelTitle>
                 </Stack>
                 <Stack $gap={10}>
                   <Bubble>Which telescopes observed S250818k?</Bubble>
                   <Muted>Answers from ~45,000 GCN Circulars since 1997 <span style={{ color: 'var(--accent-text)' }}>· Try it →</span></Muted>
                 </Stack>
               </Panel>
-              <Panel href="/novatrace/events" $span={2} $minH={340}>
+              <Panel href="/novatrace/events" $span={2} $minH={280}>
                 <PanelLabel $color="var(--starithm-nebula-teal)">EVENT PAGES</PanelLabel>
                 <Stack $gap={10}>
-                  <PanelTitle $size={30}>Timeline, position, key facts, sky map, citation.</PanelTitle>
+                  <PanelTitle $size={24}>Timeline, position, key facts, sky map, citation.</PanelTitle>
                   <Muted style={{ color: 'var(--accent-text)' }}>Browse events →</Muted>
                 </Stack>
               </Panel>
@@ -494,7 +494,7 @@ export function Homepage() {
           <SplitRow>
             <Stack $gap={28}>
               <Kicker>05 / Join early</Kicker>
-              <H2 $size={72}>The record is being written now.</H2>
+              <H2 $size={56}>The record is being written now.</H2>
               <Muted $size={17} style={{ maxWidth: 500 }}>
                 Every new event starts its page the moment the first notice lands. Sign in to add what you saw,
                 or correct what we got wrong, while the record is still taking shape.
@@ -533,7 +533,7 @@ export function Homepage() {
 
       <Closing>
         <Wrap $narrow>
-          <H2 $size={72}>Start with a question.</H2>
+          <H2 $size={56}>Start with a question.</H2>
           <AskBox id="ask2" placeholder="Which telescopes observed S250818k?" />
           <Contact>
             <Kicker>Built with astronomers</Kicker>
