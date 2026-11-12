@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSignIn, useAuth, useClerk, UserButton } from '@clerk/react';
 import { saveReturnUrl } from '../../../shared/lib/auth';
 import { API_ENDPOINTS, ASK_ASSISTANT } from '../../../shared/lib/config';
@@ -8,9 +8,10 @@ import {
   Hero, HeroRow, HeroCopy, H1, Lede, AskForm, VisuallyHidden, Chips,
   CardSlot, EventCard, CardHead, CardStats, CardRows, CardRow, CardFoot,
   Ticker, TickerLabel, TickerTrack, TickerRun, TickerDot,
-  Typed, Caret, Sub, Dots, DotBar,
-  Bento, Panel, PanelLabel, PanelTitle, Bubble,
-  Stats, Big, HeadRow, Steps, StepItem, Demo,
+  Typed, Caret, Sub, Dots, DotBar, HeadRow,
+  DeckRow, Deck, DeckCard, DeckTitle, DeckBody, DeckNav,
+  Bars, BarRow, BarLabel, BarTrack, BarFill, BarValue,
+  Flow, FlowNode, FlowLink,
   SplitRow, Providers, ErrorNote, FormCard, FormTitle, FakeField, FieldRow,
   Closing, Contact, Footer, FooterCols, line,
 } from '../styled_components/HomepageV3.styled';
@@ -54,6 +55,33 @@ const STEPS: [string, string, string][] = [
   ['03', 'Extract', 'Values read out of circular text.'],
   ['04', 'Cross-match', 'Position, time, false-alarm check.'],
   ['05', 'Publish', 'One event page, updated live.'],
+];
+
+/* What it does, dealt as a deck. Each claim is live and backed (docs/homepage-redesign-brief.md). */
+const FEATURES: { label: string; color: string; title: string; body: string; href?: string; cta?: string; feature?: boolean }[] = [
+  { label: ASK_ASSISTANT.toUpperCase(), color: 'var(--accent-text)', feature: true, href: ASK_URL, cta: 'Try it →',
+    title: 'Ask in plain English. Every sentence cites a circular.',
+    body: 'Answers from about 45,000 GCN Circulars since 1997, recent ATels and GCN notices, each sentence linked to the circular it came from.' },
+  { label: 'EVENT PAGES', color: 'var(--starithm-nebula-teal)', href: '/novatrace/events', cta: 'Browse events →',
+    title: 'One page per event.',
+    body: 'Notices timeline, circulars, best position, key facts, every reported observation, a sky map of the error region and a citation.' },
+  { label: 'VALUES AS DATA', color: 'var(--starithm-golden-yellow)',
+    title: 'A source on every value.',
+    body: 'Magnitudes, upper limits, fluxes, fluences, T90 and redshifts read out of the circular text, each quoting the sentence it came from.' },
+  { label: 'COUNTERPARTS', color: TYPE_GRB,
+    title: 'Matched by time and position.',
+    body: 'Related events with a false-alarm check, optical candidates from Lasair, TNS and Fink, known catalogue sources in the error region, and X-ray light curves.' },
+  { label: 'LIVE', color: 'var(--starithm-nebula-teal)',
+    title: 'New circulars appear within minutes.',
+    body: 'Fermi, Swift, Einstein Probe, SVOM, LIGO/Virgo/KAGRA, IceCube, CHIME, MAXI and more, in one schema, updated as notices and circulars arrive.' },
+];
+
+/* Accuracy against independent catalogues (blog: how-accurate-is-starithm-extraction, 2026-11-12). */
+const ACCURACY: { label: string; note: string; value: number; muted?: boolean }[] = [
+  { label: 'Redshift', note: 'vs GRBweb · 327 of 346 bursts · Δz ≤ 0.01', value: 94.5 },
+  { label: 'T90', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 92.2 },
+  { label: 'Fluence', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 94.5 },
+  { label: 'Redshift shown on the event page', note: 'telling a burst’s redshift from a host’s or a limit: work in progress', value: 86.0, muted: true },
 ];
 
 const reducedMotion = () =>
@@ -209,16 +237,100 @@ function ProblemCarousel() {
   );
 }
 
-function StepList() {
-  const t = useTick(2000);
+function FlowChart() {
+  const t = useTick(1600);
   return (
-    <Steps>
+    <Flow aria-label="How it works">
       {STEPS.map(([n, name, desc], i) => (
-        <StepItem key={n} $on={!reducedMotion() && i === t % STEPS.length}>
-          <small>{n}</small><strong>{name}</strong><span>{desc}</span>
-        </StepItem>
+        <React.Fragment key={n}>
+          {i > 0 && <FlowLink aria-hidden="true"><i /><i /><i /></FlowLink>}
+          <FlowNode $on={!reducedMotion() && i === t % STEPS.length}>
+            <small>{n}</small><strong>{name}</strong><span>{desc}</span>
+          </FlowNode>
+        </React.Fragment>
       ))}
-    </Steps>
+    </Flow>
+  );
+}
+
+function FeatureDeck() {
+  const [top, setTop] = useState(0);
+  const [hold, setHold] = useState(false);
+  const t = useTick(4500, hold);
+  useEffect(() => { if (t > 0) setTop(x => (x + 1) % FEATURES.length); }, [t]);
+  const n = FEATURES.length;
+  const go = (i: number) => setTop(((i % n) + n) % n);
+  return (
+    <DeckRow>
+      <Stack $gap={18}>
+        <H2>One page per event. A source on every value.</H2>
+        <Muted $size={15} style={{ maxWidth: 440 }}>
+          Every notice and circular about an event, read, linked and kept in one record you can search, open and cite.
+        </Muted>
+        <DeckNav>
+          <button type="button" className="arrow" aria-label="Previous feature" onClick={() => go(top - 1)}>←</button>
+          {FEATURES.map((f, i) => (
+            <button key={f.label} type="button" className="dot" aria-label={`Show ${f.label.toLowerCase()}`} onClick={() => go(i)}>
+              <DotBar $on={i === top} />
+            </button>
+          ))}
+          <button type="button" className="arrow" aria-label="Next feature" onClick={() => go(top + 1)}>→</button>
+        </DeckNav>
+      </Stack>
+      <Deck onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)} onFocus={() => setHold(true)} onBlur={() => setHold(false)}
+        aria-roledescription="carousel" aria-label="What it does">
+        {FEATURES.map((f, i) => {
+          const pos = (i - top + n) % n;
+          return (
+            <DeckCard key={f.label} as={f.href ? 'a' : 'div'} href={f.href} $pos={pos} $out={pos === n - 1} $feature={f.feature}
+              aria-hidden={pos !== 0} tabIndex={pos === 0 ? 0 : -1}>
+              <Stack $gap={12}>
+                <Kicker $color={f.color}>{f.label}</Kicker>
+                <DeckTitle>{f.title}</DeckTitle>
+              </Stack>
+              <Stack $gap={14}>
+                <DeckBody>{f.body}</DeckBody>
+                {f.cta && <Muted $size={13} style={{ color: 'var(--accent-text)' }}>{f.cta}</Muted>}
+              </Stack>
+            </DeckCard>
+          );
+        })}
+      </Deck>
+    </DeckRow>
+  );
+}
+
+/* Bars fill to their value, and the number counts up, once the block scrolls into view. */
+function AccuracyBars() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(reducedMotion());
+  const [k, setK] = useState(reducedMotion() ? 1 : 0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || shown) return;
+    if (typeof IntersectionObserver === 'undefined') { setShown(true); setK(1); return; }
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { setShown(true); io.disconnect(); } }, { threshold: 0.3 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [shown]);
+  useEffect(() => {
+    if (!shown || k >= 1) return;
+    const start = performance.now();
+    let raf = 0;
+    const step = (now: number) => { const x = Math.min(1, (now - start) / 1600); setK(1 - (1 - x) ** 3); if (x < 1) raf = requestAnimationFrame(step); };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [shown]); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <Bars ref={ref}>
+      {ACCURACY.map(a => (
+        <BarRow key={a.label}>
+          <BarLabel>{a.label}<small>{a.note}</small></BarLabel>
+          <BarTrack><BarFill $pct={shown ? a.value : 0} $muted={a.muted} /></BarTrack>
+          <BarValue $muted={a.muted}>{(a.value * k).toFixed(1)}%</BarValue>
+        </BarRow>
+      ))}
+    </Bars>
   );
 }
 
@@ -262,45 +374,6 @@ export function Homepage() {
   const { openSignIn } = useClerk();
   const [busy, setBusy] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
-
-  /* The demo clip sits well below the fold. Don't let it compete with the hero for
-     bandwidth — only attach the <source> once it's near the viewport. Until then the
-     poster (the screenshot) is all that has been fetched. */
-  const demoRef = useRef<HTMLVideoElement>(null);
-  const [demoVisible, setDemoVisible] = useState(false);
-
-  useEffect(() => {
-    const el = demoRef.current;
-    if (!el || demoVisible) return;
-    if (typeof IntersectionObserver === 'undefined') {
-      setDemoVisible(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      entries => {
-        if (entries.some(e => e.isIntersecting)) {
-          setDemoVisible(true);
-          io.disconnect();
-        }
-      },
-      { rootMargin: '300px' },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [demoVisible]);
-
-  /* Attaching <source> after mount doesn't restart the element on its own, and the
-     autoplay attribute is only honoured on the initial load in some browsers — so
-     kick playback off explicitly once the source is in. A rejected play() just means
-     the browser declined autoplay; the poster stays up, which is the intended
-     fallback. */
-  useEffect(() => {
-    if (!demoVisible) return;
-    const el = demoRef.current;
-    if (!el) return;
-    el.load();
-    el.play().catch(() => {});
-  }, [demoVisible]);
 
   const openModal = () => {
     saveReturnUrl();
@@ -392,92 +465,27 @@ export function Homepage() {
 
       <Section>
         <Wrap>
-          <Stack>
-            <Stack $gap={12}>
-              <H2>One page per event. A source on every value.</H2>
-            </Stack>
-            <Bento>
-              <Panel href={ASK_URL} $span={4} $feature $minH={246}>
-                <Stack $gap={9}>
-                  <PanelLabel $color="var(--accent-text)">{ASK_ASSISTANT.toUpperCase()}</PanelLabel>
-                  <PanelTitle $size={28}>Ask in plain English. Every sentence cites a circular.</PanelTitle>
-                </Stack>
-                <Stack $gap={9}>
-                  <Bubble>Which telescopes observed S250818k?</Bubble>
-                  <Muted>Answers from ~45,000 GCN Circulars since 1997 <span style={{ color: 'var(--accent-text)' }}>· Try it →</span></Muted>
-                </Stack>
-              </Panel>
-              <Panel href="/novatrace/events" $span={2} $minH={246}>
-                <PanelLabel $color="var(--starithm-nebula-teal)">EVENT PAGES</PanelLabel>
-                <Stack $gap={9}>
-                  <PanelTitle $size={21}>Timeline, position, key facts, sky map, citation.</PanelTitle>
-                  <Muted style={{ color: 'var(--accent-text)' }}>Browse events →</Muted>
-                </Stack>
-              </Panel>
-              <Panel as="div" $span={2}>
-                <PanelLabel $color="var(--starithm-golden-yellow)">VALUES AS DATA</PanelLabel>
-                <PanelTitle>Magnitudes, fluxes, T90, redshifts, each quoting its sentence.</PanelTitle>
-              </Panel>
-              <Panel as="div" $span={2}>
-                <PanelLabel $color={TYPE_GRB}>COUNTERPARTS</PanelLabel>
-                <PanelTitle>Matched by time and position, with a false-alarm check.</PanelTitle>
-              </Panel>
-              <Panel as="div" $span={2}>
-                <PanelLabel $color="var(--starithm-nebula-teal)"><LiveDot $size={6} />LIVE</PanelLabel>
-                <PanelTitle>New circulars appear within minutes.</PanelTitle>
-              </Panel>
-            </Bento>
-            <Muted $size={11}>Fermi · Swift · Einstein Probe · SVOM · LIGO/Virgo/KAGRA · IceCube · CHIME · MAXI · and more, in one schema</Muted>
-          </Stack>
+          <FeatureDeck />
         </Wrap>
       </Section>
 
       <Section $alt>
         <Wrap>
-          <Stack $gap={49}>
+          <Stack $gap={36}>
             <HeadRow>
-              <Stack $gap={12}>
-                <H2>Measured, not claimed.</H2>
-              </Stack>
+              <H2>Measured, not claimed.</H2>
               <GhostButton href="/blog/how-accurate-is-starithm-extraction">How we measured →</GhostButton>
             </HeadRow>
-            <Stats>
-              <div><Big>94.5<span>%</span></Big><Muted $size={13}>Redshift vs GRBweb (327 / 346 bursts, Δz ≤ 0.01)</Muted></div>
-              <div><Big>92.2<span>%</span></Big><Muted $size={13}>Swift-BAT T90 within 10%</Muted></div>
-              <div><Big>94.5<span>%</span></Big><Muted $size={13}>Swift-BAT fluence within 10%</Muted></div>
-            </Stats>
-            <Muted>Event-page redshift agrees for 86.0%. Telling a burst&rsquo;s redshift from a host&rsquo;s or a limit is work in progress.</Muted>
+            <AccuracyBars />
           </Stack>
         </Wrap>
       </Section>
 
       <Section>
         <Wrap>
-          <Stack>
-            <Stack $gap={12}>
-              <H2>From alert to event page.</H2>
-            </Stack>
-            <StepList />
-            <Demo>
-              {/* The poster is the screenshot, so this renders identically before the
-                  clip loads — and stays a still image if /novatrace-demo.mp4 is absent
-                  or the browser blocks autoplay. muted + playsInline are both required
-                  or mobile Safari/Chrome refuse to autoplay at all. */}
-              <video
-                poster="/novatrace-screenshot.png"
-                width={1800}
-                height={980}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload={demoVisible ? 'auto' : 'none'}
-                ref={demoRef}
-                aria-label="NovaTrace: an event page and an Ask Evren question"
-              >
-                {demoVisible && <source src="/novatrace-demo.mp4" type="video/mp4" />}
-              </video>
-            </Demo>
+          <Stack $gap={32}>
+            <H2>From alert to event page.</H2>
+            <FlowChart />
           </Stack>
         </Wrap>
       </Section>
@@ -487,7 +495,7 @@ export function Homepage() {
           <SplitRow>
             <Stack $gap={25}>
               <Kicker>Join early</Kicker>
-              <H2 $size={49}>The record is being written now.</H2>
+              <H2 $size={36}>The record is being written now.</H2>
               <Muted $size={15} style={{ maxWidth: 440 }}>
                 Every new event starts its page the moment the first notice lands. Sign in to add what you saw,
                 or correct what we got wrong, while the record is still taking shape.
@@ -526,16 +534,16 @@ export function Homepage() {
 
       <Closing>
         <Wrap $narrow>
-          <H2 $size={49}>Start with a question.</H2>
+          <H2 $size={36}>Start with a question.</H2>
           <AskBox id="ask2" placeholder="Which telescopes observed S250818k?" />
           <Contact>
-            <Kicker>Built with astronomers</Kicker>
+            <Kicker>Built for astronomers</Kicker>
             <Muted $size={13}>
               Values are extracted by language models, and each links to its circular. Spot an error, or want to
               collaborate? We&rsquo;d like to hear from you.
             </Muted>
             <div>
-              <GhostButton href="mailto:contact.starithm@gmail.com">contact.starithm@gmail.com</GhostButton>
+              <GhostButton href="mailto:contact.starithm@gmail.com" aria-label="Email contact.starithm@gmail.com">Email</GhostButton>
               <GhostButton href="https://www.linkedin.com/company/starithm" target="_blank" rel="noopener noreferrer">LinkedIn</GhostButton>
             </div>
           </Contact>
