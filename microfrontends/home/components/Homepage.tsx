@@ -1,51 +1,498 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSignIn, useAuth, useClerk, UserButton } from '@clerk/react';
 import { saveReturnUrl } from '../../../shared/lib/auth';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../shared/components/ui/dialog';
+import { API_ENDPOINTS, ASK_ASSISTANT } from '../../../shared/lib/config';
+import { HeroSky } from './HeroSky';
 import {
-  Page, Shell, Section, Eyebrow,
-  Nav, Brand, NavLinks, NavSignIn,
-  HeroGrid, HeroKicker, HeroTitle, HeroLede, HeroActions, PrimaryCta, SecondaryCta, TextLink,
-  EventCard, EventHead, EventId, Significance, EventBlurb, Timeline, TimelineRow, Tag, EventFoot,
-  ProblemGrid, ProblemItem, ProblemKicker,
-  FeatureGrid, FeatureCard, FeatureTitle, FeatureBody,
-  StepGrid, StepRail, Step, StepNo, StepName, StepBody,
-  SectionHeading, Shot, ShotHead, DisclosureGrid,
-  SignInSection, SignInLede, ProviderGrid, ProviderButton, SignInNote, SignInError,
-  Disclosure, FooterBar, FooterCols, FooterCol, FooterMark,
-} from '../styled_components/HomepageV2.styled';
+  Page, Wrap, Header, NavRow, Brand, NavLinks, NavButton,
+  Section, Stack, Kicker, H2, Muted, LiveDot, PrimaryButton, GhostButton,
+  Hero, HeroRow, HeroCopy, H1, Lede, AskForm, VisuallyHidden, Chips,
+  CardSlot, EventCard, CardHead, CardStats, CardRows, CardRow, CardFoot,
+  Ticker, TickerLabel, TickerTrack, TickerRun, TickerDot,
+  HeadRow, ProblemGrid, Resolve,
+  DeckRow, DeckTitle, DeckBody,
+  TabsRow, TabList, TabItem, TabProgress, ShowPanel, Preview, PreviewBox,
+  Graph, GraphNotes,
+  FlowFigure,
+  SplitRow, Providers, ErrorNote, FormCard, FormTitle, FakeField, FieldRow,
+  Closing, Contact, Footer, FooterCols, line,
+} from '../styled_components/HomepageV3.styled';
 
-/* Event-type colours mirror the legend the product actually paints
-   (shared/components/ui/celestial-sphere.tsx) so the marketing page and the
-   real dashboard agree. */
+/* Homepage v3 (2026-11-12), built from the Claude Design canvas "Starithm homepage redesign"
+   (docs/homepage-redesign-brief.md holds the facts it may state). Every number here is checked:
+   the hero card is a real record and the accuracy figures are the published ones. */
+
+/* Event-type colours mirror the legend the product paints (shared/components/ui/celestial-sphere.tsx). */
 const TYPE_GRB = '#FF6B6B';
 const TYPE_POSITION = '#4ECDC4';
-const VIOLET_D = 'var(--starithm-electric-violet-dark, #9A48FF)';
+const KIND_COLOR: Record<string, string> = { grb: TYPE_GRB, position: TYPE_POSITION, extracted: 'var(--accent-text)' };
 
-const PROBLEMS: [string, string][] = [
-  ['GCN delivers, then forgets.', 'The notice is broadcast. Nothing links it to what came after.'],
-  ['Brokers filter, then forget.', 'Volume is reduced. History is not retained.'],
-  ['Observatories publish later.', 'The measurement lands in a PDF, unlinked and unstructured.'],
+const ASK_URL = '/novatrace/search';
+const askHref = (q: string) => `${ASK_URL}?q=${encodeURIComponent(q)}`;
+const ASK_EXAMPLES: [string, string][] = [
+  ['Which telescopes observed S250818k?', 'Which telescopes observed S250818k?'],
+  ['Kilonova candidates with a red near-infrared excess', 'Kilonova candidates, red NIR excess'],
 ];
 
-const FEATURES: [string, string][] = [
-  ['One schema for every instrument',
-   'Fermi, Swift, Einstein Probe, SVOM, LVK, IceCube, CHIME, DSA-110, MAXI, Super-K. JSON and VOEvent XML, one normalised notice type.'],
-  ['Measurements pulled out of prose',
-   'Circulars parsed for flux, fluence, T90, redshift, position, spectral fits, telescopes and observers — as fields, not paragraphs.'],
-  ['Counterparts, proposed and shown',
-   'Spatial and temporal matching with per-instrument error radii, a Bayesian false-alarm pre-filter, and a stated confidence on every group.'],
-  ['A record that stays citable',
-   'Conflicting reports are flagged rather than averaged. Versioned, so a citation still resolves to what the record said that day.'],
+/* GRB 260924A (canonical 811905208): times from its notices and circulars, checked 2026-11-12. */
+const HERO_EVENT = { id: '811905208', name: 'GRB 260924A', redshift: '3.51', circulars: 29, notices: 10 };
+const HERO_ROWS: [string, string, string][] = [
+  ['T+4.4s', 'Fermi GBM notice', 'grb'],
+  ['T+28m', 'GCN 45713 · Swift detection', 'grb'],
+  ['T+4.0h', 'GCN 45715 · Swift-XRT position', 'position'],
+  ['T+6.0h', 'GCN 45717 · optical afterglow, OSN 1.5 m', 'extracted'],
+  ['T+1.3d', 'GCN 45740 · z = 3.51, CAHA 2.2 m', 'extracted'],
+];
+
+const SLIDES = [
+  { text: 'GCN delivers, then forgets.', sub: 'The notice is broadcast. Nothing links it to what came after.' },
+  { text: 'Brokers filter, then forget.', sub: 'Volume is reduced. History is not retained.' },
+  { text: 'Observatories publish later.', sub: 'The measurement lands in circular text, unlinked and unstructured.' },
+  { text: 'Starithm keeps the record.', sub: 'One page per event. Every value linked to the circular it came from.' },
 ];
 
 const STEPS: [string, string, string][] = [
-  ['STEP 01', 'Ingest', 'Kafka consumer across GCN topics; circular inbox polled continuously.'],
-  ['STEP 02', 'Normalise', 'Per-instrument mappers produce one canonical notice type.'],
-  ['STEP 03', 'Extract', 'Measurements and entities read out of the circular text.'],
-  ['STEP 04', 'Cross-match', 'Position, time, false-alarm probability, then verification.'],
-  ['STEP 05', 'Publish', 'One event page, refreshed as new notices arrive.'],
+  ['01', 'Ingest', 'GCN Kafka and circulars, continuously.'],
+  ['02', 'Normalise', 'One notice type for every instrument.'],
+  ['03', 'Extract', 'Values read out of circular text.'],
+  ['04', 'Cross-match', 'Position, time, false-alarm check.'],
+  ['05', 'Publish', 'One event page, updated live.'],
 ];
+
+/* What it does, dealt as a deck. Each claim is live and backed (docs/homepage-redesign-brief.md). */
+const FEATURES: { label: string; color: string; title: string; body: string; href?: string; cta?: string; feature?: boolean }[] = [
+  { label: ASK_ASSISTANT.toUpperCase(), color: 'var(--accent-text)', feature: true, href: ASK_URL, cta: 'Try it →',
+    title: 'Ask in plain English. Every sentence cites a circular.',
+    body: 'Answers from about 45,000 GCN Circulars since 1997, recent ATels and GCN notices, each sentence linked to the circular it came from.' },
+  { label: 'EVENT PAGES', color: 'var(--starithm-nebula-teal)', href: '/novatrace/events', cta: 'Browse events →',
+    title: 'One page per event.',
+    body: 'Notices timeline, circulars, best position, key facts, every reported observation, a sky map of the error region and a citation.' },
+  { label: 'VALUES AS DATA', color: 'var(--starithm-golden-yellow)',
+    title: 'A source on every value.',
+    body: 'Magnitudes, upper limits, fluxes, fluences, T90 and redshifts read out of the circular text, each quoting the sentence it came from.' },
+  { label: 'COUNTERPARTS', color: TYPE_GRB,
+    title: 'Matched by time and position.',
+    body: 'Related events with a false-alarm check, optical candidates from Lasair, TNS and Fink, known catalogue sources in the error region, and X-ray light curves.' },
+  { label: 'LIVE', color: 'var(--starithm-nebula-teal)',
+    title: 'New circulars appear within minutes.',
+    body: 'Fermi, Swift, Einstein Probe, SVOM, LIGO/Virgo/KAGRA, IceCube, CHIME, MAXI and more, in one schema, updated as notices and circulars arrive.' },
+];
+
+/* Accuracy against independent catalogues (blog: how-accurate-is-starithm-extraction, 2026-11-12), lowest first. */
+const ACCURACY: { label: string; short: string; note: string; value: number; muted?: boolean }[] = [
+  { label: 'Redshift shown on the event page', short: 'Event-page z', note: 'redshift shown on the event page; telling a burst’s redshift from a host’s or a limit: work in progress', value: 86.0, muted: true },
+  { label: 'T90', short: 'T90', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 92.2 },
+  { label: 'Redshift', short: 'Redshift', note: 'vs GRBweb · 327 of 346 bursts · Δz ≤ 0.01', value: 94.5 },
+  { label: 'Fluence', short: 'Fluence', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 94.5 },
+];
+
+const reducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+/* A counter that ticks every `ms` unless motion is reduced; each animated block owns one so the
+   rest of the page doesn't re-render with it. */
+function useTick(ms: number, paused = false) {
+  const [t, setT] = useState(0);
+  useEffect(() => {
+    if (paused || reducedMotion()) return;
+    const id = setInterval(() => setT(x => x + 1), ms);
+    return () => clearInterval(id);
+  }, [ms, paused]);
+  return t;
+}
+
+function AskBox({ id, placeholder, icon }: { id: string; placeholder: string; icon?: boolean }) {
+  const [q, setQ] = useState('');
+  return (
+    <AskForm onSubmit={e => { e.preventDefault(); window.location.href = q.trim() ? askHref(q.trim()) : ASK_URL; }}>
+      {icon && (
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
+        </svg>
+      )}
+      <VisuallyHidden htmlFor={id}>{ASK_ASSISTANT}</VisuallyHidden>
+      <input id={id} type="text" value={q} onChange={e => setQ(e.target.value)} placeholder={placeholder} />
+      <button type="submit">Ask</button>
+    </AskForm>
+  );
+}
+
+function HeroCard() {
+  const t = useTick(1800);
+  const active = t % HERO_ROWS.length;
+  return (
+    <EventCard href={`/novatrace/events/${HERO_EVENT.id}`} aria-label={`Open the ${HERO_EVENT.name} event page`}>
+      <CardHead>
+        <span><LiveDot $size={7} $still />{HERO_EVENT.name}</span>
+        <span>● SIGNIFICANCE HIGH</span>
+      </CardHead>
+      <CardStats>
+        <div><small>REDSHIFT</small><strong>{HERO_EVENT.redshift}</strong></div>
+        <div><small>CIRCULARS</small><strong>{HERO_EVENT.circulars}</strong></div>
+        <div><small>NOTICES</small><strong>{HERO_EVENT.notices}</strong></div>
+      </CardStats>
+      <CardRows>
+        {HERO_ROWS.map(([time, what, kind], i) => (
+          <CardRow key={time} $active={i === active}>
+            <span>{time}</span><span>{what}</span><span style={{ color: KIND_COLOR[kind] }}>{kind}</span>
+          </CardRow>
+        ))}
+      </CardRows>
+      <CardFoot><span>Model-extracted · each value links to its circular</span><span>Open →</span></CardFoot>
+    </EventCard>
+  );
+}
+
+/* The newest circulars, live from NovaTrace (/api/public/latest). Nothing is shown until they load,
+   and nothing if they don't: a "just in" strip must never show stale or sample rows. */
+interface Latest { alertKey: string; label: string; event: string; canonicalId: string | null; date: string; what: string }
+const eventColor = (name: string) =>
+  /^GRB|^sb\d/i.test(name) ? TYPE_GRB : /^EP|^IceCube|^S\d{6}/.test(name) ? TYPE_POSITION : 'var(--accent-text)';
+const ago = (iso: string) => {
+  const m = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000));
+  return m < 60 ? `${m} min ago` : m < 48 * 60 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} d ago`;
+};
+
+/* The newest circulars, or null while loading, or 'failed'. Never throws: the homepage renders without it.
+   Times out after 8 s, and drops malformed items (no key or no valid date). */
+function useLatest(): Latest[] | null | 'failed' {
+  const [items, setItems] = useState<Latest[] | null | 'failed'>(null);
+  useEffect(() => {
+    let off = false;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const load = async (): Promise<Latest[] | null> => {
+      try {
+        const r = await fetch(API_ENDPOINTS.publicLatest, { signal: ctrl.signal });
+        if (r.ok) return (await r.json()) as Latest[];
+        // Until the endpoint is deployed, the dev server reads the heavy /api/alerts instead.
+        if (!import.meta.env.DEV) return null;
+        const all = await (await fetch(`${API_ENDPOINTS.alerts}?limit=12`, { signal: ctrl.signal })).json();
+        return all.map((a: any) => {
+          const subject = (String(a.data?.raw ?? '').match(/^SUBJECT:\s*(.+)$/m)?.[1] ?? '').trim();
+          return { alertKey: a.alertKey, label: String(a.alertKey).replace(/^GCN-/, 'GCN '), event: a.event,
+            canonicalId: a.canonicalId, date: a.date, what: subject.includes(':') ? subject.slice(subject.indexOf(':') + 1).trim() : subject };
+        });
+      } catch { return null; }
+    };
+    load().then(x => {
+      clearTimeout(timer);
+      if (off) return;
+      const ok = Array.isArray(x) ? x.filter(k => k && k.alertKey && Number.isFinite(Date.parse(k.date))) : [];
+      setItems(ok.length ? ok : 'failed');
+    });
+    return () => { off = true; clearTimeout(timer); ctrl.abort(); };
+  }, []);
+  return items;
+}
+
+function JustIn() {
+  const latest = useLatest();
+  const items = Array.isArray(latest) ? latest : null;
+  if (!items) return null;
+  /* Old rows can hold a circular's subject as their "event" ("The EP-WXT trigger … is likely a flare");
+     a name is at most 3 words and 40 characters (NovaTrace normaliser isSpecificEventName). */
+  const named = (e: string) => (e && e.length <= 40 && e.trim().split(/\s+/).length <= 3 ? e : '');
+  const run = items.map(k => (
+    <a key={k.alertKey} href={k.canonicalId ? `/novatrace/events/${encodeURIComponent(k.canonicalId)}` : '/novatrace/events'}>
+      <TickerDot $color={eventColor(k.event)} />
+      {named(k.event) && <span className="ev">{named(k.event)}</span>}
+      <span className="what">{k.label} · {k.what}</span>
+      <span className="ago">{ago(k.date)}</span>
+    </a>
+  ));
+  return (
+    <Ticker aria-label="Latest circulars">
+      <TickerLabel href="/novatrace/events"><LiveDot $size={6} />JUST IN</TickerLabel>
+      <TickerTrack>
+        <TickerRun $seconds={Math.max(90, items.length * 14)}>{run}<span aria-hidden="true" style={{ display: 'contents' }}>{run}</span></TickerRun>
+      </TickerTrack>
+    </Ticker>
+  );
+}
+
+function Problem() {
+  return (
+    <Section $alt aria-label="The problem">
+      <Wrap>
+        <Stack $gap={30}>
+          <ProblemGrid>
+            {SLIDES.slice(0, -1).map(x => <div key={x.text}><strong>{x.text}</strong><span>{x.sub}</span></div>)}
+          </ProblemGrid>
+          <Resolve>
+            <em>{SLIDES[SLIDES.length - 1].text}</em>
+            <small>{SLIDES[SLIDES.length - 1].sub}</small>
+          </Resolve>
+        </Stack>
+      </Wrap>
+    </Section>
+  );
+}
+
+/* Vertical flow chart. The flow runs down through the stages and back up the update loop (a new notice or
+   circular for an event goes through again and the page updates): the stage or arrow it is in glows. Extract
+   carries its own loop: an unreadable answer is retried by a second model. */
+const FW = 640, NODE_W = 360, NODE_H = 70, GAP = 44, TOP = 10;
+const NX = (FW - NODE_W) / 2;
+const nodeY = (i: number) => TOP + i * (NODE_H + GAP);
+function FlowChart() {
+  const pathRef = useRef<SVGPathElement>(null);
+  const [dot, setDot] = useState<{ x: number; y: number } | null>(null); // where the flow is (not drawn)
+  const cx = FW / 2, last = STEPS.length - 1;
+  const bottom = nodeY(last) + NODE_H, rightX = NX + NODE_W;
+  // Down the middle from Ingest to Publish, out of Publish's right side, up the loop, into Ingest's right side.
+  const route = `M ${cx} ${nodeY(0) + NODE_H / 2} L ${cx} ${nodeY(last) + NODE_H / 2} L ${rightX} ${nodeY(last) + NODE_H / 2}`
+    + ` C ${rightX + 90} ${nodeY(last) + NODE_H / 2}, ${rightX + 90} ${nodeY(0) + NODE_H / 2}, ${rightX} ${nodeY(0) + NODE_H / 2} L ${cx} ${nodeY(0) + NODE_H / 2}`;
+  useEffect(() => {
+    if (reducedMotion()) return;
+    const path = pathRef.current;
+    if (!path) return;
+    const len = path.getTotalLength();
+    let raf = 0;
+    const start = performance.now();
+    const frame = (now: number) => {
+      const p = ((now - start) % 11000) / 11000;
+      const pt = path.getPointAtLength(p * len);
+      setDot({ x: pt.x, y: pt.y });
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  const onCentre = !!dot && Math.abs(dot.x - cx) < 1;
+  const active = onCentre ? STEPS.findIndex((_, i) => dot!.y >= nodeY(i) && dot!.y <= nodeY(i) + NODE_H) : -1;
+  // The arrow the flow is passing through glows: a link between two stages, or the update loop.
+  const linkOn = onCentre ? STEPS.findIndex((_, i) => i < last && dot!.y > nodeY(i) + NODE_H && dot!.y < nodeY(i + 1)) : -1;
+  const loopOn = !!dot && dot.x > rightX + 1;
+  const ext = 2; // Extract
+  return (
+    <FlowFigure>
+      <svg viewBox={`0 0 ${FW} ${bottom + 12}`} role="img"
+        aria-label={`How it works: ${STEPS.map(([, n, d]) => `${n}, ${d}`).join(' Then ')} New notices and circulars go through again and update the page; an unreadable extraction is retried by a second model.`}>
+        <path ref={pathRef} d={route} fill="none" stroke="none" />
+        {STEPS.slice(0, -1).map((_, i) => (
+          <g key={i}>
+            <line className={`link${i === linkOn ? ' on' : ''}`} x1={cx} x2={cx} y1={nodeY(i) + NODE_H} y2={nodeY(i + 1) - 6} />
+            <path className={`arrow${i === linkOn ? ' on' : ''}`} d={`M ${cx - 4} ${nodeY(i + 1) - 8} L ${cx + 4} ${nodeY(i + 1) - 8} L ${cx} ${nodeY(i + 1) - 1} Z`} />
+          </g>
+        ))}
+        {/* update loop: Publish back to Ingest */}
+        <path className={`loop${loopOn ? ' on' : ''}`} d={`M ${rightX} ${nodeY(last) + NODE_H / 2} C ${rightX + 90} ${nodeY(last) + NODE_H / 2}, ${rightX + 90} ${nodeY(0) + NODE_H / 2}, ${rightX + 6} ${nodeY(0) + NODE_H / 2}`} />
+        <path className={`arrow${loopOn ? ' on' : ''}`} d={`M ${rightX + 9} ${nodeY(0) + NODE_H / 2 - 4} L ${rightX + 9} ${nodeY(0) + NODE_H / 2 + 4} L ${rightX + 1} ${nodeY(0) + NODE_H / 2} Z`} />
+        <text className="loop-label" x={rightX + 74} y={(nodeY(0) + bottom) / 2 - 8} textAnchor="start">new notices</text>
+        <text className="loop-label" x={rightX + 74} y={(nodeY(0) + bottom) / 2 + 8} textAnchor="start">and circulars</text>
+        {/* retry loop on Extract */}
+        <path className="loop" d={`M ${NX} ${nodeY(ext) + 18} C ${NX - 60} ${nodeY(ext) + 8}, ${NX - 60} ${nodeY(ext) + NODE_H - 8}, ${NX - 6} ${nodeY(ext) + NODE_H - 18}`} />
+        <path className="arrow" d={`M ${NX - 9} ${nodeY(ext) + NODE_H - 22} L ${NX - 9} ${nodeY(ext) + NODE_H - 14} L ${NX - 1} ${nodeY(ext) + NODE_H - 18} Z`} />
+        <text className="loop-label" x={NX - 58} y={nodeY(ext) + NODE_H / 2 - 4} textAnchor="end">retried by a</text>
+        <text className="loop-label" x={NX - 58} y={nodeY(ext) + NODE_H / 2 + 12} textAnchor="end">second model</text>
+        {STEPS.map(([n, name, desc], i) => (
+          <g key={n} className={`node${i === active ? ' on' : ''}`}>
+            <rect x={NX} y={nodeY(i)} width={NODE_W} height={NODE_H} rx={14} />
+            <text className="n" x={NX + 18} y={nodeY(i) + 24}>{n}</text>
+            <text className="name" x={NX + 46} y={nodeY(i) + 26}>{name}</text>
+            <text className="desc" x={NX + 18} y={nodeY(i) + 50}>{desc}</text>
+          </g>
+        ))}
+      </svg>
+    </FlowFigure>
+  );
+}
+
+/* What it does: features listed on the left, the current one shown on the right with a preview; it
+   advances every few seconds (paused on hover). Chosen 2026-11-12 over a card deck, an expanding row and a
+   peek carousel. */
+const DEAL_MS = 4500;
+function useDeal(paused: boolean) {
+  const [top, setTop] = useState(0);
+  const t = useTick(DEAL_MS, paused);
+  useEffect(() => { if (t > 0) setTop(x => (x + 1) % FEATURES.length); }, [t]);
+  return [top, setTop] as const;
+}
+const featureHead = (
+  <Stack $gap={14} style={{ alignItems: 'center' }}>
+    <H2>One page per event. A source on every value.</H2>
+    <Muted $size={15} style={{ maxWidth: 520 }}>
+      Every notice and circular about an event, read, linked and kept in one record you can search, open and cite.
+    </Muted>
+  </Stack>
+);
+/* What each feature looks like, with real data: GRB 260924A (canonical 811905208) as stored on
+   2026-11-12, and the live circular feed. The Ask Evren answer is written from GCN 45740 and labelled as
+   an example, not shown as a live answer. */
+function FeaturePreview({ label }: { label: string }) {
+  const latest = useLatest();
+  if (label === 'EVENT PAGES') return (
+    <PreviewBox>
+      <div className="facts">
+        <div><small>EVENT</small><b>GRB 260924A</b></div>
+        <div><small>TRIGGER</small><b>2026-09-24 01:13:23 UTC</b></div>
+        <div><small>BEST POSITION · SWIFT-XRT, GCN 45715</small><b>RA 133.7628° Dec +12.0433° ±2.1″</b></div>
+        <div><small>REDSHIFT · GCN 45740</small><b>z = 3.51</b></div>
+      </div>
+      <div className="note">29 circulars · 10 notices · every value links to its source</div>
+    </PreviewBox>
+  );
+  if (label === 'VALUES AS DATA') return (
+    <PreviewBox>
+      <table>
+        <thead><tr><th>Band</th><th>Magnitude</th><th>Time</th><th>Telescope</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>white</td><td>14.68 ± 0.02</td><td>T+158 s</td><td>Swift/UVOT</td><td>GCN 45735</td></tr>
+          <tr><td>u</td><td>17.33 ± 0.24</td><td>T+334 s</td><td>Swift/UVOT</td><td>GCN 45735</td></tr>
+          <tr><td>b</td><td>15.71 ± 0.03</td><td>T+3637 s</td><td>Swift/UVOT</td><td>GCN 45735</td></tr>
+        </tbody>
+      </table>
+      <div className="quote">“white 158 308 147 14.68 +/- 0.02”, the line each value is read from</div>
+    </PreviewBox>
+  );
+  if (label === 'COUNTERPARTS') return (
+    <PreviewBox>
+      <svg viewBox="0 0 520 150" role="img" aria-label="GRB 260924A localisation narrowing from the Fermi GBM circle to the Swift-XRT position and the optical afterglow">
+        <circle cx={150} cy={75} r={66} fill="none" stroke="rgba(255, 107, 107, 0.6)" strokeDasharray="4 4" />
+        <circle cx={150} cy={75} r={9} fill="none" stroke="var(--starithm-nebula-teal)" />
+        <circle cx={150} cy={75} r={2.5} fill="var(--accent-text)" />
+        <line x1={150} y1={75} x2={240} y2={75} stroke="rgba(231, 223, 221, 0.2)" />
+        <text x={248} y={42}>Fermi GBM · 1.6° (T+9 min)</text>
+        <text x={248} y={79}>Swift-XRT · 2.1″ (GCN 45715)</text>
+        <text x={248} y={116}>optical afterglow (GCN 45717)</text>
+        <circle cx={240} cy={38} r={3} fill="rgba(255, 107, 107, 0.8)" />
+        <circle cx={240} cy={75} r={3} fill="var(--starithm-nebula-teal)" />
+        <circle cx={240} cy={112} r={3} fill="var(--accent-text)" />
+      </svg>
+      <div className="note">GRB 260924A: the error region narrowing as reports arrive (not to scale)</div>
+    </PreviewBox>
+  );
+  if (label === 'LIVE') return (
+    <PreviewBox>
+      <div className="live">
+        {(Array.isArray(latest) ? latest : []).slice(0, 4).map(k => (
+          <a key={k.alertKey} href={k.canonicalId ? `/novatrace/events/${encodeURIComponent(k.canonicalId)}` : '/novatrace/events'}>
+            <TickerDot $color={eventColor(k.event)} />
+            <span className="what">{k.label} · {k.what}</span>
+            <span className="ago">{ago(k.date)}</span>
+          </a>
+        ))}
+        {latest === null && <span className="note">Loading the latest circulars…</span>}
+        {latest === 'failed' && <span className="note">The latest circulars are on the <a href="/novatrace/events" style={{ display: 'inline', color: 'var(--accent-text)' }}>events page →</a></span>}
+      </div>
+    </PreviewBox>
+  );
+  return (
+    <PreviewBox>
+      <div className="q">What redshift was measured for GRB 260924A?</div>
+      <div className="a">
+        A spectroscopic redshift of z = 3.51 ± 0.10 was measured with the CAHA 2.2 m telescope.<span className="cite">GCN 45740</span>
+      </div>
+      <div className="note">Example answer, written from GCN 45740</div>
+    </PreviewBox>
+  );
+}
+
+function FeatureTabs() {
+  const [hold, setHold] = useState(false);
+  const [top, setTop] = useDeal(hold);
+  const f = FEATURES[top];
+  return (
+    <DeckRow>
+      {featureHead}
+      <TabsRow onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}>
+        <TabList role="tablist" aria-label="What it does">
+          {FEATURES.map((x, i) => (
+            <TabItem key={x.label} $on={i === top} role="tab" aria-selected={i === top} onClick={() => setTop(i)}>
+              <Kicker $color={x.color}>{x.label}</Kicker>
+              <span className="t">{x.title}</span>
+              <TabProgress key={`${i}-${top}`} $on={i === top} $ms={DEAL_MS} $paused={hold} />
+            </TabItem>
+          ))}
+        </TabList>
+        <ShowPanel as={f.href ? 'a' : 'div'} href={f.href} role="tabpanel">
+          <Stack $gap={14}>
+            <Kicker $color={f.color}>{f.label}</Kicker>
+            <DeckTitle style={{ fontSize: 30 }}>{f.title}</DeckTitle>
+          </Stack>
+          <Preview><FeaturePreview label={f.label} /></Preview>
+          <Stack $gap={12}>
+            <DeckBody>{f.body}</DeckBody>
+            {f.cta && <Muted $size={13} style={{ color: 'var(--accent-text)' }}>{f.cta}</Muted>}
+          </Stack>
+        </ShowPanel>
+      </TabsRow>
+    </DeckRow>
+  );
+}
+
+
+/* A grid graph drawn by one dot: it traces a neon line through the four values, and as it reaches each one
+   a stem drops to the baseline so the value still reads on its own (they are separate measurements, not a
+   series). The axis starts at 0 so heights compare honestly. Drawn once, when the block scrolls into view. */
+const GW = 1100, GH = 300, PAD_L = 44, PAD_B = 34, PAD_T = 34;
+const DRAW_MS = 2600;
+function AccuracyGraph() {
+  const ref = useRef<HTMLElement>(null);
+  const lineRef = useRef<SVGPathElement>(null);
+  const [p, setP] = useState(reducedMotion() ? 1 : 0);
+  const [go, setGo] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || p >= 1) return;
+    if (typeof IntersectionObserver === 'undefined') { setP(1); return; }
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { setGo(true); io.disconnect(); } }, { threshold: 0.35 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!go) return;
+    let raf = 0;
+    const start = performance.now();
+    const frame = (now: number) => { const x = Math.min(1, (now - start) / DRAW_MS); setP(x); if (x < 1) raf = requestAnimationFrame(frame); };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [go]);
+  const plotH = GH - PAD_B - PAD_T, plotW = GW - PAD_L;
+  const y = (v: number) => PAD_T + plotH * (1 - v / 100);
+  const slot = plotW / ACCURACY.length;
+  const pts = ACCURACY.map((a, i) => ({ ...a, x: PAD_L + slot * (i + 0.5), y: y(a.value) }));
+  const d = pts.map((q, i) => `${i ? 'L' : 'M'} ${q.x} ${q.y}`).join(' ');
+  // Share of the line's length at which the dot reaches each point.
+  const seg = pts.slice(1).map((q, i) => Math.hypot(q.x - pts[i].x, q.y - pts[i].y));
+  const total = seg.reduce((n, x) => n + x, 0);
+  const at = pts.map((_, i) => seg.slice(0, i).reduce((n, x) => n + x, 0) / total);
+  const len = lineRef.current?.getTotalLength() ?? total;
+  const dot = lineRef.current && p > 0 && p < 1 ? lineRef.current.getPointAtLength(p * len) : null;
+  return (
+    <Graph ref={ref as React.RefObject<HTMLElement>}>
+      <svg viewBox={`0 0 ${GW} ${GH}`} role="img"
+        aria-label={ACCURACY.map(a => `${a.label}: ${a.value.toFixed(1)}%`).join('; ')}>
+        <g className="grid">
+          {[0, 20, 40, 60, 80, 100].map(v => (
+            <g key={v}>
+              <line x1={PAD_L} x2={GW} y1={y(v)} y2={y(v)} className={v === 0 ? 'base' : undefined} />
+              <text className="tick" x={PAD_L - 10} y={y(v) + 4} textAnchor="end">{v}%</text>
+            </g>
+          ))}
+          {pts.map((_, i) => <line key={i} x1={PAD_L + slot * (i + 1)} x2={PAD_L + slot * (i + 1)} y1={PAD_T} y2={y(0)} />)}
+        </g>
+        <path ref={lineRef} className="trace" d={d} style={{ strokeDasharray: total, strokeDashoffset: total * (1 - p) }} />
+        {pts.map((q, i) => {
+          const reached = p >= at[i] - 1e-6;
+          return (
+            <g key={q.label} className={`pt${reached ? ' on' : ''}`}>
+              <line className={`stem${q.muted ? ' muted' : ''}`} x1={q.x} x2={q.x} y1={q.y} y2={y(0)} />
+              <circle className={`mark${q.muted ? ' muted' : ''}`} cx={q.x} cy={q.y} r={6} />
+              <text className={`val${q.muted ? ' muted' : ''}`} x={q.x} y={q.y - 16} textAnchor="middle">{q.value.toFixed(1)}%</text>
+              <text className="xlab" x={q.x} y={GH - 10} textAnchor="middle">{q.short}</text>
+            </g>
+          );
+        })}
+        {dot && <circle className="pen" cx={dot.x} cy={dot.y} r={7} />}
+      </svg>
+      <GraphNotes>
+        {ACCURACY.map(a => <li key={a.label}><b>{a.short}</b>{a.note}</li>)}
+      </GraphNotes>
+    </Graph>
+  );
+}
 
 /* Clerk OAuth strategies — these three are what the privacy policy documents and
    what the Clerk instance is configured for. LinkedIn is the OIDC variant on v6. */
@@ -81,53 +528,12 @@ const PROVIDERS = [
     ),
   },
 ];
-
 export function Homepage() {
   const { signIn } = useSignIn();
   const { isSignedIn } = useAuth();
   const { openSignIn } = useClerk();
   const [busy, setBusy] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
-
-  /* The demo clip sits well below the fold. Don't let it compete with the hero for
-     bandwidth — only attach the <source> once it's near the viewport. Until then the
-     poster (the screenshot) is all that has been fetched. */
-  const demoRef = useRef<HTMLVideoElement>(null);
-  const [demoVisible, setDemoVisible] = useState(false);
-
-  useEffect(() => {
-    const el = demoRef.current;
-    if (!el || demoVisible) return;
-    if (typeof IntersectionObserver === 'undefined') {
-      setDemoVisible(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      entries => {
-        if (entries.some(e => e.isIntersecting)) {
-          setDemoVisible(true);
-          io.disconnect();
-        }
-      },
-      { rootMargin: '300px' },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [demoVisible]);
-
-  /* Attaching <source> after mount doesn't restart the element on its own, and the
-     autoplay attribute is only honoured on the initial load in some browsers — so
-     kick playback off explicitly once the source is in. A rejected play() just means
-     the browser declined autoplay; the poster stays up, which is the intended
-     fallback. */
-  useEffect(() => {
-    if (!demoVisible) return;
-    const el = demoRef.current;
-    if (!el) return;
-    el.load();
-    el.play().catch(() => {});
-  }, [demoVisible]);
 
   const openModal = () => {
     saveReturnUrl();
@@ -166,234 +572,163 @@ export function Homepage() {
 
   return (
     <Page>
-      <Shell>
-        <Nav>
-          <Brand href="/">
-            <img src="/logo_without_name.png" alt="Starithm" width={32} height={32} />
-            <span>STARITHM</span>
-          </Brand>
-          <NavLinks>
-            <a href="/novatrace/events">NovaTrace</a>
-            <a href="/blog">Blog</a>
-            <a href="/blog/roadmap">Roadmap</a>
-            {isSignedIn ? (
-              <UserButton />
-            ) : (
-              <NavSignIn onClick={openModal}>Sign in</NavSignIn>
-            )}
-          </NavLinks>
-        </Nav>
+      <Header>
+        <Wrap>
+          <NavRow>
+            <Brand href="/">
+              <img src="/logo_without_name.png" alt="" width={23} height={23} />
+              <span>STARITHM</span>
+            </Brand>
+            <NavLinks aria-label="Main">
+              <a href="/novatrace/events" className="hide-sm">NovaTrace</a>
+              <a href={ASK_URL}>{ASK_ASSISTANT}</a>
+              <a href="/blog" className="hide-sm">Blog</a>
+              <a href="/blog/roadmap" className="hide-sm">Roadmap</a>
+              {isSignedIn ? <UserButton /> : <NavButton type="button" onClick={openModal}>Sign in</NavButton>}
+            </NavLinks>
+          </NavRow>
+        </Wrap>
+      </Header>
 
-        <HeroGrid>
-          <div>
-            <HeroKicker>AN OPERATING SYSTEM FOR OBSERVATIONAL ASTRONOMY</HeroKicker>
-            <HeroTitle>
-              Astronomy&rsquo;s <em>memory</em> layer.
-            </HeroTitle>
-            <HeroLede>
-              A transient is announced in seconds and understood over months. Starithm holds the
-              whole arc, machine notice &rarr; final measurement, as one structured, versioned
-              record you can open, cite and follow.
-            </HeroLede>
-            <HeroActions>
-              <PrimaryCta href="/novatrace/events">Open a live event</PrimaryCta>
-              {!isSignedIn && <SecondaryCta onClick={openModal}>Sign in</SecondaryCta>}
-            </HeroActions>
-          </div>
+      <Hero>
+        <HeroSky />
+        <Wrap>
+          <HeroRow>
+            <HeroCopy>
+              <Stack $gap={16}>
+                <Kicker>An operating system for observational astronomy</Kicker>
+                <H1>Astronomy&rsquo;s <em>memory</em> layer.</H1>
+                <Lede>
+                  A transient is announced in seconds and understood over months. Starithm holds the whole
+                  arc, machine notice &rarr; final measurement, as one structured record you can open, cite and follow.
+                </Lede>
+              </Stack>
+              <Stack $gap={12} style={{ maxWidth: 563 }}>
+                <AskBox id="ask" icon placeholder={`${ASK_ASSISTANT}: what redshift was measured for GRB 221009A?`} />
+                <Chips>{ASK_EXAMPLES.map(([q, label]) => <a key={q} href={askHref(q)}>{label}</a>)}</Chips>
+              </Stack>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                <PrimaryButton href="/novatrace/events">Open NovaTrace <span aria-hidden="true">→</span></PrimaryButton>
+                {!isSignedIn && <GhostButton href="#signin">Join early</GhostButton>}
+              </div>
+              <Muted $size={11} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                <LiveDot />Live · new circulars are read within minutes of publication
+              </Muted>
+            </HeroCopy>
+            <CardSlot><HeroCard /></CardSlot>
+          </HeroRow>
+        </Wrap>
+      </Hero>
 
-          <EventCard>
-            <EventHead>
-              <EventId>GRB 260411B</EventId>
-              <Significance>
-                <span />
-                SIGNIFICANCE HIGH
-              </Significance>
-            </EventHead>
-            <EventBlurb>
-              Long GRB with a confirmed optical counterpart at z = 1.24, detected within 3 s by two
-              instruments.
-            </EventBlurb>
-            <Timeline>
-              <TimelineRow>
-                <span>T+0.0s</span><span>Fermi GBM · notice</span><Tag $color={TYPE_GRB}>grb</Tag>
-              </TimelineRow>
-              <TimelineRow>
-                <span>T+2.9s</span><span>Swift BAT GUANO · notice</span><Tag $color={TYPE_GRB}>grb</Tag>
-              </TimelineRow>
-              <TimelineRow $highlight>
-                <span>T+18m</span><span>GCN 44312 · redshift z = 1.24</span><Tag $color={VIOLET_D}>extracted</Tag>
-              </TimelineRow>
-              <TimelineRow>
-                <span>T+4.1h</span><span>GCN 44361 · BALROG localisation</span><Tag $color={TYPE_POSITION}>position</Tag>
-              </TimelineRow>
-              <TimelineRow>
-                <span>T+2d</span><span>7 circulars · 3 telescopes</span><Tag $color={VIOLET_D}>discussed</Tag>
-              </TimelineRow>
-            </Timeline>
-            <EventFoot>Summary is model-generated · every field links to its source</EventFoot>
-          </EventCard>
-        </HeroGrid>
+      <JustIn />
 
-        <Section>
-          <Eyebrow>01 / THE PROBLEM</Eyebrow>
-          <SectionHeading $left>Every system in this pipeline is amnesiac.</SectionHeading>
-          <ProblemGrid>
-            {PROBLEMS.map(([title, body]) => (
-              <ProblemItem key={title}>
-                <strong>{title}</strong>
-                <div>{body}</div>
-              </ProblemItem>
-            ))}
-          </ProblemGrid>
-          <ProblemKicker>
-            While others lose context, <em>Starithm keeps the record.</em>
-          </ProblemKicker>
-        </Section>
+      <Problem />
 
-        <Section>
-          <Eyebrow>02 / WHAT IT DOES</Eyebrow>
-          <FeatureGrid>
-            {FEATURES.map(([title, body]) => (
-              <FeatureCard key={title}>
-                <FeatureTitle>{title}</FeatureTitle>
-                <FeatureBody>{body}</FeatureBody>
-              </FeatureCard>
-            ))}
-          </FeatureGrid>
-        </Section>
+      <Section>
+        <Wrap>
+          <FeatureTabs />
+        </Wrap>
+      </Section>
 
-        <Section>
-          <Eyebrow>03 / HOW IT WORKS</Eyebrow>
-          <SectionHeading $left>Alert to record, without a human in the loop.</SectionHeading>
-          <StepRail />
-          <StepGrid>
-            {STEPS.map(([no, name, body], i) => {
-              /* Publish is the terminal step — accented so the pipeline resolves. */
-              const accent = i === STEPS.length - 1;
-              return (
-                <Step key={no} $accent={accent}>
-                  <StepNo $accent={accent}>{no}</StepNo>
-                  <StepName>{name}</StepName>
-                  <StepBody $accent={accent}>{body}</StepBody>
-                </Step>
-              );
-            })}
-          </StepGrid>
-        </Section>
+      <Section $alt>
+        <Wrap>
+          <Stack $gap={36}>
+            <HeadRow>
+              <H2>Measured, not claimed.</H2>
+              <GhostButton href="/blog/how-accurate-is-starithm-extraction">How we measured →</GhostButton>
+            </HeadRow>
+            <AccuracyGraph />
+          </Stack>
+        </Wrap>
+      </Section>
 
-        <Section>
-          <ShotHead>
-            <SectionHeading $left style={{ margin: 0 }}>See it on a real week of sky.</SectionHeading>
-            <TextLink href="/novatrace/events">Open NovaTrace →</TextLink>
-          </ShotHead>
-          <Shot>
-            {/* The poster is the screenshot, so this renders identically before the
-                clip loads — and stays a still image if /novatrace-demo.mp4 is absent
-                or the browser blocks autoplay. muted + playsInline are both required
-                or mobile Safari/Chrome refuse to autoplay at all. */}
-            <video
-              poster="/novatrace-screenshot.png"
-              width={1800}
-              height={980}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload={demoVisible ? 'auto' : 'none'}
-              ref={demoRef}
-              aria-label="NovaTrace events dashboard showing the sky map and an event detail panel"
-            >
-              {demoVisible && <source src="/novatrace-demo.mp4" type="video/mp4" />}
-            </video>
-          </Shot>
-        </Section>
-      </Shell>
+      <Section>
+        <Wrap>
+          <Stack $gap={32}>
+            <H2>From alert to event page.</H2>
+            <FlowChart />
+          </Stack>
+        </Wrap>
+      </Section>
 
-      <SignInSection>
-        <SectionHeading>Read anything. Sign in to weigh in.</SectionHeading>
-        <SignInLede>
-          The platform is open — no account, no waitlist. An account lets you join the discussion on
-          any event, so the reasoning around a record lives beside the record itself.
-        </SignInLede>
-        {isSignedIn ? (
-          <SignInNote>You&rsquo;re signed in — open any event to join the discussion.</SignInNote>
-        ) : (
-          <>
-            <ProviderGrid>
-              {PROVIDERS.map(p => (
-                <ProviderButton
-                  key={p.id}
-                  type="button"
-                  onClick={() => signInWith(p.id)}
-                  disabled={busy !== null}
-                  aria-label={`Sign in with ${p.label}`}
-                >
-                  {p.icon}
-                  {busy === p.id ? 'Redirecting…' : p.label}
-                </ProviderButton>
-              ))}
-            </ProviderGrid>
-            {authError && <SignInError role="alert">{authError}</SignInError>}
-            <SignInNote>Reading needs no account.</SignInNote>
-          </>
-        )}
-      </SignInSection>
+      <Section $alt id="signin">
+        <Wrap>
+          <SplitRow>
+            <Stack $gap={25}>
+              <Kicker>Join early</Kicker>
+              <H2 $size={36}>The record is being written now.</H2>
+              <Muted $size={15} style={{ maxWidth: 440 }}>
+                Every new event starts its page the moment the first notice lands. Sign in to add what you saw,
+                or correct what we got wrong, while the record is still taking shape.
+              </Muted>
+              {isSignedIn ? (
+                <Muted>You&rsquo;re signed in. Open any event to add an observation or a correction.</Muted>
+              ) : (
+                <>
+                  <Providers>
+                    {PROVIDERS.map(p => (
+                      <button key={p.id} type="button" onClick={() => signInWith(p.id)} disabled={busy !== null}
+                        aria-label={`Continue with ${p.label}`}>
+                        {p.icon}{busy === p.id ? 'Redirecting…' : `Continue with ${p.label}`}
+                      </button>
+                    ))}
+                  </Providers>
+                  {authError && <ErrorNote role="alert" $color={TYPE_GRB}>{authError}</ErrorNote>}
+                </>
+              )}
+              <Muted $size={11}>Read anything. Sign in to weigh in. Free.</Muted>
+            </Stack>
+            <div>
+              <FormCard aria-hidden="true">
+                <div><span>{HERO_EVENT.name}</span><span>Observations</span></div>
+                <div>
+                  <FormTitle>Add an observation or a correction</FormTitle>
+                  <FieldRow><FakeField>Telescope</FakeField><FakeField>Filter · magnitude</FakeField></FieldRow>
+                  <FakeField $tall>Source and a note</FakeField>
+                  <PrimaryButton as="span" style={{ alignSelf: 'flex-end', minHeight: 42, padding: '0 18px', fontSize: 12 }}>Sign in to post</PrimaryButton>
+                </div>
+              </FormCard>
+            </div>
+          </SplitRow>
+        </Wrap>
+      </Section>
 
-      <Shell>
-        <Section>
-          <DisclosureGrid>
-            <Eyebrow $accent>HOW TO READ THIS</Eyebrow>
-            <Disclosure>
-            Event summaries, extracted measurements and cross-match groups are produced by language
-            models and labelled as such throughout the product. They have not been reviewed by
-            professional astronomers. Treat them as a navigational index into the primary sources —
-            every field links back to the notice or circular it came from. Known limitations are
-              described on the <TextLink href="/blog/roadmap">roadmap</TextLink>.
-            </Disclosure>
-          </DisclosureGrid>
-        </Section>
+      <Closing>
+        <Wrap $narrow>
+          <H2 $size={36}>Built for astronomers.</H2>
+          <Contact style={{ marginTop: 0 }}>
+            <Muted $size={15}>
+              Values are extracted by language models, and each links to its circular. If you spot an error, have
+              observations or data to add, or want to help shape what we build, we&rsquo;d like to hear from you.
+            </Muted>
+            <div>
+              <GhostButton href="mailto:contact.starithm@gmail.com" aria-label="Email contact.starithm@gmail.com">Email</GhostButton>
+              <GhostButton href="https://www.linkedin.com/company/starithm" target="_blank" rel="noopener noreferrer">LinkedIn</GhostButton>
+            </div>
+          </Contact>
+        </Wrap>
+      </Closing>
 
-        <FooterBar>
+      <Footer>
+        <Wrap>
+          <Stack $gap={9}>
+            <Brand href="/"><img src="/logo_without_name.png" alt="" width={19} height={19} /><span>STARITHM</span></Brand>
+            <Muted $size={11}>Built on public GCN data. © {new Date().getFullYear()}</Muted>
+          </Stack>
           <FooterCols>
-            <FooterCol>
-              <span>Product</span>
-              <a href="/novatrace/events">NovaTrace</a>
-              <a href="/ears-to-the-universe">Ears to the Universe</a>
-              <a href="/novatrace/status">Status</a>
-            </FooterCol>
-            <FooterCol>
-              <span>Writing</span>
-              <a href="/blog">Blog</a>
-              <a href="/blog/roadmap">Roadmap</a>
-            </FooterCol>
-            <FooterCol>
+            <div><span>Product</span><a href="/novatrace/events">NovaTrace</a><a href="/ears-to-the-universe">Ears to the Universe</a><a href="/novatrace/status">Status</a></div>
+            <div><span>Writing</span><a href="/blog">Blog</a><a href="/blog/roadmap">Roadmap</a></div>
+            <div>
               <span>Contact</span>
-              <button type="button" onClick={() => setIsContactDialogOpen(true)}>Contact us</button>
-              {/* Platform names, not handles: @starithm_ai and @starithm.ai differ only by
-                  underscore vs dot and were indistinguishable at this size. aria-label keeps
-                  the handle available to screen readers and as a hover tooltip. */}
-              <a href="https://x.com/starithm_ai" target="_blank" rel="noopener noreferrer" aria-label="Starithm on X (@starithm_ai)" title="@starithm_ai">X</a>
-              <a href="https://www.instagram.com/starithm.ai/" target="_blank" rel="noopener noreferrer" aria-label="Starithm on Instagram (@starithm.ai)" title="@starithm.ai">Instagram</a>
+              <a href="mailto:contact.starithm@gmail.com">Email</a>
+              {/* Platform names, not handles: @starithm_ai and @starithm.ai differ only by underscore vs dot. */}
+              <a href="https://x.com/starithm_ai" target="_blank" rel="noopener noreferrer" aria-label="Starithm on X (@starithm_ai)">X</a>
+              <a href="https://www.instagram.com/starithm.ai/" target="_blank" rel="noopener noreferrer" aria-label="Starithm on Instagram (@starithm.ai)">Instagram</a>
               <a href="/privacy">Privacy</a>
-            </FooterCol>
+            </div>
           </FooterCols>
-          <FooterMark>
-            <div>STARITHM</div>
-            <div>Built on public GCN data. © {new Date().getFullYear()}</div>
-          </FooterMark>
-        </FooterBar>
-      </Shell>
-
-      <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-starithm-electric-violet">Contact Us</DialogTitle>
-          </DialogHeader>
-          <p style={{ fontSize: 14 }}>
-            <a href="mailto:contact.starithm@gmail.com">contact.starithm@gmail.com</a>
-          </p>
-        </DialogContent>
-      </Dialog>
+        </Wrap>
+      </Footer>
     </Page>
   );
 }

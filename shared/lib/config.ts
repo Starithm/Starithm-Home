@@ -25,6 +25,7 @@ export const API_ENDPOINTS = {
   eventDetails: (id: string) => `${API_BASE_URL}/api/events/${id}`,
   publicEvent: (id: string) => `${API_BASE_URL}/api/public/events/${id}`,
   publicEventList: `${API_BASE_URL}/api/public/events`,
+  publicLatest: `${API_BASE_URL}/api/public/latest`,
   publicSearch: (q: string) => `${API_BASE_URL}/api/public/search?q=${encodeURIComponent(q)}`,
   publicCirculars: (eventName: string) => `${API_BASE_URL}/api/public/circulars/${encodeURIComponent(eventName)}`,
   comments: (params: { canonicalId?: string; alertKey?: string }) => {
