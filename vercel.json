@@ -5,6 +5,7 @@
       "rewrites": [
       { "source": "/assets/(.*)", "destination": "/assets/$1" },
 
+
       { "source": "/feed.xml", "destination": "/api/feed" },
       { "source": "/sitemap.xml", "destination": "/api/sitemap?part=index" },
       { "source": "/sitemaps/events-recent.xml", "destination": "/api/sitemap?part=recent" },
