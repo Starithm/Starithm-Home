@@ -18,8 +18,11 @@
 //     -User / -Training), Amazon (Amzn-SearchBot / Amzn-User; "amazonbot" doesn't match them), xAI Grok,
 //     DeepSeek, DuckAssistBot, AI2 (AI2Bot, Ai2Bot-Dolma: open scientific corpora), Google-CloudVertexBot,
 //     Claude-Code.
+//   Added 2026-11-12: Google's user-triggered fetchers (Google-Read-Aloud, Google-Site-Verification,
+//     Google-Agent, Google-GeminiNotebook / the older Google-NotebookLM, Google-Pinpoint), Bing's link
+//     previews (BingPreview, MicrosoftPreview) and ProRataInc (Gist answer engine).
 export const BOT_REGEX =
-  /googlebot|googleother|google-extended|google-inspectiontool|storebot-google|bingbot|slurp|duckduckbot|baiduspider|yandex|facebookexternalhit|facebookcatalog|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|slack-imgproxy|discordbot|redditbot|cardyb|bsky|mastodon|pleroma|misskey|pinterest|tumblr|flipboard|embedly|iframely|skypeuripreview|vkshare|nuzzel|snapchat|viber|line-podcast|opengraph|metainspector|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-user|claude-web|claude-searchbot|anthropic-ai|perplexitybot|perplexity-user|youbot|ccbot|cohere-ai|diffbot|bytespider|applebot|ia_archiver|amazonbot|amzn-searchbot|amzn-user|brightbot|imagesiftbot|meta-externalagent|meta-webindexer|meta-externalfetcher|mistralai|xai-bot|xai-searchbot|deepseek|duckassistbot|ai2bot|google-cloudvertexbot|claude-code/i;
+  /googlebot|googleother|google-extended|google-inspectiontool|storebot-google|bingbot|slurp|duckduckbot|baiduspider|yandex|facebookexternalhit|facebookcatalog|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|slack-imgproxy|discordbot|redditbot|cardyb|bsky|mastodon|pleroma|misskey|pinterest|tumblr|flipboard|embedly|iframely|skypeuripreview|vkshare|nuzzel|snapchat|viber|line-podcast|opengraph|metainspector|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-user|claude-web|claude-searchbot|anthropic-ai|perplexitybot|perplexity-user|youbot|ccbot|cohere-ai|diffbot|bytespider|applebot|ia_archiver|amazonbot|amzn-searchbot|amzn-user|brightbot|imagesiftbot|meta-externalagent|meta-webindexer|meta-externalfetcher|mistralai|xai-bot|xai-searchbot|deepseek|duckassistbot|ai2bot|google-cloudvertexbot|google-read-aloud|google-site-verification|google-agent|google-gemininotebook|google-notebooklm|google-pinpoint|bingpreview|microsoftpreview|prorata|claude-code/i;
 
 // Diagnostic header so `curl -I` reveals what the edge function did, without fetching
 // the body. Values:
@@ -30,8 +33,14 @@ export const BOT_REGEX =
 //   spa          — normal user, served the SPA shell (expected)
 export const PRERENDER_HEADER = 'x-starithm-prerender';
 
+// Agents that browse with a plain Chrome user agent but sign requests with Web Bot Auth (RFC 9421) name
+// themselves in Signature-Agent: OpenAI's cloud browser ("https://chatgpt.com") and some Google-Agent
+// requests ("https://agent.bot.goog"). Unverified, like the user agent: serving a page needs no proof.
+const SIGNATURE_AGENTS = /^"?https:\/\/(chatgpt\.com|agent\.bot\.goog)\/?"?$/i;
+
 export function isBot(req: Request): boolean {
-  return BOT_REGEX.test(req.headers.get('user-agent') || '');
+  return BOT_REGEX.test(req.headers.get('user-agent') || '')
+    || SIGNATURE_AGENTS.test((req.headers.get('signature-agent') || '').trim());
 }
 
 // Vary: User-Agent is required because these routes serve DIFFERENT bodies per UA;
@@ -40,7 +49,7 @@ export function htmlResponse(body: string, prerenderState: string): Response {
   return new Response(body, {
     headers: {
       'content-type': 'text/html; charset=utf-8',
-      'vary': 'User-Agent',
+      'vary': 'User-Agent, Signature-Agent',
       [PRERENDER_HEADER]: prerenderState,
     },
   });
