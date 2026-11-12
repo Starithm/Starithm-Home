@@ -11,7 +11,7 @@ const VIOLET_D = 'var(--starithm-electric-violet-dark)';
 const LILAC = 'var(--accent-text)';
 const GOLD = 'var(--starithm-golden-yellow)';
 const PLATINUM = 'var(--foreground)';
-/* trial 2026-11-12: page background --surface-sunken (was --background) */
+/* The homepage ground: --surface-sunken, the darkest token (chosen 2026-11-12), so cards on --surface stand out. */
 const BLACK = 'var(--surface-sunken)';
 const PANEL = 'var(--surface)';
 const RAISED = 'var(--surface-raised)';
@@ -83,7 +83,7 @@ export const NavButton = styled.button`
 /* ── shared section pieces ── */
 /* Sections size to their content; only the hero is screen-height. */
 export const Section = styled.section<{ $alt?: boolean }>`
-  background: ${BLACK}; /* trial 2026-11-12: all-black page; was $alt ? PANEL : transparent */
+  background: ${BLACK}; /* one ground for every section; $alt no longer changes it */
   border-top: 1px solid ${line(0.07)};
   > div { padding-top: 67px; padding-bottom: 67px; }
   @media (max-width: 760px) { > div { padding-top: 49px; padding-bottom: 49px; } }
