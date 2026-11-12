@@ -76,12 +76,12 @@ const FEATURES: { label: string; color: string; title: string; body: string; hre
     body: 'Fermi, Swift, Einstein Probe, SVOM, LIGO/Virgo/KAGRA, IceCube, CHIME, MAXI and more, in one schema, updated as notices and circulars arrive.' },
 ];
 
-/* Accuracy against independent catalogues (blog: how-accurate-is-starithm-extraction, 2026-11-12). */
+/* Accuracy against independent catalogues (blog: how-accurate-is-starithm-extraction, 2026-11-12), lowest first. */
 const ACCURACY: { label: string; short: string; note: string; value: number; muted?: boolean }[] = [
-  { label: 'Redshift', short: 'Redshift', note: 'vs GRBweb · 327 of 346 bursts · Δz ≤ 0.01', value: 94.5 },
-  { label: 'T90', short: 'T90', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 92.2 },
-  { label: 'Fluence', short: 'Fluence', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 94.5 },
   { label: 'Redshift shown on the event page', short: 'Event-page z', note: 'redshift shown on the event page; telling a burst’s redshift from a host’s or a limit: work in progress', value: 86.0, muted: true },
+  { label: 'T90', short: 'T90', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 92.2 },
+  { label: 'Redshift', short: 'Redshift', note: 'vs GRBweb · 327 of 346 bursts · Δz ≤ 0.01', value: 94.5 },
+  { label: 'Fluence', short: 'Fluence', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 94.5 },
 ];
 
 const reducedMotion = () =>
