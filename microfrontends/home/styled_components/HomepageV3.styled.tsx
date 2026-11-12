@@ -108,7 +108,7 @@ export const LiveDot = styled.span<{ $size?: number; $still?: boolean }>`
 /* ── buttons ── */
 const btn = css`
   display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
-  font: inherit; font-size: 12px; border-radius: 11px; padding: 0 21px; min-height: 42px; cursor: pointer;
+  font: inherit; font-size: 12.5px; border-radius: 999px; padding: 0 20px; min-height: 40px; cursor: pointer;
   box-sizing: border-box;
 `;
 export const PrimaryButton = styled.a`
@@ -122,27 +122,27 @@ export const GhostButton = styled.a`
 
 /* ── hero ── */
 export const Hero = styled.section`
-  min-height: max(546px, min(90vh, 722px));
+  min-height: max(500px, min(80vh, 660px));
   display: flex; align-items: center;
   background: radial-gradient(1100px 600px at 78% 45%, rgba(141, 15, 245, 0.16), rgba(14, 11, 22, 0) 70%);
   @media (max-width: 760px) { min-height: 0; }
 `;
 export const HeroRow = styled.div`
-  display: flex; flex-wrap: wrap; gap: 56px; align-items: center;
-  padding-top: 63px; padding-bottom: 63px;
-  @media (max-width: 760px) { gap: 35px; padding-top: 35px; padding-bottom: 42px; }
+  display: flex; flex-wrap: wrap; gap: 48px; align-items: center;
+  padding-top: 48px; padding-bottom: 56px;
+  @media (max-width: 760px) { gap: 32px; padding-top: 32px; padding-bottom: 40px; }
 `;
 export const HeroCopy = styled.div`
-  flex: 1 1 493px; min-width: 0; display: flex; flex-direction: column; gap: 28px;
+  flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 22px;
 `;
+/* Sized as the previous homepage's hero title (clamp to 66 px, light weight). */
 export const H1 = styled.h1`
   ${serif};
-  margin: 0; font-size: 67px; line-height: 0.98; letter-spacing: -0.025em;
+  margin: 0; font-size: clamp(38px, 5.4vw, 62px); font-weight: 300; line-height: 1.02; letter-spacing: -0.02em;
   em { color: ${LILAC}; }
-  @media (max-width: 760px) { font-size: 42px; }
 `;
 export const Lede = styled.p`
-  margin: 0; max-width: 56ch; font-size: 13px; line-height: 1.75; color: ${line(0.7)};
+  margin: 0; max-width: 52ch; font-size: 13.5px; line-height: 1.8; color: ${line(0.66)};
 `;
 
 /* ── ask box ── */
@@ -151,19 +151,19 @@ export const AskForm = styled.form`
      scrolls on phones (body is the scroller there) and pushes the page out of view. */
   position: relative;
   display: flex; align-items: center; gap: 9px;
-  background: ${RAISED}; border: 1px solid rgba(154, 72, 255, 0.5); border-radius: 16px;
-  padding: 9px 9px 9px 19px; max-width: 634px; width: 100%; box-sizing: border-box; text-align: left;
+  background: ${RAISED}; border: 1px solid rgba(154, 72, 255, 0.5); border-radius: 14px;
+  padding: 6px 6px 6px 15px; max-width: 560px; width: 100%; box-sizing: border-box; text-align: left;
   &:focus-within { border-color: ${VIOLET_D}; box-shadow: 0 0 0 4px rgba(141, 15, 245, 0.22); }
   svg { flex: none; }
   input {
     flex: 1 1 auto; min-width: 0; background: transparent; border: 0; color: ${PLATINUM};
-    font: inherit; font-size: 13px; padding: 10px 0;
+    font: inherit; font-size: 12.5px; padding: 8px 0;
     &::placeholder { color: ${line(0.5)}; }
     &:focus { outline: none; }
   }
   button {
     flex: none; background: ${VIOLET}; color: var(--foreground); border: 0; font: inherit; font-weight: 600; font-size: 13px;
-    border-radius: 11px; padding: 0 19px; min-height: 40px; cursor: pointer;
+    border-radius: 10px; padding: 0 16px; min-height: 34px; cursor: pointer;
     &:hover { background: ${VIOLET_D}; }
   }
   @media (max-width: 520px) { padding-left: 12px; button { padding: 0 14px; } }
@@ -175,49 +175,49 @@ export const Chips = styled.div`
   display: flex; flex-wrap: wrap; gap: 7px;
   a {
     font-size: 11px; color: ${line(0.75)}; text-decoration: none; border: 1px solid ${line(0.14)};
-    border-radius: 879px; padding: 0 12px; min-height: 32px; display: inline-flex; align-items: center;
+    border-radius: 879px; padding: 0 11px; min-height: 28px; display: inline-flex; align-items: center;
   }
   a:hover { border-color: ${VIOLET_D}; color: ${PLATINUM}; }
 `;
 
 /* ── hero event card ── */
 export const CardSlot = styled.div`
-  flex: 1 1 422px; min-width: 0; display: flex; justify-content: center;
+  flex: 1 1 400px; min-width: 0; display: flex; justify-content: center;
 `;
 export const EventCard = styled.a`
-  width: 100%; max-width: 540px; display: block; text-decoration: none; color: ${PLATINUM} !important;
-  background: linear-gradient(180deg, ${RAISED}, ${PANEL}); border: 1px solid ${line(0.14)}; border-radius: 19px;
-  overflow: hidden; box-shadow: 0 40px 120px rgba(141, 15, 245, 0.25);
+  width: 100%; max-width: 470px; display: block; text-decoration: none; color: ${PLATINUM} !important;
+  background: linear-gradient(180deg, ${RAISED}, ${PANEL}); border: 1px solid ${line(0.14)}; border-radius: 14px;
+  overflow: hidden; box-shadow: 0 30px 90px rgba(141, 15, 245, 0.25);
   animation: ${floaty} 6s ease-in-out infinite; ${still}
   &:hover { border-color: rgba(154, 72, 255, 0.5); }
 `;
 export const CardHead = styled.div`
-  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 11px; padding: 19px 23px;
-  > span:first-child { display: flex; align-items: center; gap: 11px; font-weight: 600; white-space: nowrap; font-size: 18px; }
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 18px;
+  > span:first-child { display: flex; align-items: center; gap: 9px; font-weight: 600; white-space: nowrap; font-size: 13.5px; }
   > span:last-child { font-size: 10px; letter-spacing: 0.14em; white-space: nowrap; color: ${GOLD}; }
 `;
 export const CardStats = styled.div`
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid ${line(0.08)}; border-bottom: 1px solid ${line(0.08)};
-  > div { padding: 16px 23px; display: flex; flex-direction: column; gap: 2px; }
+  > div { padding: 11px 18px; display: flex; flex-direction: column; gap: 1px; }
   > div + div { border-left: 1px solid ${line(0.08)}; }
-  small { font-size: 10px; color: ${line(0.6)}; }
-  strong { ${serif}; font-size: 25px; line-height: 1.1; }
-  @media (max-width: 520px) { > div { padding: 12px 14px; } strong { font-size: 23px; } }
+  small { font-size: 9.5px; color: ${line(0.6)}; }
+  strong { ${serif}; font-size: 21px; line-height: 1.1; }
+  @media (max-width: 520px) { > div { padding: 10px 12px; } strong { font-size: 19px; } }
 `;
 export const CardRows = styled.div`
-  display: flex; flex-direction: column; font-size: 12px; padding: 7px 0;
+  display: flex; flex-direction: column; font-size: 11.5px; padding: 5px 0;
 `;
 export const CardRow = styled.div<{ $active?: boolean }>`
-  display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 11px; padding: 10px 23px;
+  display: grid; grid-template-columns: 50px minmax(0, 1fr) auto; gap: 10px; padding: 8px 18px;
   transition: background 0.4s;
   background: ${p => (p.$active ? 'rgba(141, 15, 245, 0.16)' : 'transparent')};
   > span:first-child { color: ${line(0.6)}; }
-  @media (max-width: 520px) { padding: 9px 14px; grid-template-columns: 46px minmax(0, 1fr) auto; font-size: 12.5px; }
+  @media (max-width: 520px) { padding: 8px 12px; grid-template-columns: 44px minmax(0, 1fr) auto; }
 `;
 export const CardFoot = styled.div`
-  display: flex; justify-content: space-between; align-items: center; gap: 7px; padding: 14px 23px;
-  border-top: 1px solid ${line(0.08)}; font-size: 11px;
+  display: flex; justify-content: space-between; align-items: center; gap: 7px; padding: 11px 18px;
+  border-top: 1px solid ${line(0.08)}; font-size: 10.5px;
   > span:first-child { color: ${line(0.6)}; }
   > span:last-child { color: ${LILAC}; font-weight: 500; }
 `;

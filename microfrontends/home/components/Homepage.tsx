@@ -93,7 +93,7 @@ function HeroCard() {
   return (
     <EventCard href={`/novatrace/events/${HERO_EVENT.id}`} aria-label={`Open the ${HERO_EVENT.name} event page`}>
       <CardHead>
-        <span><LiveDot $size={8} $still />{HERO_EVENT.name}</span>
+        <span><LiveDot $size={7} $still />{HERO_EVENT.name}</span>
         <span>● SIGNIFICANCE HIGH</span>
       </CardHead>
       <CardStats>
@@ -185,10 +185,6 @@ function ProblemCarousel() {
     <Section $alt aria-roledescription="carousel" aria-label="The problem">
       <Wrap>
         <Stack>
-          <HeadRow style={{ alignItems: 'center' }}>
-            <Kicker>01 / The problem</Kicker>
-            <Muted $size={11}>{slide + 1} / {SLIDES.length}</Muted>
-          </HeadRow>
           <Stack $gap={19} style={{ minHeight: 211, justifyContent: 'center' }}>
             <Typed $accent={slide === SLIDES.length - 1} aria-live="polite">
               {s.text.slice(0, chars)}<Caret aria-hidden="true">|</Caret>
@@ -398,7 +394,6 @@ export function Homepage() {
         <Wrap>
           <Stack>
             <Stack $gap={12}>
-              <Kicker>02 / What it does</Kicker>
               <H2>One page per event. A source on every value.</H2>
             </Stack>
             <Bento>
@@ -442,7 +437,6 @@ export function Homepage() {
           <Stack $gap={49}>
             <HeadRow>
               <Stack $gap={12}>
-                <Kicker>03 / Accuracy</Kicker>
                 <H2>Measured, not claimed.</H2>
               </Stack>
               <GhostButton href="/blog/how-accurate-is-starithm-extraction">How we measured →</GhostButton>
@@ -461,7 +455,6 @@ export function Homepage() {
         <Wrap>
           <Stack>
             <Stack $gap={12}>
-              <Kicker>04 / How it works</Kicker>
               <H2>From alert to event page.</H2>
             </Stack>
             <StepList />
@@ -493,7 +486,7 @@ export function Homepage() {
         <Wrap>
           <SplitRow>
             <Stack $gap={25}>
-              <Kicker>05 / Join early</Kicker>
+              <Kicker>Join early</Kicker>
               <H2 $size={49}>The record is being written now.</H2>
               <Muted $size={15} style={{ maxWidth: 440 }}>
                 Every new event starts its page the moment the first notice lands. Sign in to add what you saw,
