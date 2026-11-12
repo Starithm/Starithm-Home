@@ -138,7 +138,7 @@ code {
   color: #374151;
   text-decoration: none;
   /* Stated rather than inherited — the homepage ships its own nav (see
-     HomepageV2.styled.tsx Brand/NavLinks) and is matched to these values. */
+     HomepageV3.styled.tsx Brand/NavLinks) and is matched to these values. */
   font-size: 1rem;
   font-weight: 500;
   transition: color 0.2s;
