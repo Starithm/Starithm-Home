@@ -91,7 +91,7 @@ function body(items: Latest[]): string {
     ${li('T90: Swift-BAT values agree with the Swift GRB table within 10% for 92.2% of bursts.')}
     ${li('Fluence (15–150 keV): Swift-BAT values agree with the Swift GRB table within 10% for 94.5% of bursts.')}
     ${li('The single redshift shown on an event page agrees for 86.0%; telling a burst’s redshift from a host galaxy’s or a limit is work in progress.')}
-  </ul><p><a href="${SITE}/blog/how-accurate-is-starithm-extraction">How we measured</a></p></section>
+  </ul><p><a href="${SITE}/blog/posts/how-accurate-is-starithm-extraction">How we measured</a></p></section>
   <section><h2>From alert to event page</h2><ol>
     ${li('Collect: GCN notices (Fermi, Swift, Einstein Probe, SVOM, LIGO/Virgo/KAGRA, IceCube, CHIME, MAXI), GCN Circulars since 1997 and ATels, as they are issued.')}
     ${li('Read: the values in each circular (magnitudes, limits, fluxes, durations, redshifts, positions), each with the sentence it came from. Example: z = 3.51 ± 0.10 for GRB 260924A from GCN 45740.')}
