@@ -374,23 +374,6 @@ export const GraphNotes = styled.ul`
 
 
 /* ── how it works: a vertical flow chart, one dot travelling through it and round the update loop ── */
-export const FlowFigure = styled.figure`
-  margin: 0 auto; width: 100%; max-width: 640px;
-  svg { display: block; width: 100%; height: auto; overflow: visible; }
-  .node rect { fill: ${PANEL}; stroke: ${line(0.14)}; stroke-width: 1; transition: fill 0.4s, stroke 0.4s; }
-  .node.on rect { fill: rgba(141, 15, 245, 0.08); stroke: rgba(154, 72, 255, 0.4); }
-  .node .n { fill: ${line(0.5)}; font-family: var(--font-mono); font-size: 11px; }
-  .node .name { fill: ${PLATINUM}; font-family: var(--font-mono); font-size: 16px; font-weight: 600; }
-  .node .desc { fill: ${line(0.68)}; font-family: var(--font-prose); font-size: 13px; }
-  .link { stroke: ${line(0.22)}; stroke-width: 1.5; fill: none; }
-  .loop { stroke: ${line(0.3)}; stroke-width: 1.5; fill: none; stroke-dasharray: 5 6; }
-  .loop-label { fill: ${line(0.6)}; font-family: var(--font-prose); font-size: 12px; }
-  .arrow { fill: ${line(0.4)}; }
-  .link, .loop, .arrow { transition: stroke 0.25s, fill 0.25s, filter 0.25s; }
-  .link.on, .loop.on { stroke: rgba(202, 144, 250, 0.7); stroke-width: 2; filter: drop-shadow(0 0 3px rgba(141, 15, 245, 0.5)); }
-  .loop.on { stroke-dasharray: none; }
-  .arrow.on { fill: rgba(202, 144, 250, 0.8); filter: drop-shadow(0 0 3px rgba(141, 15, 245, 0.5)); }
-`;
 
 
 /* ── the problem: three static blocks ── */
