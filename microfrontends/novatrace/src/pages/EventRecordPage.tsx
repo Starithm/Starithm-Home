@@ -14,7 +14,7 @@ import {
   MetaRow, SigPill, Kind, Headline, SubMeta,
   OriginNote,
   SectionHead, SectionNote, Card, Prose, SummarySplit,
-  FieldGrid, Field, FieldLabel, FieldValue, FieldHint,
+  PosSplit, FieldGrid, Field, FieldLabel, FieldValue, FieldHint,
   Muted,
   Row, Stack, Topic, Phase, PayloadWrap, PayloadTable,
   Tabs, Tab, CircCard, CircHead, CircTop, CircSummary, Chip, CircBody,
@@ -32,6 +32,7 @@ import { EventObservations } from '../components/EventObservations';
 import { EventLightCurve, type LightCurve } from '../components/EventLightCurve';
 import { EventBurstProperties } from '../components/EventBurstProperties';
 import { EventKeyFacts } from '../components/EventKeyFacts';
+import { SkyCutoutFigure } from '../components/SkyCutout';
 import { keyFacts, type Energetics } from '../utils/keyFacts';
 import { shownObservations, burstProperties, type CatalogValues, type ObservationRow } from '../utils/observations';
 import { swiftLinks } from '../utils/swift';
@@ -570,7 +571,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
             </SectionHead>
             <Card>
               {event.raDeg != null && event.decDeg != null ? (
-                <>
+                <PosSplit>
+                  <div style={{ minWidth: 0 }}>
                   <FieldGrid>
                     <Field>
                       <FieldLabel>RA</FieldLabel>
@@ -630,7 +632,10 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
                       </TableWrap>
                     </LocBlock>
                   )}
-                </>
+                  </div>
+                  {/* the sky at the position, when it is well localised (lib/skyCutouts.ts, shared with Ask Evren) */}
+                  <SkyCutoutFigure ra={event.raDeg} dec={event.decDeg} errDeg={err} width={260} />
+                </PosSplit>
               ) : <Empty>No position reported.</Empty>}
 
               {swift && (

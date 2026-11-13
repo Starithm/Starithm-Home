@@ -524,6 +524,12 @@ export const LocStar = styled.span`
   margin-right: 6px;
 `;
 
+/* Position: values and localisations on the left, the sky image (when there is one) on the right. */
+export const PosSplit = styled.div`
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: start;
+  @media (max-width: 760px) { grid-template-columns: minmax(0, 1fr); }
+`;
+
 export const FieldGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
