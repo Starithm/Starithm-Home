@@ -11,6 +11,7 @@ import {
 import { kindColor } from '@shared/utils/eventColors';
 import { getTimeAgo } from '../utils/duration';
 import { hasPosition, posErrorRadius } from '../utils/sky';
+import { useSkyCutout } from '@novatrace/lib/skyCutouts';
 
 /* Left-column context. An event question gets a fact sheet (and real images when they exist);
  * a topic question gets the events behind its sources. Missing fields say "not reported":
@@ -119,57 +120,18 @@ function useRecordFigures(canonicalId: string): Figure[] {
   return figs;
 }
 
-/* Galactic latitude (degrees) of an ICRS position, from the north Galactic pole at 192.85948°, +27.12825°. */
-function galacticLat(ra: number, dec: number): number {
-  const r = Math.PI / 180, dG = 27.12825 * r;
-  return Math.asin(Math.sin(dec * r) * Math.sin(dG) + Math.cos(dec * r) * Math.cos(dG) * Math.cos((ra - 192.85948) * r)) / r;
-}
-
-/* Sky cutouts in the order to try: one is shown, and a failed one gives way to the next.
-   - Legacy Surveys DR10 (deep, colour) only where it has data: outside its footprint it returns a blank or
-     one-band image rather than an error, so the choice is by position (the plane and the far south excluded).
-   - NASA SkyView DSS2 red: the whole sky, black and white.
-   - CDS hips2fits Pan-STARRS: the original source. Down since 2026-11-12 (CDS cybersecurity incident,
-     cds.unistra.fr); kept last so it is used again if the others fail once CDS is back. */
-function skyCutouts(ra: number, dec: number, fov: number): Figure[] {
-  const at = `${ra.toFixed(4)}°, ${dec >= 0 ? '+' : ''}${dec.toFixed(4)}°`;
-  const out: Figure[] = [];
-  if (dec >= -65 && Math.abs(galacticLat(ra, dec)) >= 20) {
-    out.push({
-      key: 'sky-legacy',
-      src: `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=ls-dr10&pixscale=${((fov * 3600) / 400).toFixed(3)}&size=400`,
-      caption: `Legacy Surveys DR10 · ${at}`,
-    });
-  }
-  out.push({
-    key: 'sky-dss',
-    src: `https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Survey=DSS2+Red&Position=${ra},${dec}&Size=${fov}&Pixels=400&Return=JPEG`,
-    caption: `DSS2 red · NASA SkyView · ${at}`,
-  });
-  out.push({
-    key: 'sky-hips',
-    src: `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS%2FP%2FPanSTARRS%2FDR1%2Fcolor-z-zg-g&width=400&height=300&fov=${fov}&projection=TAN&coordsys=icrs&ra=${ra}&dec=${dec}&format=jpg`,
-    caption: `Pan-STARRS · ${at}`,
-  });
-  return out;
-}
-
 function Images({ event }: { event: AskEventFacts }) {
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const record = useRecordFigures(event.canonicalId);
   const imgs: Figure[] = [];
-  let skyFailed = false;
+  // A sky cutout only for a well-localised, real position; not for a GW "position" (the centre of a
+  // ~1000 deg² region). Which survey, and the fallback when one fails, are shared with the event page.
+  const sky = useSkyCutout(realPosition(event) && event.kind !== 'gw' ? event.raDeg : null, event.decDeg, event.posErrorDeg);
+  const skyFailed = sky.allFailed;
   if (event.kind === 'gw' && event.hasSkymap) {
     imgs.push({ key: 'skymap', src: `https://gracedb.ligo.org/apiweb/superevents/${encodeURIComponent(event.canonicalId)}/files/bayestar.png`, caption: 'LVK skymap · GraceDB' });
   }
-  // A sky cutout only means something for a well-localised source. A GW "position" is the
-  // centre of a ~1000 deg² region, and an unknown error could be just as large.
-  if (realPosition(event) && event.raDeg != null && event.decDeg != null && event.kind !== 'gw'
-      && event.posErrorDeg != null && event.posErrorDeg > 0 && event.posErrorDeg < 0.5) {
-    const fov = Math.min(Math.max((event.posErrorDeg ?? 0.02) * 4, 0.05), 1);
-    const sky = skyCutouts(event.raDeg, event.decDeg, fov).find((c) => !broken[c.key]);
-    if (sky) imgs.push(sky); else skyFailed = true;
-  }
+  if (sky.cutout) imgs.push(sky.cutout);
   imgs.push(...record);
   const shown = imgs.filter((i) => !broken[i.key]);
   return (
@@ -190,7 +152,7 @@ function Images({ event }: { event: AskEventFacts }) {
           {shown.map((i) => (
             <figure key={i.key} style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
               <a href={i.src} target="_blank" rel="noopener noreferrer">
-                <Img src={i.src} alt={i.caption} loading="lazy" onError={() => setBroken((b) => ({ ...b, [i.key]: true }))} />
+                <Img src={i.src} alt={i.caption} loading="lazy" onError={() => (i.key === sky.cutout?.key ? sky.onError() : setBroken((b) => ({ ...b, [i.key]: true })))} />
               </a>
               <figcaption style={{ fontSize: 12, color: 'var(--text-muted)' }}>{i.caption}</figcaption>
             </figure>
