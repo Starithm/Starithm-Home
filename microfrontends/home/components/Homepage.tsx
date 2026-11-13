@@ -557,7 +557,7 @@ export function Homepage() {
           <Stack $gap={36}>
             <HeadRow>
               <H2>Measured, not claimed.</H2>
-              <GhostButton href="/blog/how-accurate-is-starithm-extraction">How we measured →</GhostButton>
+              <GhostButton href="/blog/posts/how-accurate-is-starithm-extraction">How we measured →</GhostButton>
             </HeadRow>
             <AccuracyGraph />
           </Stack>
