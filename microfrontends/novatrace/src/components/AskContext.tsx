@@ -119,10 +119,46 @@ function useRecordFigures(canonicalId: string): Figure[] {
   return figs;
 }
 
+/* Galactic latitude (degrees) of an ICRS position, from the north Galactic pole at 192.85948°, +27.12825°. */
+function galacticLat(ra: number, dec: number): number {
+  const r = Math.PI / 180, dG = 27.12825 * r;
+  return Math.asin(Math.sin(dec * r) * Math.sin(dG) + Math.cos(dec * r) * Math.cos(dG) * Math.cos((ra - 192.85948) * r)) / r;
+}
+
+/* Sky cutouts in the order to try: one is shown, and a failed one gives way to the next.
+   - Legacy Surveys DR10 (deep, colour) only where it has data: outside its footprint it returns a blank or
+     one-band image rather than an error, so the choice is by position (the plane and the far south excluded).
+   - NASA SkyView DSS2 red: the whole sky, black and white.
+   - CDS hips2fits Pan-STARRS: the original source. Down since 2026-11-12 (CDS cybersecurity incident,
+     cds.unistra.fr); kept last so it is used again if the others fail once CDS is back. */
+function skyCutouts(ra: number, dec: number, fov: number): Figure[] {
+  const at = `${ra.toFixed(4)}°, ${dec >= 0 ? '+' : ''}${dec.toFixed(4)}°`;
+  const out: Figure[] = [];
+  if (dec >= -65 && Math.abs(galacticLat(ra, dec)) >= 20) {
+    out.push({
+      key: 'sky-legacy',
+      src: `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=ls-dr10&pixscale=${((fov * 3600) / 400).toFixed(3)}&size=400`,
+      caption: `Legacy Surveys DR10 · ${at}`,
+    });
+  }
+  out.push({
+    key: 'sky-dss',
+    src: `https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Survey=DSS2+Red&Position=${ra},${dec}&Size=${fov}&Pixels=400&Return=JPEG`,
+    caption: `DSS2 red · NASA SkyView · ${at}`,
+  });
+  out.push({
+    key: 'sky-hips',
+    src: `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS%2FP%2FPanSTARRS%2FDR1%2Fcolor-z-zg-g&width=400&height=300&fov=${fov}&projection=TAN&coordsys=icrs&ra=${ra}&dec=${dec}&format=jpg`,
+    caption: `Pan-STARRS · ${at}`,
+  });
+  return out;
+}
+
 function Images({ event }: { event: AskEventFacts }) {
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const record = useRecordFigures(event.canonicalId);
   const imgs: Figure[] = [];
+  let skyFailed = false;
   if (event.kind === 'gw' && event.hasSkymap) {
     imgs.push({ key: 'skymap', src: `https://gracedb.ligo.org/apiweb/superevents/${encodeURIComponent(event.canonicalId)}/files/bayestar.png`, caption: 'LVK skymap · GraceDB' });
   }
@@ -131,11 +167,8 @@ function Images({ event }: { event: AskEventFacts }) {
   if (realPosition(event) && event.raDeg != null && event.decDeg != null && event.kind !== 'gw'
       && event.posErrorDeg != null && event.posErrorDeg > 0 && event.posErrorDeg < 0.5) {
     const fov = Math.min(Math.max((event.posErrorDeg ?? 0.02) * 4, 0.05), 1);
-    imgs.push({
-      key: 'sky',
-      src: `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS%2FP%2FPanSTARRS%2FDR1%2Fcolor-z-zg-g&width=400&height=300&fov=${fov}&projection=TAN&coordsys=icrs&ra=${event.raDeg}&dec=${event.decDeg}&format=jpg`,
-      caption: `Pan-STARRS · ${event.raDeg.toFixed(4)}°, ${event.decDeg >= 0 ? '+' : ''}${event.decDeg.toFixed(4)}°`,
-    });
+    const sky = skyCutouts(event.raDeg, event.decDeg, fov).find((c) => !broken[c.key]);
+    if (sky) imgs.push(sky); else skyFailed = true;
   }
   imgs.push(...record);
   const shown = imgs.filter((i) => !broken[i.key]);
@@ -149,6 +182,7 @@ function Images({ event }: { event: AskEventFacts }) {
         <SectionNote>
           No images: none of this event's notices or circulars link one, and{' '}
           {!realPosition(event) ? 'the position is not reported, so there is no sky cutout.'
+            : skyFailed ? 'the sky surveys could not be reached.'
             : 'the position is too uncertain for a useful sky cutout.'}
         </SectionNote>
       ) : (
