@@ -93,11 +93,12 @@ function body(items: Latest[]): string {
     ${li('The single redshift shown on an event page agrees for 86.0%; telling a burst’s redshift from a host galaxy’s or a limit is work in progress.')}
   </ul><p><a href="${SITE}/blog/how-accurate-is-starithm-extraction">How we measured</a></p></section>
   <section><h2>From alert to event page</h2><ol>
-    ${li('Ingest: GCN Kafka and circulars, continuously.')}
-    ${li('Normalise: one notice type for every instrument.')}
-    ${li('Extract: values read out of circular text; an unreadable answer is retried by a second model.')}
-    ${li('Cross-match: position, time, false-alarm check.')}
-    ${li('Publish: one event page, updated live; new notices and circulars go through again.')}
+    ${li('Collect: GCN notices (Fermi, Swift, Einstein Probe, SVOM, LIGO/Virgo/KAGRA, IceCube, CHIME, MAXI), GCN Circulars since 1997 and ATels, as they are issued.')}
+    ${li('Read: the values in each circular (magnitudes, limits, fluxes, durations, redshifts, positions), each with the sentence it came from. Example: z = 3.51 ± 0.10 for GRB 260924A from GCN 45740.')}
+    ${li('One event: every notice and circular about the same event linked into one record, by trigger number, name and position (GRB 260924A: Fermi trigger 811905208 and Swift trigger 1513082).')}
+    ${li('Counterparts: afterglows and candidates near the position (Lasair, TNS, Fink) and known sources in the region from HEASARC catalogues (4FGL, TeVCat, XMM, 2SXPS, 2RXS).')}
+    ${li('Catalogues: refined values from the Fermi GBM burst catalogue and the Swift GRB table, and Swift-XRT light curves from the UK Swift Science Data Centre.')}
+    ${li('Publish: one page per event, cited and searchable; new notices, circulars and corrections go through again and the page updates.')}
   </ol></section>
   ${items.length ? `<section><h2>Latest circulars</h2><ul>
     ${items.map(k => li(`<a href="${k.canonicalId ? `${SITE}/novatrace/events/${encodeURIComponent(k.canonicalId)}` : `${SITE}/novatrace/events`}">${esc(k.label)}</a>${k.event ? ` (${esc(k.event)})` : ''}: ${esc(k.what)}, ${esc(new Date(k.date).toISOString().slice(0, 16).replace('T', ' '))} UTC`)).join('\n    ')}

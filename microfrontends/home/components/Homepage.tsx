@@ -3,6 +3,7 @@ import { useSignIn, useAuth, useClerk, UserButton } from '@clerk/react';
 import { saveReturnUrl } from '../../../shared/lib/auth';
 import { API_ENDPOINTS, ASK_ASSISTANT } from '../../../shared/lib/config';
 import { HeroSky } from './HeroSky';
+import { HowItWorks } from './HowItWorks';
 import {
   Page, Wrap, Header, NavRow, Brand, NavLinks, NavButton,
   Section, Stack, Kicker, H2, Muted, LiveDot, PrimaryButton, GhostButton,
@@ -13,7 +14,6 @@ import {
   DeckRow, DeckTitle, DeckBody,
   TabsRow, TabList, TabItem, TabProgress, ShowPanel, Preview, PreviewBox,
   Graph, GraphNotes,
-  FlowFigure,
   SplitRow, Providers, ErrorNote, FormCard, FormTitle, FakeField, FieldRow,
   Closing, Contact, Footer, FooterCols, line,
 } from '../styled_components/HomepageV3.styled';
@@ -49,14 +49,6 @@ const SLIDES = [
   { text: 'Brokers filter, then forget.', sub: 'Volume is reduced. History is not retained.' },
   { text: 'Observatories publish later.', sub: 'The measurement lands in circular text, unlinked and unstructured.' },
   { text: 'Starithm keeps the record.', sub: 'One page per event. Every value linked to the circular it came from.' },
-];
-
-const STEPS: [string, string, string][] = [
-  ['01', 'Ingest', 'GCN Kafka and circulars, continuously.'],
-  ['02', 'Normalise', 'One notice type for every instrument.'],
-  ['03', 'Extract', 'Values read out of circular text.'],
-  ['04', 'Cross-match', 'Position, time, false-alarm check.'],
-  ['05', 'Publish', 'One event page, updated live.'],
 ];
 
 /* What it does, dealt as a deck. Each claim is live and backed (docs/homepage-redesign-brief.md). */
@@ -226,76 +218,6 @@ function Problem() {
         </Stack>
       </Wrap>
     </Section>
-  );
-}
-
-/* Vertical flow chart. The flow runs down through the stages and back up the update loop (a new notice or
-   circular for an event goes through again and the page updates): the stage or arrow it is in glows. Extract
-   carries its own loop: an unreadable answer is retried by a second model. */
-const FW = 640, NODE_W = 360, NODE_H = 70, GAP = 44, TOP = 10;
-const NX = (FW - NODE_W) / 2;
-const nodeY = (i: number) => TOP + i * (NODE_H + GAP);
-function FlowChart() {
-  const pathRef = useRef<SVGPathElement>(null);
-  const [dot, setDot] = useState<{ x: number; y: number } | null>(null); // where the flow is (not drawn)
-  const cx = FW / 2, last = STEPS.length - 1;
-  const bottom = nodeY(last) + NODE_H, rightX = NX + NODE_W;
-  // Down the middle from Ingest to Publish, out of Publish's right side, up the loop, into Ingest's right side.
-  const route = `M ${cx} ${nodeY(0) + NODE_H / 2} L ${cx} ${nodeY(last) + NODE_H / 2} L ${rightX} ${nodeY(last) + NODE_H / 2}`
-    + ` C ${rightX + 90} ${nodeY(last) + NODE_H / 2}, ${rightX + 90} ${nodeY(0) + NODE_H / 2}, ${rightX} ${nodeY(0) + NODE_H / 2} L ${cx} ${nodeY(0) + NODE_H / 2}`;
-  useEffect(() => {
-    if (reducedMotion()) return;
-    const path = pathRef.current;
-    if (!path) return;
-    const len = path.getTotalLength();
-    let raf = 0;
-    const start = performance.now();
-    const frame = (now: number) => {
-      const p = ((now - start) % 11000) / 11000;
-      const pt = path.getPointAtLength(p * len);
-      setDot({ x: pt.x, y: pt.y });
-      raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-  const onCentre = !!dot && Math.abs(dot.x - cx) < 1;
-  const active = onCentre ? STEPS.findIndex((_, i) => dot!.y >= nodeY(i) && dot!.y <= nodeY(i) + NODE_H) : -1;
-  // The arrow the flow is passing through glows: a link between two stages, or the update loop.
-  const linkOn = onCentre ? STEPS.findIndex((_, i) => i < last && dot!.y > nodeY(i) + NODE_H && dot!.y < nodeY(i + 1)) : -1;
-  const loopOn = !!dot && dot.x > rightX + 1;
-  const ext = 2; // Extract
-  return (
-    <FlowFigure>
-      <svg viewBox={`0 0 ${FW} ${bottom + 12}`} role="img"
-        aria-label={`How it works: ${STEPS.map(([, n, d]) => `${n}, ${d}`).join(' Then ')} New notices and circulars go through again and update the page; an unreadable extraction is retried by a second model.`}>
-        <path ref={pathRef} d={route} fill="none" stroke="none" />
-        {STEPS.slice(0, -1).map((_, i) => (
-          <g key={i}>
-            <line className={`link${i === linkOn ? ' on' : ''}`} x1={cx} x2={cx} y1={nodeY(i) + NODE_H} y2={nodeY(i + 1) - 6} />
-            <path className={`arrow${i === linkOn ? ' on' : ''}`} d={`M ${cx - 4} ${nodeY(i + 1) - 8} L ${cx + 4} ${nodeY(i + 1) - 8} L ${cx} ${nodeY(i + 1) - 1} Z`} />
-          </g>
-        ))}
-        {/* update loop: Publish back to Ingest */}
-        <path className={`loop${loopOn ? ' on' : ''}`} d={`M ${rightX} ${nodeY(last) + NODE_H / 2} C ${rightX + 90} ${nodeY(last) + NODE_H / 2}, ${rightX + 90} ${nodeY(0) + NODE_H / 2}, ${rightX + 6} ${nodeY(0) + NODE_H / 2}`} />
-        <path className={`arrow${loopOn ? ' on' : ''}`} d={`M ${rightX + 9} ${nodeY(0) + NODE_H / 2 - 4} L ${rightX + 9} ${nodeY(0) + NODE_H / 2 + 4} L ${rightX + 1} ${nodeY(0) + NODE_H / 2} Z`} />
-        <text className="loop-label" x={rightX + 74} y={(nodeY(0) + bottom) / 2 - 8} textAnchor="start">new notices</text>
-        <text className="loop-label" x={rightX + 74} y={(nodeY(0) + bottom) / 2 + 8} textAnchor="start">and circulars</text>
-        {/* retry loop on Extract */}
-        <path className="loop" d={`M ${NX} ${nodeY(ext) + 18} C ${NX - 60} ${nodeY(ext) + 8}, ${NX - 60} ${nodeY(ext) + NODE_H - 8}, ${NX - 6} ${nodeY(ext) + NODE_H - 18}`} />
-        <path className="arrow" d={`M ${NX - 9} ${nodeY(ext) + NODE_H - 22} L ${NX - 9} ${nodeY(ext) + NODE_H - 14} L ${NX - 1} ${nodeY(ext) + NODE_H - 18} Z`} />
-        <text className="loop-label" x={NX - 58} y={nodeY(ext) + NODE_H / 2 - 4} textAnchor="end">retried by a</text>
-        <text className="loop-label" x={NX - 58} y={nodeY(ext) + NODE_H / 2 + 12} textAnchor="end">second model</text>
-        {STEPS.map(([n, name, desc], i) => (
-          <g key={n} className={`node${i === active ? ' on' : ''}`}>
-            <rect x={NX} y={nodeY(i)} width={NODE_W} height={NODE_H} rx={14} />
-            <text className="n" x={NX + 18} y={nodeY(i) + 24}>{n}</text>
-            <text className="name" x={NX + 46} y={nodeY(i) + 26}>{name}</text>
-            <text className="desc" x={NX + 18} y={nodeY(i) + 50}>{desc}</text>
-          </g>
-        ))}
-      </svg>
-    </FlowFigure>
   );
 }
 
@@ -646,7 +568,7 @@ export function Homepage() {
         <Wrap>
           <Stack $gap={32}>
             <H2>From alert to event page.</H2>
-            <FlowChart />
+            <HowItWorks />
           </Stack>
         </Wrap>
       </Section>
