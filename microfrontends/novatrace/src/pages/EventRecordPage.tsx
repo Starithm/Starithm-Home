@@ -22,7 +22,7 @@ import {
   Cite, Empty, Figures, Figure,
   UrlList, UrlLink, MiniLabel, CircGrid, CircId, CircFacility, CircDate,
   MetaLine, TableHead, Disclaimer, SIGNIFICANCE, LocBlock, LocRow, LocStar,
-  RedshiftPill, RedshiftNote,
+  RedshiftPill, RedshiftNote, TriggerCards, TriggerName,
 } from '../styled_pages/EventRecord.styled';
 import { eventRedshifts, needsLabel, readRedshift } from '../utils/redshift';
 import { EventCounterparts, counterpartsCount, hasCounterparts, type Counterparts } from '../components/EventCounterparts';
@@ -86,6 +86,31 @@ interface PublicEvent {
   crossMatch?: Counterparts['crossMatch'];
   optical?: Counterparts['optical'];
   catalog?: Counterparts['catalog'];
+  /* One page per burst (cross-match group). On the group's main event: every matched trigger and
+     all their notices, oldest first. On another member: the main event. Absent before that API. */
+  group?: { triggers: GroupTrigger[]; notices: (Notice & { canonicalId: string })[] } | null;
+  partOf?: { canonicalId: string; name: string; noticeCount: number; circularCount: number; instruments: string[] } | null;
+}
+
+interface GroupTrigger {
+  canonicalId: string; name: string; sourceName: string | null; t0: string | null; noticeCount: number;
+  match: { method: string | null; confidence: number | null; fap: number | null; viaName: string | null } | null;
+}
+
+/* Offset of a trigger from the burst's T0: "T0", "+0.96 s", "−0.10 s". */
+function triggerOffset(t0: string | null, at: string | null): string {
+  if (!t0 || !at) return '—';
+  const s = (new Date(at).getTime() - new Date(t0).getTime()) / 1000;
+  if (s === 0) return 'T0';
+  const a = Math.abs(s);
+  return `${s > 0 ? '+' : '−'}${a < 100 ? a.toFixed(2) : Math.round(a)} s`;
+}
+
+function matchLabel(m: GroupTrigger['match']): string {
+  if (!m) return 'this record';
+  return [m.method, m.confidence != null ? `${Math.round(m.confidence * 100)}%` : null,
+    m.fap != null ? `FAP ${(m.fap * 100).toFixed(3)}%` : null, m.viaName ? `via ${m.viaName}` : null]
+    .filter(Boolean).join(' · ');
 }
 
 /* posErrorDeg is jsonb ({radius,type}); older rows are plain numbers. */
@@ -412,6 +437,10 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
 
   const err = posErrorRadius(event.posErrorDeg);
   const sig = (event.aiSummary?.significance || 'medium').toLowerCase();
+  /* The burst's main page lists every matched trigger's notices, each prefixed with its instrument. */
+  const timeline: (Notice & { canonicalId?: string })[] = event.group?.notices ?? event.notices;
+  const sourceOf = new Map((event.group?.triggers ?? []).map(t => [t.canonicalId, t.sourceName ?? t.name]));
+  const groupSource = (n: { canonicalId?: string }) => (n.canonicalId ? sourceOf.get(n.canonicalId) ?? null : null);
   const lastActivity = [...event.circulars.map(c => c.date), ...event.notices.map(n => n.producedAt || '')]
     .filter(Boolean).sort().pop() || null;
   const best = bestLocalisation(localisations, event.positionSource, event.raDeg, event.decDeg);
@@ -447,7 +476,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
   const swift = swiftLinks(event.circulars);
   const counterpartsData: Counterparts = { crossMatch: event.crossMatch ?? null, optical: event.optical ?? null, catalog: event.catalog ?? null };
   const counts: Record<string, number | undefined> = {
-    notices: event.notices.length,
+    notices: timeline.length,
     circulars: event.circulars.length,
     counterparts: counterpartsCount(counterpartsData) || undefined,
     observations: observationsCount || undefined,
@@ -526,6 +555,14 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
               {facilities.length > 0 && <span>· {facilities.join(' · ')}</span>}
             </MetaRow>
             <Headline>{eventTitle(event)}</Headline>
+            {event.partOf && (
+              <OriginNote>
+                <strong>Part of {event.partOf.name}.</strong> This trigger was matched to the same burst
+                {event.partOf.instruments.length > 0 ? ` as ${event.partOf.instruments.join(' and ')}` : ''}. The full record, with all{' '}
+                {event.partOf.noticeCount} notices and {event.partOf.circularCount} circulars, is on{' '}
+                <UrlLink as={Link} to={`/novatrace/events/${encodeURIComponent(event.partOf.canonicalId)}`}>{event.partOf.name}</UrlLink>.
+              </OriginNote>
+            )}
             {event.aiSummary?.headline && event.aiSummary.headline !== eventTitle(event) && <SubMeta>{event.aiSummary.headline}</SubMeta>}
             <SubMeta>
               {event.t0 ? `T0 ${fmtDate(event.t0)}` : 'T0 unknown'} · {event.noticeCount} notices ·{' '}
@@ -663,12 +700,33 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
 
           <RecordSection id="notices">
             <SectionHead>
-              <SectionToggle>Notice timeline</SectionToggle>
-              <SectionNote>{event.notices.length} machine notices</SectionNote>
+              <SectionToggle>{event.group ? 'Triggers and notices' : 'Notice timeline'}</SectionToggle>
+              <SectionNote>
+                {event.group
+                  ? `${event.group.triggers.length} instruments triggered on this burst · ${timeline.length} notices`
+                  : `${event.notices.length} machine notices`}
+              </SectionNote>
             </SectionHead>
+            {event.group && (
+              <TriggerCards>
+                {event.group.triggers.map(t => (
+                  <Card key={t.canonicalId} style={{ padding: '12px 14px' }}>
+                    <TriggerName>{t.sourceName ?? t.name}</TriggerName>
+                    <Muted style={{ display: 'block', marginTop: 4 }}>
+                      {t.canonicalId === canonicalId ? t.name
+                        : <Link to={`/novatrace/events/${encodeURIComponent(t.canonicalId)}`} style={{ color: 'inherit' }}>{t.name}</Link>}
+                      {' · '}{triggerOffset(event.t0, t.t0)}
+                    </Muted>
+                    <Muted style={{ display: 'block' }}>
+                      {t.noticeCount} notice{t.noticeCount === 1 ? '' : 's'} · {matchLabel(t.match)}
+                    </Muted>
+                  </Card>
+                ))}
+              </TriggerCards>
+            )}
             <Stack>
-              {event.notices.length === 0 && <Empty>No notices on this record.</Empty>}
-              {event.notices.map(n => {
+              {timeline.length === 0 && <Empty>No notices on this record.</Empty>}
+              {timeline.map(n => {
                 const open = openNotice.has(n.id);
                 const assets = noticeAssets(n);
                 const metrics = payloadFields(n.payload);
@@ -676,7 +734,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
                   <div key={n.id}>
                     <Row onClick={() => toggle(openNotice, setOpenNotice)(n.id)} aria-expanded={open}>
                       <Muted>{tPlus(event.t0, n.producedAt || n.t0)}</Muted>
-                      <Topic>{n.topic}</Topic>
+                      <Topic>{groupSource(n) ? <><Muted>{groupSource(n)} · </Muted>{n.topic}</> : n.topic}</Topic>
                       <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                         {assets.images.length > 0 && <Chip>{assets.images.length} fig</Chip>}
                         {assets.fits.length > 0 && <Chip>fits</Chip>}

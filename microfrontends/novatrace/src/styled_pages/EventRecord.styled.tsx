@@ -1231,3 +1231,21 @@ export const ObsRow = styled.tr<{ $limit: boolean }>`
   ${p => p.$limit && css`& > td { color: ${line(0.5)}; }`}
 `;
 
+
+/* The burst's main page: one card per instrument that triggered on it (cross-match group),
+   above the merged notice timeline. Display only, no filter (decided 2026-11-14). */
+export const TriggerCards = styled.div`
+  ${mono};
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: ${fs(11.5)};
+  line-height: 1.6;
+`;
+
+export const TriggerName = styled.div`
+  font-size: ${fs(12.5)};
+  font-weight: 600;
+  color: ${PLATINUM};
+`;
