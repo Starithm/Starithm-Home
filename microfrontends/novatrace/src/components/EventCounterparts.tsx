@@ -16,6 +16,8 @@ import { RecordSection, SectionToggle } from './RecordSection';
 export interface RelatedEvent {
   canonicalId: string; name: string | null; alertKind: string | null;
   confidence: number | null; matchMethod: string | null; fap: number | null;
+  /** Matched to another member, not to this event: its name (cross-match pairs, 2026-11-14). */
+  viaName?: string | null;
 }
 export interface OpticalCandidate {
   objectId: string; brokers: string[]; url: string | null; ra?: number | null; dec?: number | null; separationArcsec: number | null;
@@ -188,7 +190,7 @@ export function EventCounterparts({ data, position }: {
                   <tr key={r.canonicalId}>
                     <td><Link to={`/novatrace/events/${encodeURIComponent(r.canonicalId)}`} style={{ color: 'inherit' }}>{r.name || r.canonicalId}</Link></td>
                     <td><Muted>{r.alertKind ?? '—'}</Muted></td>
-                    <td><Muted>{r.matchMethod ?? '—'}</Muted></td>
+                    <td><Muted>{r.matchMethod ?? '—'}{r.viaName ? ` · via ${r.viaName}` : ''}</Muted></td>
                     <td>{pct(r.confidence)}</td>
                     <td>{r.fap == null ? '—' : `${(r.fap * 100).toFixed(2)}%`}</td>
                   </tr>
