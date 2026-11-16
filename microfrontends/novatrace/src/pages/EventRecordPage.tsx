@@ -30,6 +30,7 @@ import { eventLocalisations, bestLocalisation, instrumentsSeen, type Localisatio
 import { RecordSection, SectionToggle, SectionsProvider, useSections } from '../components/RecordSection';
 import { EventObservations } from '../components/EventObservations';
 import { EventLightCurve, type LightCurve } from '../components/EventLightCurve';
+import { EventIceCat } from '../components/EventIceCat';
 import { EventBurstProperties } from '../components/EventBurstProperties';
 import { EventKeyFacts } from '../components/EventKeyFacts';
 import { SkyCutoutFigure } from '../components/SkyCutout';
@@ -702,6 +703,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
           <EventBurstProperties circulars={event.circulars} catalogs={event.catalogValues} onOpenCircular={openCircular} />
 
           <EventLightCurve curves={event.lightCurves} circulars={event.circulars} onOpenCircular={openCircular} />
+
+          <EventIceCat name={eventTitle(event)} notices={event.notices} />
 
           <EventObservations circulars={event.circulars} t0={event.t0} onOpenCircular={openCircular} />
 
