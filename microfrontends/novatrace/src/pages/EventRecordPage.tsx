@@ -520,7 +520,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
                 requestAnimationFrame(() => document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
               }}
             >
-              {s.label}
+              {/* Only catalogued sources: what is known in the region, not candidates (EventCounterparts). */}
+              {s.id === 'counterparts' && !counterpartsCount(counterpartsData) ? 'Known sources' : s.label}
               {counts[s.id] != null && <RailCount>{counts[s.id]}</RailCount>}
             </RailLink>
           ))}

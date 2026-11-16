@@ -27,6 +27,9 @@ export interface SkyPoint {
   level?: number | null;
   /** Listed under a fold rather than in the main list. */
   minor?: boolean;
+  /** Folded with the others of the same label into one expandable row: the sources of one deep
+   *  archival X-ray observation ("23 XMM sources from one observation, 2018-07-26"). */
+  group?: string;
 }
 
 const KINDS: Record<PointKind, { label: string; color: string; shape: 'diamond' | 'star' | 'circle' | 'square' | 'triangle' | 'ring' | 'cross' }> = {
@@ -86,6 +89,7 @@ export function EventSkyMap({ points, raDeg, decDeg, errorDeg, region, note }: {
   const [picked, setPicked] = useState<string | null>(null);
   const [filter, setFilter] = useState<PointKind | 'all'>('all');
   const [showMinor, setShowMinor] = useState(false);
+  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
 
   const corners = useMemo(() => (region?.outline ?? []).map(px => px.map(([ra, dec]) => project(ra, dec, raDeg, decDeg))), [region, raDeg, decDeg]);
   const coreCorners = useMemo(() => (region?.coreOutline ?? []).map(px => px.map(([ra, dec]) => project(ra, dec, raDeg, decDeg))), [region, raDeg, decDeg]);
@@ -110,7 +114,9 @@ export function EventSkyMap({ points, raDeg, decDeg, errorDeg, region, note }: {
   const shown = points.filter(p => filter === 'all' || p.kind === filter);
   const byMap = shown.some(p => p.level != null);
   const sorted = [...shown].sort((a, b) => byMap ? (a.level ?? 2) - (b.level ?? 2) : (a.sepDeg ?? 1e9) - (b.sepDeg ?? 1e9));
-  const list = byMap ? sorted.filter(p => !p.minor) : sorted;
+  const list = (byMap ? sorted.filter(p => !p.minor) : sorted).filter(p => !p.group);
+  const groups = [...new Set(sorted.filter(p => p.group).map(p => p.group!))];
+  const toggleGroup = (g: string) => setOpenGroups(prev => { const n = new Set(prev); n.has(g) ? n.delete(g) : n.add(g); return n; });
   const minor = byMap ? sorted.filter(p => p.minor) : [];
   const active = hover ?? picked;
   // Draw the highlighted marker last so it sits on top.
@@ -196,6 +202,24 @@ export function EventSkyMap({ points, raDeg, decDeg, errorDeg, region, note }: {
               </Item>
             </React.Fragment>
           ))}
+          {groups.map(g => {
+            const members = sorted.filter(p => p.group === g);
+            return (
+              <React.Fragment key={g}>
+                <Fold onClick={() => toggleGroup(g)} aria-expanded={openGroups.has(g)}>
+                  {openGroups.has(g) ? 'Hide' : 'Show'} {g}
+                </Fold>
+                {openGroups.has(g) && members.map(p => (
+                  <Item key={p.key} $on={p.key === active}
+                    onMouseEnter={() => setHover(p.key)} onMouseLeave={() => setHover(null)} onClick={() => setPicked(p.key)}>
+                    <Glyph kind={p.kind} />
+                    <Name>{p.name}</Name>
+                    <Faint>{sepText(p.sepDeg)}</Faint>
+                  </Item>
+                ))}
+              </React.Fragment>
+            );
+          })}
           {minor.length > 0 && !showMinor && (
             <Fold onClick={() => setShowMinor(true)}>Show {minor.length} unassociated 4FGL source{minor.length === 1 ? '' : 's'}</Fold>
           )}
