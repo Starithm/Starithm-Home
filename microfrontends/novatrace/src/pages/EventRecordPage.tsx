@@ -10,7 +10,7 @@ import { saveReturnUrl } from '@shared/lib/auth';
 import {
   Page, TopBar, Crumbs, BrandMark, TopActions, GhostButton,
   Shell, Rail, RailHead, RailLink, RailCount, RailFoot, RailFootHead, RailPrompt,
-  RailPromptCta, Content,
+  RailPromptCta, RailNote, Content,
   MetaRow, SigPill, Kind, Headline, SubMeta,
   OriginNote,
   SectionHead, SectionNote, Card, Prose, SummarySplit,
@@ -291,6 +291,9 @@ const ORIGIN: Record<Origin, { kind: string; what: string; sky: boolean }> = {
 };
 const NO_SKY = new Set(['position', 'counterparts']);
 
+/* The extraction-accuracy article. Later measurements are published as new parts; point this at the newest. */
+const ACCURACY_URL = '/blog/posts/how-accurate-is-starithm-extraction';
+
 const SECTIONS = [
   { id: 'summary', label: 'Summary' },
   { id: 'position', label: 'Position' },
@@ -538,6 +541,11 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
               Add an observation or a correction
               <RailPromptCta>{isSignedIn ? 'Write a comment ↓' : 'Sign in →'}</RailPromptCta>
             </RailPrompt>
+          </RailFoot>
+          {/* What the values are worth: the article measuring extraction against independent catalogues. */}
+          <RailFoot>
+            <RailFootHead>Extraction</RailFootHead>
+            <RailNote href={ACCURACY_URL}>Values are read from circulars by a model. How accurate is that? <span>Measured →</span></RailNote>
           </RailFoot>
         </Rail>
 

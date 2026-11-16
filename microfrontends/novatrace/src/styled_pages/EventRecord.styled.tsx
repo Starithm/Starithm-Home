@@ -263,6 +263,18 @@ export const RailPromptCta = styled.span`
   letter-spacing: 0.06em;
 `;
 
+/* A quiet link under the rail, to the article that measures extraction against catalogues. */
+export const RailNote = styled.a`
+  font-size: ${fs(12)};
+  line-height: 1.5;
+  color: ${line(0.55)};
+  text-decoration: none;
+  &:hover { color: ${PLATINUM}; }
+  &:hover span { text-decoration: underline; }
+  span { color: ${VIOLET_D}; }
+  &:focus-visible { outline: 1px solid ${line(0.3)}; outline-offset: 2px; }
+`;
+
 export const Content = styled.main`
   min-width: 0;
   display: flex;
