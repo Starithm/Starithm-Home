@@ -136,10 +136,9 @@ export function EventIceCat({ name, notices }: { name: string; notices: NoticeLi
             ))}
             <text className="axis-title" x={(L + W - R) / 2} y={H - 4} textAnchor="middle">Most probable neutrino energy</text>
             <text className="axis-title" transform={`translate(12 ${(T + H - B) / 2}) rotate(-90)`} textAnchor="middle">Signalness</text>
-            {/* The mark, so a screenshot carries where it came from; top right is empty (high energy, signalness near 1). */}
+            {/* The logo, so a screenshot carries where it came from; top right is empty (high energy, signalness near 1). */}
             <g className="brand" aria-hidden="true">
-              <image href="/logo_without_name.png" x={W - R - 112} y={T + 6} width={16} height={16} />
-              <text x={W - R - 92} y={T + 18}>starithm.ai</text>
+              <image href="/logo_without_name.png" x={W - R - 26} y={T + 6} width={20} height={20} />
             </g>
             {rows.map(mark)}
             {hp && <circle className="hover-ring" cx={x(hp.energy)} cy={y(hp.signal)} r={7} />}

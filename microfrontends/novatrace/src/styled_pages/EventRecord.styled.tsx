@@ -1240,7 +1240,6 @@ export const IcChart = styled(LcChart)`
   .this { fill: ${PLATINUM}; stroke: ${BG}; stroke-width: 2; }
   .this-label { fill: ${PLATINUM}; font-size: ${fs(10)}; }
   .brand { opacity: 0.7; }
-  .brand text { fill: ${line(0.6)}; font-size: ${fs(10)}; letter-spacing: 0.04em; }
 `;
 
 export const IcLegend = styled(LcLegend)`
