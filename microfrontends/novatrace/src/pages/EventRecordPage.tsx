@@ -322,6 +322,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
   const [copied, setCopied] = useState(false);
   const [active, setActive] = useState('summary');
   const [openNotice, setOpenNotice] = useState<Set<string>>(new Set());
+  /* Figures whose image failed to load (Konus's GIFs are 404 at GCN): dropped with their count. */
+  const [deadImages, setDeadImages] = useState<Set<string>>(new Set());
   const [openCirc, setOpenCirc] = useState<Set<string>>(new Set());
   const [circView, setCircView] = useState<Record<string, 'parsed' | 'raw' | 'files'>>({});
   /* Which collapsed cards have their measurement table expanded past PREVIEW_ROWS. */
@@ -728,7 +730,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
               {timeline.length === 0 && <Empty>No notices on this record.</Empty>}
               {timeline.map(n => {
                 const open = openNotice.has(n.id);
-                const assets = noticeAssets(n);
+                const found = noticeAssets(n);
+                const assets = { ...found, images: found.images.filter(([, u]) => !deadImages.has(u)) };
                 const metrics = payloadFields(n.payload);
                 return (
                   <div key={n.id}>
@@ -748,11 +751,22 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
                       <Figures>
                         {assets.images.map(([label, u]) => (
                           <Figure key={u} href={u} target="_blank" rel="noopener noreferrer">
-                            <img src={u} alt={label} loading="lazy" />
+                            <img src={u} alt={label} loading="lazy"
+                              onError={() => setDeadImages(prev => new Set(prev).add(u))} />
                             <figcaption>{label || fileName(u)}</figcaption>
                           </Figure>
                         ))}
                       </Figures>
+                    )}
+                    {/* A light curve that is a page, not an image (CALET), shows as a link. */}
+                    {assets.pages.length > 0 && (
+                      <InlineActions style={{ padding: '0 18px 10px' }}>
+                        {assets.pages.map(([label, u]) => (
+                          <GhostButton key={u} as="a" href={u} target="_blank" rel="noopener noreferrer">
+                            {label} <ExternalLink size={11} />
+                          </GhostButton>
+                        ))}
+                      </InlineActions>
                     )}
                     {open && assets.fits.length > 0 && (
                       <InlineActions style={{ padding: '0 0 10px' }}>
