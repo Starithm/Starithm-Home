@@ -1227,6 +1227,27 @@ export const LcLegend = styled.div`
   .shapes { --c: ${line(0.7)}; }
 `;
 
+/* IceCube alert among IceCat-1 (EventIceCat): colour is the tier, on the light curve's pair; the
+   alert is a platinum star with a 2 px ground ring, labelled, above the catalogue. */
+const icTiers = css`
+  .gold { --c: var(--chart-1); }
+  .bronze { --c: var(--chart-2); }
+`;
+
+export const IcChart = styled(LcChart)`
+  ${icTiers}
+  .filled { opacity: 0.85; }
+  .this { fill: ${PLATINUM}; stroke: ${BG}; stroke-width: 2; }
+  .this-label { fill: ${PLATINUM}; font-size: ${fs(10)}; }
+  .brand { opacity: 0.7; }
+  .brand text { fill: ${line(0.6)}; font-size: ${fs(10)}; letter-spacing: 0.04em; }
+`;
+
+export const IcLegend = styled(LcLegend)`
+  ${icTiers}
+  .this { fill: ${PLATINUM}; }
+`;
+
 export const ObsRow = styled.tr<{ $limit: boolean }>`
   ${p => p.$limit && css`& > td { color: ${line(0.5)}; }`}
 `;
