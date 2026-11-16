@@ -120,9 +120,10 @@ export const Pill = styled.button<{ $on?: boolean }>`
 
 /* ---- below the slide ---- */
 
-/* The website half: starts a clear gap below the slide, so the slide stays one clean screen. */
+/* The website half, a section's gap below the slide. It was 12vh so the slide stayed one clean
+   screen when projected; on the page that read as an empty band (2026-11-16). */
 export const Below = styled.div`
-  padding-top: 12vh;
+  padding-top: 28px;
 `;
 
 export const Stack = styled.div`

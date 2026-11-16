@@ -29,8 +29,17 @@ const PROJECTS: Project[] = [
   },
 ];
 
-/* Films on YouTube, embedded without cookies. Empty until they are uploaded. */
+/* Films on YouTube, embedded without cookies. Empty until they are uploaded; until then the section
+   shows COMING_SOON's posters (NASA images already in public/voyager). */
 const FILMS: { title: string; youtubeId: string; note?: string }[] = [];
+const COMING_SOON = {
+  when: '18 November 2026',
+  text: 'The two films we made with the NYUAD Space Art Lab for Leonardo Barilaro\'s Voyager concert, here after the concert.',
+  posters: [
+    ['/voyager/pale-blue-dot-pia23645.jpg', 'The Pale Blue Dot, Earth seen by Voyager 1 in 1990 (NASA/JPL-Caltech)'],
+    ['/voyager/golden-record-pia14113.jpg', 'The Golden Record carried by Voyager 1 (NASA/JPL-Caltech)'],
+  ],
+};
 
 export default function OutreachPage() {
   useEffect(() => { document.title = 'Outreach · Starithm'; }, []);
@@ -54,6 +63,21 @@ export default function OutreachPage() {
           </Card>
         ))}
       </Grid>
+
+      {FILMS.length === 0 && (
+        <section id="films" style={{ marginTop: 40 }}>
+          <Eyebrow>Films</Eyebrow>
+          <P style={{ marginTop: 8 }}>{COMING_SOON.text}</P>
+          <Grid style={{ marginTop: 12 }}>
+            {COMING_SOON.posters.map(([src, alt]) => (
+              <Poster key={src}>
+                <Img src={src} alt={alt} loading="lazy" style={{ opacity: 0.55 }} />
+                <Soon>Coming {COMING_SOON.when}</Soon>
+              </Poster>
+            ))}
+          </Grid>
+        </section>
+      )}
 
       {FILMS.length > 0 && (
         <section id="films" style={{ marginTop: 40 }}>
@@ -89,4 +113,10 @@ const Card = styled.article`border: 1px solid var(--line-subtle); background: va
 const Img = styled.img`display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--surface-sunken);`;
 const Body = styled.div`padding: 16px 18px 18px;`;
 const Video = styled.iframe`display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--line-subtle); background: var(--surface-sunken);`;
+const Poster = styled.div`position: relative; border: 1px solid var(--line-subtle); background: var(--surface-sunken);`;
+const Soon = styled.span`
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;
+  color: var(--foreground); background: var(--surface-raised); border: 1px solid var(--line-control); padding: 6px 12px;
+`;
 const FilmTitle = styled.div`font-size: 13px; margin-top: 6px; color: var(--foreground);`;
