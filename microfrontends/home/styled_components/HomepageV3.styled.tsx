@@ -325,13 +325,16 @@ export const Contact = styled.div`
 /* ── footer ── */
 export const Footer = styled.footer`
   border-top: 1px solid ${line(0.07)};
-  > div { padding-top: 42px; padding-bottom: 42px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 28px; font-size: 11px; }
+  > div { padding-top: 42px; padding-bottom: 42px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 28px; font-size: 12px; }
+  /* The footer's mark a size up from the header's. */
+  ${Brand} span { font-size: 15px; }
+  ${Brand} img { width: 22px; height: 22px; }
 `;
 export const FooterCols = styled.div`
   display: flex; flex-wrap: wrap; gap: 42px;
   > div { display: flex; flex-direction: column; gap: 7px; }
-  span { color: ${line(0.6)}; font-size: 11px; }
-  a { color: ${line(0.8)}; text-decoration: none; }
+  span { color: ${line(0.6)}; font-size: 12px; }
+  a { color: ${line(0.8)}; text-decoration: none; font-size: 13px; }
   a:hover { color: ${PLATINUM}; }
 `;
 

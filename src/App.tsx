@@ -15,6 +15,7 @@ const BlogMicrofrontend = lazy(() => import('./microfrontends/BlogMicrofrontend'
 const EarsMicrofrontend = lazy(() => import('./microfrontends/EarsMicrofrontend'));
 const VoyagerMicrofrontend = lazy(() => import('./microfrontends/VoyagerMicrofrontend'));
 const VoyagerStageMicrofrontend = lazy(() => import('./microfrontends/VoyagerStageMicrofrontend'));
+const OutreachPage = lazy(() => import('../microfrontends/home/components/OutreachPage'));
 
 function App() {
   const location = useLocation();
@@ -81,6 +82,7 @@ function App() {
               <Route path="/ears-to-the-universe/*" element={<EarsMicrofrontend />} />
               <Route path="/voyager-1" element={<VoyagerMicrofrontend />} />
               <Route path="/voyager-1/stage" element={<VoyagerStageMicrofrontend />} />
+              <Route path="/outreach" element={<OutreachPage />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               {/* Clerk lands here after a provider redirect (homepage OAuth buttons).
                   Without this route the handshake cannot complete. */}
