@@ -443,6 +443,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
   const timeline: (Notice & { canonicalId?: string })[] = event.group?.notices ?? event.notices;
   const sourceOf = new Map((event.group?.triggers ?? []).map(t => [t.canonicalId, t.sourceName ?? t.name]));
   const groupSource = (n: { canonicalId?: string }) => (n.canonicalId ? sourceOf.get(n.canonicalId) ?? null : null);
+  /* One notice and no circulars: no model summary (decided 2026-11-16; the API sends none). */
+  const singleNotice = event.notices.length === 1 && event.circulars.length === 0 && !event.group;
   const lastActivity = [...event.circulars.map(c => c.date), ...event.notices.map(n => n.producedAt || '')]
     .filter(Boolean).sort().pop() || null;
   const best = bestLocalisation(localisations, event.positionSource, event.raDeg, event.decDeg);
@@ -591,13 +593,18 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
           <RecordSection id="summary">
             <SectionHead>
               <SectionToggle>Summary</SectionToggle>
-              <SectionNote>Model-generated · unreviewed</SectionNote>
+              <SectionNote>{event.aiSummary?.details ? 'Model-generated · unreviewed' : singleNotice ? 'From the notice' : 'Model-generated · unreviewed'}</SectionNote>
             </SectionHead>
             <Card>
               <SummarySplit>
                 {event.aiSummary?.details
                   ? <Prose>{event.aiSummary.details}</Prose>
-                  : <Empty>No summary generated for this event yet.</Empty>}
+                  : singleNotice
+                    ? <Prose>
+                        One {event.notices[0]?.sourceName ?? ''} notice and no circulars yet, so there is nothing to summarise beyond
+                        what the notice reports, shown here. A summary is written once a circular reports on this event.
+                      </Prose>
+                    : <Empty>No summary generated for this event yet.</Empty>}
                 <EventKeyFacts facts={facts} onOpenCircular={openCircular} />
               </SummarySplit>
             </Card>
