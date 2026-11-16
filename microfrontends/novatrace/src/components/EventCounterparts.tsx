@@ -85,7 +85,17 @@ export function counterpartsCount(c: Counterparts): number {
 }
 
 /* Whether the section has anything to show, catalog sources included. */
-export const hasCounterparts = (c: Counterparts) => counterpartsCount(c) > 0 || (c.catalog?.sources.length ?? 0) > 0;
+export const hasCounterparts = (c: Counterparts) => counterpartsCount(c) > 0 || (c.catalog?.sources.length ?? 0) > 0
+  || emptySearches(c.catalog).length > 0;
+
+/* Catalogs searched that hold nothing in the region. For a neutrino the first question is whether a
+ * gamma-ray blazar sits in it, and an empty 4FGL search answers it (IceCube-260930A, 2026-11-16). */
+function emptySearches(cat: Counterparts['catalog']): string[] {
+  if (!cat) return [];
+  return CATALOG_ORDER.filter(n => cat.catalogs[n] && !cat.catalogs[n].error && cat.catalogs[n].total === 0).map(n => CATALOG_LABEL[n]);
+}
+/* "A, B or C" */
+const orList = (xs: string[]) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} or ${xs[xs.length - 1]}`);
 
 const num = (v: unknown) => (typeof v === 'number' ? (Math.abs(v) < 1e-3 || Math.abs(v) >= 1e5 ? v.toExponential(2) : String(+v.toFixed(3))) : String(v));
 
@@ -109,9 +119,13 @@ function skyPoints(c: Counterparts): SkyPoint[] {
         ['Fink class', r.finkClass ? `${r.finkClass}${r.finkClassScore != null ? ` (${pct(r.finkClassScore)})` : ''}` : null]],
     });
   }
+  // Sources of one deep archival observation fold into one list row (pointings).
+  const groupOf = new Map<CatalogSource, string>();
+  for (const g of pointings(c.catalog?.sources ?? [])) for (const s of g) groupOf.set(s, pointingLabel(g));
   for (const s of c.catalog?.sources ?? []) {
     if (s.ra == null || s.dec == null || !CATALOG_LABEL[s.catalog]) continue;
     pts.push({
+      group: groupOf.get(s),
       key: `${s.catalog}:${s.name}`, kind: s.catalog as PointKind, name: s.name, ra: s.ra, dec: s.dec, sepDeg: s.sep_deg, url: s.url ?? null,
       level: s.region_level ?? null, minor: s.catalog === '4FGL' && !s.assoc,
       details: [['Class', s.class], ['Association', s.assoc], ['Variable', s.variable == null ? null : s.variable ? 'yes' : 'no'],
@@ -147,7 +161,7 @@ function catalogNote(cat: Counterparts['catalog']): React.ReactNode {
  * field: faint background sources that show where the telescope looked, not candidates
  * (IceCube-261020A: 21 XMM sources from a 2017 observation at the edge of the region). Same rule as
  * NovaTrace's event-html-generator splitPointings. */
-function pointingNote(sources: CatalogSource[]): string {
+function pointings(sources: CatalogSource[]): CatalogSource[][] {
   const groups = new Map<string, CatalogSource[]>();
   for (const s of sources) {
     const t = s.extra?.first_mjd;
@@ -156,10 +170,14 @@ function pointingNote(sources: CatalogSource[]): string {
       groups.set(k, [...(groups.get(k) ?? []), s]);
     }
   }
-  return [...groups.values()].filter(g => g.length >= 5).map(g => {
-    const date = new Date(((g[0].extra!.first_mjd as number) - 40587) * 86400000).toISOString().slice(0, 10);
-    return ` ${g.length} ${g[0].catalog} sources come from one archival observation (${date}): a deep X-ray image holds many faint background sources wherever it points.`;
-  }).join('');
+  return [...groups.values()].filter(g => g.length >= 5);
+}
+const pointingDate = (g: CatalogSource[]) => new Date(((g[0].extra!.first_mjd as number) - 40587) * 86400000).toISOString().slice(0, 10);
+const pointingLabel = (g: CatalogSource[]) => `${g.length} ${g[0].catalog} sources from one observation, ${pointingDate(g)}`;
+
+function pointingNote(sources: CatalogSource[]): string {
+  return pointings(sources).map(g =>
+    ` ${g.length} ${g[0].catalog} sources come from one archival observation (${pointingDate(g)}): a deep X-ray image holds many faint background sources wherever it points.`).join('');
 }
 
 /* Only blocks with something in them render; with nothing at all, neither does the section (the
@@ -172,12 +190,17 @@ export function EventCounterparts({ data, position }: {
   const candidates = optical?.candidates ?? [];
   if (!hasCounterparts(data)) return null;
   const points = position ? skyPoints(data) : [];
+  // Catalogued sources are what is known in the region, not counterpart candidates: only related
+  // events and optical candidates make this a section of candidates (IceCube-260930A: 34 archival
+  // X-ray sources under "Counterparts · candidates").
+  const scored = related.length > 0 || candidates.length > 0;
+  const empty = emptySearches(data.catalog);
 
   return (
     <RecordSection id="counterparts">
       <SectionHead>
-        <SectionToggle>Counterparts</SectionToggle>
-        <SectionNote>Candidates · not confirmed</SectionNote>
+        <SectionToggle>{scored ? 'Counterparts' : 'Known sources'}</SectionToggle>
+        <SectionNote>{scored ? 'Candidates · not confirmed' : 'Catalogued · not candidates'}</SectionNote>
       </SectionHead>
       <Card>
         {related.length > 0 && (
@@ -233,10 +256,20 @@ export function EventCounterparts({ data, position }: {
         {position && points.length > 0 && (
           <>
             <MiniLabel style={{ marginTop: related.length || candidates.length ? 18 : 0 }}>
-              Sky map · {points.length} source{points.length === 1 ? '' : 's'} in and around the error region
+              Known sources in and around the error region · {points.length}
             </MiniLabel>
+            {empty.length > 0 && <Muted as="p" style={{ margin: '0 0 10px', fontSize: 12 }}>No {orList(empty)} source in the region.</Muted>}
             <EventSkyMap points={points} raDeg={position.raDeg} decDeg={position.decDeg} errorDeg={position.errorDeg}
               region={data.catalog?.region} note={catalogNote(data.catalog)} />
+          </>
+        )}
+
+        {(!position || points.length === 0) && empty.length > 0 && (
+          <>
+            <MiniLabel style={{ marginTop: related.length || candidates.length ? 18 : 0 }}>Known sources in the region</MiniLabel>
+            <Muted as="p" style={{ margin: '0 0 10px', fontSize: 12 }}>
+              No {orList(empty)} source in the region{data.catalog?.radiusDeg != null ? ` (${data.catalog.radiusDeg}°)` : ''}.
+            </Muted>
           </>
         )}
 
