@@ -634,8 +634,8 @@ export function Homepage() {
       <Footer>
         <Wrap>
           <Stack $gap={9}>
-            <Brand href="/"><img src="/logo_without_name.png" alt="" width={19} height={19} /><span>STARITHM</span></Brand>
-            <Muted $size={11}>Built on public GCN data. © {new Date().getFullYear()}</Muted>
+            <Brand href="/"><img src="/logo_without_name.png" alt="" width={22} height={22} /><span>STARITHM</span></Brand>
+            <Muted $size={12}>Built on public GCN data. © {new Date().getFullYear()}</Muted>
           </Stack>
           <FooterCols>
             <div><span>Product</span><a href="/novatrace/events">NovaTrace</a><a href="/outreach">Outreach</a><a href="/novatrace/status">Status</a></div>
