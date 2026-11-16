@@ -506,7 +506,6 @@ export function Homepage() {
               <a href="/novatrace/events" className="hide-sm">NovaTrace</a>
               <a href={ASK_URL}>{ASK_ASSISTANT}</a>
               <a href="/blog" className="hide-sm">Blog</a>
-              <a href="/blog/roadmap" className="hide-sm">Roadmap</a>
               {isSignedIn ? <UserButton /> : <NavButton type="button" onClick={openModal}>Sign in</NavButton>}
             </NavLinks>
           </NavRow>
@@ -639,7 +638,7 @@ export function Homepage() {
             <Muted $size={11}>Built on public GCN data. © {new Date().getFullYear()}</Muted>
           </Stack>
           <FooterCols>
-            <div><span>Product</span><a href="/novatrace/events">NovaTrace</a><a href="/ears-to-the-universe">Ears to the Universe</a><a href="/novatrace/status">Status</a></div>
+            <div><span>Product</span><a href="/novatrace/events">NovaTrace</a><a href="/outreach">Outreach</a><a href="/novatrace/status">Status</a></div>
             <div><span>Writing</span><a href="/blog">Blog</a><a href="/blog/roadmap">Roadmap</a></div>
             <div>
               <span>Contact</span>
