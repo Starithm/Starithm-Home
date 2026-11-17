@@ -13,8 +13,21 @@ export default async function handler(req: Request): Promise<Response> {
   // but if an AI agent's UA is NOT in BOT_REGEX it surfaces here — grep Vercel Function
   // Logs for "[event-page fallthrough]" to capture the exact UA string to add, then
   // remove this log once the bot list is settled. (Web Request API, not next/server.)
+  // Since 2026-11-17 it also says who the visitor is: Vercel's geo headers (city is URL-encoded), the client
+  // IP, where they came from, and the browser's own hints. Missing headers are logged as "-".
   if (!isBot(req)) {
-    console.log(`[event-page fallthrough] path=${pathname} ua="${req.headers.get('user-agent') || ''}"`);
+    const h = (name: string) => req.headers.get(name) || '-';
+    let city = h('x-vercel-ip-city');
+    try { city = decodeURIComponent(city); } catch { /* malformed encoding: log it raw rather than fail the page */ }
+    const ip = h('x-real-ip') !== '-' ? h('x-real-ip') : h('x-forwarded-for').split(',')[0].trim();
+    console.log(
+      `[event-page fallthrough] path=${pathname} ip=${ip} ` +
+        `geo="${city}, ${h('x-vercel-ip-country-region')}, ${h('x-vercel-ip-country')}" ` +
+        `latlon=${h('x-vercel-ip-latitude')},${h('x-vercel-ip-longitude')} tz=${h('x-vercel-ip-timezone')} ` +
+        `ref="${h('referer')}" lang="${h('accept-language')}" ` +
+        `platform=${h('sec-ch-ua-platform')} mobile=${h('sec-ch-ua-mobile')} fetch=${h('sec-fetch-site')}/${h('sec-fetch-mode')} ` +
+        `ua="${h('user-agent')}"`,
+    );
     return serveSpa(req, 'spa');
   }
 
