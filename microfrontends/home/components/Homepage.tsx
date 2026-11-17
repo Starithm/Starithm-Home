@@ -70,13 +70,15 @@ const FEATURES: { label: string; color: string; title: string; body: string; hre
     body: 'Fermi, Swift, Einstein Probe, SVOM, LIGO/Virgo/KAGRA, IceCube, CHIME, MAXI and more, in one schema, updated as notices and circulars arrive.' },
 ];
 
-/* Accuracy against independent catalogues (blog: how-accurate-is-starithm-extraction, 2026-11-12; the event-page
-   redshift re-measured 2026-11-13 after NovaTrace #167, limits counted apart), lowest first. */
+/* Accuracy against independent catalogues, like for like (blog: how-accurate-is-starithm-extraction-part-2,
+   2026-11-17): redshift vs Greiner by each value's stated error or written precision, T90 and fluence vs GRBweb's
+   per-instrument tables in the catalogue's band. Lowest first. GBM fluence (39.4%) is left out: it measures the
+   circulars' preliminary values against the redone catalogue, not the reading (the article says so). */
 const ACCURACY: { label: string; short: string; note: string; value: number; muted?: boolean }[] = [
-  { label: 'T90', short: 'T90', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 92.2 },
-  { label: 'Redshift shown on the event page', short: 'Event-page z', note: 'the one redshift shown per burst vs GRBweb · 366 of 389 measured values · Δz ≤ 0.01', value: 94.1 },
-  { label: 'Redshift', short: 'Redshift', note: 'any extracted value vs GRBweb · 327 of 346 bursts · Δz ≤ 0.01', value: 94.5 },
-  { label: 'Fluence', short: 'Fluence', note: 'Swift-BAT vs the Swift GRB table · within 10%', value: 94.5 },
+  { label: 'T90, Fermi-GBM', short: 'GBM T90', note: 'GBM circulars vs GRBweb’s GBM table, both 50–300 keV · 101 of 112 bursts · within 10%', value: 90.2 },
+  { label: 'Redshift shown on the event page', short: 'Redshift', note: 'the one redshift shown per burst vs Greiner’s GRB table, same kind and method · 418 of 456 · within the stated error or written precision', value: 91.7 },
+  { label: 'T90, Swift-BAT', short: 'BAT T90', note: 'BAT circulars vs GRBweb’s Swift table, 15–350 keV · 171 of 179 bursts · within 10%', value: 95.5 },
+  { label: 'Fluence, Swift-BAT', short: 'BAT fluence', note: 'BAT circulars vs GRBweb’s Swift table, 15–150 keV · 177 of 183 bursts · within 10%', value: 96.7 },
 ];
 
 const reducedMotion = () =>
@@ -557,7 +559,7 @@ export function Homepage() {
           <Stack $gap={36}>
             <HeadRow>
               <H2>Measured, not claimed.</H2>
-              <GhostButton href="/blog/posts/how-accurate-is-starithm-extraction">How we measured →</GhostButton>
+              <GhostButton href="/blog/posts/how-accurate-is-starithm-extraction-part-2">How we measured →</GhostButton>
             </HeadRow>
             <AccuracyGraph />
           </Stack>

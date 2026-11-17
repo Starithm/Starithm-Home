@@ -6,7 +6,7 @@ import { isBot, htmlResponse, serveSpa, esc, injectHead } from './_shared/preren
 // its body is empty: Googlebot and AI fetchers saw only "Starithm - Real-time Astronomical Event
 // Intelligence Platform". Mirrors api/melody-page.ts: bots get the page's text and real tags; humans get
 // the SPA shell untouched. The content mirrors microfrontends/home/components/Homepage.tsx; keep the two in
-// step (the accuracy figures come from the blog article how-accurate-is-starithm-extraction).
+// step (the accuracy figures come from the blog article how-accurate-is-starithm-extraction-part-2).
 
 const SITE = 'https://starithm.ai';
 const API = (process.env.VITE_API_BASE_URL || 'https://novatrace-microservice.onrender.com').replace(/\/$/, '');
@@ -87,11 +87,10 @@ function body(items: Latest[]): string {
     ${FEATURES.map(([t, d]) => li(`<strong>${esc(t)}.</strong> ${esc(d)}`)).join('\n    ')}
   </ul></section>
   <section><h2>Measured, not claimed</h2><ul>
-    ${li('Redshift: for 327 of 346 gamma-ray bursts (94.5%) at least one extracted value agrees with GRBweb to within Δz = 0.01.')}
-    ${li('T90: Swift-BAT values agree with the Swift GRB table within 10% for 92.2% of bursts.')}
-    ${li('Fluence (15–150 keV): Swift-BAT values agree with the Swift GRB table within 10% for 94.5% of bursts.')}
-    ${li('The single redshift shown on an event page agrees for 366 of 389 measured values (94.1%); intervening absorbers, unrelated galaxies and limits are told apart from the burst’s own redshift.')}
-  </ul><p><a href="${SITE}/blog/posts/how-accurate-is-starithm-extraction">How we measured</a></p></section>
+    ${li('Redshift: the one redshift shown per gamma-ray burst agrees with Greiner’s GRB table for 418 of 456 bursts (91.7%), within the stated error or written precision, comparing only the same kind of measurement by the same method.')}
+    ${li('T90: Swift-BAT values agree with GRBweb’s Swift table within 10% for 95.5% of bursts (15–350 keV); Fermi-GBM values with its GBM table for 90.2% (50–300 keV).')}
+    ${li('Fluence (15–150 keV): Swift-BAT values agree with GRBweb’s Swift table within 10% for 96.7% of bursts.')}
+  </ul><p><a href="${SITE}/blog/posts/how-accurate-is-starithm-extraction-part-2">How we measured</a></p></section>
   <section><h2>From alert to event page</h2><ol>
     ${li('Collect: GCN notices (Fermi, Swift, Einstein Probe, SVOM, LIGO/Virgo/KAGRA, IceCube, CHIME, MAXI), GCN Circulars since 1997 and ATels, as they are issued.')}
     ${li('Read: the values in each circular (magnitudes, limits, fluxes, durations, redshifts, positions), each with the sentence it came from. Example: z = 3.51 ± 0.10 for GRB 260924A from GCN 45740.')}

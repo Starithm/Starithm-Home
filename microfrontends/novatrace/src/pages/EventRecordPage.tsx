@@ -292,7 +292,7 @@ const ORIGIN: Record<Origin, { kind: string; what: string; sky: boolean }> = {
 const NO_SKY = new Set(['position', 'counterparts']);
 
 /* The extraction-accuracy article. Later measurements are published as new parts; point this at the newest. */
-const ACCURACY_URL = '/blog/posts/how-accurate-is-starithm-extraction';
+const ACCURACY_URL = '/blog/posts/how-accurate-is-starithm-extraction-part-2';
 
 const SECTIONS = [
   { id: 'summary', label: 'Summary' },
