@@ -37,4 +37,11 @@ export const API_ENDPOINTS = {
   createComment: `${API_BASE_URL}/api/comments`,
   deleteComment: (id: string) => `${API_BASE_URL}/api/comments/${id}`,
   uploadCommentFile: `${API_BASE_URL}/api/comments/upload-file`,
+  // Gold set: circulars checked blind by signed-in users (/novatrace/gold-set)
+  goldNext: (exclude: number[]) => `${API_BASE_URL}/api/gold/next?exclude=${exclude.join(',')}`,
+  goldStats: `${API_BASE_URL}/api/gold/stats`,
+  goldCircular: (n: number) => `${API_BASE_URL}/api/gold/circular/${n}`,
+  goldCompare: (n: number) => `${API_BASE_URL}/api/gold/circular/${n}/compare`,
+  goldAnswers: `${API_BASE_URL}/api/gold/answers`,
+  goldChecker: `${API_BASE_URL}/api/gold/checker`,
 } as const;
