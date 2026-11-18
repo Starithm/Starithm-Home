@@ -8,6 +8,7 @@ import AskPage from '../../microfrontends/novatrace/src/pages/AskPage';
 import CircularEventPage from '../../microfrontends/novatrace/src/pages/CircularEventPage';
 import CircularArchive from '../../microfrontends/novatrace/src/pages/CircularArchive';
 import NotFound from '../../microfrontends/novatrace/src/pages/NotFound';
+import GoldSetPage from '../../microfrontends/novatrace/src/pages/GoldSetPage';
 
 const NovaTraceMicrofrontend: React.FC = () => {
   const location = useLocation();
@@ -34,6 +35,8 @@ const NovaTraceMicrofrontend: React.FC = () => {
         return <EventLevel />;
       case '/novatrace/circular-archive':
         return <CircularArchive />;
+      case '/novatrace/gold-set':
+        return <GoldSetPage />;
       // /alerts was never an alerts page — it is an archive of GCN circulars. Redirect so
       // existing links and indexed URLs keep working.
       case '/novatrace/alerts':
