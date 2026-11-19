@@ -37,7 +37,7 @@ export const AREAS: RoadmapArea[] = [
   { key: 'analysis', depth: 'LAYER 04', name: 'Analysis & Figures',
     note: 'Science we can compute ourselves once the record holds — light curves, localisation history, our own figures.' },
   { key: 'access', depth: 'LAYER 05', name: 'Observing & Access',
-    note: 'Getting the record out: API, observability planning, accounts, contributed observations, mobile.' },
+    note: 'Getting the record out: API, accounts, contributed observations, mobile.' },
 ];
 
 const S: Record<string, RoadmapStatus> = { shipped: 'held', building: 'crossing', next: 'ahead' };
@@ -142,9 +142,6 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
   { id: '32', area: 'assoc', status: 'held', category: 'feature',
     title: 'Catalogue Cross-Reference',
     description: 'What is already known at this position, recorded as the event arrives: catalogued gamma-ray and TeV sources inside the error region, which flag a crowded field or a known variable emitter, shown on the event record with a sky map of the region. Cheap context that changes how a new detection should be read.' },
-  { id: '33', area: 'access', status: 'ahead', category: 'feature',
-    title: 'Observability & Airmass',
-    description: 'Observability windows and airmass curves for a given observatory from any event\'s position, accounting for twilight and airmass limits. For poorly localised gravitational-wave triggers, ranked tiled pointings derived from the probability map.' },
   { id: '34', area: 'access', status: 'ahead', category: 'feature',
     title: 'Accounts, Preferences & Followed Events',
     description: 'Set preferences by event type, instrument and significance and have the dashboard open filtered to them. Follow an event to hear when new alerts, Circulars or counterpart candidates land on it.' },
