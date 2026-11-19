@@ -999,6 +999,12 @@ export const Cite = styled.pre`
   ${darkScroll}
 `;
 
+export const CiteLabel = styled.div`
+  font-size: ${fs(12)};
+  color: ${line(0.5)};
+  margin: 14px 0 6px;
+`;
+
 export const Empty = styled.div`
   font-size: ${fs(12)};
   color: ${line(0.3)};
