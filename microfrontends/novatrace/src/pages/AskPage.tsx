@@ -31,6 +31,10 @@ interface State {
   steps: Partial<Record<AskStep, string>>;
   sources: AskSource[] | null;
   degraded: boolean;
+  // Degraded answers: the backend keeps retrying semantic search. `upgrade` = it came back (ask
+  // again for the full answer); `ended` = the stream closed, so the retry is over either way.
+  upgrade: boolean;
+  ended: boolean;
   event: AskEventFacts | null;
   events: (AskEventFacts & { sources: number })[] | null;
   draft: { text: string; cites: string[] }[];
@@ -45,14 +49,15 @@ interface State {
 }
 
 const EMPTY: State = {
-  phase: 'idle', steps: {}, sources: null, degraded: false, event: null, events: null, draft: [],
+  phase: 'idle', steps: {}, sources: null, degraded: false, upgrade: false, ended: false, event: null, events: null, draft: [],
   answer: null, kind: null, message: null, searchId: null, check: null, ms: null,
 };
 
-type Action = { type: 'start' } | { type: 'event'; e: AskEvent };
+type Action = { type: 'start' } | { type: 'ended' } | { type: 'event'; e: AskEvent };
 
 function reduce(s: State, a: Action): State {
   if (a.type === 'start') return { ...EMPTY, phase: 'working', prev: s.phase === 'done' ? { ...s, prev: undefined } : undefined };
+  if (a.type === 'ended') return { ...s, ended: true };
   const e = a.e;
   switch (e.type) {
     case 'status': return { ...s, steps: { ...s.steps, [e.step]: e.text } };
@@ -76,6 +81,7 @@ function reduce(s: State, a: Action): State {
     // Refused before answering: put the previous answer back (the gate says it stays).
     case 'limited': return s.prev ? { ...s.prev, prev: undefined } : { ...s, phase: 'limited', kind: 'limited', message: e.message };
     case 'error': return { ...s, phase: 'error', kind: 'error', message: e.message };
+    case 'upgrade': return { ...s, upgrade: true };
   }
 }
 
@@ -125,9 +131,11 @@ export default function AskPage() {
       await streamAsk(q, { token, anonId: isSignedIn ? null : anonId(), signal: controller.signal, mock: initial.mock },
         (e) => {
           if (e.type === 'limited' && e.reason === 'sign_in') setGate(q);
-          if (e.type === 'done' && e.answer.length > 0) answered = true;
+          // A degraded answer isn't the visitor's question either: they're offered the full one.
+          if (e.type === 'done' && e.answer.length > 0 && e.kind !== 'degraded') answered = true;
           dispatch({ type: 'event', e });
         });
+      if (!controller.signal.aborted) dispatch({ type: 'ended' });
       if (!isSignedIn && !initial.mock && answered) noteAnonAsked();
     } catch (err) {
       if (!controller.signal.aborted) dispatch({ type: 'event', e: { type: 'error', message: `${ASSISTANT_NAME} could not answer right now. Please try again.` } });
@@ -263,13 +271,21 @@ export default function AskPage() {
 
       <S.Body>
         <S.AnswerColumn>
-          {state.degraded && (
-            <S.Notice $tone="warn">
-              Semantic search is unavailable right now. Showing keyword and exact-name matches only, so circulars that
-              use different words may be missing.
-              <S.SmallButton onClick={() => run(asked)} style={{ marginLeft: 'auto' }}>Retry</S.SmallButton>
+          {(state.degraded || state.kind === 'degraded') && (state.upgrade ? (
+            <S.Notice $tone="info">
+              Semantic search is back. The full answer can now include circulars that use different words.
+              <S.SmallButton $primary onClick={() => run(asked)} style={{ marginLeft: 'auto', whiteSpace: 'nowrap', flexShrink: 0 }}>Get the full answer</S.SmallButton>
             </S.Notice>
-          )}
+          ) : (
+            <S.Notice $tone="warn">
+              {state.phase !== 'done'
+                ? 'Semantic search is unavailable right now. Showing keyword and exact-name matches only, so circulars that use different words may be missing.'
+                : state.ended
+                  ? 'Semantic search is still unavailable, so this answer uses keyword and exact-name matches only. Please try again in a few minutes.'
+                  : "Semantic search is unavailable right now, so this answer uses keyword and exact-name matches only. We're retrying in the background and will tell you here when the full answer is ready."}
+              {state.ended && <S.SmallButton onClick={() => run(asked)} style={{ marginLeft: 'auto' }}>Retry</S.SmallButton>}
+            </S.Notice>
+          ))}
 
           {(state.phase === 'error' || (state.phase === 'limited' && !gate)) && (
             <S.Notice $tone="warn">{state.message}</S.Notice>
