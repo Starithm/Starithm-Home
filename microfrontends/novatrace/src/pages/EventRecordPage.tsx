@@ -19,7 +19,7 @@ import {
   Row, Stack, Topic, Phase, PayloadWrap, PayloadTable,
   Tabs, Tab, CircCard, CircHead, CircTop, CircSummary, Chip, CircBody,
   MeasureTable, ShowMore, MeasureNote, CircMeasures, TableWrap, Table, RawText, InlineActions,
-  Cite, Empty, Figures, Figure,
+  Cite, CiteLabel, Empty, Figures, Figure,
   UrlList, UrlLink, MiniLabel, CircGrid, CircId, CircFacility, CircDate,
   MetaLine, TableHead, Disclaimer, SIGNIFICANCE, LocBlock, LocRow, LocStar,
   RedshiftPill, RedshiftNote, TriggerCards, TriggerName,
@@ -304,6 +304,15 @@ const SECTIONS = [
   { id: 'circulars', label: 'Circulars' },
   { id: 'cite', label: 'Cite' },
 ];
+
+/** The event's year for its citation: from t0, else from the date in its name ("GRB 241030A" → 2024).
+ *  Events built from circulars alone have no t0, and the current year was cited instead. */
+function citeYear(event: { t0?: string | null; canonicalId: string }): number {
+  if (event.t0) return new Date(event.t0).getUTCFullYear();
+  const m = event.canonicalId.match(/(?<!\d)(\d{2})(\d{2})(\d{2})(?!\d)/);
+  if (m && +m[2] >= 1 && +m[2] <= 12 && +m[3] >= 1 && +m[3] <= 31) return 2000 + +m[1];
+  return new Date().getUTCFullYear();
+}
 
 export default function EventRecordPage(props: { canonicalId?: string }) {
   return <SectionsProvider><EventRecord {...props} /></SectionsProvider>;
@@ -1031,10 +1040,15 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
             <Cite>{`@misc{starithm_${event.canonicalId.toLowerCase().replace(/[^a-z0-9]/g, '_')},
   title   = {${eventTitle(event)}},
   author  = {{Starithm Platform}},
-  year    = {${event.t0 ? new Date(event.t0).getUTCFullYear() : new Date().getUTCFullYear()}},
+  year    = {${citeYear(event)}},
   url     = {https://starithm.ai/novatrace/events/${event.canonicalId}},
+  urldate = {${new Date().toISOString().slice(0, 10)}},
   note    = {Real-time astronomical event monitoring, Starithm}
 }`}</Cite>
+            {/* The record keeps changing for weeks, so the entry carries the date it was read (urldate).
+                Most papers credit a platform with one pasted sentence in the acknowledgements. */}
+            <CiteLabel>Acknowledgement</CiteLabel>
+            <Cite>This work made use of the Starithm platform (https://starithm.ai).</Cite>
           </RecordSection>
 
           <RecordSection id="discussion">
