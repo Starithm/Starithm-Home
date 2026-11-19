@@ -158,7 +158,7 @@ export function fetchCircular(key: string): Promise<any | null> {
 /** Lists NovaTrace builds itself, not circulars: an event's notice digest (NOTICES-<id>), its
  *  optical candidates (OPTICAL-<id>), its circulars' observations (OBSERVATIONS-<id>), and a
  *  time window's events (EVENTS-window). */
-const isDigest = (key: string) => /^(NOTICES|OPTICAL|CATALOG|OBSERVATIONS|EVENTS)-/.test(key);
+const isDigest = (key: string) => /^(NOTICES|OPTICAL|CATALOG|OBSERVATIONS|EVENTS|GRACEDB)-/.test(key);
 
 /** Whether a source opens in the popup. Circulars do; digests link to pages instead. */
 export const opensInPopup = (key: string) => !isDigest(key);
@@ -167,6 +167,8 @@ export const opensInPopup = (key: string) => !isDigest(key);
 export function circularUrl(s: Pick<AskSource, 'key' | 'n' | 'url'>): string {
   // Optical candidates link to the nearest candidate's Lasair/TNS page: the event page doesn't list them.
   if (s.key.startsWith('OPTICAL-') && s.url) return s.url;
+  // A GraceDB record (a superevent NovaTrace holds nothing about) links to its GraceDB page.
+  if (s.key.startsWith('GRACEDB-') && s.url) return s.url;
   // An event's notice digest and optical candidates (NOTICES-/OPTICAL-<canonical_id>) link to its event page.
   const eventDigest = s.key.match(/^(?:NOTICES|OPTICAL|CATALOG|OBSERVATIONS)-(.+)$/);
   if (eventDigest) return `/novatrace/events/${encodeURIComponent(eventDigest[1])}`;
@@ -179,6 +181,7 @@ export function circularUrl(s: Pick<AskSource, 'key' | 'n' | 'url'>): string {
 export function digestLinkLabel(s: Pick<AskSource, 'key' | 'url'>): string {
   if (s.key.startsWith('EVENTS-')) return 'All events →';
   if (s.key.startsWith('OPTICAL-') && s.url) return 'Nearest candidate →';
+  if (s.key.startsWith('GRACEDB-')) return 'GraceDB →';
   return 'Event page →';
 }
 
@@ -200,6 +203,7 @@ export function sourceLabel(s: Pick<AskSource, 'key' | 'n'>): string {
   if (s.key.startsWith('CATALOG-')) return 'Catalogs';
   if (s.key.startsWith('OBSERVATIONS-')) return 'Observations';
   if (s.key.startsWith('EVENTS-')) return 'Events';
+  if (s.key.startsWith('GRACEDB-')) return 'GraceDB';
   if (s.key.startsWith('ATel-')) return `ATel ${s.key.slice(5)}`;
   return `GCN ${s.n}`;
 }
