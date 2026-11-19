@@ -41,6 +41,8 @@ export type AskEvent =
   | { type: 'done'; searchId: string | null; kind: AskKind; message?: string;
       answer: AnswerSentence[]; dropped: number; check: { sentences: number; circulars: number }; ms: number }
   | { type: 'limited'; reason: 'sign_in' | 'daily' | 'busy'; message: string }
+  // After a degraded answer, on the same stream: semantic search is back for this question.
+  | { type: 'upgrade'; message: string }
   | { type: 'error'; message: string };
 
 // Dev only: in a production build DEV is false, so the fixtures are tree-shaken out entirely.
