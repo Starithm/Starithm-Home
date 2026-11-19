@@ -118,13 +118,17 @@ export default function AskPage() {
     window.history.replaceState(null, '', url);
     dispatch({ type: 'start' });
     const token = isSignedIn ? await getToken() : null;
+    // Only an answered question uses the free one, as on the backend: a search that found nothing
+    // is our gap, not the visitor's question.
+    let answered = false;
     try {
       await streamAsk(q, { token, anonId: isSignedIn ? null : anonId(), signal: controller.signal, mock: initial.mock },
         (e) => {
           if (e.type === 'limited' && e.reason === 'sign_in') setGate(q);
+          if (e.type === 'done' && e.answer.length > 0) answered = true;
           dispatch({ type: 'event', e });
         });
-      if (!isSignedIn && !initial.mock) noteAnonAsked();
+      if (!isSignedIn && !initial.mock && answered) noteAnonAsked();
     } catch (err) {
       if (!controller.signal.aborted) dispatch({ type: 'event', e: { type: 'error', message: `${ASSISTANT_NAME} could not answer right now. Please try again.` } });
     }
@@ -272,7 +276,9 @@ export default function AskPage() {
           )}
 
           {outOfScope ? (
-            <OutOfScope message={state.message} onAsk={(q) => { setInput(q); run(q); }} />
+            <NoAnswer message={state.message} searchId={state.searchId} signedIn={!!isSignedIn} onSignIn={signIn}
+              getToken={() => (isSignedIn ? getToken() : Promise.resolve(null))}
+              onAsk={(q) => { setInput(q); run(q); }} />
           ) : state.phase !== 'error' && state.phase !== 'limited' && (
             <S.MobileOnly $show={tab === 'answer'}>
               <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -397,13 +403,49 @@ function WorkingSteps({ steps, done, compact }: { steps: Partial<Record<AskStep,
   );
 }
 
-function OutOfScope({ message, onAsk }: { message: string | null; onAsk: (q: string) => void }) {
+// No answer: say so plainly, keep the reason, and ask what they were looking for. The question is
+// already in search_log; a note goes to the same row as thumbs-down feedback.
+function NoAnswer({ message, searchId, signedIn, onSignIn, getToken, onAsk }: {
+  message: string | null; searchId: string | null; signedIn: boolean; onSignIn: () => void;
+  getToken: () => Promise<string | null>; onAsk: (q: string) => void;
+}) {
+  const [note, setNote] = useState('');
+  const [sent, setSent] = useState(false);
+  const send = async () => {
+    if (!searchId || !note.trim()) return;
+    await sendFeedback(await getToken(), searchId, -1, note.trim());
+    setSent(true);
+  };
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: '78ch' }}>
-      <S.SectionLabel>No matching circulars · no summary generated</S.SectionLabel>
+      <S.SectionLabel>No answer this time</S.SectionLabel>
       <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'var(--text-body)' }}>
-        {message ?? `${ASSISTANT_NAME} covers GCN Circulars (1997 to today) and recent ATels, and found nothing for this question.`}
+        {ASSISTANT_NAME} is at an early stage, and it looks like it didn't find what you were looking for. We've noted
+        your question and will work on it.{signedIn && " We'll let you know by email when it's fixed, so you can carry on."}
       </p>
+      {message && <S.SectionNote>{message}</S.SectionNote>}
+      {searchId && (sent ? (
+        <S.FeedbackRow>Thanks, we've got it.</S.FeedbackRow>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <S.FeedbackRow>What kind of questions would you like {ASSISTANT_NAME} to answer? It helps us build the right thing.</S.FeedbackRow>
+          <S.NoteBox placeholder="For example: light curves of GRB 221009A, or every kilonova candidate since 2017" value={note}
+            onChange={(e) => setNote(e.target.value)} maxLength={2000} />
+          <div>
+            <S.SmallButton $primary onClick={send} disabled={!note.trim()}>Send</S.SmallButton>
+          </div>
+        </div>
+      ))}
+      <S.SectionNote>
+        You can also email us at <S.Link href="mailto:contact.starithm@gmail.com">contact.starithm@gmail.com</S.Link>.
+      </S.SectionNote>
+      {!signedIn && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <S.SectionNote style={{ margin: 0 }}>Sign in and we'll email you when it's fixed. You can ask more questions too.</S.SectionNote>
+          <S.SmallButton onClick={onSignIn}>Sign in</S.SmallButton>
+        </div>
+      )}
+      <S.SectionLabel>Or try</S.SectionLabel>
       <S.Chips>
         {EXAMPLE_QUESTIONS.slice(0, 3).map((x) => (
           <S.ExampleChip key={x.q} onClick={() => onAsk(x.q)}>{x.q}</S.ExampleChip>
