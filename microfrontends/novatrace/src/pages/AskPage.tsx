@@ -201,6 +201,11 @@ export default function AskPage() {
   // Events involved = the events behind what the answer actually cites, once it is checked. While
   // streaming, the backend's list (events of all sources) is shown; it can include events that
   // merely share words with the question (e.g. 2025 GW candidates for a 2017 BNS question).
+  // An answer that found nothing: it opens by saying what the documents don't contain ("No document
+  // mentions S230612cc …"), or nothing in it is cited. It still shows, with the help-build invitation
+  // in place of the thumbs.
+  const foundNothing = !!state.answer && state.answer.length > 0
+    && (state.answer[0].absence || state.answer.every((a) => a.cites.length === 0));
   const citedEvents = useMemo(() => {
     if (!state.answer || !state.events) return state.events;
     const cited = new Set(state.answer.flatMap((a) => a.cites));
@@ -317,7 +322,10 @@ export default function AskPage() {
                 {state.draft.length > 0 && working && <WorkingSteps steps={state.steps} done={false} compact />}
               </section>
 
-              {state.phase === 'done' && state.searchId && (
+              {state.phase === 'done' && foundNothing ? (
+                <HelpBuild searchId={state.searchId} signedIn={!!isSignedIn} onSignIn={signIn}
+                  getToken={() => (isSignedIn ? getToken() : Promise.resolve(null))} />
+              ) : state.phase === 'done' && state.searchId && (
                 <Feedback searchId={state.searchId} getToken={() => (isSignedIn ? getToken() : Promise.resolve(null))} />
               )}
               {state.phase === 'done' && (
@@ -425,6 +433,27 @@ function NoAnswer({ message, searchId, signedIn, onSignIn, getToken, onAsk }: {
   message: string | null; searchId: string | null; signedIn: boolean; onSignIn: () => void;
   getToken: () => Promise<string | null>; onAsk: (q: string) => void;
 }) {
+  return (
+    <section style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: '78ch' }}>
+      <S.SectionLabel>No answer this time</S.SectionLabel>
+      {message && <S.SectionNote>{message}</S.SectionNote>}
+      <HelpBuild searchId={searchId} signedIn={signedIn} onSignIn={onSignIn} getToken={getToken} />
+      <S.SectionLabel>Or try</S.SectionLabel>
+      <S.Chips>
+        {EXAMPLE_QUESTIONS.slice(0, 3).map((x) => (
+          <S.ExampleChip key={x.q} onClick={() => onAsk(x.q)}>{x.q}</S.ExampleChip>
+        ))}
+      </S.Chips>
+    </section>
+  );
+}
+
+// When Evren found nothing — no answer at all, or an answer that only says what the documents don't
+// contain — ask what they were looking for, and invite them to shape it while it's early. The note
+// goes to the question's search_log row as thumbs-down feedback.
+function HelpBuild({ searchId, signedIn, onSignIn, getToken }: {
+  searchId: string | null; signedIn: boolean; onSignIn: () => void; getToken: () => Promise<string | null>;
+}) {
   const [note, setNote] = useState('');
   const [sent, setSent] = useState(false);
   const send = async () => {
@@ -433,27 +462,28 @@ function NoAnswer({ message, searchId, signedIn, onSignIn, getToken, onAsk }: {
     setSent(true);
   };
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: '78ch' }}>
-      <S.SectionLabel>No answer this time</S.SectionLabel>
-      <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'var(--text-body)' }}>
-        {ASSISTANT_NAME} is at an early stage, and it looks like it didn't find what you were looking for. We've noted
-        your question and will work on it.{signedIn && " We'll let you know by email when it's fixed, so you can carry on."}
+    <S.HelpBuild>
+      <S.HelpBuildTitle>Didn't find what you were looking for?</S.HelpBuildTitle>
+      <p style={{ margin: 0 }}>
+        We check what people search every day and fix the gaps quickly.{signedIn && " We'll email you when this one is fixed."}
       </p>
-      {message && <S.SectionNote>{message}</S.SectionNote>}
+      <p style={{ margin: 0 }}>
+        Meanwhile, we'd love to know what you want to search for: the questions, the data, the kind of knowledge.
+        {' '}{ASSISTANT_NAME} is at an early stage, so this is the best time to shape it. Come help us build it.
+      </p>
       {searchId && (sent ? (
-        <S.FeedbackRow>Thanks, we've got it.</S.FeedbackRow>
+        <S.FeedbackRow>Thank you, we've got it.</S.FeedbackRow>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <S.FeedbackRow>What kind of questions would you like {ASSISTANT_NAME} to answer? It helps us build the right thing.</S.FeedbackRow>
           <S.NoteBox placeholder="For example: light curves of GRB 221009A, or every kilonova candidate since 2017" value={note}
-            onChange={(e) => setNote(e.target.value)} maxLength={2000} />
+            onChange={(e) => setNote(e.target.value)} maxLength={2000} aria-label="What would you like to search for?" />
           <div>
             <S.SmallButton $primary onClick={send} disabled={!note.trim()}>Send</S.SmallButton>
           </div>
         </div>
       ))}
-      <S.SectionNote>
-        You can also email us at <S.Link href="mailto:contact.starithm@gmail.com">contact.starithm@gmail.com</S.Link>.
+      <S.SectionNote style={{ margin: 0 }}>
+        Or email us at <S.Link href="mailto:contact.starithm@gmail.com">contact.starithm@gmail.com</S.Link>.
       </S.SectionNote>
       {!signedIn && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
@@ -461,13 +491,7 @@ function NoAnswer({ message, searchId, signedIn, onSignIn, getToken, onAsk }: {
           <S.SmallButton onClick={onSignIn}>Sign in</S.SmallButton>
         </div>
       )}
-      <S.SectionLabel>Or try</S.SectionLabel>
-      <S.Chips>
-        {EXAMPLE_QUESTIONS.slice(0, 3).map((x) => (
-          <S.ExampleChip key={x.q} onClick={() => onAsk(x.q)}>{x.q}</S.ExampleChip>
-        ))}
-      </S.Chips>
-    </section>
+    </S.HelpBuild>
   );
 }
 
