@@ -162,6 +162,9 @@ export function fetchCircular(key: string): Promise<any | null> {
  *  time window's events (EVENTS-window), and a catalogued source's other names (ALIASES-<name>). */
 const isDigest = (key: string) => /^(NOTICES|OPTICAL|CATALOG|OBSERVATIONS|EVENTS|GRACEDB|ALIASES)-/.test(key);
 
+/** A catalogued source's names (ALIASES-<name>): short, so the card and the citation show it whole. */
+export const isCatalogEntry = (key: string) => key.startsWith('ALIASES-');
+
 /** Whether a source opens in the popup. Circulars do; digests link to pages instead. */
 export const opensInPopup = (key: string) => !isDigest(key);
 
