@@ -162,7 +162,7 @@ export function fetchCircular(key: string): Promise<any | null> {
  *  time window's events (EVENTS-window), and a catalogued source's other names (ALIASES-<name>). */
 const isDigest = (key: string) => /^(NOTICES|OPTICAL|CATALOG|OBSERVATIONS|EVENTS|GRACEDB|ALIASES)-/.test(key);
 
-/** A catalogued source's names (ALIASES-<name>): short, so the card and the citation show it whole. */
+/** A catalogued source's names (ALIASES-<catalogue>-<name>): short, so the card and the citation show it whole. */
 export const isCatalogEntry = (key: string) => key.startsWith('ALIASES-');
 
 /** Whether a source opens in the popup. Circulars do; digests link to pages instead. */
@@ -174,7 +174,7 @@ export function circularUrl(s: Pick<AskSource, 'key' | 'n' | 'url'>): string {
   if (s.key.startsWith('OPTICAL-') && s.url) return s.url;
   // A GraceDB record (a superevent NovaTrace holds nothing about) links to its GraceDB page.
   if (s.key.startsWith('GRACEDB-') && s.url) return s.url;
-  // A catalogued source's names (4FGL) link to the catalogue release's page.
+  // A catalogued source's names link to its catalogue's page (4FGL, X-ray binaries, magnetars).
   if (s.key.startsWith('ALIASES-')) return s.url ?? 'https://fermi.gsfc.nasa.gov/ssc/data/access/lat/14yr_catalog/';
   // An event's notice digest and optical candidates (NOTICES-/OPTICAL-<canonical_id>) link to its event page.
   const eventDigest = s.key.match(/^(?:NOTICES|OPTICAL|CATALOG|OBSERVATIONS)-(.+)$/);
@@ -189,7 +189,7 @@ export function digestLinkLabel(s: Pick<AskSource, 'key' | 'url'>): string {
   if (s.key.startsWith('EVENTS-')) return 'All events →';
   if (s.key.startsWith('OPTICAL-') && s.url) return 'Nearest candidate →';
   if (s.key.startsWith('GRACEDB-')) return 'GraceDB →';
-  if (s.key.startsWith('ALIASES-')) return 'Fermi 4FGL →';
+  if (s.key.startsWith('ALIASES-')) return 'Catalogue →';
   return 'Event page →';
 }
 
@@ -212,7 +212,8 @@ export function sourceLabel(s: Pick<AskSource, 'key' | 'n'>): string {
   if (s.key.startsWith('OBSERVATIONS-')) return 'Observations';
   if (s.key.startsWith('EVENTS-')) return 'Events';
   if (s.key.startsWith('GRACEDB-')) return 'GraceDB';
-  if (s.key.startsWith('ALIASES-')) return '4FGL';
+  // The catalogue's short name ('4FGL', 'HMXB', 'Magnetar'); older backends sent 'aliases' for 4FGL.
+  if (s.key.startsWith('ALIASES-')) return s.n && s.n !== 'aliases' ? s.n : '4FGL';
   if (s.key.startsWith('ATel-')) return `ATel ${s.key.slice(5)}`;
   return `GCN ${s.n}`;
 }
