@@ -448,3 +448,24 @@ export const GateCard = styled.div`
   border: 1px solid var(--line-dialog);
   border-radius: 10px;
 `;
+
+/* The "help us build it" invitation shown when Evren found nothing. */
+export const HelpBuild = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 78ch;
+  padding: 16px 18px;
+  border: 1px solid var(--line-subtle);
+  border-left: 3px solid var(--primary);
+  border-radius: 8px;
+  background: var(--surface-raised);
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text-body);
+`;
+export const HelpBuildTitle = styled.div`
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--text-primary, var(--text-body));
+`;
