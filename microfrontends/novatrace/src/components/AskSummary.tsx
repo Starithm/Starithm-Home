@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { type AnswerSentence, type AskSource, circularUrl, digestLinkLabel, linkTarget, opensInPopup, sourceLabel } from '@novatrace/lib/askCosmos';
+import { type AnswerSentence, type AskSource, circularUrl, digestLinkLabel, isCatalogEntry, linkTarget, opensInPopup, sourceLabel } from '@novatrace/lib/askCosmos';
 import {
   CiteCard, CiteChip, CiteWrap, Link, Mono, Sentence, SummaryText,
 } from '@novatrace/styled_pages/AskPage.styled';
@@ -63,6 +63,9 @@ function Cite({ sourceKey, source, first, active, onHover, onOpen }: {
             <Mono style={{ color: 'var(--text-muted)' }}>{source.date}</Mono>
           </span>
           <span style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--text-body)' }}>{source.subject}</span>
+          {isCatalogEntry(sourceKey) && source.snippet && (
+            <span style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--text-secondary)', whiteSpace: 'pre-line' }}>{source.snippet}</span>
+          )}
           <Link href={circularUrl(source)} {...linkTarget(circularUrl(source))} onClick={openPopup}>
             {popup ? (source.archive ? 'Open circular (archive text)' : 'Open circular') : digestLinkLabel(source)}
           </Link>

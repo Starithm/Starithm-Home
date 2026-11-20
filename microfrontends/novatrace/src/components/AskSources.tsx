@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { thinScrollbar } from '@shared/components/ui/primitives';
-import { type AskSource, circularUrl, digestLinkLabel, linkTarget, opensInPopup, sourceLabel } from '@novatrace/lib/askCosmos';
+import { type AskSource, circularUrl, digestLinkLabel, isCatalogEntry, linkTarget, opensInPopup, sourceLabel } from '@novatrace/lib/askCosmos';
 import { Link, Mono, SectionLabel } from '@novatrace/styled_pages/AskPage.styled';
 
 /* The source rail: every circular retrieved, as a filterable vertical list (not a carousel:
@@ -84,7 +84,7 @@ export default function AskSources({ sources, countText, hoverKey, onHover, onOp
               {s.archive && <Tag>Archive · not extracted</Tag>}
             </CardTop>
             <Subject>{s.subject}</Subject>
-            {s.snippet && <Snippet>{s.snippet}</Snippet>}
+            {s.snippet && (isCatalogEntry(s.key) ? <Entry>{s.snippet}</Entry> : <Snippet>{s.snippet}</Snippet>)}
             {opensInPopup(s.key) ? (
               <OpenHint>{s.archive ? 'Open circular (archive text)' : 'Open circular'}</OpenHint>
             ) : (
@@ -150,6 +150,8 @@ const EventTag = styled.span`
 const OpenHint = styled.span`font-size: 12px; color: var(--starithm-link);`;
 const Subject = styled.div`font-size: 13.5px; line-height: 1.4; font-weight: 500; color: var(--text-body); text-wrap: pretty;`;
 const Snippet = styled.div`font-size: 12.5px; line-height: 1.5; color: var(--text-muted); text-wrap: pretty;`;
+/* A catalogue entry (4FGL names) is shown whole, one statement per line: it has no page to open. */
+const Entry = styled(Snippet)`white-space: pre-line; color: var(--text-secondary);`;
 const SrIndex = styled.span`position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);`;
 const Skeleton = styled.div`
   border: 1px solid var(--line-hairline); border-radius: 8px; background: var(--surface-raised);
