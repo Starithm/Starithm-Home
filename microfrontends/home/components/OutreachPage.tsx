@@ -30,14 +30,14 @@ const PROJECTS: Project[] = [
 ];
 
 /* Reels on @starithm.ai, picked from its analytics (2026-11-23): the most watched one, and three on the
-   kinds of event Starithm tracks. Links only: Instagram's thumbnail URLs expire, and its embed loads
-   Instagram's script on our page. */
+   kinds of event Starithm tracks. Covers are each reel's own thumbnail, saved once into public/outreach/reels
+   (Instagram's thumbnail URLs expire, and its embed loads Instagram's script on our page). */
 const INSTAGRAM = 'https://www.instagram.com/starithm.ai/';
-const REELS: { title: string; url: string }[] = [
-  { title: 'A message for the year 40,272', url: 'https://www.instagram.com/reel/Df4DqAoIXj6/' },
-  { title: 'The first gravitational waves, September 2015', url: 'https://www.instagram.com/reel/DfSCAe-Cjxq/' },
-  { title: 'The flash that blinded our gamma-ray detectors', url: 'https://www.instagram.com/reel/DfPiWcWlUsx/' },
-  { title: 'A neutrino, a flaring galaxy, and a clue in old data', url: 'https://www.instagram.com/reel/De_ErkHDv9r/' },
+const REELS: { title: string; url: string; cover: string }[] = [
+  { title: 'A message for the year 40,272', url: 'https://www.instagram.com/reel/Df4DqAoIXj6/', cover: '/outreach/reels/message-40272.jpg' },
+  { title: 'The first gravitational waves, September 2015', url: 'https://www.instagram.com/reel/DfSCAe-Cjxq/', cover: '/outreach/reels/first-gravitational-waves.jpg' },
+  { title: 'The flash that blinded our gamma-ray detectors', url: 'https://www.instagram.com/reel/DfPiWcWlUsx/', cover: '/outreach/reels/gamma-ray-flash.jpg' },
+  { title: 'A neutrino, a flaring galaxy, and a clue in old data', url: 'https://www.instagram.com/reel/De_ErkHDv9r/', cover: '/outreach/reels/neutrino-flaring-galaxy.jpg' },
 ];
 
 /* Films on YouTube, embedded without cookies. Empty until they are uploaded; until then the section
@@ -74,6 +74,24 @@ export default function OutreachPage() {
         ))}
       </Grid>
 
+      <section id="reels" style={{ marginTop: 40 }}>
+        <Eyebrow>Reels</Eyebrow>
+        <P style={{ marginTop: 8 }}>Short films about what the sky is doing, on Instagram.</P>
+        <ReelGrid>
+          {REELS.map(r => (
+            <Reel key={r.url} href={r.url} target="_blank" rel="noopener noreferrer">
+              <Cover>
+                <img src={r.cover} alt="" loading="lazy" />
+                <Play aria-hidden="true">▶</Play>
+              </Cover>
+              <span>{r.title}</span>
+              <small>Watch on Instagram →</small>
+            </Reel>
+          ))}
+        </ReelGrid>
+        <Follow href={INSTAGRAM} target="_blank" rel="noopener noreferrer">Follow @starithm.ai on Instagram</Follow>
+      </section>
+
       {FILMS.length === 0 && (
         <section id="films" style={{ marginTop: 40 }}>
           <Eyebrow>Films</Eyebrow>
@@ -88,20 +106,6 @@ export default function OutreachPage() {
           </Grid>
         </section>
       )}
-
-      <section id="reels" style={{ marginTop: 40 }}>
-        <Eyebrow>Reels</Eyebrow>
-        <P style={{ marginTop: 8 }}>Short films about what the sky is doing, on Instagram.</P>
-        <ReelGrid>
-          {REELS.map(r => (
-            <Reel key={r.url} href={r.url} target="_blank" rel="noopener noreferrer">
-              <span>{r.title}</span>
-              <small>Watch on Instagram →</small>
-            </Reel>
-          ))}
-        </ReelGrid>
-        <Follow href={INSTAGRAM} target="_blank" rel="noopener noreferrer">Follow @starithm.ai on Instagram</Follow>
-      </section>
 
       {FILMS.length > 0 && (
         <section id="films" style={{ marginTop: 40 }}>
@@ -143,13 +147,26 @@ const Soon = styled.span`
   font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;
   color: var(--foreground); background: var(--surface-raised); border: 1px solid var(--line-control); padding: 6px 12px;
 `;
-const ReelGrid = styled.div`display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px;`;
+// Four across, two on a phone.
+const ReelGrid = styled.div`
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 12px;
+  @media (max-width: 640px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+`;
 const Reel = styled.a`
-  display: flex; flex-direction: column; justify-content: space-between; gap: 14px; min-height: 96px;
-  padding: 14px 16px; border: 1px solid var(--line-subtle); background: var(--surface-raised); text-decoration: none;
-  span { font-family: var(--font-prose); font-size: 15px; line-height: 1.4; color: var(--foreground); }
-  small { font-size: 12px; color: var(--accent-text); }
-  &:hover { border-color: var(--line-hover); }
+  display: flex; flex-direction: column; gap: 8px; text-decoration: none;
+  span { font-family: var(--font-prose); font-size: 14px; line-height: 1.4; color: var(--foreground); }
+  small { font-size: 12px; color: var(--accent-text); margin-top: auto; }
+  &:hover img { opacity: 1; }
+  &:hover span { text-decoration: underline; }
+`;
+const Cover = styled.div`
+  position: relative; border: 1px solid var(--line-subtle); background: var(--surface-sunken);
+  img { display: block; width: 100%; aspect-ratio: 9 / 16; object-fit: cover; opacity: 0.9; transition: opacity 0.15s; }
+`;
+const Play = styled.div`
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; padding-left: 3px;
+  font-size: 15px; color: var(--foreground); background: var(--surface-raised); border: 1px solid var(--line-control); opacity: 0.85;
 `;
 const Follow = styled.a`
   display: inline-block; margin-top: 18px; padding: 10px 16px; font-size: 13px; text-decoration: none;
