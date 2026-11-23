@@ -33,6 +33,7 @@ import { EventLightCurve, type LightCurve } from '../components/EventLightCurve'
 import { EventIceCat } from '../components/EventIceCat';
 import { EventBurstProperties } from '../components/EventBurstProperties';
 import { EventKeyFacts } from '../components/EventKeyFacts';
+import { EventAsk } from '../components/EventAsk';
 import { SkyCutoutFigure } from '../components/SkyCutout';
 import { keyFacts, type Energetics } from '../utils/keyFacts';
 import { shownObservations, burstProperties, type CatalogValues, type ObservationRow } from '../utils/observations';
@@ -627,6 +628,8 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
                 <EventKeyFacts facts={facts} onOpenCircular={openCircular} />
               </SummarySplit>
             </Card>
+            {/* Named by the event's name, never the model headline eventTitle falls back to. */}
+            <EventAsk name={event.name || event.primaryName || event.canonicalId} kind={event.alertKind} />
           </RecordSection>
 
           {!noSky && <RecordSection id="position">
