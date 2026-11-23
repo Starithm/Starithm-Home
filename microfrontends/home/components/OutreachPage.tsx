@@ -29,12 +29,22 @@ const PROJECTS: Project[] = [
   },
 ];
 
+/* Reels on @starithm.ai, picked from its analytics (2026-11-23): the most watched one, and three on the
+   kinds of event Starithm tracks. Links only: Instagram's thumbnail URLs expire, and its embed loads
+   Instagram's script on our page. */
+const INSTAGRAM = 'https://www.instagram.com/starithm.ai/';
+const REELS: { title: string; url: string }[] = [
+  { title: 'A message for the year 40,272', url: 'https://www.instagram.com/reel/Df4DqAoIXj6/' },
+  { title: 'The first gravitational waves, September 2015', url: 'https://www.instagram.com/reel/DfSCAe-Cjxq/' },
+  { title: 'The flash that blinded our gamma-ray detectors', url: 'https://www.instagram.com/reel/DfPiWcWlUsx/' },
+  { title: 'A neutrino, a flaring galaxy, and a clue in old data', url: 'https://www.instagram.com/reel/De_ErkHDv9r/' },
+];
+
 /* Films on YouTube, embedded without cookies. Empty until they are uploaded; until then the section
    shows COMING_SOON's posters (NASA images already in public/voyager). */
 const FILMS: { title: string; youtubeId: string; note?: string }[] = [];
 const COMING_SOON = {
-  when: '18 November 2026',
-  text: 'The two films we made with the NYUAD Space Art Lab for Leonardo Barilaro\'s Voyager concert, here after the concert.',
+  text: 'The two films we made with the NYUAD Space Art Lab for Leonardo Barilaro\'s Voyager concert.',
   posters: [
     ['/voyager/pale-blue-dot-pia23645.jpg', 'The Pale Blue Dot, Earth seen by Voyager 1 in 1990 (NASA/JPL-Caltech)'],
     ['/voyager/golden-record-pia14113.jpg', 'The Golden Record carried by Voyager 1 (NASA/JPL-Caltech)'],
@@ -72,12 +82,26 @@ export default function OutreachPage() {
             {COMING_SOON.posters.map(([src, alt]) => (
               <Poster key={src}>
                 <Img src={src} alt={alt} loading="lazy" style={{ opacity: 0.55 }} />
-                <Soon>Coming {COMING_SOON.when}</Soon>
+                <Soon>Coming soon</Soon>
               </Poster>
             ))}
           </Grid>
         </section>
       )}
+
+      <section id="reels" style={{ marginTop: 40 }}>
+        <Eyebrow>Reels</Eyebrow>
+        <P style={{ marginTop: 8 }}>Short films about what the sky is doing, on Instagram.</P>
+        <ReelGrid>
+          {REELS.map(r => (
+            <Reel key={r.url} href={r.url} target="_blank" rel="noopener noreferrer">
+              <span>{r.title}</span>
+              <small>Watch on Instagram →</small>
+            </Reel>
+          ))}
+        </ReelGrid>
+        <Follow href={INSTAGRAM} target="_blank" rel="noopener noreferrer">Follow @starithm.ai on Instagram</Follow>
+      </section>
 
       {FILMS.length > 0 && (
         <section id="films" style={{ marginTop: 40 }}>
@@ -118,5 +142,18 @@ const Soon = styled.span`
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;
   color: var(--foreground); background: var(--surface-raised); border: 1px solid var(--line-control); padding: 6px 12px;
+`;
+const ReelGrid = styled.div`display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px;`;
+const Reel = styled.a`
+  display: flex; flex-direction: column; justify-content: space-between; gap: 14px; min-height: 96px;
+  padding: 14px 16px; border: 1px solid var(--line-subtle); background: var(--surface-raised); text-decoration: none;
+  span { font-family: var(--font-prose); font-size: 15px; line-height: 1.4; color: var(--foreground); }
+  small { font-size: 12px; color: var(--accent-text); }
+  &:hover { border-color: var(--line-hover); }
+`;
+const Follow = styled.a`
+  display: inline-block; margin-top: 18px; padding: 10px 16px; font-size: 13px; text-decoration: none;
+  color: var(--primary-foreground); background: var(--primary); border: 1px solid var(--primary);
+  &:hover { filter: brightness(1.1); }
 `;
 const FilmTitle = styled.div`font-size: 13px; margin-top: 6px; color: var(--foreground);`;
