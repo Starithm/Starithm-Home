@@ -103,7 +103,7 @@ anywhere else will 404 with no build error.
 | Command | Catches |
 |---|---|
 | `npm run check:tokens` | `theme.ts` drifting from `globals.css` |
-| `npm run check:no-raw-hex` | new raw hex in components — a **ratchet**: 342 literals already exist, it fails only on an increase. Re-baseline with `-- --update` after a genuine reduction |
+| `npm run check:no-raw-hex` | new raw hex in components — a **ratchet**: 335 literals already exist, it fails only on an increase. Re-baseline with `-- --update` after a genuine reduction |
 | `npm run check:design` | both |
 | `npx tsc --noEmit` | ~116 pre-existing errors (root tsconfig doesn't map the vite aliases). Diff against a baseline; don't expect zero |
 

@@ -35,6 +35,18 @@ export function kindKey(alertKind: string | null | undefined): string {
   return ALIASES[k] || k;
 }
 
+/** Long names for alert kinds, used by Ask Evren and the RSS feed. Kinds without one get none. */
+export const KIND_NAMES: Record<string, string> = {
+  gw: 'Gravitational-wave event', grb: 'Gamma-ray burst', neutrino: 'Neutrino alert',
+  xray: 'X-ray transient', ep: 'X-ray transient', frb: 'Fast radio burst', optical: 'Optical transient',
+  sgr: 'Magnetar burst', sn: 'Supernova',
+};
+
+/** 'grb' (or 'gamma-ray burst') → 'Gamma-ray burst'; undefined when the kind has no long name. */
+export function kindName(alertKind: string | null | undefined): string | undefined {
+  return KIND_NAMES[kindKey(alertKind)];
+}
+
 /** The kind as shown: 'solar_flare' → 'solar flare'. */
 export function kindLabel(alertKind: string | null | undefined): string {
   return (alertKind || '').replace(/_/g, ' ');

@@ -8,7 +8,7 @@ import {
   CardField, CardFieldLabel, CardFieldValue, CardGrid, CardMetaLine, EventPanel, EventPanelBody, EventPanelContent,
   EventPanelLeft, EventPanelTop, EventTitle, KindChip, PrimaryAction,
 } from '@novatrace/styled_pages/EventLevelDashboard.styled';
-import { kindColor } from '@shared/utils/eventColors';
+import { kindColor, kindName } from '@shared/utils/eventColors';
 import { getTimeAgo } from '../utils/duration';
 import { hasPosition, posErrorRadius } from '../utils/sky';
 import { useSkyCutout } from '@novatrace/lib/skyCutouts';
@@ -17,12 +17,6 @@ import { utcSecond } from '@shared/utils/time';
 /* Left-column context. An event question gets a fact sheet (and real images when they exist);
  * a topic question gets the events behind its sources. Missing fields say "not reported":
  * events minted from circulars alone have no time or position, and a blank or a 0 would lie. */
-
-const KIND: Record<string, string> = {
-  gw: 'Gravitational-wave event', grb: 'Gamma-ray burst', neutrino: 'Neutrino alert',
-  xray: 'X-ray transient', ep: 'X-ray transient', frb: 'Fast radio burst', optical: 'Optical transient',
-  sgr: 'Magnetar burst', sn: 'Supernova',
-};
 
 const NOT_REPORTED = <span style={{ color: 'var(--text-faint)' }}>not reported</span>;
 const NOT_SEARCHED = <span style={{ color: 'var(--text-faint)' }}>not searched</span>;
@@ -53,7 +47,7 @@ export function FactSheet({ event }: { event: AskEventFacts }) {
   const seen = new Set([eventLabel(event).toLowerCase()]);
   const others = (event.aliases ?? []).filter((a) => /[A-Z]/.test(a) && !seen.has(a.toLowerCase()) && seen.add(a.toLowerCase())).slice(0, 3);
   const rows: [string, React.ReactNode][] = [
-    ['Kind', event.kind ? KIND[event.kind] ?? event.kind : NOT_REPORTED],
+    ['Kind', event.kind ? kindName(event.kind) ?? event.kind : NOT_REPORTED],
     ['Trigger (UTC)', t0 ? <Mono>{t0}</Mono> : NOT_REPORTED],
     ['Position', pos ? <Mono>{pos}</Mono> : NOT_REPORTED],
     ['Classification', event.classification || NOT_REPORTED],

@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Event } from '@shared/types';
+import { platinumA as line, MONO as mono } from '@shared/theme/brand';
 
 /* Event counts across the current date window, as a sparkline in the filter row.
  *
@@ -10,8 +11,6 @@ import { Event } from '@shared/types';
  */
 
 const BINS = 56;
-const mono = "'Google Sans Code', ui-monospace, monospace";
-const line = (a: number) => `rgba(231, 223, 221, ${a})`;
 
 const Wrap = styled.div`
   display: flex;

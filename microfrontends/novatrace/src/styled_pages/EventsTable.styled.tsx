@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { PLATINUM, SELECTIVE_YELLOW as GOLD, platinumA as line, MONO as mono } from '@shared/theme/brand';
 
 /* List view (design 2b) — the table that sits behind the Globe/List toggle.
  *
@@ -11,12 +12,8 @@ import styled from 'styled-components';
  * docs/events-page-design-context.md §9.
  */
 
-const PLATINUM = '#E7DFDD';
-const line = (a: number) => `rgba(231, 223, 221, ${a})`;
-const GOLD = '#FFB400';
 const SELECTED = 'rgba(141, 15, 245, 0.10)';
 
-const mono = "'Google Sans Code', ui-monospace, monospace";
 
 /* Eight columns; the mock's last two (N · C, SIG) are dropped. Instrument gets a
    little room to grow for "LIGO-Virgo-KAGRA", and a trailing 1fr track soaks up

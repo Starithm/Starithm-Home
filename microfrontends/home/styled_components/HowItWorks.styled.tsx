@@ -1,5 +1,5 @@
-import styled, { css } from 'styled-components';
-import { line } from './HomepageV3.styled';
+import styled from 'styled-components';
+import { mono, prose, platinumA as line } from '@shared/theme/brand';
 
 /* "From alert to event page" (2026-11-13): a spine of stage ovals down the middle. The first is ringed by
    its sources as pills; each later one reaches out on a dotted line to a small card of real data from one
@@ -11,8 +11,6 @@ const LILAC = 'var(--accent-text)';
 const PANEL = 'var(--surface)';
 const ON = 'rgba(154, 72, 255, 0.7)';
 const GLOW = '0 0 14px rgba(141, 15, 245, 0.45)';
-const prose = css`font-family: var(--font-prose);`;
-const mono = css`font-family: var(--font-mono);`;
 
 /* Messenger / band colours for the source pills. */
 export const BAND = {

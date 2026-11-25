@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { GOLD, PLATINUM, platinumA as line, mono } from '@shared/theme/brand';
 
 /* Standalone event record — scroll layout with a dividerless left rail.
  *
@@ -14,7 +15,6 @@ const BG = '#0E0B16';
    them with a solid colour — so rows read as a lift off #0E0B16, not as a
    different (slightly violet) material. */
 const SUNKEN = 'rgba(231, 223, 221, 0.05)';
-const GOLD = 'var(--starithm-golden-yellow, #ffc332)';
 /* Veronica, muted for this page: same hue as --starithm-veronica-dark (283.6°),
    saturation dropped 91% → 62%, lightness held at 63% so contrast on the near-black
    background doesn't fall with it. Local to the record page — the palette token
@@ -30,9 +30,7 @@ const goldA = (a: number) => `rgba(255, 195, 50, ${a})`;
    whatever surface the chip sits on, exactly as the mark does. */
 const ARC = (a: number) => `rgba(157, 92, 255, ${a})`;
 const ARC_OUTER = ARC(0.42);
-const PLATINUM = 'var(--starithm-platinum, #E7DFDD)';
 
-const line = (a: number) => `rgba(231, 223, 221, ${a})`;
 
 export const SIGNIFICANCE: Record<string, string> = {
   critical: '#ef4444',
@@ -41,9 +39,6 @@ export const SIGNIFICANCE: Record<string, string> = {
   low: '#22c55e',
 };
 
-const mono = css`
-  font-family: 'Google Sans Code', ui-monospace, monospace;
-`;
 
 /* One knob for the whole record's type scale. The numbers passed to fs() are the
    design's original sizes; BUMP shifts every one of them together, so the

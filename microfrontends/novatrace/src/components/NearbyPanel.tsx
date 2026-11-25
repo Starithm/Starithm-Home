@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Event } from '@shared/types';
 import { kindColor } from '@shared/utils/eventColors';
 import { angularSeparation, formatSeparation, hasPosition } from '../utils/sky';
+import { platinumA as line, MONO as mono } from '@shared/theme/brand';
 
 /* Events within a cone of the selected one, in the current filter window.
  *
@@ -15,8 +16,6 @@ import { angularSeparation, formatSeparation, hasPosition } from '../utils/sky';
 const RADIUS_DEG = 30;
 const MAX_ROWS = 5;
 
-const mono = "'Google Sans Code', ui-monospace, monospace";
-const line = (a: number) => `rgba(231, 223, 221, ${a})`;
 
 const Panel = styled.aside`
   position: absolute;

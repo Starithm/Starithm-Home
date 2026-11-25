@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { AmbientNote, MapBox, MapCanvas, MapFrame } from '../styled_components/Ears.styled';
+import { prepareCanvas } from '../lib/canvas';
 
 interface Props {
   /** Stable per track, so each track gets its own star pattern. */
@@ -50,20 +51,9 @@ export function AmbientSky({ seed, playing, note }: Props) {
         raf = requestAnimationFrame(draw);
         return;
       }
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
-        canvas.width = Math.round(w * dpr);
-        canvas.height = Math.round(h * dpr);
-      }
-      const g = canvas.getContext('2d');
-      if (!g) return;
-      g.setTransform(dpr, 0, 0, dpr, 0, 0);
-      g.clearRect(0, 0, w, h);
-
-      const css = getComputedStyle(canvas);
-      const violet = css.getPropertyValue('--starithm-electric-violet').trim();
-      const amber = css.getPropertyValue('--starithm-selective-yellow').trim();
-      const ink = css.getPropertyValue('--text-body').trim();
+      const frame = prepareCanvas(canvas, w, h);
+      if (!frame) return;
+      const { g, violet, amber, ink } = frame;
       const t = (now - start) / 1000;
       energy += ((playingRef.current ? 1 : 0.25) - energy) * 0.03; // ease between rest and play
 

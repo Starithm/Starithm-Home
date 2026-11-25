@@ -11,7 +11,7 @@
  "microfrontends/blog/src/pages/BlogList.tsx": 24,
  "microfrontends/blog/src/pages/BlogPost.tsx": 39,
  "microfrontends/blog/src/styled_components/BlogList.styled.tsx": 18,
- "microfrontends/blog/src/styled_components/RoadmapFrontier.styled.tsx": 7,
+ "microfrontends/blog/src/styled_components/RoadmapFrontier.styled.tsx": 4,
  "microfrontends/home/components/Homepage.tsx": 7,
  "microfrontends/novatrace/src/components/CircularsList.tsx": 33,
  "microfrontends/novatrace/src/components/MeasurementsDisplay.tsx": 7,
@@ -23,7 +23,6 @@
  "microfrontends/novatrace/src/pages/EventRecordPage.tsx": 1,
  "microfrontends/novatrace/src/styled_components/Navbar.styled.tsx": 4,
  "microfrontends/novatrace/src/styled_pages/EventLevelDashboard.styled.tsx": 43,
- "microfrontends/novatrace/src/styled_pages/EventRecord.styled.tsx": 9,
- "microfrontends/novatrace/src/styled_pages/EventsTable.styled.tsx": 2,
+ "microfrontends/novatrace/src/styled_pages/EventRecord.styled.tsx": 7,
  "microfrontends/novatrace/src/styled_pages/InfraStatus.styled.tsx": 1
 }

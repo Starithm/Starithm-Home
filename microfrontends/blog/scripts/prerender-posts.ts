@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 // Same helpers the edge prerenderers use — the strip-then-inject rule in particular must
 // not drift between the two, or one surface regrows the duplicate-og:tag bug.
 import { esc, injectHead, truncate } from '../../../api/_shared/prerender';
+import { parseFrontmatter } from '../src/lib/posts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -33,20 +34,6 @@ interface PostMeta {
   image: string;
 }
 interface Post extends PostMeta { content: string; }
-
-function parseFrontmatter(raw: string): { meta: Partial<PostMeta>; content: string } {
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) return { meta: {}, content: raw };
-  const meta: Partial<PostMeta> = {};
-  for (const line of match[1].split('\n')) {
-    const colon = line.indexOf(':');
-    if (colon === -1) continue;
-    const key = line.slice(0, colon).trim();
-    const value = line.slice(colon + 1).trim().replace(/^"|"$/g, '');
-    (meta as any)[key] = value;
-  }
-  return { meta, content: match[2].trim() };
-}
 
 function markdownToHtml(md: string): string {
   const lines = md.split('\n');
@@ -197,7 +184,7 @@ async function main() {
   const posts = await Promise.all(
     mdFiles.map(async (file) => {
       const raw = await fetch(`${RAW_BASE}/posts/${file.name}`).then(r => r.text());
-      const { meta, content } = parseFrontmatter(raw);
+      const { meta, content } = parseFrontmatter<PostMeta>(raw);
       return {
         slug: meta.slug || file.name.replace('.md', ''),
         title: meta.title || file.name,
