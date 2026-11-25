@@ -11,6 +11,7 @@ import {
   PreservedSection, PreservedBody, ImageGrid, Thumb,
   TableWrap, MiniTable,
 } from '../styled_components/CircularDetailModal.styled';
+import { utcMinute } from '@shared/utils/time';
 
 /**
  * Circular detail popup.
@@ -37,7 +38,7 @@ function fmtTime(a: any): string {
 function fmtDateTime(a: any): string {
   const d = new Date(a?.date ?? a?.createdAt ?? 0);
   if (!Number.isFinite(d.getTime())) return '';
-  return d.toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+  return `${utcMinute(d)} UTC`;
 }
 
 /**
@@ -270,9 +271,7 @@ export function CircularDetailModal({
               <PreservedSection>
                 <summary>FITS files ({fits.length})</summary>
                 <PreservedBody>
-                  {/* The legacy dashboard opens these in an embedded JS9 viewer. That viewer
-                      loads a global JS9 instance on page mount; wiring it into this modal is
-                      a separate change, so for now each file is a direct link. */}
+                  {/* Each FITS file is a direct link (no in-page viewer). */}
                   {fits.map((u, i) => (
                     <LinkAnchor key={i} href={u} target="_blank" rel="noreferrer noopener">{u}</LinkAnchor>
                   ))}

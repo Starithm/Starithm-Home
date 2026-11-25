@@ -7,6 +7,8 @@
  * "not observed".
  */
 
+import { utcMinute } from '@shared/utils/time';
+
 export interface ObservationRow {
   quantity: string | null;       // magnitude | flux | flux_density | count_rate | (prompt) duration | fluence | peak_flux | photon_index | epeak | …
   kind: 'detection' | 'upper_limit' | 'depth' | string | null;
@@ -37,6 +39,9 @@ export interface ObservationRow {
 
 /** The event's own values from burst catalogues (NovaTrace scripts/main/enrich/gbm-catalog.ts). */
 export interface CatalogValues { catalog: string; catalogId: string; matchedBy: string; fetchedAt: string; rows: ObservationRow[] }
+
+/** "GCN-46098" → "46098": the number shown next to a value's source circular. */
+export const gcnNo = (k: string) => k.replace(/^GCN-/, '');
 
 export const CATALOG_LABEL: Record<string, string> = { fermigbrst: 'GBM catalogue', swift_grb_table: 'Swift GRB table' };
 
@@ -235,7 +240,7 @@ export function fmtSinceTrigger(s: number | null): string {
 export function fmtObservationUtc(t0: string | null | undefined, s: number | null): string {
   if (!t0 || s == null) return '—';
   const d = new Date(new Date(t0).getTime() + s * 1000);
-  return Number.isNaN(d.getTime()) ? '—' : d.toISOString().slice(0, 16).replace('T', ' ');
+  return Number.isNaN(d.getTime()) ? '—' : utcMinute(d);
 }
 
 /** Exposure as reported: "300 s", "1.2 ks". */

@@ -12,6 +12,7 @@
  */
 import { burstProperties, CATALOG_LABEL, fmtNormalised, fmtObservationValue, type CatalogValues, type Observation, type ObservationRow } from './observations';
 import type { RedshiftReport } from './redshift';
+import { utcSecond } from '@shared/utils/time';
 
 export interface KeyFact {
   id: string;
@@ -50,7 +51,7 @@ const PROMPT_FACTS: { id: string; label: string; grb: boolean }[] = [
 const missing = (id: string, label: string, wide = false): KeyFact => ({ id, label, value: 'not reported', missing: true, wide });
 
 /** "2026-10-17 16:05:05 UTC". */
-const fmtTrigger = (iso: string) => `${new Date(iso).toISOString().slice(0, 19).replace('T', ' ')} UTC`;
+const fmtTrigger = (iso: string) => `${utcSecond(iso)} UTC`;
 
 /** A unit that carries its own power of ten ("1e-07 erg/cm^2") reads better normalised ("5.10 × 10⁻⁷ erg/cm2");
  *  otherwise the value as reported, with its error. */

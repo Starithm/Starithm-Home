@@ -3,6 +3,8 @@ import { ExternalLink } from 'lucide-react';
 import { MeasurementsDisplay } from './MeasurementsDisplay';
 import styled from 'styled-components';
 import { thinScrollbar } from '@shared/components/ui/primitives';
+import { utcLong } from '@shared/utils/time';
+import { IMAGE_EXTS } from '@novatrace/lib/eventAssets';
 
 const RawScroll = styled.div`
   overflow-y: auto;
@@ -28,8 +30,6 @@ export interface Circular {
   tags?: string[];
 }
 
-const IMAGE_EXTS = /\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?.*)?$/i;
-
 function normalizeUrl(url: string): string {
   if (/^https?:\/\//i.test(url)) return url;
   return `https://${url}`;
@@ -42,13 +42,6 @@ function urlLabel(url: string): string {
   } catch {
     return url;
   }
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short',
-  });
 }
 
 export function CircularsList({ circulars, allExpandedByDefault = false }: { circulars: Circular[]; allExpandedByDefault?: boolean }) {
@@ -101,7 +94,7 @@ export function CircularsList({ circulars, allExpandedByDefault = false }: { cir
                       <span key={t} style={{ fontSize: '0.62rem', color: '#8D0FF5', background: 'rgba(141,15,245,0.08)', padding: '0.1rem 0.4rem', borderRadius: 3 }}>{t}</span>
                     ))}
                     {hasExtra && <span style={{ color: '#444', fontSize: '0.7rem', marginLeft: 'auto' }}>{isExpanded ? '▲' : '▼'}</span>}
-                    <span style={{ color: '#555', fontSize: '0.72rem', marginLeft: hasExtra ? '0' : 'auto' }}>{c.date ? formatDate(c.date) : ''}</span>
+                    <span style={{ color: '#555', fontSize: '0.72rem', marginLeft: hasExtra ? '0' : 'auto' }}>{c.date ? utcLong(c.date) : ''}</span>
                   </div>
                   {(() => {
                     const text = c.summary || (typeof c.data?.raw === 'string' ? c.data.raw.slice(0, 400).trimEnd() + (c.data.raw.length > 400 ? '…' : '') : null);

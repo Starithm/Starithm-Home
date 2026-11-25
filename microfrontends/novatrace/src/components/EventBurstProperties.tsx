@@ -3,7 +3,7 @@ import {
   SectionHead, SectionNote, Card, FieldHint, Muted, ScrollTableWrap, Table, UrlLink, Disclaimer,
 } from '../styled_pages/EventRecord.styled';
 import {
-  burstProperties, catalogUrl, fmtObservationValue, CATALOG_LABEL, PROMPT_PROPERTIES, SPECTRAL_MODEL_LABEL,
+  gcnNo, burstProperties, catalogUrl, fmtObservationValue, CATALOG_LABEL, PROMPT_PROPERTIES, SPECTRAL_MODEL_LABEL,
   type CatalogValues, type ObservationRow,
 } from '../utils/observations';
 import { RecordSection, SectionToggle } from './RecordSection';
@@ -15,8 +15,6 @@ import { RecordSection, SectionToggle } from './RecordSection';
  * Burst-catalogue values (GBM's own catalogue) come first in each property, linked to the catalogue. */
 
 interface CircularLike { alertKey: string; date: string; data?: { observations?: { rows?: ObservationRow[] } } }
-
-const gcnNo = (k: string) => k.replace(/^GCN-/, '');
 
 export function EventBurstProperties({ circulars, catalogs, onOpenCircular }: {
   circulars: CircularLike[]; catalogs?: CatalogValues[]; onOpenCircular: (alertKey: string) => void;

@@ -7,7 +7,6 @@ import { DayPicker, PropsSingle as DayPickerSingleProps } from "react-day-picker
 
 
 import { cn } from "../../utils/cn";
-import { buttonVariants } from "./button";
 
 type CalendarProps = React.ComponentProps<typeof DayPicker & DayPickerSingleProps> & {
   triggerClassName?: string;

@@ -1,4 +1,3 @@
-import React from 'react';
 import { TableWrap } from '@shared/components/ui/primitives';
 
 interface MeasurementsDisplayProps {

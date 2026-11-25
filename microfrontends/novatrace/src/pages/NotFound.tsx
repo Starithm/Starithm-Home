@@ -1,4 +1,3 @@
-import React from 'react';
 import { NotFound } from '@shared/components';
 
 export default function NovaTraceNotFound() {

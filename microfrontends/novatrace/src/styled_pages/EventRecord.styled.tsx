@@ -13,7 +13,6 @@ const BG = '#0E0B16';
 /* The design tints surfaces with alpha platinum over the page rather than filling
    them with a solid colour — so rows read as a lift off #0E0B16, not as a
    different (slightly violet) material. */
-const SURFACE = 'rgba(231, 223, 221, 0.03)';
 const SUNKEN = 'rgba(231, 223, 221, 0.05)';
 const GOLD = 'var(--starithm-golden-yellow, #ffc332)';
 /* Veronica, muted for this page: same hue as --starithm-veronica-dark (283.6°),
@@ -340,24 +339,6 @@ export const RedshiftPill = styled.span`
 /* Same value inside a circular's chip strip — same anatomy as ValueChip so the
    strip stays one system, with a gold bar and gold text marking it out from the
    values around it. */
-export const RedshiftChip = styled.span`
-  font-size: ${fs(10)};
-  letter-spacing: 0.04em;
-  padding: 5px 10px;
-  background: ${goldA(0.07)};
-  border: 1px solid ${goldA(0.28)};
-  border-left: 3px solid ${GOLD};
-  color: ${GOLD};
-  white-space: nowrap;
-
-  b {
-    font-weight: 400;
-    font-style: italic;
-    color: inherit;
-    &::after { content: '='; margin: 0 6px; font-style: normal; color: ${goldA(0.6)}; }
-  }
-`;
-
 /* Disagreement between circulars is stated, never resolved away. */
 export const RedshiftNote = styled.span`
   color: ${goldA(0.7)};
@@ -489,15 +470,6 @@ export const KeyFactItem = styled.div<{ $wide: boolean }>`
 
 /* ── position ─────────────────────────────────────────────────────────── */
 
-/* Position and "how it narrowed" sit side by side, per the design's 1fr 1fr. */
-export const PositionSplit = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: start;
-  @media (max-width: 820px) { grid-template-columns: 1fr; gap: 20px; }
-`;
-
 /* Each half of the position split is its own bordered box —
    border: 1px solid rgba(231,223,221,.1); padding: 15px 17px. */
 export const Panel = styled.div`
@@ -507,15 +479,6 @@ export const Panel = styled.div`
   flex-direction: column;
   gap: 11px;
   min-width: 0;
-`;
-
-/* Footer line inside a panel, e.g. "tightest from …". */
-export const PanelFoot = styled.div`
-  padding-top: 11px;
-  border-top: 1px solid ${line(0.08)};
-  font-size: ${fs(11)};
-  color: ${line(0.5)};
-  overflow-wrap: anywhere;
 `;
 
 /* "Every localisation reported" under the coordinates: one row per notice instrument's tightest
@@ -570,32 +533,6 @@ export const FieldHint = styled.span`
   font-size: ${fs(11)};
   color: ${line(0.38)};
   margin-left: 6px;
-`;
-
-/* Error radius shrinking across notices — the record narrowing over time. */
-export const NarrowRow = styled.div`
-  display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: center;
-  padding: 7px 0;
-  font-size: ${fs(11.5)};
-  border-top: 1px solid ${line(0.06)};
-  &:first-of-type { border-top: 0; }
-`;
-
-export const NarrowBar = styled.div<{ $pct: number; $best?: boolean }>`
-  height: 4px;
-  border-radius: 0;
-  background: ${line(0.08)};
-  overflow: hidden;
-  &::after {
-    content: '';
-    display: block;
-    height: 100%;
-    width: ${p => Math.max(2, Math.min(100, p.$pct))}%;
-    background: linear-gradient(90deg, rgba(141, 15, 245, 0.85), rgba(200, 75, 247, 0.55));
-  }
 `;
 
 export const Muted = styled.span`
@@ -766,16 +703,6 @@ export const CircHead = styled.button`
   &:focus-visible { outline: 1px solid ${line(0.3)}; outline-offset: -1px; }
 `;
 
-export const CircTop = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  font-size: ${fs(11)};
-  color: ${line(0.42)};
-  strong { color: ${GOLD}; font-weight: 600; letter-spacing: 0.06em; }
-`;
-
 export const CircSummary = styled.div`
   font-family: var(--font-prose);
   font-size: ${fs(12.5)};
@@ -799,13 +726,6 @@ export const CircBody = styled.div`
   border-top: 1px solid ${line(0.06)};
   padding: 14px 18px 16px;
   background: ${BG};
-`;
-
-export const ValueChips = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
 `;
 
 /* Extracted values read as `key = value` in plain platinum, held in a neutral
@@ -1093,16 +1013,6 @@ export const CircFacility = styled.span`
 export const CircDate = styled.span`
   color: ${line(0.35)};
   font-size: ${fs(11)};
-  white-space: nowrap;
-`;
-
-/* Table chip is gold and dashed — it points at rows, not a parsed scalar. */
-export const TableChip = styled.span`
-  font-size: ${fs(10)};
-  letter-spacing: 0.04em;
-  padding: 3px 7px;
-  border: 1px dashed rgba(255, 195, 50, 0.5);
-  color: ${GOLD};
   white-space: nowrap;
 `;
 

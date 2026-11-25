@@ -7,14 +7,7 @@ import { Badge } from '@shared/components/ui/badge';
 import { Calendar as CalendarComponent } from '@shared/components/ui/calendar';
 
 import {
-  MapPin,
-  Telescope,
-  Star,
-  Activity,
-  ChevronLeft,
-  ChevronRight,
   ChevronDown,
-  Clock,
   RotateCcw,
   ArrowRight,
   Calendar,
@@ -55,7 +48,6 @@ import {
   LiveIndicator,
   LiveDot,
   LiveText,
-  Navigation,
   SearchSection,
   SearchBarWrapper,
   SearchBarInput,
@@ -65,7 +57,6 @@ import {
   FilterPillWrapper,
   FilterPill,
   PillDropdownItem,
-  DateRangeContainer,
   DateRangeSeparator,
   CardMetaLine,
   CardGrid,
@@ -86,24 +77,12 @@ import {
   CelestialSphereContainer,
   FloatingEventPanel,
   EventPanel,
-  EventPanelHeader,
   EventPanelContent,
   EventPanelTop,
   EventPanelLeft,
-  EventIconContainer,
   EventTitle,
-  EventSubtitle,
   EventPanelBody,
   BadgeContainer,
-  SectionContainer,
-  SectionHeader,
-  SectionIcon,
-  SectionTitle,
-  SectionContent,
-  SectionRow,
-  SectionLabel,
-  SectionValue,
-  ActionsContainer,
   StatusBar,
   StatusContent,
   StatusLeft,
@@ -203,17 +182,9 @@ export default function EventLevel() {
 
   // State for search trigger
   const [searchTrigger, setSearchTrigger] = useState(1); // Start with 1 to trigger initial load
-  const [filtersModified, setFiltersModified] = useState(false); // Track if filters have been modified
-
-  // Reset filtersModified flag on initial load
-  useEffect(() => {
-    if (searchTrigger === 1) {
-      setFiltersModified(false);
-    }
-  }, [searchTrigger]);
 
   // Fetch events with all filter parameters
-  const { data: events = [], isLoading, error } = useQuery({
+  const { data: events = [], error } = useQuery({
     queryKey: ['events', searchTrigger], // Only depend on searchTrigger
     queryFn: async () => {
       const response = await fetch(API_ENDPOINTS.events, {
@@ -322,7 +293,6 @@ export default function EventLevel() {
 
   const handleDateRangeChange = (start: string, end: string) => {
     setDateRange({ start, end });
-    setFiltersModified(true);
     console.log("dateRange", dateRange);
   };
 
@@ -338,11 +308,6 @@ export default function EventLevel() {
       prev.includes(kind) ? prev.filter(k => k !== kind) : [...prev, kind]
     );
     setSearchTrigger(prev => prev + 1);
-  };
-
-  const handleSearch = () => {
-    setSearchTrigger(prev => prev + 1);
-    setFiltersModified(false);
   };
 
   // The header bar is now Ask Evren: Enter opens the answer page with the question (it used to
@@ -369,7 +334,6 @@ export default function EventLevel() {
     setConeRa('');
     setConeDec('');
     setConeRadius('');
-    setFiltersModified(false);
     setSearchTrigger(prev => prev + 1);
   };
 
@@ -387,57 +351,9 @@ export default function EventLevel() {
     window.history.replaceState(null, '', url.toString());
   };
 
-  const handleClosePanel = () => {
-    setSelectedEvent(null);
-    const url = new URL(window.location.href);
-    url.searchParams.delete('id');
-    window.history.replaceState(null, '', url.toString());
-  };
 
-  const getEventIcon = (alertKind: string) => {
-    switch (alertKind?.toLowerCase()) {
-      case 'grb':
-      case 'gamma-ray burst':
-        return <Star size={16} />;
-      case 'gw':
-      case 'gravitational wave':
-        return <Telescope size={16} />;
-      default:
-        return <MapPin size={16} />;
-    }
-  };
 
-  const getPhaseColor = (phase: string) => {
-    switch (phase?.toLowerCase()) {
-      case 'initial':
-        return 'bg-blue-500';
-      case 'update':
-        return 'bg-yellow-500';
-      case 'final':
-        return 'bg-green-500';
-      case 'retraction':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
 
-  const getEventTypeColor = (type: string) => {
-    switch (type?.toLowerCase()) {
-      case 'grb':
-      case 'gamma-ray burst':
-        return 'destructive';
-      case 'gw':
-      case 'gravitational wave':
-        return 'default';
-      case 'neutrino':
-        return 'secondary';
-      case 'supernova':
-        return 'outline';
-      default:
-        return 'outline';
-    }
-  };
 
   const formatCoordinate = (value: number, type: 'ra' | 'dec') => {
     if (type === 'ra') {

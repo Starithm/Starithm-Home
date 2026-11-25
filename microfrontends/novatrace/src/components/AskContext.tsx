@@ -12,6 +12,7 @@ import { kindColor } from '@shared/utils/eventColors';
 import { getTimeAgo } from '../utils/duration';
 import { hasPosition, posErrorRadius } from '../utils/sky';
 import { useSkyCutout } from '@novatrace/lib/skyCutouts';
+import { utcSecond } from '@shared/utils/time';
 
 /* Left-column context. An event question gets a fact sheet (and real images when they exist);
  * a topic question gets the events behind its sources. Missing fields say "not reported":
@@ -29,7 +30,7 @@ const NOT_SEARCHED = <span style={{ color: 'var(--text-faint)' }}>not searched</
 function utc(t: string | null) {
   if (!t) return null;
   const d = new Date(t);
-  return Number.isNaN(d.getTime()) ? null : d.toISOString().replace('T', ' ').slice(0, 19);
+  return Number.isNaN(d.getTime()) ? null : utcSecond(d);
 }
 
 function eventPage(id: string) {

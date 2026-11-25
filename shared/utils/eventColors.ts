@@ -44,11 +44,6 @@ export function kindColor(alertKind: string | null | undefined): string {
   return KIND_COLORS[kindKey(alertKind)] || KIND_FALLBACK;
 }
 
-/** Chip fill — the kind's colour at ~16%, per the 2b spec (`colour + "28"`). */
-export function kindChipBg(alertKind: string | null | undefined): string {
-  return `${kindColor(alertKind)}28`;
-}
-
 export const SIG_COLORS: Record<string, string> = {
   critical: '#ef4444',
   high: '#f97316',

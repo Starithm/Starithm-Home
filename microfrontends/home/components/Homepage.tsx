@@ -15,7 +15,7 @@ import {
   TabsRow, TabList, TabItem, TabProgress, ShowPanel, Preview, PreviewBox,
   Graph, GraphNotes,
   SplitRow, Providers, ErrorNote, FormCard, FormTitle, FakeField, FieldRow,
-  Closing, Contact, Footer, FooterCols, line,
+  Closing, Contact, Footer, FooterCols,
 } from '../styled_components/HomepageV3.styled';
 
 /* Homepage v3 (2026-11-12), built from the Claude Design canvas "Starithm homepage redesign"

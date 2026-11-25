@@ -77,9 +77,9 @@ All token-based, exported from `@shared/components`.
 
 Extend rather than redraw: ``styled(Page)` font-family: var(--font-mono); ` ``.
 
-`shared/components/ui/` also holds 13 kept shadcn primitives (`badge` `button` `calendar`
-`card` `celestial-sphere` `dialog` `error` `input` `label` `loading` `select` `sheet`
-`tooltip`). **37 unused ones were deleted** — don't reintroduce one without a real consumer;
+`shared/components/ui/` also holds 7 kept shadcn primitives (`badge` `button` `calendar`
+`celestial-sphere` `error` `loading` `sheet`). **37 unused ones were deleted**, and `card`
+`dialog` `input` `label` `select` `tooltip` went with the legacy alerts page (2026-11-25) — don't reintroduce one without a real consumer;
 the original drop-in left 39 of 52 with none, and removing them cut emitted CSS 195 → 104 kB.
 
 There is **no toast system**. `toast`, `toaster` and `use-toast` were retired with the
@@ -103,7 +103,7 @@ anywhere else will 404 with no build error.
 | Command | Catches |
 |---|---|
 | `npm run check:tokens` | `theme.ts` drifting from `globals.css` |
-| `npm run check:no-raw-hex` | new raw hex in components — a **ratchet**: 577 literals already exist, it fails only on an increase. Re-baseline with `-- --update` after a genuine reduction |
+| `npm run check:no-raw-hex` | new raw hex in components — a **ratchet**: 342 literals already exist, it fails only on an increase. Re-baseline with `-- --update` after a genuine reduction |
 | `npm run check:design` | both |
 | `npx tsc --noEmit` | ~116 pre-existing errors (root tsconfig doesn't map the vite aliases). Diff against a baseline; don't expect zero |
 

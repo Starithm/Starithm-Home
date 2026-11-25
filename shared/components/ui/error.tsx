@@ -1,4 +1,3 @@
-import React from 'react';
 import { AlertTriangle, RefreshCw, Coffee, Zap } from 'lucide-react';
 import {
   ErrorContainer,

@@ -422,7 +422,6 @@ export function CelestialSphere({ events, onEventClick, selectedEvent, coneSearc
     // Draw cone search region
     if (coneSearch) {
       const { raDeg: cRA, decDeg: cDec, radiusDeg: r } = coneSearch;
-      const cRArad = (cRA * Math.PI) / 180;
       const cDecRad = (cDec * Math.PI) / 180;
       const rRad = (r * Math.PI) / 180;
 

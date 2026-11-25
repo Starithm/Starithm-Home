@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { SectionHead, SectionNote, Card, UrlLink, Disclaimer, LcScroll, LcWrap, LcChart, LcTip, LcLegend } from '../styled_pages/EventRecord.styled';
-import { eventObservations, fmtSinceTrigger, isEventLight, type ObservationRow } from '../utils/observations';
+import { gcnNo, eventObservations, fmtSinceTrigger, isEventLight, type ObservationRow } from '../utils/observations';
 import { RecordSection, SectionToggle } from './RecordSection';
 
 /* The burst's X-ray light curve: UKSSDC's Swift-XRT 0.3-10 keV flux against time since the BAT
@@ -50,7 +50,6 @@ const pow10 = (e: number) => `10${String(e).replace(/./g, c => SUP[c] ?? c)}`;
 const sci = (v: number) => { const e = Math.floor(Math.log10(v)); return `${(v / 10 ** e).toFixed(2)}×${pow10(e)}`; };
 const TIME_TICKS: [number, string][] = [[1, '1 s'], [10, '10 s'], [60, '1 min'], [600, '10 min'], [3600, '1 h'], [36000, '10 h'], [86400, '1 d'], [864000, '10 d'], [8640000, '100 d']];
 const MODE_LABEL: Record<string, string> = { WTSLEW: 'Windowed Timing (settling)', WT: 'Windowed Timing', PC: 'Photon Counting' };
-const gcnNo = (k: string) => k.replace(/^GCN-/, '');
 
 /** UKSSDC points, and circular soft X-ray fluxes (normalised to erg/cm²/s, with a time since trigger). */
 function points(curve: LightCurve | null, circulars: CircularLike[]): Pt[] {

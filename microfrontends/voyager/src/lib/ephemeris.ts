@@ -91,11 +91,3 @@ export function formatClock(seconds: number, decimals = 1) {
   return `${neg ? '−' : ''}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${sec}`;
 }
 
-export function formatSpan(ms: number) {
-  const s = Math.floor(Math.abs(ms) / 1000);
-  const d = Math.floor(s / 86400);
-  const h = Math.floor((s % 86400) / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  return { d, h, m, s: sec };
-}

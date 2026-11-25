@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Copy, Check, ExternalLink } from 'lucide-react';
 import { API_ENDPOINTS } from '@shared/lib/config';
-import { FITS_EXTS, IMAGE_EXTS, imageUrls, noticeAssets } from '@novatrace/lib/eventAssets';
+import { imageUrls, noticeAssets } from '@novatrace/lib/eventAssets';
 import { StarithmLoaderBlock } from '@shared/components/StarithmLoader';
 import { CommentThread } from '@shared/components/CommentThread';
 import { SignInButton, UserButton, useAuth } from '@clerk/react';
@@ -17,7 +17,7 @@ import {
   PosSplit, FieldGrid, Field, FieldLabel, FieldValue, FieldHint,
   Muted,
   Row, Stack, Topic, Phase, PayloadWrap, PayloadTable,
-  Tabs, Tab, CircCard, CircHead, CircTop, CircSummary, Chip, CircBody,
+  Tabs, Tab, CircCard, CircHead, CircSummary, Chip, CircBody,
   MeasureTable, ShowMore, MeasureNote, CircMeasures, TableWrap, Table, RawText, InlineActions,
   Cite, CiteLabel, Empty, Figures, Figure,
   UrlList, UrlLink, MiniLabel, CircGrid, CircId, CircFacility, CircDate,
@@ -38,6 +38,7 @@ import { SkyCutoutFigure } from '../components/SkyCutout';
 import { keyFacts, type Energetics } from '../utils/keyFacts';
 import { shownObservations, burstProperties, type CatalogValues, type ObservationRow } from '../utils/observations';
 import { swiftLinks } from '../utils/swift';
+import { utcLong } from '@shared/utils/time';
 
 /* Types mirror GET /api/public/events/:canonicalId exactly — no fields beyond it. */
 interface Notice {
@@ -138,12 +139,6 @@ function fmtCoord(value: number, type: 'ra' | 'dec'): string {
  * generated headline). Before the API sends `name`, the old order: headline, then primary name. */
 const eventTitle = (e: { name?: string; primaryName?: string | null; canonicalId: string; aiSummary: { headline: string } | null }) =>
   e.name || e.primaryName || e.aiSummary?.headline || e.canonicalId;
-
-const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short',
-  });
 
 /** Offset from T0, e.g. "T+2:22:55". */
 function tPlus(t0: string | null, at: string | null): string {
@@ -264,14 +259,6 @@ function payloadFields(payload: Record<string, any> | null | undefined): Array<[
 const fileName = (u: string) => u.split('/').pop()?.split('?')[0] || u;
 
 const hostOf = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
-
-/** Extension-derived label for the files list. */
-function fileKind(u: string): string {
-  if (IMAGE_EXTS.test(u)) return 'img';
-  if (FITS_EXTS.test(u)) return 'fits';
-  const m = u.split('?')[0].match(/\.([a-z0-9]{1,5})$/i);
-  return m ? m[1].toLowerCase() : 'link';
-}
 
 const toCsv = (rows: Array<Record<string, any>>) => {
   const cols = Array.from(new Set(rows.flatMap(r => Object.keys(r))));
@@ -589,7 +576,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
             )}
             {event.aiSummary?.headline && event.aiSummary.headline !== eventTitle(event) && <SubMeta>{event.aiSummary.headline}</SubMeta>}
             <SubMeta>
-              {event.t0 ? `T0 ${fmtDate(event.t0)}` : 'T0 unknown'} · {event.noticeCount} notices ·{' '}
+              {event.t0 ? `T0 ${utcLong(event.t0)}` : 'T0 unknown'} · {event.noticeCount} notices ·{' '}
               {event.circularCount} circulars
               {lastActivity && ` · last activity ${tPlus(event.t0, lastActivity)}`}
             </SubMeta>
@@ -685,7 +672,7 @@ function EventRecord({ canonicalId }: { canonicalId?: string }) {
                                 <td>{l === best && <LocStar aria-label="event position">★</LocStar>}{l.instrument}</td>
                                 <td>{l.role === 'event' ? 'burst' : 'afterglow'}{l.tentative && ' (tentative)'}</td>
                                 <td>{fmtErr(l.errorDeg!)}{l.containment && <FieldHint>{l.containment}</FieldHint>}</td>
-                                <td>{event.t0 ? tPlus(event.t0, l.at) : l.at ? fmtDate(l.at) : '—'}</td>
+                                <td>{event.t0 ? tPlus(event.t0, l.at) : l.at ? utcLong(l.at) : '—'}</td>
                                 <td>
                                   {l.from.kind === 'circular'
                                     ? <UrlLink href={`#circ-${l.from.alertKey}`} onClick={ev => { ev.preventDefault(); openCircular((l.from as { alertKey: string }).alertKey); }}>
