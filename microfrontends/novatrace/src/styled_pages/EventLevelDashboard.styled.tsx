@@ -58,12 +58,6 @@ export const LogoContainer = styled.div`
   box-shadow: 0 8px 32px rgba(141, 15, 245, 0.3);
 `;
 
-export const LogoText = styled.span`
-  color: white;
-  font-weight: bold;
-  font-size: 1.125rem;
-`;
-
 /* Starithm brand lock-up. The mark is used bare rather than inside LogoContainer's
    violet gradient — the arcs are the same purple and would disappear against it. */
 export const BrandLink = styled.a`
@@ -321,19 +315,6 @@ export const FilterPill = styled.button<{ $active?: boolean }>`
   &:hover { border-color: ${({ $active }) => $active ? 'transparent' : 'rgba(231, 223, 221, 0.3)'}; }
 `;
 
-export const PillDropdown = styled.div`
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 0.875rem;
-  padding: 0.4rem;
-  min-width: 200px;
-  z-index: 99999;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-`;
-
 export const PillDropdownItem = styled.button<{ $selected?: boolean }>`
   display: flex;
   align-items: center;
@@ -350,12 +331,6 @@ export const PillDropdownItem = styled.button<{ $selected?: boolean }>`
   white-space: nowrap;
   transition: background 0.1s;
   &:hover { background: var(--muted); }
-`;
-
-export const DateRangeContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
 `;
 
 export const DateRangeSeparator = styled.span`
@@ -599,14 +574,6 @@ export const SignInAction = styled.button`
   &:hover { background: rgba(107, 52, 176, 0.32); }
 `;
 
-export const EventPanelHeader = styled.div`
-  padding: 0.5rem 0 0 0.5rem;
-  margin-left: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-`;
-
 export const EventPanelContent = styled.div`
   padding: 13px 14px 0;
 `;
@@ -624,24 +591,9 @@ export const EventPanelLeft = styled.div`
   min-width: 0;
 `;
 
-export const EventIconContainer = styled.div`
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #8D0FF5 0%, #A239CA 100%);
-`;
-
 export const EventTitle = styled.h3`
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
-`;
-
-export const EventSubtitle = styled.p`
-  font-size: var(--font-size-xs);
-  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
 `;
 
 /* The children carry their own margins now, so the 1rem flex gap was stacking on
@@ -659,51 +611,12 @@ export const BadgeContainer = styled.div`
   gap: var(--space-2);
 `;
 
-export const SectionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-`;
-
-export const SectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--font-size-sm);
-`;
-
-export const SectionIcon = styled.div`
-  color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
-`;
-
 export const SectionTitle = styled.span`
   font-weight: var(--font-weight-medium);
 `;
 
-export const SectionContent = styled.div`
-  font-size: var(--font-size-xs);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-`;
-
-export const SectionRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
 export const SectionLabel = styled.span`
   color: ${({ theme }) => getThemeValue(theme, 'mutedForeground', '#686868')};
-`;
-
-export const SectionValue = styled.span`
-  font-family: monospace;
-`;
-
-export const ActionsContainer = styled.div`
-  display: flex;
-  gap: var(--space-2);
-  padding-top: var(--space-2);
 `;
 
 // Status bar

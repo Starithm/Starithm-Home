@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { PlayerData } from '../lib/melodies';
 import { brightnessAt, pointAt } from '../lib/playerMath';
 import { MapBox, MapCanvas, MapFrame, MapImage } from '../styled_components/Ears.styled';
+import { prepareCanvas } from '../lib/canvas';
 
 interface Props {
   mapUrl: string;
@@ -33,21 +34,9 @@ export function SkyMap({ mapUrl, player, time, alt }: Props) {
     const { w, h } = size;
     if (!canvas || !w || !h || !player.path.length) return;
 
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-    }
-    const g = canvas.getContext('2d');
-    if (!g) return;
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    g.clearRect(0, 0, w, h);
-
-    const css = getComputedStyle(canvas);
-    const token = (name: string) => css.getPropertyValue(name).trim();
-    const violet = token('--starithm-electric-violet');
-    const amber = token('--starithm-selective-yellow');
-    const ink = token('--text-body');
+    const frame = prepareCanvas(canvas, w, h);
+    if (!frame) return;
+    const { g, violet, amber, ink } = frame;
 
     const [cx, cy] = pointAt(player, time);
 

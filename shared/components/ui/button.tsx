@@ -2,7 +2,6 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import styled, { css } from "styled-components";
-import { cn } from "../../utils/cn";
 
 // Keep Tailwind variant helper for legacy consumers (e.g., AlertDialog, Pagination)
 const buttonVariants = cva(

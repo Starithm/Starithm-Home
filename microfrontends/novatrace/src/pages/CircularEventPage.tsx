@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'wouter';
+import { useEffect, useState } from 'react';
 import { FileText, Calendar } from 'lucide-react';
 import { Section } from '../components/Section';
 import { CircularsList } from '../components/CircularsList';
 import type { Circular } from '../components/CircularsList';
 import { API_ENDPOINTS } from '@shared/lib/config';
 import { CommentThread } from '@shared/components/CommentThread';
+import { utcLong } from '@shared/utils/time';
 
 interface CircularEvent {
   event: string;
   circularCount: number;
   circulars: Circular[];
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short',
-  });
 }
 
 function navigateTo(path: string) {
@@ -29,7 +22,6 @@ function navigateTo(path: string) {
 }
 
 export default function CircularEventPage({ eventName }: { eventName?: string }) {
-  const [, navigate] = useLocation();
   const [data, setData] = useState<CircularEvent | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -89,7 +81,7 @@ export default function CircularEventPage({ eventName }: { eventName?: string })
             {sortedCirculars[0] && (
               <span style={{ fontSize: '0.72rem', color: '#555', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                 <Calendar style={{ width: 11, height: 11 }} />
-                {formatDate(sortedCirculars[0].date)}
+                {utcLong(sortedCirculars[0].date)}
               </span>
             )}
           </div>

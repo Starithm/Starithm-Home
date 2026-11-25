@@ -6,6 +6,7 @@ import {
 } from '../styled_pages/EventRecord.styled';
 import { EventSkyMap, type PointKind, type SkyPoint, type SkyRegion } from './EventSkyMap';
 import { RecordSection, SectionToggle } from './RecordSection';
+import { utcMinute } from '@shared/utils/time';
 
 /* Everything NovaTrace found around an event, in one section: other events cross-match grouped
  * with it, optical candidates from the cone search (Lasair Rubin/ZTF, TNS) with the cross-match
@@ -61,7 +62,7 @@ const GAMMA = ['4FGL', 'TeVCat'];
 
 
 const pct = (x: number | null) => (x == null ? '—' : `${Math.round(x * 100)}%`);
-const utc = (iso: string | null) => (iso ? `${new Date(iso).toISOString().slice(0, 16).replace('T', ' ')} UTC` : null);
+const utc = (iso: string | null) => (iso ? `${utcMinute(iso)} UTC` : null);
 function since(min: number | null): string {
   if (min == null) return '—';
   const h = min / 60;

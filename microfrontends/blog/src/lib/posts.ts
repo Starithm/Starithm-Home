@@ -23,11 +23,13 @@ export interface Post extends PostMeta {
   content: string;
 }
 
-function parseFrontmatter(raw: string): { meta: Partial<PostMeta>; content: string } {
+/** Splits a post into its `---` frontmatter (flat `key: value` lines) and body. Also used by
+ *  scripts/prerender-posts.ts, which passes its own meta type. */
+export function parseFrontmatter<M = PostMeta>(raw: string): { meta: Partial<M>; content: string } {
   const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!match) return { meta: {}, content: raw };
 
-  const meta: Partial<PostMeta> = {};
+  const meta: Partial<M> = {};
   for (const line of match[1].split('\n')) {
     const colon = line.indexOf(':');
     if (colon === -1) continue;

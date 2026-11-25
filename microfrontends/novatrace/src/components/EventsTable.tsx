@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Event } from '@shared/types';
 import { kindColor, kindLabel } from '@shared/utils/eventColors';
 import { getTimeAgo } from '../utils/duration';

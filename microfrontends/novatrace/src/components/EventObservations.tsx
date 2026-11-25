@@ -4,7 +4,7 @@ import {
   TableWrap, Table, UrlLink, ShowMore, Disclaimer, ObsChart, ObsRow, AssumptionNote,
 } from '../styled_pages/EventRecord.styled';
 import {
-  shownObservations, observationsCoverage, fmtObservationValue, fmtSinceTrigger, fmtObservationUtc, fmtExposure,
+  gcnNo, shownObservations, observationsCoverage, fmtObservationValue, fmtSinceTrigger, fmtObservationUtc, fmtExposure,
   fmtNormalised, fmtNormalisedAt, normAssumptions,
   REGIMES, type Observation, type Regime, type ObservationRow,
 } from '../utils/observations';
@@ -19,7 +19,6 @@ interface CircularLike { alertKey: string; date: string; data?: { observations?:
 
 const PREVIEW = 12;
 const isLimit = (o: Observation) => o.kind === 'upper_limit' || o.kind === 'depth';
-const gcnNo = (k: string) => k.replace(/^GCN-/, '');
 
 function Coverage({ obs, lanes, filter, onFilter }: {
   obs: Observation[]; lanes: typeof REGIMES; filter: Regime | 'all'; onFilter: (r: Regime | 'all') => void;

@@ -25,10 +25,3 @@ export const MainContent = styled.div`
   }
 `;
 
-// Loading state
-export const LoadingContainer = styled.div`
-  flex: 1;
-  display: flex;
-  aligntItems: center;
-  justifyContent: center;
-`;

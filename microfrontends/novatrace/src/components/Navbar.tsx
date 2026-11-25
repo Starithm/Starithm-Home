@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Activity, Home, Search, Menu } from "lucide-react";
-import { useLocation } from "wouter";
 import { SignInButton, UserButton, useAuth } from "@clerk/react";
 import { saveReturnUrl } from '@shared/lib/auth';
 import { ASK_ASSISTANT } from '@shared/lib/config';
@@ -24,25 +23,12 @@ import {
 } from "../styled_components/Navbar.styled";
 
 export function Navbar() {
-  const [, setLocation] = useLocation();
   const { isSignedIn } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const navigateToEvents = () => {
     // Navigate to the main app's events route
     const target = '/novatrace/events';
-    // If embedded in a host, ask parent to navigate
-    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
-      window.parent.postMessage({ type: 'navigate', path: target }, '*');
-    } else {
-      // Fallback: navigate within microfrontend (works in standalone dev)
-      window.location.href = `${target}`;
-    }
-  };
-
-  const navigateToStatus = () => {
-    // Navigate to the main app's status route
-    const target = '/novatrace/status';
     // If embedded in a host, ask parent to navigate
     if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
       window.parent.postMessage({ type: 'navigate', path: target }, '*');

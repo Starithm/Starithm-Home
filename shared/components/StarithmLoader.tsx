@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * The Starithm mark as a loading indicator — three arcs orbiting at non-harmonic

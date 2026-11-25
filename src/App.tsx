@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef } from 'react';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { SignInButton, UserButton, useAuth, AuthenticateWithRedirectCallback } from '@clerk/react';

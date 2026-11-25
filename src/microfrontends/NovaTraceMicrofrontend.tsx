@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import InfraStatus from '../../microfrontends/novatrace/src/pages/InfraStatus';
-import AlertsLevel from '../../microfrontends/novatrace/src/pages/AlertLevelDashboard';
 import EventLevel from '../../microfrontends/novatrace/src/pages/EventLevelDashboard';
 import EventRecordPage from '../../microfrontends/novatrace/src/pages/EventRecordPage';
 import AskPage from '../../microfrontends/novatrace/src/pages/AskPage';
@@ -39,12 +38,10 @@ const NovaTraceMicrofrontend: React.FC = () => {
         return <GoldSetPage />;
       // /alerts was never an alerts page — it is an archive of GCN circulars. Redirect so
       // existing links and indexed URLs keep working.
+      // The legacy alerts dashboard (removed 2026-11-25) lived at /alerts-legacy.
       case '/novatrace/alerts':
-        return <Navigate to="/novatrace/circular-archive" replace />;
-      // Legacy dashboard kept reachable: it is still the only surface exposing the JS9
-      // FITS viewer, which the archive popup does not yet wire up.
       case '/novatrace/alerts-legacy':
-        return <AlertsLevel />;
+        return <Navigate to="/novatrace/circular-archive" replace />;
       // Ask Evren replaced the old keyword event search here (the question is in ?q=).
       case '/novatrace/search':
         return <AskPage />;

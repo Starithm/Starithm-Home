@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import type { RoadmapStatus } from '../data/roadmap';
+import { VIOLET, VIOLET_D, PLATINUM, platinumA as line } from '@shared/theme/brand';
 
 /* Roadmap — "the frontier".
  *
@@ -18,14 +19,10 @@ import type { RoadmapStatus } from '../data/roadmap';
 const CARD_BG = '#0A0810';
 const RULE = '#1B1626';
 const AHEAD_BG = '#0C0A12';
-const VIOLET = 'var(--starithm-electric-violet, #8D0FF5)';
-const VIOLET_D = 'var(--starithm-electric-violet-dark, #9A48FF)';
-const PLATINUM = 'var(--starithm-platinum, #E7DFDD)';
 
 const HELD = '#10b981';
 
 /* Alpha variants of --starithm-platinum (231,223,221). */
-const line = (a: number) => `rgba(231, 223, 221, ${a})`;
 
 export const STATUS_COLOR: Record<RoadmapStatus, string> = {
   held: HELD,

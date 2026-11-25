@@ -2,14 +2,11 @@ export const config = { runtime: 'edge' };
 
 import { esc } from './_shared/prerender';
 import { CACHE, SITE_BASE, eventTime, eventUrl, listedEvents } from './_shared/events';
+import { kindName } from '../shared/utils/eventColors';
 
 /* /novatrace/feed.xml: the newest events as RSS 2.0. Search Console takes a feed as a sitemap and
  * fetches it often, the quickest way for a new event page to be found; researchers can follow it too. */
 const ITEMS = 50;
-const KIND: Record<string, string> = {
-  grb: 'Gamma-ray burst', gw: 'Gravitational-wave event', neutrino: 'Neutrino alert', xray: 'X-ray transient',
-  frb: 'Fast radio burst', optical: 'Optical transient',
-};
 
 export default async function handler(): Promise<Response> {
   let events;
@@ -21,7 +18,7 @@ export default async function handler(): Promise<Response> {
   const newest = [...events].sort((a, b) => eventTime(b) - eventTime(a)).slice(0, ITEMS);
   const items = newest.map((e) => {
     const name = e.name || e.canonicalId;
-    const kind = KIND[String(e.alertKind ?? '').toLowerCase()];
+    const kind = kindName(e.alertKind);
     const when = e.t0 ? new Date(e.t0) : null;
     return `    <item>
       <title>${esc(kind ? `${name}: ${kind}` : name)}</title>

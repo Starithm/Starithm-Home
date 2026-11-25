@@ -1,4 +1,5 @@
 import styled, { keyframes, css } from 'styled-components';
+import { platinumA as line, prose } from '@shared/theme/brand';
 
 /* Homepage v3 (2026-11-12), from the Claude Design canvas "Starithm homepage redesign".
  *
@@ -15,21 +16,17 @@ const PLATINUM = 'var(--foreground)';
 const BLACK = 'var(--surface-sunken)';
 const PANEL = 'var(--surface)';
 const RAISED = 'var(--surface-raised)';
-const SUNKEN = 'var(--surface-sunken)';
 const TEAL = 'var(--starithm-nebula-teal)';
 
 /* Alpha variants of --starithm-platinum (231,223,221) for borders and muted text, as in v2. */
-export const line = (a: number) => `rgba(231, 223, 221, ${a})`;
 
 const serif = css`font-family: var(--font-display); font-weight: 400;`;
 /* NovaTrace's faces (CLAUDE.md): Newsreader for homepage titles; numbers and labels in Google Sans Code;
    multi-sentence text in Andika. */
 const heading = css`font-family: var(--font-mono); font-weight: 600; letter-spacing: -0.01em;`;
-const prose = css`font-family: var(--font-prose);`;
 
 const floaty = keyframes`0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-18px) rotate(0.5deg)}`;
 const ping = keyframes`0%{box-shadow:0 0 0 0 rgba(78,205,196,0.6)}100%{box-shadow:0 0 0 10px rgba(78,205,196,0)}`;
-const fadeup = keyframes`from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}`;
 const marquee = keyframes`from{transform:translateX(0)}to{transform:translateX(-50%)}`;
 const still = css`@media (prefers-reduced-motion: reduce) { animation: none; }`;
 

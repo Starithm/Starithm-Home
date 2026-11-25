@@ -1,7 +1,7 @@
 // /outreach: Starithm's projects for a general audience, linked from the homepage footer in place of
 // Ears to the Universe (decided 2026-11-16, layout "two equal cards"). Each project gets one card;
 // films appear under the cards once FILMS lists them (YouTube ids), so adding one is a data change.
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 
 interface Project {
